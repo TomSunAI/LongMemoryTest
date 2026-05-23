@@ -138,6 +138,8 @@ Poixe smoke test 位于 `scripts/poixe_smoke_test.py`，用于验证本地 key�
 
 B 的 Letta 配置入口位于 `src/long_memory_test/letta_memory.py`。基础连通性测试位于 `scripts/letta_memory_smoke.py`，用于验证 B agent 可以创建，并且 M2 memory block 可以被修改和读回。
 
+Letta 中 M0/M1/M2/M3 的具体设计以 `docs/letta_memory_levels.md` 为准。该文档定义了每个层级在 Letta 中读取什么、写入什么、禁止读取什么，以及 M3 的过度记忆风险控制。
+
 ## 核心数据流程
 
 1. 生成或读取模拟用户画像。
