@@ -77,6 +77,9 @@ POIXE_API_KEY=your-poixe-api-key-here
 POIXE_BASE_URL=https://api.poixe.com/v1
 POIXE_MODEL=gpt-5.2
 LLM_PROVIDER=poixe
+LETTA_BASE_URL=http://127.0.0.1:8283
+LETTA_MODEL=openai-proxy/gpt-5.2
+LETTA_EMBEDDING=openai/text-embedding-3-small
 ```
 
 `.env.local` 已加入 `.gitignore`，不要提交真实 key。
@@ -90,6 +93,19 @@ python3 scripts/poixe_smoke_test.py
 
 共享客户端位于 `src/long_memory_test/llm.py`。后续 A 的文本润色、B 的 Letta 记忆判断和对话实验都应通过这个入口读取模型配置。
 
+本地 Letta server 使用 Docker 运行在 `http://127.0.0.1:8283`。Poixe 会映射为 Letta 的 OpenAI-compatible provider：
+
+```text
+OPENAI_API_KEY  <- POIXE_API_KEY
+OPENAI_API_BASE <- POIXE_BASE_URL
+```
+
+验证 Letta memory block 读写：
+
+```bash
+PYTHONPATH=src .venv/bin/python scripts/letta_memory_smoke.py
+```
+
 ## 项目结构
 
 ```text
@@ -101,11 +117,13 @@ scripts/
   generate_timeline.py
   generate_daily_user_messages.py
   poixe_smoke_test.py
+  letta_memory_smoke.py
 src/long_memory_test/agents/
   event_stream_generator.py
   daily_message_generator.py
 src/long_memory_test/
   llm.py
+  letta_memory.py
 sample_output/
   timeline.json
   daily_user_message.json

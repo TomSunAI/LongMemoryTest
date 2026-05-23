@@ -129,6 +129,15 @@ LLM_PROVIDER=poixe
 
 Poixe smoke test 位于 `scripts/poixe_smoke_test.py`，用于验证本地 key、base URL 和模型名是否可用。
 
+本地 Letta server 作为 B 的记忆底座运行在 `http://127.0.0.1:8283`。Poixe 在 Letta 中按 OpenAI-compatible provider 接入：
+
+- `OPENAI_API_KEY <- POIXE_API_KEY`
+- `OPENAI_API_BASE <- POIXE_BASE_URL`
+- 默认 B 模型：`openai-proxy/gpt-5.2`
+- 默认 embedding：`openai/text-embedding-3-small`
+
+B 的 Letta 配置入口位于 `src/long_memory_test/letta_memory.py`。基础连通性测试位于 `scripts/letta_memory_smoke.py`，用于验证 B agent 可以创建，并且 M2 memory block 可以被修改和读回。
+
 ## 核心数据流程
 
 1. 生成或读取模拟用户画像。
