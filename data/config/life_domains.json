@@ -1,0 +1,54 @@
+{
+  "domains": [
+    {
+      "domain": "parenting",
+      "weight": 0.3,
+      "keywords": [
+        "kindergarten",
+        "crying",
+        "teacher",
+        "social interaction",
+        "classes"
+      ]
+    },
+    {
+      "domain": "career",
+      "weight": 0.25,
+      "keywords": [
+        "paper",
+        "grant",
+        "collaboration",
+        "deadline",
+        "student"
+      ]
+    },
+    {
+      "domain": "intimate_relationship",
+      "weight": 0.15,
+      "keywords": [
+        "communication",
+        "housework",
+        "emotional support"
+      ]
+    },
+    {
+      "domain": "friendship",
+      "weight": 0.1,
+      "keywords": [
+        "friends",
+        "mothers",
+        "social circle"
+      ]
+    },
+    {
+      "domain": "self_management",
+      "weight": 0.2,
+      "keywords": [
+        "sleep",
+        "exercise",
+        "reflection",
+        "schedule"
+      ]
+    }
+  ]
+}

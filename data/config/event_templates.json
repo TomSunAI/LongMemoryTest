@@ -1,0 +1,113 @@
+{
+  "templates": [
+    {
+      "template_id": "parenting_001",
+      "domain": "parenting",
+      "title_template": "Child's kindergarten may become unstable",
+      "description_template": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans.",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "default_emotional_intensity": 5,
+      "default_decision_impact": 5,
+      "default_time_sensitivity": 5,
+      "follow_up_needed": true,
+      "should_be_remembered": true
+    },
+    {
+      "template_id": "career_001",
+      "domain": "career",
+      "title_template": "Research collaboration becomes difficult",
+      "description_template": "The user discusses a collaboration where concepts and implementation levels are not aligned.",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "default_emotional_intensity": 4,
+      "default_decision_impact": 3,
+      "default_time_sensitivity": 2,
+      "follow_up_needed": true,
+      "should_be_remembered": true
+    },
+    {
+      "template_id": "intimate_001",
+      "domain": "intimate_relationship",
+      "title_template": "Family coordination conversation feels stuck",
+      "description_template": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient.",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "default_emotional_intensity": 4,
+      "default_decision_impact": 3,
+      "default_time_sensitivity": 2,
+      "follow_up_needed": true,
+      "should_be_remembered": true
+    },
+    {
+      "template_id": "self_management_001",
+      "domain": "self_management",
+      "title_template": "Sleep schedule becomes fragmented",
+      "description_template": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day.",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "default_emotional_intensity": 3,
+      "default_decision_impact": 3,
+      "default_time_sensitivity": 2,
+      "follow_up_needed": true,
+      "should_be_remembered": false
+    },
+    {
+      "template_id": "friendship_001",
+      "domain": "friendship",
+      "title_template": "A friend asks for a quick catch-up",
+      "description_template": "A friend invites the user to catch up, but the user is unsure whether to spend limited free time socializing or recovering alone.",
+      "participants": [
+        "user",
+        "friend"
+      ],
+      "default_emotional_intensity": 2,
+      "default_decision_impact": 2,
+      "default_time_sensitivity": 2,
+      "follow_up_needed": false,
+      "should_be_remembered": false
+    },
+    {
+      "template_id": "career_002",
+      "domain": "career",
+      "title_template": "A paper deadline needs practical triage",
+      "description_template": "The user needs to decide which parts of a paper draft deserve careful revision and which parts can be simplified before the deadline.",
+      "participants": [
+        "user",
+        "student",
+        "collaborator"
+      ],
+      "default_emotional_intensity": 3,
+      "default_decision_impact": 4,
+      "default_time_sensitivity": 4,
+      "follow_up_needed": true,
+      "should_be_remembered": true
+    },
+    {
+      "template_id": "parenting_002",
+      "domain": "parenting",
+      "title_template": "Child has a difficult drop-off morning",
+      "description_template": "The child cries during kindergarten drop-off, making the user worry about adaptation and whether recent family changes are affecting the child.",
+      "participants": [
+        "user",
+        "child",
+        "teacher"
+      ],
+      "default_emotional_intensity": 4,
+      "default_decision_impact": 3,
+      "default_time_sensitivity": 3,
+      "follow_up_needed": true,
+      "should_be_remembered": true
+    }
+  ]
+}

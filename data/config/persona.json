@@ -1,0 +1,25 @@
+{
+  "persona_id": "user_001",
+  "name": "Wendy-like simulated user",
+  "age": 35,
+  "occupation": "researcher",
+  "family_status": "married with one child",
+  "child_age": 3,
+  "personality_traits": [
+    "reflective",
+    "analytical",
+    "sensitive",
+    "action-oriented"
+  ],
+  "social_style": "selective but deep communication",
+  "pressure_sources": [
+    "child education",
+    "research deadlines",
+    "family coordination"
+  ],
+  "long_term_goals": [
+    "child stability",
+    "career development",
+    "better self-management"
+  ]
+}

@@ -1,0 +1,12 @@
+[project]
+name = "long-memory-test"
+version = "0.1.0"
+description = "Experimental platform for long-term relationship memory agents."
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
