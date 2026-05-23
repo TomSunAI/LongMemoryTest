@@ -3,7 +3,9 @@ name = "long-memory-test"
 version = "0.1.0"
 description = "Experimental platform for long-term relationship memory agents."
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+  "openai>=1.0.0",
+]
 
 [tool.ruff]
 line-length = 100

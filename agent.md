@@ -112,6 +112,23 @@ B-V0.1 的下一条小链路是：
 
 当前阶段暂不实现复杂前端、多智能体系统、真实向量库或完整自动评测。先保证 B 的记忆层级判断、记忆动作和实验字段稳定、可复现、可扩展。
 
+## 模型 API 配置
+
+项目使用 Poixe 作为 OpenAI-compatible API 入口，供 A 和 B 共用。模型配置通过本地 `.env.local` 提供，不提交到 git。
+
+推荐本地配置：
+
+```bash
+POIXE_API_KEY=your-poixe-api-key-here
+POIXE_BASE_URL=https://api.poixe.com/v1
+POIXE_MODEL=gpt-5.2
+LLM_PROVIDER=poixe
+```
+
+共享模型客户端位于 `src/long_memory_test/llm.py`。A 后续做自然语言润色、B 后续接 Letta 或做记忆判断时，都应从该模块读取统一配置，避免散落多个 API key 和 base URL。
+
+Poixe smoke test 位于 `scripts/poixe_smoke_test.py`，用于验证本地 key、base URL 和模型名是否可用。
+
 ## 核心数据流程
 
 1. 生成或读取模拟用户画像。

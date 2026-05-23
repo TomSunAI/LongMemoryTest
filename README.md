@@ -60,6 +60,36 @@ python3 scripts/generate_daily_user_messages.py \
 
 当前 A-V0.2 默认不接 LLM，使用编剧式规则、多模板和话题阶段推进，保证可复现、可调试、可评测。后续 A-V0.3 再接入 LLM 做自然语言润色、风格扩展和更强的表达多样性。
 
+## Poixe API
+
+项目使用 Poixe 作为 OpenAI-compatible API 入口，供后续 A/B 共用。
+
+先复制环境变量模板：
+
+```bash
+cp .env.example .env.local
+```
+
+然后在 `.env.local` 中填入真实 key：
+
+```bash
+POIXE_API_KEY=your-poixe-api-key-here
+POIXE_BASE_URL=https://api.poixe.com/v1
+POIXE_MODEL=gpt-5.2
+LLM_PROVIDER=poixe
+```
+
+`.env.local` 已加入 `.gitignore`，不要提交真实 key。
+
+安装依赖后可做一次 smoke test：
+
+```bash
+.venv/bin/pip install openai
+python3 scripts/poixe_smoke_test.py
+```
+
+共享客户端位于 `src/long_memory_test/llm.py`。后续 A 的文本润色、B 的 Letta 记忆判断和对话实验都应通过这个入口读取模型配置。
+
 ## 项目结构
 
 ```text
@@ -70,9 +100,12 @@ data/config/
 scripts/
   generate_timeline.py
   generate_daily_user_messages.py
+  poixe_smoke_test.py
 src/long_memory_test/agents/
   event_stream_generator.py
   daily_message_generator.py
+src/long_memory_test/
+  llm.py
 sample_output/
   timeline.json
   daily_user_message.json
