@@ -140,6 +140,13 @@ B 的 Letta 配置入口位于 `src/long_memory_test/letta_memory.py`。基础�
 
 Letta 中 M0/M1/M2/M3 的具体设计以 `docs/letta_memory_levels.md` 为准。该文档定义了每个层级在 Letta 中读取什么、写入什么、禁止读取什么，以及 M3 的过度记忆风险控制。
 
+最近已完成的对照实验：
+
+- `scripts/run_m0_m1_dialogue_probe.py` 已跑通。
+- `sample_output/m0_m1_dialogue_probe.json` 已生成。
+- 结果显示 M0 只能基于当前问题给出通用建议，M1 会额外贴合“用户偏好直接、少废话、先拆事实和下一步”的结论级记忆。
+- 这说明 M1 的作用主要是改进回应风格和问题切入方式，而不是引入具体历史事件。
+
 ## 核心数据流程
 
 1. 生成或读取模拟用户画像。
