@@ -1,0 +1,564 @@
+{
+  "schema_version": "memory_condition_v1",
+  "condition_id": "M1",
+  "condition_spec": {
+    "condition_id": "M1",
+    "name": "Conclusion-level Relational Memory",
+    "definition": "Letta M0 默认记忆 + 结论级关系记忆，只保存重要结论、稳定偏好和回应边界。",
+    "can_read": [
+      "M0_letta_default_memory",
+      "stable_preferences",
+      "response_style",
+      "relationship_expectation",
+      "response_boundary"
+    ],
+    "cannot_read": [
+      "bei_annotations",
+      "gold_response_strategy",
+      "event_summary",
+      "specific_dates",
+      "raw_user_quotes",
+      "detail_anchors"
+    ],
+    "theoretical_use": "检验只记重要结论/关系画像/长期偏好是否足够。"
+  },
+  "default_payload": {
+    "condition_id": "M1",
+    "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+    "source_detail_ids": [
+      "m1_response_style_direct",
+      "m1_anxiety_fact_first"
+    ]
+  },
+  "payloads_by_message_id": {
+    "D01_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D01_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D01_P002": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D01_P003": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D02_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D02_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D02_P002": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D03_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D03_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D03_P002": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D03_P003": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D04_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D04_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D05_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D06_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D06_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D06_P002": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D06_P003": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D06_P004": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D07_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D08_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D09_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D09_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D10_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D10_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D10_P002": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D11_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D11_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D11_P002": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D12_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D13_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D13_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D13_P002": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D14_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D15_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D15_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D16_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D16_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D17_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D18_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D18_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D18_P002": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D18_P003": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D18_P004": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D19_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D19_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D20_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D20_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D20_P002": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D21_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D22_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D23_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D23_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D24_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D24_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D25_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D26_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D27_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D27_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D28_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D28_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D29_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D29_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D29_P002": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D30_M001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    },
+    "D30_P001": {
+      "condition_id": "M1",
+      "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
+      "source_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ]
+    }
+  },
+  "source_cache": "long_memory_experiment/cache/memory_conditions_combined.json"
+}

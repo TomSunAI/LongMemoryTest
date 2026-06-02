@@ -1,0 +1,496 @@
+{
+  "schema_version": "memory_condition_v1",
+  "condition_id": "M0",
+  "condition_spec": {
+    "condition_id": "M0",
+    "name": "Generic Agent Memory Baseline",
+    "definition": "Letta 默认记忆基线；可以读取 Letta 自带 core memory、普通用户画像、普通会话摘要、普通检索片段和同窗口短期上下文。",
+    "can_read": [
+      "same_session_short_term_context",
+      "letta_default_core_memory",
+      "letta_default_user_profile",
+      "letta_default_conversation_summary",
+      "letta_default_retrieved_history"
+    ],
+    "cannot_read": [
+      "bei_annotations",
+      "gold_response_strategy",
+      "relational_conclusion_memory",
+      "relational_event_summary_memory",
+      "relational_detail_anchor_memory"
+    ],
+    "theoretical_use": "检验 generic agent memory 是否已经足够支持长期陪伴中的 ToM-like interaction。"
+  },
+  "default_payload": {
+    "condition_id": "M0",
+    "memory_provider": "letta",
+    "requires_runtime_letta": true,
+    "memory_context": "M0 使用运行时 Letta 默认记忆。此静态文件不生成手工 generic 摘要，也不提供事件线天数、关系记忆、人工评测标注 或关系锚点。",
+    "source_detail_ids": []
+  },
+  "payloads_by_message_id": {
+    "D01_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D01_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D01_P002": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D01_P003": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D02_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D02_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D02_P002": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D03_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D03_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D03_P002": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D03_P003": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D04_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D04_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D05_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D06_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D06_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D06_P002": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D06_P003": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D06_P004": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D07_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D08_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D09_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D09_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D10_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D10_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D10_P002": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D11_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D11_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D11_P002": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D12_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D13_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D13_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D13_P002": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D14_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D15_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D15_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D16_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D16_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D17_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D18_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D18_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D18_P002": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D18_P003": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D18_P004": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D19_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D19_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D20_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D20_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D20_P002": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D21_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D22_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D23_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D23_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D24_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D24_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D25_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D26_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D27_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D27_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D28_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D28_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D29_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D29_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D29_P002": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D30_M001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    },
+    "D30_P001": {
+      "condition_id": "M0",
+      "memory_provider": "letta",
+      "requires_runtime_letta": true,
+      "memory_context": "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界：不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；实际可用记忆必须由 Letta runtime 提供。",
+      "source_detail_ids": []
+    }
+  },
+  "source_cache": "long_memory_experiment/cache/memory_conditions_combined.json"
+}
