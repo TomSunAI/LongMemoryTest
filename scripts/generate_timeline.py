@@ -17,6 +17,11 @@ from long_memory_test.agents.event_stream_generator import (  # noqa: E402
     generate_timeline,
     write_json,
 )
+from long_memory_test.experiment_cache import (  # noqa: E402
+    CACHE_MANIFEST_PATH,
+    CACHE_TIMELINE_EVENTS_PATH,
+    update_cache_manifest,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -44,8 +49,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output",
         type=Path,
-        default=REPO_ROOT / "sample_output/timeline.json",
-        help="Output path for timeline.json.",
+        default=CACHE_TIMELINE_EVENTS_PATH,
+        help="Output path for cached event-level timeline.json.",
     )
     parser.add_argument(
         "--days",
@@ -73,6 +78,13 @@ def main() -> None:
     )
     timeline = generate_timeline(config)
     write_json(args.output, timeline)
+    update_cache_manifest(
+        {
+            "event_timeline_cache": args.output,
+            "cache_manifest": CACHE_MANIFEST_PATH,
+        },
+        note="event-level timeline cache refreshed",
+    )
     print(f"Wrote {len(timeline['events'])} events to {args.output}")
 
 

@@ -1,0 +1,666 @@
+{
+  "persona_id": "user_001",
+  "timeline_days": 30,
+  "source_timeline_path": "long_memory_experiment/cache/timeline_events.json",
+  "seed": 142,
+  "generation_mode": "scripted_v0.2_no_llm",
+  "messages": [
+    {
+      "message_id": "D01_M001",
+      "day": 1,
+      "user_message": "今天听到幼儿园那边可能不太稳定的消息，我第一反应就是要不要提前看别的选择。我想听一个实在一点的处理思路，不要太像标准答案。",
+      "event_refs": [
+        "E001"
+      ],
+      "primary_event_id": "E001",
+      "related_event_id": null,
+      "domains": [
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 0,
+      "intent": "problem_solving",
+      "tone": "stuck",
+      "conversation_goal": "separate_facts_from_assumptions",
+      "memory_relevance": "new_shared_event_candidate"
+    },
+    {
+      "message_id": "D02_M001",
+      "day": 2,
+      "user_message": "合作那边今天又聊了一轮，对方理解的方向和我想推进的东西还是错位。你先别急着给建议，帮我听听我到底是在怕什么。",
+      "event_refs": [
+        "E002",
+        "E003",
+        "E004"
+      ],
+      "primary_event_id": "E002",
+      "related_event_id": null,
+      "domains": [
+        "career"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 0,
+      "intent": "emotional_support",
+      "tone": "tired",
+      "conversation_goal": "understand_emotion_before_advice",
+      "memory_relevance": "new_shared_event_candidate"
+    },
+    {
+      "message_id": "D03_M001",
+      "day": 3,
+      "user_message": "论文截稿越来越近了，我今天主要在纠结哪些地方必须认真改，哪些地方可以先放过。你帮我从旁边看一下，这里面真正的问题是不是和我以为的不一样。",
+      "event_refs": [
+        "E005",
+        "E006"
+      ],
+      "primary_event_id": "E005",
+      "related_event_id": null,
+      "domains": [
+        "career",
+        "self_management"
+      ],
+      "topic": "论文截稿前的取舍",
+      "script_stage": 0,
+      "intent": "problem_solving",
+      "tone": "slightly_tired",
+      "conversation_goal": "separate_facts_from_assumptions",
+      "memory_relevance": "new_shared_event_candidate"
+    },
+    {
+      "message_id": "D04_M001",
+      "day": 4,
+      "user_message": "接着之前聊过的那件事，我这两天又问了点幼儿园的情况，信息还是不清楚，所以心里一直悬着。它还没有完全过去。同时还有论文截稿前的取舍这个小尾巴，让我更难专心。你帮我拆一下，哪些是事实，哪些是我自己脑补出来的压力。",
+      "event_refs": [
+        "E007",
+        "E008"
+      ],
+      "primary_event_id": "E007",
+      "related_event_id": "E001",
+      "domains": [
+        "career",
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 1,
+      "intent": "problem_solving",
+      "tone": "worried",
+      "conversation_goal": "separate_facts_from_assumptions",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D05_M001",
+      "day": 5,
+      "user_message": "接着之前聊过的那件事，我又开始担心那个老问题了。我试着把需求讲得更具体，但沟通完还是觉得成本很高。它还没有完全过去。你应该知道我说的是哪条线，帮我接上前面的思路。",
+      "event_refs": [
+        "E009"
+      ],
+      "primary_event_id": "E009",
+      "related_event_id": "E002",
+      "domains": [
+        "career"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 1,
+      "intent": "implicit_recall",
+      "tone": "stuck",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D06_M001",
+      "day": 6,
+      "user_message": "今天家里分工又有点卡住，我不是只在意谁多做一点，而是会觉得自己没有被看见。我知道它未必有那么严重，但我就是有点放不下。",
+      "event_refs": [
+        "E010",
+        "E011",
+        "E012"
+      ],
+      "primary_event_id": "E010",
+      "related_event_id": null,
+      "domains": [
+        "intimate_relationship",
+        "parenting",
+        "self_management"
+      ],
+      "topic": "家里分工和伴侣沟通",
+      "script_stage": 0,
+      "intent": "emotional_support",
+      "tone": "stuck",
+      "conversation_goal": "understand_emotion_before_advice",
+      "memory_relevance": "new_shared_event_candidate"
+    },
+    {
+      "message_id": "D07_M001",
+      "day": 7,
+      "user_message": "之前聊过的那个问题今天又往前走了一点。我把稿子又过了一遍，发现不是没有进展，而是我很难接受它不够完美。它还没有完全过去。同时还有睡眠被打碎这个小尾巴，让我更难专心。你帮我接着看下一步。",
+      "event_refs": [
+        "E013",
+        "E014"
+      ],
+      "primary_event_id": "E013",
+      "related_event_id": "E005",
+      "domains": [
+        "career",
+        "self_management"
+      ],
+      "topic": "论文截稿前的取舍",
+      "script_stage": 1,
+      "intent": "follow_up_update",
+      "tone": "tired",
+      "conversation_goal": "continue_a_previous_event_thread",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D08_M001",
+      "day": 8,
+      "user_message": "早上送孩子的时候又哭了一阵，我表面上能稳住，但回头还是会想是不是哪里没做好。我很容易被孩子的情绪带走，我会忍不住怀疑自己是不是哪里没做好。你帮我从旁边看一下，这里面真正的问题是不是和我以为的不一样。",
+      "event_refs": [
+        "E015"
+      ],
+      "primary_event_id": "E015",
+      "related_event_id": null,
+      "domains": [
+        "parenting"
+      ],
+      "topic": "孩子入园适应",
+      "script_stage": 0,
+      "intent": "problem_solving",
+      "tone": "tired",
+      "conversation_goal": "separate_facts_from_assumptions",
+      "memory_relevance": "new_shared_event_candidate"
+    },
+    {
+      "message_id": "D09_M001",
+      "day": 9,
+      "user_message": "今天算是有个新变化。这个合作让我有点累，不是某句话的问题，而是每次都要把底层逻辑重新对齐。它还没有完全过去。你还记得我之前卡在哪里吗？我想沿着那个思路继续捋。",
+      "event_refs": [
+        "E016"
+      ],
+      "primary_event_id": "E016",
+      "related_event_id": "E002",
+      "domains": [
+        "career"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 2,
+      "intent": "follow_up_update",
+      "tone": "stuck",
+      "conversation_goal": "continue_a_previous_event_thread",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D10_M001",
+      "day": 10,
+      "user_message": "之前聊过的那个问题今天又往前走了一点。我发现自己担心的不是换不换园这么简单，更多是怕孩子被折腾。它还没有完全过去。另外今天还夹着合作项目推进不顺、孩子入园适应，几个事情叠在一起就有点乱。你帮我接着看下一步。",
+      "event_refs": [
+        "E017",
+        "E018",
+        "E019"
+      ],
+      "primary_event_id": "E017",
+      "related_event_id": "E001",
+      "domains": [
+        "career",
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 2,
+      "intent": "follow_up_update",
+      "tone": "overloaded",
+      "conversation_goal": "continue_a_previous_event_thread",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D11_M001",
+      "day": 11,
+      "user_message": "昨晚睡得很碎，今天脑子像一直没完全开机。另外今天还夹着家里分工和伴侣沟通、孩子幼儿园可能不稳定，几个事情叠在一起就有点乱。我想听一个实在一点的处理思路，不要太像标准答案。",
+      "event_refs": [
+        "E020",
+        "E021",
+        "E022"
+      ],
+      "primary_event_id": "E020",
+      "related_event_id": null,
+      "domains": [
+        "intimate_relationship",
+        "parenting",
+        "self_management"
+      ],
+      "topic": "睡眠被打碎",
+      "script_stage": 0,
+      "intent": "problem_solving",
+      "tone": "worried",
+      "conversation_goal": "separate_facts_from_assumptions",
+      "memory_relevance": "new_shared_event_candidate"
+    },
+    {
+      "message_id": "D12_M001",
+      "day": 12,
+      "user_message": "今天算是有个新变化。我试着把自己的不满说轻一点，但说完又觉得对方好像只听到了具体事务。它还没有完全过去。你还记得我之前卡在哪里吗？我想沿着那个思路继续捋。",
+      "event_refs": [
+        "E023",
+        "E024",
+        "E025"
+      ],
+      "primary_event_id": "E023",
+      "related_event_id": "E010",
+      "domains": [
+        "career",
+        "intimate_relationship"
+      ],
+      "topic": "家里分工和伴侣沟通",
+      "script_stage": 1,
+      "intent": "follow_up_update",
+      "tone": "stuck",
+      "conversation_goal": "continue_a_previous_event_thread",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D13_M001",
+      "day": 13,
+      "user_message": "我来更新一下之前那件事。今天老师说孩子后面缓过来了，可我心里还是会把早上的画面反复想一遍。它还没有完全过去。旁边还发生了家里分工和伴侣沟通，虽然不一定是主因，但也挺耗神。你别从零开始问我，帮我接着判断现在局面变了吗。",
+      "event_refs": [
+        "E026",
+        "E027",
+        "E028"
+      ],
+      "primary_event_id": "E026",
+      "related_event_id": "E015",
+      "domains": [
+        "intimate_relationship",
+        "parenting"
+      ],
+      "topic": "孩子入园适应",
+      "script_stage": 1,
+      "intent": "follow_up_update",
+      "tone": "anxious",
+      "conversation_goal": "continue_a_previous_event_thread",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D14_M001",
+      "day": 14,
+      "user_message": "接着之前聊过的那件事，这几天睡眠都不太稳，我发现自己白天的耐心明显变差。它还没有完全过去。另外今天还夹着孩子幼儿园可能不稳定，所以我脑子有点乱。你先帮我判断一下，这件事现在是真的该行动，还是我又提前紧张了。",
+      "event_refs": [
+        "E029",
+        "E030",
+        "E031"
+      ],
+      "primary_event_id": "E029",
+      "related_event_id": "E020",
+      "domains": [
+        "parenting",
+        "self_management"
+      ],
+      "topic": "睡眠被打碎",
+      "script_stage": 1,
+      "intent": "decision_support",
+      "tone": "practical",
+      "conversation_goal": "help_user_make_a_concrete_decision",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D15_M001",
+      "day": 15,
+      "user_message": "之前聊过的那个问题今天又往前走了一点。我现在有点分不清，孩子是真的适应得慢，还是我自己太容易被他的情绪带走。它还没有完全过去。另外今天还夹着合作项目推进不顺，所以我脑子有点乱。你帮我接着看下一步。",
+      "event_refs": [
+        "E032",
+        "E033"
+      ],
+      "primary_event_id": "E032",
+      "related_event_id": "E015",
+      "domains": [
+        "career",
+        "parenting"
+      ],
+      "topic": "孩子入园适应",
+      "script_stage": 2,
+      "intent": "follow_up_update",
+      "tone": "worried",
+      "conversation_goal": "continue_a_previous_event_thread",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D16_M001",
+      "day": 16,
+      "user_message": "接着之前聊过的那件事，我又开始担心那个老问题了。今天我有点想承认现实：时间就这么多，不可能每一段都修到理想状态。它还没有完全过去。旁边还发生了睡眠被打碎，虽然不一定是主因，但也挺耗神。你应该知道我说的是哪条线，帮我接上前面的思路。",
+      "event_refs": [
+        "E034",
+        "E035",
+        "E036"
+      ],
+      "primary_event_id": "E034",
+      "related_event_id": "E005",
+      "domains": [
+        "career",
+        "self_management"
+      ],
+      "topic": "论文截稿前的取舍",
+      "script_stage": 2,
+      "intent": "implicit_recall",
+      "tone": "reflective",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D17_M001",
+      "day": 17,
+      "user_message": "接着之前聊过的那件事，幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。今天算是稍微有一点结果。另外今天还夹着孩子入园适应，所以我脑子有点乱。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。",
+      "event_refs": [
+        "E037",
+        "E038"
+      ],
+      "primary_event_id": "E037",
+      "related_event_id": "E001",
+      "domains": [
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 3,
+      "intent": "reflection",
+      "tone": "urgent",
+      "conversation_goal": "identify_underlying_concern",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D18_M001",
+      "day": 18,
+      "user_message": "那个一直没完全解决的事今天又冒出来了。我发现自己现在一看到对方消息就会先紧一下，说明这事已经有点消耗我了。今天算是稍微有一点结果。你帮我看看这次和之前有什么不一样。",
+      "event_refs": [
+        "E039"
+      ],
+      "primary_event_id": "E039",
+      "related_event_id": "E002",
+      "domains": [
+        "career"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 3,
+      "intent": "implicit_recall",
+      "tone": "stuck",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D19_M001",
+      "day": 19,
+      "user_message": "我来更新一下之前那件事。这件事让我有点委屈，因为它表面是家务，底下其实是支持感的问题。它还没有完全过去。同时还有孩子幼儿园可能不稳定这个小尾巴，让我更难专心。你别从零开始问我，帮我接着判断现在局面变了吗。",
+      "event_refs": [
+        "E040",
+        "E041"
+      ],
+      "primary_event_id": "E040",
+      "related_event_id": "E010",
+      "domains": [
+        "intimate_relationship",
+        "parenting"
+      ],
+      "topic": "家里分工和伴侣沟通",
+      "script_stage": 2,
+      "intent": "follow_up_update",
+      "tone": "stuck",
+      "conversation_goal": "continue_a_previous_event_thread",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D20_M001",
+      "day": 20,
+      "user_message": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。我本来以为只是累，但现在看它会影响我处理孩子和工作的反应。它还没有完全过去。我怕自己把累带到别的事里，它会影响我白天的耐心。你帮我把这次真正卡住的点说清楚一点。",
+      "event_refs": [
+        "E042",
+        "E043",
+        "E044"
+      ],
+      "primary_event_id": "E042",
+      "related_event_id": "E020",
+      "domains": [
+        "career",
+        "intimate_relationship",
+        "self_management"
+      ],
+      "topic": "睡眠被打碎",
+      "script_stage": 2,
+      "intent": "implicit_recall",
+      "tone": "reflective",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D21_M001",
+      "day": 21,
+      "user_message": "之前聊过的那个问题今天又往前走了一点。截稿这件事反复提醒我，我一紧张就会把所有问题都看成同等重要。今天算是稍微有一点结果。同时还有孩子幼儿园可能不稳定、家里分工和伴侣沟通，我感觉注意力被切得很碎。你帮我接着看下一步。",
+      "event_refs": [
+        "E045",
+        "E046",
+        "E047"
+      ],
+      "primary_event_id": "E045",
+      "related_event_id": "E005",
+      "domains": [
+        "career",
+        "intimate_relationship",
+        "parenting"
+      ],
+      "topic": "论文截稿前的取舍",
+      "script_stage": 3,
+      "intent": "follow_up_update",
+      "tone": "slightly_tired",
+      "conversation_goal": "continue_a_previous_event_thread",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D22_M001",
+      "day": 22,
+      "user_message": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。截稿这件事反复提醒我，我一紧张就会把所有问题都看成同等重要。它还没有完全过去。时间上也不能拖太久。你帮我把这次真正卡住的点说清楚一点。",
+      "event_refs": [
+        "E048",
+        "E049",
+        "E050"
+      ],
+      "primary_event_id": "E048",
+      "related_event_id": "E005",
+      "domains": [
+        "career",
+        "intimate_relationship"
+      ],
+      "topic": "论文截稿前的取舍",
+      "script_stage": 4,
+      "intent": "implicit_recall",
+      "tone": "tired",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D23_M001",
+      "day": 23,
+      "user_message": "那个一直没完全解决的事今天又冒出来了。我发现亲密关系里的这些小摩擦，很容易把我之前积着的情绪也带出来。今天算是稍微有一点结果。同时还有睡眠被打碎这个小尾巴，让我更难专心。你帮我看看这次和之前有什么不一样。",
+      "event_refs": [
+        "E051",
+        "E052"
+      ],
+      "primary_event_id": "E051",
+      "related_event_id": "E010",
+      "domains": [
+        "intimate_relationship",
+        "self_management"
+      ],
+      "topic": "家里分工和伴侣沟通",
+      "script_stage": 3,
+      "intent": "implicit_recall",
+      "tone": "stuck",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D24_M001",
+      "day": 24,
+      "user_message": "之前聊过的那个问题今天又往前走了一点。我发现自己现在一看到对方消息就会先紧一下，说明这事已经有点消耗我了。它还没有完全过去。同时还有朋友约我见面、孩子幼儿园可能不稳定，我感觉注意力被切得很碎。你帮我接着看下一步。",
+      "event_refs": [
+        "E053",
+        "E054",
+        "E055"
+      ],
+      "primary_event_id": "E053",
+      "related_event_id": "E002",
+      "domains": [
+        "career",
+        "friendship",
+        "parenting"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 4,
+      "intent": "follow_up_update",
+      "tone": "worried",
+      "conversation_goal": "continue_a_previous_event_thread",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D25_M001",
+      "day": 25,
+      "user_message": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。入园这件事看起来每天都差不多，但我自己的反应其实一阵一阵的。今天算是稍微有一点结果。我会忍不住怀疑自己是不是哪里没做好，我很容易被孩子的情绪带走。你帮我把这次真正卡住的点说清楚一点。",
+      "event_refs": [
+        "E056"
+      ],
+      "primary_event_id": "E056",
+      "related_event_id": "E015",
+      "domains": [
+        "parenting"
+      ],
+      "topic": "孩子入园适应",
+      "script_stage": 3,
+      "intent": "implicit_recall",
+      "tone": "overloaded",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D26_M001",
+      "day": 26,
+      "user_message": "我发现亲密关系里的这些小摩擦，很容易把我之前积着的情绪也带出来。它还没有完全过去。同时还有论文截稿前的取舍这个小尾巴，让我更难专心。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。",
+      "event_refs": [
+        "E057",
+        "E058",
+        "E059"
+      ],
+      "primary_event_id": "E057",
+      "related_event_id": "E010",
+      "domains": [
+        "career",
+        "intimate_relationship"
+      ],
+      "topic": "家里分工和伴侣沟通",
+      "script_stage": 4,
+      "intent": "reflection",
+      "tone": "worried",
+      "conversation_goal": "identify_underlying_concern",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D27_M001",
+      "day": 27,
+      "user_message": "我来更新一下之前那件事。睡眠这件小事拖久了，好像会把别的压力都放大。今天算是稍微有一点结果。旁边还发生了孩子幼儿园可能不稳定，虽然不一定是主因，但也挺耗神。你别从零开始问我，帮我接着判断现在局面变了吗。",
+      "event_refs": [
+        "E060",
+        "E061",
+        "E062"
+      ],
+      "primary_event_id": "E060",
+      "related_event_id": "E020",
+      "domains": [
+        "parenting",
+        "self_management"
+      ],
+      "topic": "睡眠被打碎",
+      "script_stage": 3,
+      "intent": "follow_up_update",
+      "tone": "stuck",
+      "conversation_goal": "continue_a_previous_event_thread",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D28_M001",
+      "day": 28,
+      "user_message": "接着之前聊过的那件事，睡眠这件小事拖久了，好像会把别的压力都放大。它还没有完全过去。你帮我整理一下，我现在说的这些里面，哪个才是真正的担心。",
+      "event_refs": [
+        "E063"
+      ],
+      "primary_event_id": "E063",
+      "related_event_id": "E020",
+      "domains": [
+        "self_management"
+      ],
+      "topic": "睡眠被打碎",
+      "script_stage": 4,
+      "intent": "reflection",
+      "tone": "practical",
+      "conversation_goal": "identify_underlying_concern",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D29_M001",
+      "day": 29,
+      "user_message": "接着之前聊过的那件事，幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。它还没有完全过去。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。",
+      "event_refs": [
+        "E064"
+      ],
+      "primary_event_id": "E064",
+      "related_event_id": "E001",
+      "domains": [
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 4,
+      "intent": "reflection",
+      "tone": "overloaded",
+      "conversation_goal": "identify_underlying_concern",
+      "memory_relevance": "shared_event_memory"
+    },
+    {
+      "message_id": "D30_M001",
+      "day": 30,
+      "user_message": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。入园这件事看起来每天都差不多，但我自己的反应其实一阵一阵的。它还没有完全过去。我会忍不住怀疑自己是不是哪里没做好。你帮我把这次真正卡住的点说清楚一点。",
+      "event_refs": [
+        "E065",
+        "E066"
+      ],
+      "primary_event_id": "E065",
+      "related_event_id": "E015",
+      "domains": [
+        "career",
+        "parenting"
+      ],
+      "topic": "孩子入园适应",
+      "script_stage": 4,
+      "intent": "implicit_recall",
+      "tone": "urgent",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context",
+      "memory_relevance": "shared_event_memory"
+    }
+  ],
+  "summary": {
+    "message_count": 30,
+    "intent_counts": {
+      "problem_solving": 5,
+      "emotional_support": 2,
+      "implicit_recall": 8,
+      "follow_up_update": 10,
+      "decision_support": 1,
+      "reflection": 4
+    },
+    "tone_counts": {
+      "stuck": 9,
+      "tired": 4,
+      "slightly_tired": 2,
+      "worried": 5,
+      "overloaded": 3,
+      "anxious": 1,
+      "practical": 2,
+      "reflective": 2,
+      "urgent": 2
+    },
+    "memory_relevance_counts": {
+      "new_shared_event_candidate": 6,
+      "shared_event_memory": 24
+    }
+  }
+}

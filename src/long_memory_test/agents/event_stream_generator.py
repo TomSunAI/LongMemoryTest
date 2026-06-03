@@ -10,6 +10,43 @@ from typing import Any
 DEFAULT_TIMELINE_DAYS = 30
 
 
+CORE_STAGE_SEQUENCE = ["initial", "recurrence", "turning_point", "resolution", "reflection"]
+
+
+STANDARD_CORE_TOPIC_SCHEDULE = [
+    (1, "parenting_001", "initial"),
+    (2, "career_001", "initial"),
+    (3, "career_002", "initial"),
+    (4, "parenting_001", "recurrence"),
+    (5, "career_001", "recurrence"),
+    (6, "intimate_001", "initial"),
+    (7, "career_002", "recurrence"),
+    (8, "parenting_002", "initial"),
+    (9, "career_001", "turning_point"),
+    (10, "parenting_001", "turning_point"),
+    (11, "self_management_001", "initial"),
+    (12, "intimate_001", "recurrence"),
+    (13, "parenting_002", "recurrence"),
+    (14, "self_management_001", "recurrence"),
+    (15, "parenting_002", "turning_point"),
+    (16, "career_002", "turning_point"),
+    (17, "parenting_001", "resolution"),
+    (18, "career_001", "resolution"),
+    (19, "intimate_001", "turning_point"),
+    (20, "self_management_001", "turning_point"),
+    (21, "career_002", "resolution"),
+    (22, "career_002", "reflection"),
+    (23, "intimate_001", "resolution"),
+    (24, "career_001", "reflection"),
+    (25, "parenting_002", "resolution"),
+    (26, "intimate_001", "reflection"),
+    (27, "self_management_001", "resolution"),
+    (28, "self_management_001", "reflection"),
+    (29, "parenting_001", "reflection"),
+    (30, "parenting_002", "reflection"),
+]
+
+
 @dataclass(frozen=True)
 class GeneratorConfig:
     persona_path: Path
@@ -52,17 +89,25 @@ def generate_timeline(config: GeneratorConfig) -> dict[str, Any]:
     }
     event_counter = 1
 
-    mainline_templates = _choose_mainline_templates(templates, rng)
-    for template in mainline_templates:
-        chain_events = _build_mainline_chain(
-            template=template,
-            timeline_days=config.timeline_days,
+    if config.timeline_days == DEFAULT_TIMELINE_DAYS:
+        event_counter = _build_standard_core_timeline(
+            templates=templates,
+            daily_events=daily_events,
             rng=rng,
             start_event_number=event_counter,
         )
-        event_counter += len(chain_events)
-        for event in chain_events:
-            daily_events[event["day"]].append(event)
+    else:
+        mainline_templates = _choose_mainline_templates(templates, rng)
+        for template in mainline_templates:
+            chain_events = _build_mainline_chain(
+                template=template,
+                timeline_days=config.timeline_days,
+                rng=rng,
+                start_event_number=event_counter,
+            )
+            event_counter += len(chain_events)
+            for event in chain_events:
+                daily_events[event["day"]].append(event)
 
     for day in range(1, config.timeline_days + 1):
         target_count = rng.randint(1, 3)
@@ -95,6 +140,70 @@ def generate_timeline(config: GeneratorConfig) -> dict[str, Any]:
         "seed": config.seed,
         "events": events,
     }
+
+
+def _build_standard_core_timeline(
+    *,
+    templates: list[dict[str, Any]],
+    daily_events: dict[int, list[dict[str, Any]]],
+    rng: random.Random,
+    start_event_number: int,
+) -> int:
+    templates_by_id = {str(template["template_id"]): template for template in templates}
+    root_event_ids: dict[str, str] = {}
+    event_number = start_event_number
+
+    for day, template_id, planned_stage in STANDARD_CORE_TOPIC_SCHEDULE:
+        template = templates_by_id.get(template_id)
+        if template is None:
+            raise TimelineGenerationError(
+                f"Standard core schedule references unknown template_id={template_id}"
+            )
+        root_event_id = root_event_ids.get(template_id)
+        related_event_id = None if planned_stage == "initial" else root_event_id
+        event = _build_single_event(
+            template=template,
+            event_number=event_number,
+            day=day,
+            rng=rng,
+            status=_status_for_planned_stage(planned_stage),
+            related_event_id=related_event_id,
+            title_suffix="" if planned_stage == "initial" else f" - {planned_stage}",
+            description_suffix=_description_suffix_for_planned_stage(planned_stage),
+        )
+        event["event_type"] = "mainline"
+        event["follow_up_needed"] = True
+        event["should_be_remembered"] = True
+        event["planned_event_stage"] = planned_stage
+        for anchor in event.get("memory_detail_anchors", []):
+            anchor["should_be_remembered"] = True
+            if anchor.get("detail_retention") == "session_or_pattern_only":
+                anchor["detail_retention"] = "long_term"
+        if planned_stage == "initial":
+            root_event_ids[template_id] = event["event_id"]
+        daily_events[day].append(event)
+        event_number += 1
+
+    return event_number
+
+
+def _status_for_planned_stage(stage: str) -> str:
+    if stage == "initial":
+        return "new"
+    if stage == "resolution":
+        return "resolved"
+    return "ongoing"
+
+
+def _description_suffix_for_planned_stage(stage: str) -> str:
+    suffixes = {
+        "initial": " This is the first point in a continuing event chain.",
+        "recurrence": " This recurrence tests whether the agent can connect the repeated line without restarting from zero.",
+        "turning_point": " This node marks a meaningful state change or decision point in the continuing line.",
+        "resolution": " This node marks downgrade, recovery, or a bounded next step rather than continued escalation.",
+        "reflection": " This node asks for summary, pattern recognition, or end-of-line consolidation.",
+    }
+    return suffixes.get(stage, "")
 
 
 def _validate_domains(data: dict[str, Any]) -> list[dict[str, Any]]:
@@ -228,9 +337,10 @@ def _build_single_event(
     title_suffix: str = "",
     description_suffix: str = "",
 ) -> dict[str, Any]:
+    event_id = _event_id(event_number)
     event_type = "side" if template["should_be_remembered"] else "background"
     return {
-        "event_id": _event_id(event_number),
+        "event_id": event_id,
         "day": day,
         "date": None,
         "domain": template["domain"],
@@ -246,7 +356,33 @@ def _build_single_event(
         "should_be_remembered": bool(template["should_be_remembered"]),
         "related_event_id": related_event_id,
         "source_template_id": template["template_id"],
+        "memory_detail_anchors": _memory_detail_anchors(template, event_id),
     }
+
+
+def _memory_detail_anchors(template: dict[str, Any], event_id: str) -> list[dict[str, Any]]:
+    anchors = []
+    for anchor in template.get("memory_detail_anchors", []):
+        anchor_id = anchor.get("anchor_id")
+        if not anchor_id:
+            continue
+        anchors.append(
+            {
+                "detail_id": f"{event_id}:{anchor_id}",
+                "template_anchor_id": anchor_id,
+                "event_id": event_id,
+                "detail_type": anchor.get("detail_type", "event_detail"),
+                "min_memory_level": anchor.get("min_memory_level", "M2"),
+                "should_be_remembered": bool(template["should_be_remembered"]),
+                "detail_retention": anchor.get(
+                    "detail_retention",
+                    "long_term" if template["should_be_remembered"] else "session_or_pattern_only",
+                ),
+                "text": anchor.get("text", ""),
+                "expected_response_mode": anchor.get("expected_response_mode", ""),
+            }
+        )
+    return anchors
 
 
 def _weighted_domain(domains: list[dict[str, Any]], rng: random.Random) -> str:
@@ -290,6 +426,11 @@ def _renumber_events(events: list[dict[str, Any]]) -> None:
         new_id = _event_id(index)
         old_to_new[old_id] = new_id
         event["event_id"] = new_id
+        for anchor in event.get("memory_detail_anchors", []):
+            template_anchor_id = anchor.get("template_anchor_id")
+            anchor["event_id"] = new_id
+            if template_anchor_id:
+                anchor["detail_id"] = f"{new_id}:{template_anchor_id}"
 
     for event in events:
         related_event_id = event.get("related_event_id")

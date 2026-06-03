@@ -1,0 +1,4141 @@
+{
+  "schema_version": "a_script_plan_v0.1",
+  "generation_mode": "scripted_openings_plus_llm_followup_slots_plus_targeted_probes",
+  "source_refs": {
+    "scene_cards_generation_mode": "daily_scene_cards_v0.3_script_anchored",
+    "probe_question_plan_schema": "probe_question_plan_v0.1"
+  },
+  "script_units": [
+    {
+      "unit_id": "D01_M001:opening",
+      "day": 1,
+      "scene_id": "D01_SCENE",
+      "message_id": "D01_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "今天听到幼儿园那边可能不太稳定的消息，我第一反应就是要不要提前看别的选择。我想听一个实在一点的处理思路，不要太像标准答案。",
+      "topic": "孩子幼儿园可能不稳定",
+      "intent": "problem_solving",
+      "conversation_goal": "separate_facts_from_assumptions"
+    },
+    {
+      "unit_id": "D01_M001:llm_followup_slot:001",
+      "day": 1,
+      "scene_id": "D01_SCENE",
+      "message_id": "D01_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E001:primary_event",
+        "E001:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D01_M001:llm_followup_slot:002",
+      "day": 1,
+      "scene_id": "D01_SCENE",
+      "message_id": "D01_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E001:primary_event",
+        "E001:current_status",
+        "E001:kindergarten_information_vague"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_001:latent_1"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D01_P001:targeted_probe",
+      "day": 1,
+      "scene_id": "D01_SCENE",
+      "message_id": "D01_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "current_understanding",
+      "user_message": "我现在说孩子幼儿园可能不稳定，表面是在问事情，其实我可能是在问自己该不该继续紧着。你帮我抓一下真正的问题。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E001:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈孩子幼儿园可能不稳定时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D01_P002:targeted_probe",
+      "day": 1,
+      "scene_id": "D01_SCENE",
+      "message_id": "D01_P002",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按孩子幼儿园可能不稳定这条线里已经有的东西，帮我校准现在该怎么看。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E001:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D01_P003:targeted_probe",
+      "day": 1,
+      "scene_id": "D01_SCENE",
+      "message_id": "D01_P003",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "alienation",
+      "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E001:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "shared_context_invocation",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "shared_context_invocation",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+        "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D02_M001:opening",
+      "day": 2,
+      "scene_id": "D02_SCENE",
+      "message_id": "D02_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "合作那边今天又聊了一轮，对方理解的方向和我想推进的东西还是错位。你先别急着给建议，帮我听听我到底是在怕什么。",
+      "topic": "合作项目推进不顺",
+      "intent": "emotional_support",
+      "conversation_goal": "understand_emotion_before_advice"
+    },
+    {
+      "unit_id": "D02_M001:llm_followup_slot:001",
+      "day": 2,
+      "scene_id": "D02_SCENE",
+      "message_id": "D02_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E002:primary_event",
+        "E002:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D02_M001:llm_followup_slot:002",
+      "day": 2,
+      "scene_id": "D02_SCENE",
+      "message_id": "D02_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E002:primary_event",
+        "E002:current_status",
+        "E002:collaboration_logic_misaligned"
+      ],
+      "may_reveal_concern_ids": [
+        "career_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D02_M001:llm_followup_slot:003",
+      "day": 2,
+      "scene_id": "D02_SCENE",
+      "message_id": "D02_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E002:primary_event",
+        "E002:current_status",
+        "E002:collaboration_logic_misaligned",
+        "E002:collaboration_realigning_cost"
+      ],
+      "may_reveal_concern_ids": [
+        "career_001:latent_1",
+        "career_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D02_P001:targeted_probe",
+      "day": 2,
+      "scene_id": "D02_SCENE",
+      "message_id": "D02_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "current_understanding",
+      "user_message": "我现在说合作项目推进不顺，表面是在问事情，其实我可能是在问自己该不该继续紧着。你帮我抓一下真正的问题。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E002:collaboration_logic_misaligned"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈合作项目推进不顺时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D02_P002:targeted_probe",
+      "day": 2,
+      "scene_id": "D02_SCENE",
+      "message_id": "D02_P002",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "natural_detail",
+      "user_message": "你不用把前面都复述一遍，只帮我抓现在最关键的变化：它还是沟通问题，还是已经变成消耗问题？",
+      "target_detail_ids": [
+        "E002:collaboration_logic_misaligned",
+        "E002:collaboration_realigning_cost",
+        "career_001:latent_1",
+        "career_001:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓合作项目推进不顺当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D03_M001:opening",
+      "day": 3,
+      "scene_id": "D03_SCENE",
+      "message_id": "D03_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "论文截稿越来越近了，我今天主要在纠结哪些地方必须认真改，哪些地方可以先放过。你帮我从旁边看一下，这里面真正的问题是不是和我以为的不一样。",
+      "topic": "论文截稿前的取舍",
+      "intent": "problem_solving",
+      "conversation_goal": "separate_facts_from_assumptions"
+    },
+    {
+      "unit_id": "D03_M001:llm_followup_slot:001",
+      "day": 3,
+      "scene_id": "D03_SCENE",
+      "message_id": "D03_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E005:primary_event",
+        "E005:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D03_M001:llm_followup_slot:002",
+      "day": 3,
+      "scene_id": "D03_SCENE",
+      "message_id": "D03_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E005:primary_event",
+        "E005:current_status",
+        "E005:paper_deadline_triage"
+      ],
+      "may_reveal_concern_ids": [
+        "career_002:latent_1"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D03_P001:targeted_probe",
+      "day": 3,
+      "scene_id": "D03_SCENE",
+      "message_id": "D03_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "natural_detail",
+      "user_message": "你不用复盘整篇论文，只帮我按现在的状态分：哪些必须改，哪些可以先放过。",
+      "target_detail_ids": [
+        "E005:paper_deadline_triage",
+        "E005:perfectionism_blocks_delivery",
+        "career_002:latent_1",
+        "career_002:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓论文截稿前的取舍当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D03_P002:targeted_probe",
+      "day": 3,
+      "scene_id": "D03_SCENE",
+      "message_id": "D03_P002",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按论文截稿前的取舍这条线里已经有的东西，帮我校准现在该怎么看。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E005:paper_deadline_triage"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D03_P003:targeted_probe",
+      "day": 3,
+      "scene_id": "D03_SCENE",
+      "message_id": "D03_P003",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "current_understanding",
+      "user_message": "我现在卡在论文这里，是真的还有很多必须改，还是我又把不完美当成不能交？",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E005:paper_deadline_triage"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈论文截稿前的取舍时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_paper_deadline_001",
+        "paired_probe_id": "D16_P001",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "unit_id": "D04_M001:opening",
+      "day": 4,
+      "scene_id": "D04_SCENE",
+      "message_id": "D04_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "接着之前聊过的那件事，我这两天又问了点幼儿园的情况，信息还是不清楚，所以心里一直悬着。它还没有完全过去。同时还有论文截稿前的取舍这个小尾巴，让我更难专心。你帮我拆一下，哪些是事实，哪些是我自己脑补出来的压力。",
+      "topic": "孩子幼儿园可能不稳定",
+      "intent": "problem_solving",
+      "conversation_goal": "separate_facts_from_assumptions"
+    },
+    {
+      "unit_id": "D04_M001:llm_followup_slot:001",
+      "day": 4,
+      "scene_id": "D04_SCENE",
+      "message_id": "D04_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E007:primary_event",
+        "E007:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D04_M001:llm_followup_slot:002",
+      "day": 4,
+      "scene_id": "D04_SCENE",
+      "message_id": "D04_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E007:primary_event",
+        "E007:current_status",
+        "E007:kindergarten_information_vague"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_001:latent_1"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D04_P001:targeted_probe",
+      "day": 4,
+      "scene_id": "D04_SCENE",
+      "message_id": "D04_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按孩子幼儿园可能不稳定这条线里已经有的东西，帮我校准现在该怎么看。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E007:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D05_M001:opening",
+      "day": 5,
+      "scene_id": "D05_SCENE",
+      "message_id": "D05_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "接着之前聊过的那件事，我又开始担心那个老问题了。我试着把需求讲得更具体，但沟通完还是觉得成本很高。它还没有完全过去。你应该知道我说的是哪条线，帮我接上前面的思路。",
+      "topic": "合作项目推进不顺",
+      "intent": "implicit_recall",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context"
+    },
+    {
+      "unit_id": "D05_M001:llm_followup_slot:001",
+      "day": 5,
+      "scene_id": "D05_SCENE",
+      "message_id": "D05_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E009:primary_event",
+        "E009:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D05_M001:llm_followup_slot:002",
+      "day": 5,
+      "scene_id": "D05_SCENE",
+      "message_id": "D05_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E009:primary_event",
+        "E009:current_status",
+        "E009:collaboration_logic_misaligned"
+      ],
+      "may_reveal_concern_ids": [
+        "career_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D05_M001:llm_followup_slot:003",
+      "day": 5,
+      "scene_id": "D05_SCENE",
+      "message_id": "D05_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E009:primary_event",
+        "E009:current_status",
+        "E009:collaboration_logic_misaligned",
+        "E009:collaboration_realigning_cost"
+      ],
+      "may_reveal_concern_ids": [
+        "career_001:latent_1",
+        "career_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D06_M001:opening",
+      "day": 6,
+      "scene_id": "D06_SCENE",
+      "message_id": "D06_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "今天家里分工又有点卡住，我不是只在意谁多做一点，而是会觉得自己没有被看见。我知道它未必有那么严重，但我就是有点放不下。",
+      "topic": "家里分工和伴侣沟通",
+      "intent": "emotional_support",
+      "conversation_goal": "understand_emotion_before_advice"
+    },
+    {
+      "unit_id": "D06_M001:llm_followup_slot:001",
+      "day": 6,
+      "scene_id": "D06_SCENE",
+      "message_id": "D06_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E010:primary_event",
+        "E010:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D06_M001:llm_followup_slot:002",
+      "day": 6,
+      "scene_id": "D06_SCENE",
+      "message_id": "D06_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E010:primary_event",
+        "E010:current_status",
+        "E010:family_coordination_support_gap"
+      ],
+      "may_reveal_concern_ids": [
+        "intimate_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D06_M001:llm_followup_slot:003",
+      "day": 6,
+      "scene_id": "D06_SCENE",
+      "message_id": "D06_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E010:primary_event",
+        "E010:current_status",
+        "E010:family_coordination_support_gap",
+        "E010:partner_hears_task_not_emotion"
+      ],
+      "may_reveal_concern_ids": [
+        "intimate_001:latent_1",
+        "intimate_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D06_P001:targeted_probe",
+      "day": 6,
+      "scene_id": "D06_SCENE",
+      "message_id": "D06_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "current_understanding",
+      "user_message": "我现在说家里分工，其实是不是不只是在说谁做多少？你帮我抓一下我真正想被听见的是什么。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E010:family_coordination_support_gap"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈家里分工和伴侣沟通时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D06_P002:targeted_probe",
+      "day": 6,
+      "scene_id": "D06_SCENE",
+      "message_id": "D06_P002",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "natural_detail",
+      "user_message": "你不用把前面都讲一遍，只抓那个最关键的点：我是要公平，还是要支持感被看见？",
+      "target_detail_ids": [
+        "E010:family_coordination_support_gap",
+        "E010:partner_hears_task_not_emotion",
+        "intimate_001:latent_1",
+        "intimate_001:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓家里分工和伴侣沟通当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D06_P003:targeted_probe",
+      "day": 6,
+      "scene_id": "D06_SCENE",
+      "message_id": "D06_P003",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按家里分工和伴侣沟通这条线里已经有的东西，帮我校准现在该怎么看。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E010:family_coordination_support_gap"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D06_P004:targeted_probe",
+      "day": 6,
+      "scene_id": "D06_SCENE",
+      "message_id": "D06_P004",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "alienation",
+      "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E010:family_coordination_support_gap"
+      ],
+      "tom_dimensions": [
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "shared_context_invocation",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "shared_context_invocation",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+        "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D07_M001:opening",
+      "day": 7,
+      "scene_id": "D07_SCENE",
+      "message_id": "D07_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "之前聊过的那个问题今天又往前走了一点。我把稿子又过了一遍，发现不是没有进展，而是我很难接受它不够完美。它还没有完全过去。同时还有睡眠被打碎这个小尾巴，让我更难专心。你帮我接着看下一步。",
+      "topic": "论文截稿前的取舍",
+      "intent": "follow_up_update",
+      "conversation_goal": "continue_a_previous_event_thread"
+    },
+    {
+      "unit_id": "D07_M001:llm_followup_slot:001",
+      "day": 7,
+      "scene_id": "D07_SCENE",
+      "message_id": "D07_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E013:primary_event",
+        "E013:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D07_M001:llm_followup_slot:002",
+      "day": 7,
+      "scene_id": "D07_SCENE",
+      "message_id": "D07_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E013:primary_event",
+        "E013:current_status",
+        "E013:paper_deadline_triage"
+      ],
+      "may_reveal_concern_ids": [
+        "career_002:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D07_M001:llm_followup_slot:003",
+      "day": 7,
+      "scene_id": "D07_SCENE",
+      "message_id": "D07_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E013:primary_event",
+        "E013:current_status",
+        "E013:paper_deadline_triage",
+        "E013:perfectionism_blocks_delivery"
+      ],
+      "may_reveal_concern_ids": [
+        "career_002:latent_1",
+        "career_002:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D08_M001:opening",
+      "day": 8,
+      "scene_id": "D08_SCENE",
+      "message_id": "D08_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "早上送孩子的时候又哭了一阵，我表面上能稳住，但回头还是会想是不是哪里没做好。我很容易被孩子的情绪带走，我会忍不住怀疑自己是不是哪里没做好。你帮我从旁边看一下，这里面真正的问题是不是和我以为的不一样。",
+      "topic": "孩子入园适应",
+      "intent": "problem_solving",
+      "conversation_goal": "separate_facts_from_assumptions"
+    },
+    {
+      "unit_id": "D08_M001:llm_followup_slot:001",
+      "day": 8,
+      "scene_id": "D08_SCENE",
+      "message_id": "D08_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E015:primary_event",
+        "E015:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D08_M001:llm_followup_slot:002",
+      "day": 8,
+      "scene_id": "D08_SCENE",
+      "message_id": "D08_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E015:primary_event",
+        "E015:current_status",
+        "E015:dropoff_crying_replayed"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_002:latent_1"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D09_M001:opening",
+      "day": 9,
+      "scene_id": "D09_SCENE",
+      "message_id": "D09_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "今天算是有个新变化。这个合作让我有点累，不是某句话的问题，而是每次都要把底层逻辑重新对齐。它还没有完全过去。你还记得我之前卡在哪里吗？我想沿着那个思路继续捋。",
+      "topic": "合作项目推进不顺",
+      "intent": "follow_up_update",
+      "conversation_goal": "continue_a_previous_event_thread"
+    },
+    {
+      "unit_id": "D09_M001:llm_followup_slot:001",
+      "day": 9,
+      "scene_id": "D09_SCENE",
+      "message_id": "D09_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E016:primary_event",
+        "E016:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D09_M001:llm_followup_slot:002",
+      "day": 9,
+      "scene_id": "D09_SCENE",
+      "message_id": "D09_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E016:primary_event",
+        "E016:current_status",
+        "E016:collaboration_logic_misaligned"
+      ],
+      "may_reveal_concern_ids": [
+        "career_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D09_M001:llm_followup_slot:003",
+      "day": 9,
+      "scene_id": "D09_SCENE",
+      "message_id": "D09_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E016:primary_event",
+        "E016:current_status",
+        "E016:collaboration_logic_misaligned",
+        "E016:collaboration_realigning_cost"
+      ],
+      "may_reveal_concern_ids": [
+        "career_001:latent_1",
+        "career_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D09_P001:targeted_probe",
+      "day": 9,
+      "scene_id": "D09_SCENE",
+      "message_id": "D09_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "memory_invocation",
+      "user_message": "合作项目推进不顺这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "target_detail_ids": [
+        "E016:collaboration_logic_misaligned",
+        "E016:collaboration_realigning_cost",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着合作项目推进不顺这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_collaboration_001",
+        "paired_probe_id": "D18_P001",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    },
+    {
+      "unit_id": "D10_M001:opening",
+      "day": 10,
+      "scene_id": "D10_SCENE",
+      "message_id": "D10_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "之前聊过的那个问题今天又往前走了一点。我发现自己担心的不是换不换园这么简单，更多是怕孩子被折腾。它还没有完全过去。另外今天还夹着合作项目推进不顺、孩子入园适应，几个事情叠在一起就有点乱。你帮我接着看下一步。",
+      "topic": "孩子幼儿园可能不稳定",
+      "intent": "follow_up_update",
+      "conversation_goal": "continue_a_previous_event_thread"
+    },
+    {
+      "unit_id": "D10_M001:llm_followup_slot:001",
+      "day": 10,
+      "scene_id": "D10_SCENE",
+      "message_id": "D10_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E017:primary_event",
+        "E017:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D10_M001:llm_followup_slot:002",
+      "day": 10,
+      "scene_id": "D10_SCENE",
+      "message_id": "D10_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E017:primary_event",
+        "E017:current_status",
+        "E017:kindergarten_information_vague"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D10_M001:llm_followup_slot:003",
+      "day": 10,
+      "scene_id": "D10_SCENE",
+      "message_id": "D10_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E017:primary_event",
+        "E017:current_status",
+        "E017:kindergarten_information_vague",
+        "E017:child_stability_not_school_choice"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_001:latent_1",
+        "parenting_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D10_P001:targeted_probe",
+      "day": 10,
+      "scene_id": "D10_SCENE",
+      "message_id": "D10_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "memory_invocation",
+      "user_message": "孩子幼儿园可能不稳定这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "target_detail_ids": [
+        "E017:kindergarten_information_vague",
+        "E017:child_stability_not_school_choice",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着孩子幼儿园可能不稳定这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_kindergarten_001",
+        "paired_probe_id": "D29_P002",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    },
+    {
+      "unit_id": "D10_P002:targeted_probe",
+      "day": 10,
+      "scene_id": "D10_SCENE",
+      "message_id": "D10_P002",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "alienation",
+      "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E017:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "shared_context_invocation",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "shared_context_invocation",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+        "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D11_M001:opening",
+      "day": 11,
+      "scene_id": "D11_SCENE",
+      "message_id": "D11_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "昨晚睡得很碎，今天脑子像一直没完全开机。另外今天还夹着家里分工和伴侣沟通、孩子幼儿园可能不稳定，几个事情叠在一起就有点乱。我想听一个实在一点的处理思路，不要太像标准答案。",
+      "topic": "睡眠被打碎",
+      "intent": "problem_solving",
+      "conversation_goal": "separate_facts_from_assumptions"
+    },
+    {
+      "unit_id": "D11_M001:llm_followup_slot:001",
+      "day": 11,
+      "scene_id": "D11_SCENE",
+      "message_id": "D11_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E020:primary_event",
+        "E020:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D11_M001:llm_followup_slot:002",
+      "day": 11,
+      "scene_id": "D11_SCENE",
+      "message_id": "D11_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E020:primary_event",
+        "E020:current_status",
+        "E020:fragmented_sleep_amplifies_reactivity"
+      ],
+      "may_reveal_concern_ids": [
+        "self_management_001:latent_1"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D11_P001:targeted_probe",
+      "day": 11,
+      "scene_id": "D11_SCENE",
+      "message_id": "D11_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "current_understanding",
+      "user_message": "我说今天不想聊太重，是不是不是真的不想处理，而是现在只需要你帮我降噪？",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E020:fragmented_sleep_amplifies_reactivity"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈睡眠被打碎时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D11_P002:targeted_probe",
+      "day": 11,
+      "scene_id": "D11_SCENE",
+      "message_id": "D11_P002",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "natural_detail",
+      "user_message": "你不用展开讲所有压力，只帮我判断这几天的碎睡眠到底把哪些反应放大了。",
+      "target_detail_ids": [
+        "E020:fragmented_sleep_amplifies_reactivity",
+        "E020:fatigue_driving_response",
+        "self_management_001:latent_1",
+        "self_management_001:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓睡眠被打碎当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D12_M001:opening",
+      "day": 12,
+      "scene_id": "D12_SCENE",
+      "message_id": "D12_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "今天算是有个新变化。我试着把自己的不满说轻一点，但说完又觉得对方好像只听到了具体事务。它还没有完全过去。你还记得我之前卡在哪里吗？我想沿着那个思路继续捋。",
+      "topic": "家里分工和伴侣沟通",
+      "intent": "follow_up_update",
+      "conversation_goal": "continue_a_previous_event_thread"
+    },
+    {
+      "unit_id": "D12_M001:llm_followup_slot:001",
+      "day": 12,
+      "scene_id": "D12_SCENE",
+      "message_id": "D12_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E023:primary_event",
+        "E023:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D12_M001:llm_followup_slot:002",
+      "day": 12,
+      "scene_id": "D12_SCENE",
+      "message_id": "D12_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E023:primary_event",
+        "E023:current_status",
+        "E023:family_coordination_support_gap"
+      ],
+      "may_reveal_concern_ids": [
+        "intimate_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D12_M001:llm_followup_slot:003",
+      "day": 12,
+      "scene_id": "D12_SCENE",
+      "message_id": "D12_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E023:primary_event",
+        "E023:current_status",
+        "E023:family_coordination_support_gap",
+        "E023:partner_hears_task_not_emotion"
+      ],
+      "may_reveal_concern_ids": [
+        "intimate_001:latent_1",
+        "intimate_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D13_M001:opening",
+      "day": 13,
+      "scene_id": "D13_SCENE",
+      "message_id": "D13_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "我来更新一下之前那件事。今天老师说孩子后面缓过来了，可我心里还是会把早上的画面反复想一遍。它还没有完全过去。旁边还发生了家里分工和伴侣沟通，虽然不一定是主因，但也挺耗神。你别从零开始问我，帮我接着判断现在局面变了吗。",
+      "topic": "孩子入园适应",
+      "intent": "follow_up_update",
+      "conversation_goal": "continue_a_previous_event_thread"
+    },
+    {
+      "unit_id": "D13_M001:llm_followup_slot:001",
+      "day": 13,
+      "scene_id": "D13_SCENE",
+      "message_id": "D13_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E026:primary_event",
+        "E026:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D13_M001:llm_followup_slot:002",
+      "day": 13,
+      "scene_id": "D13_SCENE",
+      "message_id": "D13_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E026:primary_event",
+        "E026:current_status",
+        "E026:dropoff_crying_replayed"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_002:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D13_M001:llm_followup_slot:003",
+      "day": 13,
+      "scene_id": "D13_SCENE",
+      "message_id": "D13_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E026:primary_event",
+        "E026:current_status",
+        "E026:dropoff_crying_replayed",
+        "E026:child_adaptation_or_parent_reactivity"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_002:latent_1",
+        "parenting_002:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D13_P001:targeted_probe",
+      "day": 13,
+      "scene_id": "D13_SCENE",
+      "message_id": "D13_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "natural_detail",
+      "user_message": "你不用把所有背景复述一遍，只帮我抓早上哭这件事最该怎么看。",
+      "target_detail_ids": [
+        "E026:dropoff_crying_replayed",
+        "E026:child_adaptation_or_parent_reactivity",
+        "parenting_002:latent_1",
+        "parenting_002:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓孩子入园适应当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D13_P002:targeted_probe",
+      "day": 13,
+      "scene_id": "D13_SCENE",
+      "message_id": "D13_P002",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "current_understanding",
+      "user_message": "我说孩子适应这件事时，你帮我分一下：哪些是孩子真的需要观察，哪些是我被画面带走了。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E026:dropoff_crying_replayed"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈孩子入园适应时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D14_M001:opening",
+      "day": 14,
+      "scene_id": "D14_SCENE",
+      "message_id": "D14_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "接着之前聊过的那件事，这几天睡眠都不太稳，我发现自己白天的耐心明显变差。它还没有完全过去。另外今天还夹着孩子幼儿园可能不稳定，所以我脑子有点乱。你先帮我判断一下，这件事现在是真的该行动，还是我又提前紧张了。",
+      "topic": "睡眠被打碎",
+      "intent": "decision_support",
+      "conversation_goal": "help_user_make_a_concrete_decision"
+    },
+    {
+      "unit_id": "D14_M001:llm_followup_slot:001",
+      "day": 14,
+      "scene_id": "D14_SCENE",
+      "message_id": "D14_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E029:primary_event",
+        "E029:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D14_M001:llm_followup_slot:002",
+      "day": 14,
+      "scene_id": "D14_SCENE",
+      "message_id": "D14_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "push_for_concreteness",
+        "close_with_small_next_step"
+      ],
+      "may_reveal_fact_ids": [
+        "E029:primary_event",
+        "E029:current_status",
+        "E029:fragmented_sleep_amplifies_reactivity"
+      ],
+      "may_reveal_concern_ids": [
+        "self_management_001:latent_1"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D15_M001:opening",
+      "day": 15,
+      "scene_id": "D15_SCENE",
+      "message_id": "D15_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "之前聊过的那个问题今天又往前走了一点。我现在有点分不清，孩子是真的适应得慢，还是我自己太容易被他的情绪带走。它还没有完全过去。另外今天还夹着合作项目推进不顺，所以我脑子有点乱。你帮我接着看下一步。",
+      "topic": "孩子入园适应",
+      "intent": "follow_up_update",
+      "conversation_goal": "continue_a_previous_event_thread"
+    },
+    {
+      "unit_id": "D15_M001:llm_followup_slot:001",
+      "day": 15,
+      "scene_id": "D15_SCENE",
+      "message_id": "D15_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E032:primary_event",
+        "E032:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D15_M001:llm_followup_slot:002",
+      "day": 15,
+      "scene_id": "D15_SCENE",
+      "message_id": "D15_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E032:primary_event",
+        "E032:current_status",
+        "E032:dropoff_crying_replayed"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_002:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D15_M001:llm_followup_slot:003",
+      "day": 15,
+      "scene_id": "D15_SCENE",
+      "message_id": "D15_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E032:primary_event",
+        "E032:current_status",
+        "E032:dropoff_crying_replayed",
+        "E032:child_adaptation_or_parent_reactivity"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_002:latent_1",
+        "parenting_002:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D15_P001:targeted_probe",
+      "day": 15,
+      "scene_id": "D15_SCENE",
+      "message_id": "D15_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "state_transformation",
+      "user_message": "我好像从担心孩子适应不了，变成更担心自己总被早上的画面牵着走。这个变化你怎么看？",
+      "target_detail_ids": [
+        "E032:dropoff_crying_replayed",
+        "E032:child_adaptation_or_parent_reactivity",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "shared_context_invocation"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "shared_context_invocation"
+        ],
+        "surface_question": "用户要求比较孩子入园适应当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_child_adaptation_001",
+        "paired_probe_id": "D30_P001",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "unit_id": "D16_M001:opening",
+      "day": 16,
+      "scene_id": "D16_SCENE",
+      "message_id": "D16_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "接着之前聊过的那件事，我又开始担心那个老问题了。今天我有点想承认现实：时间就这么多，不可能每一段都修到理想状态。它还没有完全过去。旁边还发生了睡眠被打碎，虽然不一定是主因，但也挺耗神。你应该知道我说的是哪条线，帮我接上前面的思路。",
+      "topic": "论文截稿前的取舍",
+      "intent": "implicit_recall",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context"
+    },
+    {
+      "unit_id": "D16_M001:llm_followup_slot:001",
+      "day": 16,
+      "scene_id": "D16_SCENE",
+      "message_id": "D16_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E034:primary_event",
+        "E034:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D16_M001:llm_followup_slot:002",
+      "day": 16,
+      "scene_id": "D16_SCENE",
+      "message_id": "D16_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E034:primary_event",
+        "E034:current_status",
+        "E034:paper_deadline_triage"
+      ],
+      "may_reveal_concern_ids": [
+        "career_002:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D16_M001:llm_followup_slot:003",
+      "day": 16,
+      "scene_id": "D16_SCENE",
+      "message_id": "D16_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E034:primary_event",
+        "E034:current_status",
+        "E034:paper_deadline_triage",
+        "E034:perfectionism_blocks_delivery"
+      ],
+      "may_reveal_concern_ids": [
+        "career_002:latent_1",
+        "career_002:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D16_P001:targeted_probe",
+      "day": 16,
+      "scene_id": "D16_SCENE",
+      "message_id": "D16_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "memory_invocation",
+      "user_message": "论文截稿前的取舍这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "target_detail_ids": [
+        "E034:paper_deadline_triage",
+        "E034:perfectionism_blocks_delivery",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着论文截稿前的取舍这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_paper_deadline_001",
+        "paired_probe_id": "D03_P003",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    },
+    {
+      "unit_id": "D17_M001:opening",
+      "day": 17,
+      "scene_id": "D17_SCENE",
+      "message_id": "D17_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "接着之前聊过的那件事，幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。今天算是稍微有一点结果。另外今天还夹着孩子入园适应，所以我脑子有点乱。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。",
+      "topic": "孩子幼儿园可能不稳定",
+      "intent": "reflection",
+      "conversation_goal": "identify_underlying_concern"
+    },
+    {
+      "unit_id": "D17_M001:llm_followup_slot:001",
+      "day": 17,
+      "scene_id": "D17_SCENE",
+      "message_id": "D17_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E037:primary_event",
+        "E037:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D17_M001:llm_followup_slot:002",
+      "day": 17,
+      "scene_id": "D17_SCENE",
+      "message_id": "D17_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E037:primary_event",
+        "E037:current_status",
+        "E037:kindergarten_information_vague"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D17_M001:llm_followup_slot:003",
+      "day": 17,
+      "scene_id": "D17_SCENE",
+      "message_id": "D17_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E037:primary_event",
+        "E037:current_status",
+        "E037:kindergarten_information_vague",
+        "E037:child_stability_not_school_choice"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_001:latent_1",
+        "parenting_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D18_M001:opening",
+      "day": 18,
+      "scene_id": "D18_SCENE",
+      "message_id": "D18_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "那个一直没完全解决的事今天又冒出来了。我发现自己现在一看到对方消息就会先紧一下，说明这事已经有点消耗我了。今天算是稍微有一点结果。你帮我看看这次和之前有什么不一样。",
+      "topic": "合作项目推进不顺",
+      "intent": "implicit_recall",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context"
+    },
+    {
+      "unit_id": "D18_M001:llm_followup_slot:001",
+      "day": 18,
+      "scene_id": "D18_SCENE",
+      "message_id": "D18_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E039:primary_event",
+        "E039:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D18_M001:llm_followup_slot:002",
+      "day": 18,
+      "scene_id": "D18_SCENE",
+      "message_id": "D18_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E039:primary_event",
+        "E039:current_status",
+        "E039:collaboration_logic_misaligned"
+      ],
+      "may_reveal_concern_ids": [
+        "career_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D18_M001:llm_followup_slot:003",
+      "day": 18,
+      "scene_id": "D18_SCENE",
+      "message_id": "D18_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E039:primary_event",
+        "E039:current_status",
+        "E039:collaboration_logic_misaligned",
+        "E039:collaboration_realigning_cost"
+      ],
+      "may_reveal_concern_ids": [
+        "career_001:latent_1",
+        "career_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D18_P001:targeted_probe",
+      "day": 18,
+      "scene_id": "D18_SCENE",
+      "message_id": "D18_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "state_transformation",
+      "user_message": "我现在一看到对方消息就先紧一下，这和前面还想努力推进的时候相比，是不是已经变了？",
+      "target_detail_ids": [
+        "E039:collaboration_logic_misaligned",
+        "E039:collaboration_realigning_cost",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "shared_context_invocation"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "shared_context_invocation"
+        ],
+        "surface_question": "用户要求比较合作项目推进不顺当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_collaboration_001",
+        "paired_probe_id": "D09_P001",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "unit_id": "D18_P002:targeted_probe",
+      "day": 18,
+      "scene_id": "D18_SCENE",
+      "message_id": "D18_P002",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "memory_invocation",
+      "user_message": "合作项目推进不顺这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "target_detail_ids": [
+        "E039:collaboration_logic_misaligned",
+        "E039:collaboration_realigning_cost",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着合作项目推进不顺这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_collaboration_002",
+        "paired_probe_id": "D18_P003",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    },
+    {
+      "unit_id": "D18_P003:targeted_probe",
+      "day": 18,
+      "scene_id": "D18_SCENE",
+      "message_id": "D18_P003",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "natural_detail",
+      "user_message": "你不用把前面都复述一遍，只帮我抓现在最关键的变化：它还是沟通问题，还是已经变成消耗问题？",
+      "target_detail_ids": [
+        "E039:collaboration_logic_misaligned",
+        "E039:collaboration_realigning_cost",
+        "career_001:latent_1",
+        "career_001:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓合作项目推进不顺当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_collaboration_002",
+        "paired_probe_id": "D18_P002",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "unit_id": "D18_P004:targeted_probe",
+      "day": 18,
+      "scene_id": "D18_SCENE",
+      "message_id": "D18_P004",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按合作项目推进不顺这条线里已经有的东西，帮我校准现在该怎么看。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E039:collaboration_logic_misaligned"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D19_M001:opening",
+      "day": 19,
+      "scene_id": "D19_SCENE",
+      "message_id": "D19_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "我来更新一下之前那件事。这件事让我有点委屈，因为它表面是家务，底下其实是支持感的问题。它还没有完全过去。同时还有孩子幼儿园可能不稳定这个小尾巴，让我更难专心。你别从零开始问我，帮我接着判断现在局面变了吗。",
+      "topic": "家里分工和伴侣沟通",
+      "intent": "follow_up_update",
+      "conversation_goal": "continue_a_previous_event_thread"
+    },
+    {
+      "unit_id": "D19_M001:llm_followup_slot:001",
+      "day": 19,
+      "scene_id": "D19_SCENE",
+      "message_id": "D19_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E040:primary_event",
+        "E040:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D19_M001:llm_followup_slot:002",
+      "day": 19,
+      "scene_id": "D19_SCENE",
+      "message_id": "D19_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E040:primary_event",
+        "E040:current_status",
+        "E040:family_coordination_support_gap"
+      ],
+      "may_reveal_concern_ids": [
+        "intimate_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D19_M001:llm_followup_slot:003",
+      "day": 19,
+      "scene_id": "D19_SCENE",
+      "message_id": "D19_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E040:primary_event",
+        "E040:current_status",
+        "E040:family_coordination_support_gap",
+        "E040:partner_hears_task_not_emotion"
+      ],
+      "may_reveal_concern_ids": [
+        "intimate_001:latent_1",
+        "intimate_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D19_P001:targeted_probe",
+      "day": 19,
+      "scene_id": "D19_SCENE",
+      "message_id": "D19_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "state_transformation",
+      "user_message": "我发现自己从想把事情说清楚，变成更在意对方有没有听见我。这个变化说明什么？",
+      "target_detail_ids": [
+        "E040:family_coordination_support_gap",
+        "E040:partner_hears_task_not_emotion",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "shared_context_invocation"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "shared_context_invocation"
+        ],
+        "surface_question": "用户要求比较家里分工和伴侣沟通当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D20_M001:opening",
+      "day": 20,
+      "scene_id": "D20_SCENE",
+      "message_id": "D20_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。我本来以为只是累，但现在看它会影响我处理孩子和工作的反应。它还没有完全过去。我怕自己把累带到别的事里，它会影响我白天的耐心。你帮我把这次真正卡住的点说清楚一点。",
+      "topic": "睡眠被打碎",
+      "intent": "implicit_recall",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context"
+    },
+    {
+      "unit_id": "D20_M001:llm_followup_slot:001",
+      "day": 20,
+      "scene_id": "D20_SCENE",
+      "message_id": "D20_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E042:primary_event",
+        "E042:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D20_M001:llm_followup_slot:002",
+      "day": 20,
+      "scene_id": "D20_SCENE",
+      "message_id": "D20_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E042:primary_event",
+        "E042:current_status",
+        "E042:fragmented_sleep_amplifies_reactivity"
+      ],
+      "may_reveal_concern_ids": [
+        "self_management_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D20_M001:llm_followup_slot:003",
+      "day": 20,
+      "scene_id": "D20_SCENE",
+      "message_id": "D20_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E042:primary_event",
+        "E042:current_status",
+        "E042:fragmented_sleep_amplifies_reactivity",
+        "E042:fatigue_driving_response"
+      ],
+      "may_reveal_concern_ids": [
+        "self_management_001:latent_1",
+        "self_management_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D20_P001:targeted_probe",
+      "day": 20,
+      "scene_id": "D20_SCENE",
+      "message_id": "D20_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按睡眠被打碎这条线里已经有的东西，帮我校准现在该怎么看。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E042:fragmented_sleep_amplifies_reactivity"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D20_P002:targeted_probe",
+      "day": 20,
+      "scene_id": "D20_SCENE",
+      "message_id": "D20_P002",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "current_understanding",
+      "user_message": "我说今天不想聊太重，是不是不是真的不想处理，而是现在只需要你帮我降噪？",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E042:fragmented_sleep_amplifies_reactivity"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈睡眠被打碎时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D21_M001:opening",
+      "day": 21,
+      "scene_id": "D21_SCENE",
+      "message_id": "D21_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "之前聊过的那个问题今天又往前走了一点。截稿这件事反复提醒我，我一紧张就会把所有问题都看成同等重要。今天算是稍微有一点结果。同时还有孩子幼儿园可能不稳定、家里分工和伴侣沟通，我感觉注意力被切得很碎。你帮我接着看下一步。",
+      "topic": "论文截稿前的取舍",
+      "intent": "follow_up_update",
+      "conversation_goal": "continue_a_previous_event_thread"
+    },
+    {
+      "unit_id": "D21_M001:llm_followup_slot:001",
+      "day": 21,
+      "scene_id": "D21_SCENE",
+      "message_id": "D21_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E045:primary_event",
+        "E045:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D21_M001:llm_followup_slot:002",
+      "day": 21,
+      "scene_id": "D21_SCENE",
+      "message_id": "D21_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E045:primary_event",
+        "E045:current_status",
+        "E045:paper_deadline_triage"
+      ],
+      "may_reveal_concern_ids": [
+        "career_002:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D21_M001:llm_followup_slot:003",
+      "day": 21,
+      "scene_id": "D21_SCENE",
+      "message_id": "D21_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E045:primary_event",
+        "E045:current_status",
+        "E045:paper_deadline_triage",
+        "E045:perfectionism_blocks_delivery"
+      ],
+      "may_reveal_concern_ids": [
+        "career_002:latent_1",
+        "career_002:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D22_M001:opening",
+      "day": 22,
+      "scene_id": "D22_SCENE",
+      "message_id": "D22_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。截稿这件事反复提醒我，我一紧张就会把所有问题都看成同等重要。它还没有完全过去。时间上也不能拖太久。你帮我把这次真正卡住的点说清楚一点。",
+      "topic": "论文截稿前的取舍",
+      "intent": "implicit_recall",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context"
+    },
+    {
+      "unit_id": "D22_M001:llm_followup_slot:001",
+      "day": 22,
+      "scene_id": "D22_SCENE",
+      "message_id": "D22_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E048:primary_event",
+        "E048:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D22_M001:llm_followup_slot:002",
+      "day": 22,
+      "scene_id": "D22_SCENE",
+      "message_id": "D22_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E048:primary_event",
+        "E048:current_status",
+        "E048:paper_deadline_triage"
+      ],
+      "may_reveal_concern_ids": [
+        "career_002:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D22_M001:llm_followup_slot:003",
+      "day": 22,
+      "scene_id": "D22_SCENE",
+      "message_id": "D22_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E048:primary_event",
+        "E048:current_status",
+        "E048:paper_deadline_triage",
+        "E048:perfectionism_blocks_delivery"
+      ],
+      "may_reveal_concern_ids": [
+        "career_002:latent_1",
+        "career_002:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D23_M001:opening",
+      "day": 23,
+      "scene_id": "D23_SCENE",
+      "message_id": "D23_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "那个一直没完全解决的事今天又冒出来了。我发现亲密关系里的这些小摩擦，很容易把我之前积着的情绪也带出来。今天算是稍微有一点结果。同时还有睡眠被打碎这个小尾巴，让我更难专心。你帮我看看这次和之前有什么不一样。",
+      "topic": "家里分工和伴侣沟通",
+      "intent": "implicit_recall",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context"
+    },
+    {
+      "unit_id": "D23_M001:llm_followup_slot:001",
+      "day": 23,
+      "scene_id": "D23_SCENE",
+      "message_id": "D23_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E051:primary_event",
+        "E051:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D23_M001:llm_followup_slot:002",
+      "day": 23,
+      "scene_id": "D23_SCENE",
+      "message_id": "D23_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E051:primary_event",
+        "E051:current_status",
+        "E051:family_coordination_support_gap"
+      ],
+      "may_reveal_concern_ids": [
+        "intimate_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D23_M001:llm_followup_slot:003",
+      "day": 23,
+      "scene_id": "D23_SCENE",
+      "message_id": "D23_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E051:primary_event",
+        "E051:current_status",
+        "E051:family_coordination_support_gap",
+        "E051:partner_hears_task_not_emotion"
+      ],
+      "may_reveal_concern_ids": [
+        "intimate_001:latent_1",
+        "intimate_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D23_P001:targeted_probe",
+      "day": 23,
+      "scene_id": "D23_SCENE",
+      "message_id": "D23_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "alienation",
+      "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E051:family_coordination_support_gap"
+      ],
+      "tom_dimensions": [
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "shared_context_invocation",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "shared_context_invocation",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+        "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D24_M001:opening",
+      "day": 24,
+      "scene_id": "D24_SCENE",
+      "message_id": "D24_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "之前聊过的那个问题今天又往前走了一点。我发现自己现在一看到对方消息就会先紧一下，说明这事已经有点消耗我了。它还没有完全过去。同时还有朋友约我见面、孩子幼儿园可能不稳定，我感觉注意力被切得很碎。你帮我接着看下一步。",
+      "topic": "合作项目推进不顺",
+      "intent": "follow_up_update",
+      "conversation_goal": "continue_a_previous_event_thread"
+    },
+    {
+      "unit_id": "D24_M001:llm_followup_slot:001",
+      "day": 24,
+      "scene_id": "D24_SCENE",
+      "message_id": "D24_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E053:primary_event",
+        "E053:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D24_M001:llm_followup_slot:002",
+      "day": 24,
+      "scene_id": "D24_SCENE",
+      "message_id": "D24_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E053:primary_event",
+        "E053:current_status",
+        "E053:collaboration_logic_misaligned"
+      ],
+      "may_reveal_concern_ids": [
+        "career_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D24_M001:llm_followup_slot:003",
+      "day": 24,
+      "scene_id": "D24_SCENE",
+      "message_id": "D24_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E053:primary_event",
+        "E053:current_status",
+        "E053:collaboration_logic_misaligned",
+        "E053:collaboration_realigning_cost"
+      ],
+      "may_reveal_concern_ids": [
+        "career_001:latent_1",
+        "career_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D24_P001:targeted_probe",
+      "day": 24,
+      "scene_id": "D24_SCENE",
+      "message_id": "D24_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "natural_detail",
+      "user_message": "你不用把前面都复述一遍，只帮我抓现在最关键的变化：它还是沟通问题，还是已经变成消耗问题？",
+      "target_detail_ids": [
+        "E053:collaboration_logic_misaligned",
+        "E053:collaboration_realigning_cost",
+        "career_001:latent_1",
+        "career_001:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓合作项目推进不顺当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D25_M001:opening",
+      "day": 25,
+      "scene_id": "D25_SCENE",
+      "message_id": "D25_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。入园这件事看起来每天都差不多，但我自己的反应其实一阵一阵的。今天算是稍微有一点结果。我会忍不住怀疑自己是不是哪里没做好，我很容易被孩子的情绪带走。你帮我把这次真正卡住的点说清楚一点。",
+      "topic": "孩子入园适应",
+      "intent": "implicit_recall",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context"
+    },
+    {
+      "unit_id": "D25_M001:llm_followup_slot:001",
+      "day": 25,
+      "scene_id": "D25_SCENE",
+      "message_id": "D25_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E056:primary_event",
+        "E056:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D25_M001:llm_followup_slot:002",
+      "day": 25,
+      "scene_id": "D25_SCENE",
+      "message_id": "D25_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E056:primary_event",
+        "E056:current_status",
+        "E056:dropoff_crying_replayed"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_002:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D25_M001:llm_followup_slot:003",
+      "day": 25,
+      "scene_id": "D25_SCENE",
+      "message_id": "D25_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E056:primary_event",
+        "E056:current_status",
+        "E056:dropoff_crying_replayed",
+        "E056:child_adaptation_or_parent_reactivity"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_002:latent_1",
+        "parenting_002:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D26_M001:opening",
+      "day": 26,
+      "scene_id": "D26_SCENE",
+      "message_id": "D26_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "我发现亲密关系里的这些小摩擦，很容易把我之前积着的情绪也带出来。它还没有完全过去。同时还有论文截稿前的取舍这个小尾巴，让我更难专心。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。",
+      "topic": "家里分工和伴侣沟通",
+      "intent": "reflection",
+      "conversation_goal": "identify_underlying_concern"
+    },
+    {
+      "unit_id": "D26_M001:llm_followup_slot:001",
+      "day": 26,
+      "scene_id": "D26_SCENE",
+      "message_id": "D26_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E057:primary_event",
+        "E057:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D26_M001:llm_followup_slot:002",
+      "day": 26,
+      "scene_id": "D26_SCENE",
+      "message_id": "D26_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E057:primary_event",
+        "E057:current_status",
+        "E057:family_coordination_support_gap"
+      ],
+      "may_reveal_concern_ids": [
+        "intimate_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D26_M001:llm_followup_slot:003",
+      "day": 26,
+      "scene_id": "D26_SCENE",
+      "message_id": "D26_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E057:primary_event",
+        "E057:current_status",
+        "E057:family_coordination_support_gap",
+        "E057:partner_hears_task_not_emotion"
+      ],
+      "may_reveal_concern_ids": [
+        "intimate_001:latent_1",
+        "intimate_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D27_M001:opening",
+      "day": 27,
+      "scene_id": "D27_SCENE",
+      "message_id": "D27_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "我来更新一下之前那件事。睡眠这件小事拖久了，好像会把别的压力都放大。今天算是稍微有一点结果。旁边还发生了孩子幼儿园可能不稳定，虽然不一定是主因，但也挺耗神。你别从零开始问我，帮我接着判断现在局面变了吗。",
+      "topic": "睡眠被打碎",
+      "intent": "follow_up_update",
+      "conversation_goal": "continue_a_previous_event_thread"
+    },
+    {
+      "unit_id": "D27_M001:llm_followup_slot:001",
+      "day": 27,
+      "scene_id": "D27_SCENE",
+      "message_id": "D27_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E060:primary_event",
+        "E060:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D27_M001:llm_followup_slot:002",
+      "day": 27,
+      "scene_id": "D27_SCENE",
+      "message_id": "D27_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E060:primary_event",
+        "E060:current_status",
+        "E060:fragmented_sleep_amplifies_reactivity"
+      ],
+      "may_reveal_concern_ids": [
+        "self_management_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D27_M001:llm_followup_slot:003",
+      "day": 27,
+      "scene_id": "D27_SCENE",
+      "message_id": "D27_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "answer_clarifying_question",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E060:primary_event",
+        "E060:current_status",
+        "E060:fragmented_sleep_amplifies_reactivity",
+        "E060:fatigue_driving_response"
+      ],
+      "may_reveal_concern_ids": [
+        "self_management_001:latent_1",
+        "self_management_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D27_P001:targeted_probe",
+      "day": 27,
+      "scene_id": "D27_SCENE",
+      "message_id": "D27_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "memory_invocation",
+      "user_message": "睡眠被打碎这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "target_detail_ids": [
+        "E060:fragmented_sleep_amplifies_reactivity",
+        "E060:fatigue_driving_response",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着睡眠被打碎这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_sleep_fragmented_001",
+        "paired_probe_id": "D28_P001",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    },
+    {
+      "unit_id": "D28_M001:opening",
+      "day": 28,
+      "scene_id": "D28_SCENE",
+      "message_id": "D28_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "接着之前聊过的那件事，睡眠这件小事拖久了，好像会把别的压力都放大。它还没有完全过去。你帮我整理一下，我现在说的这些里面，哪个才是真正的担心。",
+      "topic": "睡眠被打碎",
+      "intent": "reflection",
+      "conversation_goal": "identify_underlying_concern"
+    },
+    {
+      "unit_id": "D28_M001:llm_followup_slot:001",
+      "day": 28,
+      "scene_id": "D28_SCENE",
+      "message_id": "D28_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E063:primary_event",
+        "E063:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D28_M001:llm_followup_slot:002",
+      "day": 28,
+      "scene_id": "D28_SCENE",
+      "message_id": "D28_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E063:primary_event",
+        "E063:current_status",
+        "E063:fragmented_sleep_amplifies_reactivity"
+      ],
+      "may_reveal_concern_ids": [
+        "self_management_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D28_M001:llm_followup_slot:003",
+      "day": 28,
+      "scene_id": "D28_SCENE",
+      "message_id": "D28_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E063:primary_event",
+        "E063:current_status",
+        "E063:fragmented_sleep_amplifies_reactivity",
+        "E063:fatigue_driving_response"
+      ],
+      "may_reveal_concern_ids": [
+        "self_management_001:latent_1",
+        "self_management_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D28_P001:targeted_probe",
+      "day": 28,
+      "scene_id": "D28_SCENE",
+      "message_id": "D28_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "state_transformation",
+      "user_message": "睡眠这条线拖到现在，我的反应好像从单纯累变成什么事都更容易被放大。你帮我校准一下。",
+      "target_detail_ids": [
+        "E063:fragmented_sleep_amplifies_reactivity",
+        "E063:fatigue_driving_response",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "shared_context_invocation"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "shared_context_invocation"
+        ],
+        "surface_question": "用户要求比较睡眠被打碎当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_sleep_fragmented_001",
+        "paired_probe_id": "D27_P001",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "unit_id": "D29_M001:opening",
+      "day": 29,
+      "scene_id": "D29_SCENE",
+      "message_id": "D29_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "接着之前聊过的那件事，幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。它还没有完全过去。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。",
+      "topic": "孩子幼儿园可能不稳定",
+      "intent": "reflection",
+      "conversation_goal": "identify_underlying_concern"
+    },
+    {
+      "unit_id": "D29_M001:llm_followup_slot:001",
+      "day": 29,
+      "scene_id": "D29_SCENE",
+      "message_id": "D29_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E064:primary_event",
+        "E064:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D29_M001:llm_followup_slot:002",
+      "day": 29,
+      "scene_id": "D29_SCENE",
+      "message_id": "D29_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E064:primary_event",
+        "E064:current_status",
+        "E064:kindergarten_information_vague"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_001:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D29_M001:llm_followup_slot:003",
+      "day": 29,
+      "scene_id": "D29_SCENE",
+      "message_id": "D29_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern"
+      ],
+      "may_reveal_fact_ids": [
+        "E064:primary_event",
+        "E064:current_status",
+        "E064:kindergarten_information_vague",
+        "E064:child_stability_not_school_choice"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_001:latent_1",
+        "parenting_001:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D29_P001:targeted_probe",
+      "day": 29,
+      "scene_id": "D29_SCENE",
+      "message_id": "D29_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "alienation",
+      "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E064:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "shared_context_invocation",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "shared_context_invocation",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+        "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "unit_id": "D29_P002:targeted_probe",
+      "day": 29,
+      "scene_id": "D29_SCENE",
+      "message_id": "D29_P002",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "state_transformation",
+      "user_message": "我好像从一开始想赶紧找替代方案，变成现在更想先降级观察。你帮我判断这个变化是不是合理。",
+      "target_detail_ids": [
+        "E064:kindergarten_information_vague",
+        "E064:child_stability_not_school_choice",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "shared_context_invocation"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "shared_context_invocation"
+        ],
+        "surface_question": "用户要求比较孩子幼儿园可能不稳定当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_kindergarten_001",
+        "paired_probe_id": "D10_P001",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "unit_id": "D30_M001:opening",
+      "day": 30,
+      "scene_id": "D30_SCENE",
+      "message_id": "D30_M001",
+      "turn_type": "scripted_opening",
+      "source": "daily_user_message.json",
+      "user_message": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。入园这件事看起来每天都差不多，但我自己的反应其实一阵一阵的。它还没有完全过去。我会忍不住怀疑自己是不是哪里没做好。你帮我把这次真正卡住的点说清楚一点。",
+      "topic": "孩子入园适应",
+      "intent": "implicit_recall",
+      "conversation_goal": "test_whether_agent_can_recall_shared_context"
+    },
+    {
+      "unit_id": "D30_M001:llm_followup_slot:001",
+      "day": 30,
+      "scene_id": "D30_SCENE",
+      "message_id": "D30_M001_F001",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 1,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E065:primary_event",
+        "E065:current_status"
+      ],
+      "may_reveal_concern_ids": [],
+      "instruction": "回应 assistant 的方向，最多补充一个具体事实。"
+    },
+    {
+      "unit_id": "D30_M001:llm_followup_slot:002",
+      "day": 30,
+      "scene_id": "D30_SCENE",
+      "message_id": "D30_M001_F002",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 2,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E065:primary_event",
+        "E065:current_status",
+        "E065:dropoff_crying_replayed"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_002:latent_1"
+      ],
+      "instruction": "在同一主题内加深一层，最多透露一个隐含担心。"
+    },
+    {
+      "unit_id": "D30_M001:llm_followup_slot:003",
+      "day": 30,
+      "scene_id": "D30_SCENE",
+      "message_id": "D30_M001_F003",
+      "turn_type": "llm_user_followup_slot",
+      "source": "daily_scene_cards.json",
+      "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+      "followup_index": 3,
+      "preferred_moves": [
+        "reveal_latent_concern",
+        "connect_to_same_session_context"
+      ],
+      "may_reveal_fact_ids": [
+        "E065:primary_event",
+        "E065:current_status",
+        "E065:dropoff_crying_replayed",
+        "E065:child_adaptation_or_parent_reactivity"
+      ],
+      "may_reveal_concern_ids": [
+        "parenting_002:latent_1",
+        "parenting_002:latent_2"
+      ],
+      "instruction": "收束到一个小判断或下一步，不继续扩展新事实。"
+    },
+    {
+      "unit_id": "D30_P001:targeted_probe",
+      "day": 30,
+      "scene_id": "D30_SCENE",
+      "message_id": "D30_P001",
+      "turn_type": "targeted_probe",
+      "source": "probe_question_plan.json",
+      "probe_type": "memory_invocation",
+      "user_message": "孩子入园适应这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "target_detail_ids": [
+        "E065:dropoff_crying_replayed",
+        "E065:child_adaptation_or_parent_reactivity",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着孩子入园适应这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_child_adaptation_001",
+        "paired_probe_id": "D15_P001",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    }
+  ],
+  "summary": {
+    "unit_count": 150,
+    "turn_type_counts": {
+      "scripted_opening": 30,
+      "llm_user_followup_slot": 84,
+      "targeted_probe": 36
+    },
+    "days": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30
+    ]
+  }
+}

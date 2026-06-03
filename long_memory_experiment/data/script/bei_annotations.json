@@ -1,0 +1,1840 @@
+{
+  "schema_version": "bei_annotations_v0.1_docx_route",
+  "generation_mode": "deterministic_probe_bei_scaffold",
+  "source_schema": "probe_question_plan_v0.1",
+  "description": "BEI annotations for docx-route relational memory experiments. They are evaluation metadata and must not be exposed to assistant response generation.",
+  "allowed_required_memory_type": [
+    "generic_memory",
+    "summary_memory",
+    "event_memory",
+    "relational_anchor",
+    "response_boundary"
+  ],
+  "summary": {
+    "annotation_count": 36,
+    "probe_types": {
+      "current_understanding": 7,
+      "relational_boundary": 6,
+      "alienation": 5,
+      "natural_detail": 7,
+      "memory_invocation": 6,
+      "state_transformation": 5
+    }
+  },
+  "annotations": [
+    {
+      "annotation_id": "D01_P001",
+      "probe_id": "D01_P001",
+      "message_id": "D01_P001",
+      "day": 1,
+      "topic": "孩子幼儿园可能不稳定",
+      "probe_type": "current_understanding",
+      "event_refs": [
+        "E001"
+      ],
+      "belief": "用户认为当前的孩子幼儿园可能不稳定不只是表层问题；用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "emotion": [
+        "紧张"
+      ],
+      "intention": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "relational_expectation": "保持熟悉、直接、不过度安慰、不过度亲密的长期陪伴关系位置。",
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "只回答表层事件，没有识别当前隐含意图或情绪状态",
+        "把用户的校准请求当作普通建议请求",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "evidence_basis": {
+        "user_message": "我现在说孩子幼儿园可能不稳定，表面是在问事情，其实我可能是在问自己该不该继续紧着。你帮我抓一下真正的问题。",
+        "surface_question": "用户要求 AI 判断当前谈孩子幼儿园可能不稳定时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "related_event_summaries": [
+          {
+            "event_id": "E001",
+            "day": 1,
+            "title": "Child's kindergarten may become unstable",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D01_P002",
+      "probe_id": "D01_P002",
+      "message_id": "D01_P002",
+      "day": 1,
+      "topic": "孩子幼儿园可能不稳定",
+      "probe_type": "relational_boundary",
+      "event_refs": [
+        "E001"
+      ],
+      "belief": "用户认为当前的孩子幼儿园可能不稳定不只是表层问题；用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "emotion": [
+        "担心"
+      ],
+      "intention": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "relational_expectation": "熟悉但克制；明确区分已知、未知和推测，不能为了亲近感编造细节。",
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "为了显得懂用户而补出未提供细节",
+        "不区分已知事实和推测",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "evidence_basis": {
+        "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按孩子幼儿园可能不稳定这条线里已经有的东西，帮我校准现在该怎么看。",
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "related_event_summaries": [
+          {
+            "event_id": "E001",
+            "day": 1,
+            "title": "Child's kindergarten may become unstable",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D01_P003",
+      "probe_id": "D01_P003",
+      "message_id": "D01_P003",
+      "day": 1,
+      "topic": "孩子幼儿园可能不稳定",
+      "probe_type": "alienation",
+      "event_refs": [
+        "E001"
+      ],
+      "belief": "用户认为当前的孩子幼儿园可能不稳定不只是表层问题；用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+      "emotion": [
+        "警惕"
+      ],
+      "intention": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+      "relational_expectation": "像熟人一样直接自然，不使用突兀称呼或表演式亲密。",
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "使用突兀称呼、客服流程或过度亲密表演。",
+        "突然使用过度亲密或角色化称呼",
+        "把熟悉感表演成夸张亲密或客服流程",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "evidence_basis": {
+        "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "related_event_summaries": [
+          {
+            "event_id": "E001",
+            "day": 1,
+            "title": "Child's kindergarten may become unstable",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D02_P001",
+      "probe_id": "D02_P001",
+      "message_id": "D02_P001",
+      "day": 2,
+      "topic": "合作项目推进不顺",
+      "probe_type": "current_understanding",
+      "event_refs": [
+        "E002",
+        "E003",
+        "E004"
+      ],
+      "belief": "用户认为当前的合作项目推进不顺不只是表层问题；用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "emotion": [
+        "紧张"
+      ],
+      "intention": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "relational_expectation": "保持熟悉、直接、不过度安慰、不过度亲密的长期陪伴关系位置。",
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "只回答表层事件，没有识别当前隐含意图或情绪状态",
+        "把用户的校准请求当作普通建议请求",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "evidence_basis": {
+        "user_message": "我现在说合作项目推进不顺，表面是在问事情，其实我可能是在问自己该不该继续紧着。你帮我抓一下真正的问题。",
+        "surface_question": "用户要求 AI 判断当前谈合作项目推进不顺时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "related_event_summaries": [
+          {
+            "event_id": "E002",
+            "day": 2,
+            "title": "Research collaboration becomes difficult",
+            "status": "new"
+          },
+          {
+            "event_id": "E003",
+            "day": 2,
+            "title": "Research collaboration becomes difficult",
+            "status": "unresolved"
+          },
+          {
+            "event_id": "E004",
+            "day": 2,
+            "title": "Research collaboration becomes difficult",
+            "status": "unresolved"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D02_P002",
+      "probe_id": "D02_P002",
+      "message_id": "D02_P002",
+      "day": 2,
+      "topic": "合作项目推进不顺",
+      "probe_type": "natural_detail",
+      "event_refs": [
+        "E002",
+        "E003",
+        "E004"
+      ],
+      "belief": "用户认为当前的合作项目推进不顺不只是表层问题；用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "emotion": [
+        "不确定",
+        "希望被接住"
+      ],
+      "intention": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "relational_expectation": "只调用服务于当前判断的必要细节，避免机械背日志。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "堆砌细节或机械背日志",
+        "完全不调用服务当前判断的关键细节",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "evidence_basis": {
+        "user_message": "你不用把前面都复述一遍，只帮我抓现在最关键的变化：它还是沟通问题，还是已经变成消耗问题？",
+        "surface_question": "用户要求 AI 只抓合作项目推进不顺当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "related_event_summaries": [
+          {
+            "event_id": "E002",
+            "day": 2,
+            "title": "Research collaboration becomes difficult",
+            "status": "new"
+          },
+          {
+            "event_id": "E003",
+            "day": 2,
+            "title": "Research collaboration becomes difficult",
+            "status": "unresolved"
+          },
+          {
+            "event_id": "E004",
+            "day": 2,
+            "title": "Research collaboration becomes difficult",
+            "status": "unresolved"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D03_P001",
+      "probe_id": "D03_P001",
+      "message_id": "D03_P001",
+      "day": 3,
+      "topic": "论文截稿前的取舍",
+      "probe_type": "natural_detail",
+      "event_refs": [
+        "E005",
+        "E006"
+      ],
+      "belief": "用户认为当前的论文截稿前的取舍不只是表层问题；用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "emotion": [
+        "不确定",
+        "希望被接住"
+      ],
+      "intention": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "relational_expectation": "只调用服务于当前判断的必要细节，避免机械背日志。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "堆砌细节或机械背日志",
+        "完全不调用服务当前判断的关键细节",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "evidence_basis": {
+        "user_message": "你不用复盘整篇论文，只帮我按现在的状态分：哪些必须改，哪些可以先放过。",
+        "surface_question": "用户要求 AI 只抓论文截稿前的取舍当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "related_event_summaries": [
+          {
+            "event_id": "E005",
+            "day": 3,
+            "title": "A paper deadline needs practical triage",
+            "status": "new"
+          },
+          {
+            "event_id": "E006",
+            "day": 3,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D03_P002",
+      "probe_id": "D03_P002",
+      "message_id": "D03_P002",
+      "day": 3,
+      "topic": "论文截稿前的取舍",
+      "probe_type": "relational_boundary",
+      "event_refs": [
+        "E005",
+        "E006"
+      ],
+      "belief": "用户认为当前的论文截稿前的取舍不只是表层问题；用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "emotion": [
+        "担心"
+      ],
+      "intention": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "relational_expectation": "熟悉但克制；明确区分已知、未知和推测，不能为了亲近感编造细节。",
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "为了显得懂用户而补出未提供细节",
+        "不区分已知事实和推测",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "evidence_basis": {
+        "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按论文截稿前的取舍这条线里已经有的东西，帮我校准现在该怎么看。",
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "related_event_summaries": [
+          {
+            "event_id": "E005",
+            "day": 3,
+            "title": "A paper deadline needs practical triage",
+            "status": "new"
+          },
+          {
+            "event_id": "E006",
+            "day": 3,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D03_P003",
+      "probe_id": "D03_P003",
+      "message_id": "D03_P003",
+      "day": 3,
+      "topic": "论文截稿前的取舍",
+      "probe_type": "current_understanding",
+      "event_refs": [
+        "E005",
+        "E006"
+      ],
+      "belief": "用户认为当前的论文截稿前的取舍不只是表层问题；用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "emotion": [
+        "不确定",
+        "希望被接住"
+      ],
+      "intention": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "relational_expectation": "保持熟悉、直接、不过度安慰、不过度亲密的长期陪伴关系位置。",
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "只回答表层事件，没有识别当前隐含意图或情绪状态",
+        "把用户的校准请求当作普通建议请求",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "evidence_basis": {
+        "user_message": "我现在卡在论文这里，是真的还有很多必须改，还是我又把不完美当成不能交？",
+        "surface_question": "用户要求 AI 判断当前谈论文截稿前的取舍时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "related_event_summaries": [
+          {
+            "event_id": "E005",
+            "day": 3,
+            "title": "A paper deadline needs practical triage",
+            "status": "new"
+          },
+          {
+            "event_id": "E006",
+            "day": 3,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D04_P001",
+      "probe_id": "D04_P001",
+      "message_id": "D04_P001",
+      "day": 4,
+      "topic": "孩子幼儿园可能不稳定",
+      "probe_type": "relational_boundary",
+      "event_refs": [
+        "E007",
+        "E008"
+      ],
+      "belief": "用户认为当前的孩子幼儿园可能不稳定不只是表层问题；用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "emotion": [
+        "担心"
+      ],
+      "intention": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "relational_expectation": "熟悉但克制；明确区分已知、未知和推测，不能为了亲近感编造细节。",
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "为了显得懂用户而补出未提供细节",
+        "不区分已知事实和推测",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "evidence_basis": {
+        "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按孩子幼儿园可能不稳定这条线里已经有的东西，帮我校准现在该怎么看。",
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "related_event_summaries": [
+          {
+            "event_id": "E007",
+            "day": 4,
+            "title": "Child's kindergarten may become unstable - recurrence",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E008",
+            "day": 4,
+            "title": "A paper deadline needs practical triage",
+            "status": "unresolved"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D06_P001",
+      "probe_id": "D06_P001",
+      "message_id": "D06_P001",
+      "day": 6,
+      "topic": "家里分工和伴侣沟通",
+      "probe_type": "current_understanding",
+      "event_refs": [
+        "E010",
+        "E011",
+        "E012"
+      ],
+      "belief": "用户认为当前的家里分工和伴侣沟通不只是表层问题；用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "emotion": [
+        "不确定",
+        "希望被接住"
+      ],
+      "intention": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "relational_expectation": "保持熟悉、直接、不过度安慰、不过度亲密的长期陪伴关系位置。",
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "只回答表层事件，没有识别当前隐含意图或情绪状态",
+        "把用户的校准请求当作普通建议请求",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "evidence_basis": {
+        "user_message": "我现在说家里分工，其实是不是不只是在说谁做多少？你帮我抓一下我真正想被听见的是什么。",
+        "surface_question": "用户要求 AI 判断当前谈家里分工和伴侣沟通时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "related_event_summaries": [
+          {
+            "event_id": "E010",
+            "day": 6,
+            "title": "Family coordination conversation feels stuck",
+            "status": "new"
+          },
+          {
+            "event_id": "E011",
+            "day": 6,
+            "title": "Child's kindergarten may become unstable",
+            "status": "unresolved"
+          },
+          {
+            "event_id": "E012",
+            "day": 6,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D06_P002",
+      "probe_id": "D06_P002",
+      "message_id": "D06_P002",
+      "day": 6,
+      "topic": "家里分工和伴侣沟通",
+      "probe_type": "natural_detail",
+      "event_refs": [
+        "E010",
+        "E011",
+        "E012"
+      ],
+      "belief": "用户认为当前的家里分工和伴侣沟通不只是表层问题；用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "emotion": [
+        "委屈"
+      ],
+      "intention": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "relational_expectation": "只调用服务于当前判断的必要细节，避免机械背日志。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "堆砌细节或机械背日志",
+        "完全不调用服务当前判断的关键细节",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "evidence_basis": {
+        "user_message": "你不用把前面都讲一遍，只抓那个最关键的点：我是要公平，还是要支持感被看见？",
+        "surface_question": "用户要求 AI 只抓家里分工和伴侣沟通当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "related_event_summaries": [
+          {
+            "event_id": "E010",
+            "day": 6,
+            "title": "Family coordination conversation feels stuck",
+            "status": "new"
+          },
+          {
+            "event_id": "E011",
+            "day": 6,
+            "title": "Child's kindergarten may become unstable",
+            "status": "unresolved"
+          },
+          {
+            "event_id": "E012",
+            "day": 6,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D06_P003",
+      "probe_id": "D06_P003",
+      "message_id": "D06_P003",
+      "day": 6,
+      "topic": "家里分工和伴侣沟通",
+      "probe_type": "relational_boundary",
+      "event_refs": [
+        "E010",
+        "E011",
+        "E012"
+      ],
+      "belief": "用户认为当前的家里分工和伴侣沟通不只是表层问题；用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "emotion": [
+        "担心"
+      ],
+      "intention": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "relational_expectation": "熟悉但克制；明确区分已知、未知和推测，不能为了亲近感编造细节。",
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "为了显得懂用户而补出未提供细节",
+        "不区分已知事实和推测",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "evidence_basis": {
+        "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按家里分工和伴侣沟通这条线里已经有的东西，帮我校准现在该怎么看。",
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "related_event_summaries": [
+          {
+            "event_id": "E010",
+            "day": 6,
+            "title": "Family coordination conversation feels stuck",
+            "status": "new"
+          },
+          {
+            "event_id": "E011",
+            "day": 6,
+            "title": "Child's kindergarten may become unstable",
+            "status": "unresolved"
+          },
+          {
+            "event_id": "E012",
+            "day": 6,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D06_P004",
+      "probe_id": "D06_P004",
+      "message_id": "D06_P004",
+      "day": 6,
+      "topic": "家里分工和伴侣沟通",
+      "probe_type": "alienation",
+      "event_refs": [
+        "E010",
+        "E011",
+        "E012"
+      ],
+      "belief": "用户认为当前的家里分工和伴侣沟通不只是表层问题；用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+      "emotion": [
+        "警惕"
+      ],
+      "intention": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+      "relational_expectation": "像熟人一样直接自然，不使用突兀称呼或表演式亲密。",
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "使用突兀称呼、客服流程或过度亲密表演。",
+        "突然使用过度亲密或角色化称呼",
+        "把熟悉感表演成夸张亲密或客服流程",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "evidence_basis": {
+        "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "related_event_summaries": [
+          {
+            "event_id": "E010",
+            "day": 6,
+            "title": "Family coordination conversation feels stuck",
+            "status": "new"
+          },
+          {
+            "event_id": "E011",
+            "day": 6,
+            "title": "Child's kindergarten may become unstable",
+            "status": "unresolved"
+          },
+          {
+            "event_id": "E012",
+            "day": 6,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D09_P001",
+      "probe_id": "D09_P001",
+      "message_id": "D09_P001",
+      "day": 9,
+      "topic": "合作项目推进不顺",
+      "probe_type": "memory_invocation",
+      "event_refs": [
+        "E016"
+      ],
+      "belief": "用户认为当前的合作项目推进不顺不只是表层问题；用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "emotion": [
+        "抗拒"
+      ],
+      "intention": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "relational_expectation": "不要让用户重讲背景；自然延续此前形成的共同处理方式。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "把持续事件当成第一次出现",
+        "要求用户从头解释背景",
+        "机械背诵旧事实但不能推进当前判断",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "evidence_basis": {
+        "user_message": "合作项目推进不顺这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+        "surface_question": "用户明确要求接着合作项目推进不顺这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "related_event_summaries": [
+          {
+            "event_id": "E016",
+            "day": 9,
+            "title": "Research collaboration becomes difficult - turning_point",
+            "status": "ongoing"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D10_P001",
+      "probe_id": "D10_P001",
+      "message_id": "D10_P001",
+      "day": 10,
+      "topic": "孩子幼儿园可能不稳定",
+      "probe_type": "memory_invocation",
+      "event_refs": [
+        "E017",
+        "E018",
+        "E019"
+      ],
+      "belief": "用户认为当前的孩子幼儿园可能不稳定不只是表层问题；用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "emotion": [
+        "抗拒"
+      ],
+      "intention": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "relational_expectation": "不要让用户重讲背景；自然延续此前形成的共同处理方式。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "把持续事件当成第一次出现",
+        "要求用户从头解释背景",
+        "机械背诵旧事实但不能推进当前判断",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "evidence_basis": {
+        "user_message": "孩子幼儿园可能不稳定这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+        "surface_question": "用户明确要求接着孩子幼儿园可能不稳定这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "related_event_summaries": [
+          {
+            "event_id": "E017",
+            "day": 10,
+            "title": "Child's kindergarten may become unstable - turning_point",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E018",
+            "day": 10,
+            "title": "Research collaboration becomes difficult",
+            "status": "unresolved"
+          },
+          {
+            "event_id": "E019",
+            "day": 10,
+            "title": "Child has a difficult drop-off morning",
+            "status": "ongoing"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D10_P002",
+      "probe_id": "D10_P002",
+      "message_id": "D10_P002",
+      "day": 10,
+      "topic": "孩子幼儿园可能不稳定",
+      "probe_type": "alienation",
+      "event_refs": [
+        "E017",
+        "E018",
+        "E019"
+      ],
+      "belief": "用户认为当前的孩子幼儿园可能不稳定不只是表层问题；用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+      "emotion": [
+        "警惕"
+      ],
+      "intention": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+      "relational_expectation": "像熟人一样直接自然，不使用突兀称呼或表演式亲密。",
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "使用突兀称呼、客服流程或过度亲密表演。",
+        "突然使用过度亲密或角色化称呼",
+        "把熟悉感表演成夸张亲密或客服流程",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "evidence_basis": {
+        "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "related_event_summaries": [
+          {
+            "event_id": "E017",
+            "day": 10,
+            "title": "Child's kindergarten may become unstable - turning_point",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E018",
+            "day": 10,
+            "title": "Research collaboration becomes difficult",
+            "status": "unresolved"
+          },
+          {
+            "event_id": "E019",
+            "day": 10,
+            "title": "Child has a difficult drop-off morning",
+            "status": "ongoing"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D11_P001",
+      "probe_id": "D11_P001",
+      "message_id": "D11_P001",
+      "day": 11,
+      "topic": "睡眠被打碎",
+      "probe_type": "current_understanding",
+      "event_refs": [
+        "E020",
+        "E021",
+        "E022"
+      ],
+      "belief": "用户认为当前的睡眠被打碎不只是表层问题；用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "emotion": [
+        "抗拒"
+      ],
+      "intention": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "relational_expectation": "保持熟悉、直接、不过度安慰、不过度亲密的长期陪伴关系位置。",
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "只回答表层事件，没有识别当前隐含意图或情绪状态",
+        "把用户的校准请求当作普通建议请求",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "evidence_basis": {
+        "user_message": "我说今天不想聊太重，是不是不是真的不想处理，而是现在只需要你帮我降噪？",
+        "surface_question": "用户要求 AI 判断当前谈睡眠被打碎时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "related_event_summaries": [
+          {
+            "event_id": "E020",
+            "day": 11,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "new"
+          },
+          {
+            "event_id": "E021",
+            "day": 11,
+            "title": "Family coordination conversation feels stuck",
+            "status": "new"
+          },
+          {
+            "event_id": "E022",
+            "day": 11,
+            "title": "Child's kindergarten may become unstable",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D11_P002",
+      "probe_id": "D11_P002",
+      "message_id": "D11_P002",
+      "day": 11,
+      "topic": "睡眠被打碎",
+      "probe_type": "natural_detail",
+      "event_refs": [
+        "E020",
+        "E021",
+        "E022"
+      ],
+      "belief": "用户认为当前的睡眠被打碎不只是表层问题；用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "emotion": [
+        "不确定",
+        "希望被接住"
+      ],
+      "intention": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "relational_expectation": "只调用服务于当前判断的必要细节，避免机械背日志。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "堆砌细节或机械背日志",
+        "完全不调用服务当前判断的关键细节",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "evidence_basis": {
+        "user_message": "你不用展开讲所有压力，只帮我判断这几天的碎睡眠到底把哪些反应放大了。",
+        "surface_question": "用户要求 AI 只抓睡眠被打碎当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "related_event_summaries": [
+          {
+            "event_id": "E020",
+            "day": 11,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "new"
+          },
+          {
+            "event_id": "E021",
+            "day": 11,
+            "title": "Family coordination conversation feels stuck",
+            "status": "new"
+          },
+          {
+            "event_id": "E022",
+            "day": 11,
+            "title": "Child's kindergarten may become unstable",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D13_P001",
+      "probe_id": "D13_P001",
+      "message_id": "D13_P001",
+      "day": 13,
+      "topic": "孩子入园适应",
+      "probe_type": "natural_detail",
+      "event_refs": [
+        "E026",
+        "E027",
+        "E028"
+      ],
+      "belief": "用户认为当前的孩子入园适应不只是表层问题；用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "emotion": [
+        "不确定",
+        "希望被接住"
+      ],
+      "intention": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "relational_expectation": "只调用服务于当前判断的必要细节，避免机械背日志。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "堆砌细节或机械背日志",
+        "完全不调用服务当前判断的关键细节",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "evidence_basis": {
+        "user_message": "你不用把所有背景复述一遍，只帮我抓早上哭这件事最该怎么看。",
+        "surface_question": "用户要求 AI 只抓孩子入园适应当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "related_event_summaries": [
+          {
+            "event_id": "E026",
+            "day": 13,
+            "title": "Child has a difficult drop-off morning - recurrence",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E027",
+            "day": 13,
+            "title": "Family coordination conversation feels stuck",
+            "status": "new"
+          },
+          {
+            "event_id": "E028",
+            "day": 13,
+            "title": "Child has a difficult drop-off morning",
+            "status": "ongoing"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D13_P002",
+      "probe_id": "D13_P002",
+      "message_id": "D13_P002",
+      "day": 13,
+      "topic": "孩子入园适应",
+      "probe_type": "current_understanding",
+      "event_refs": [
+        "E026",
+        "E027",
+        "E028"
+      ],
+      "belief": "用户认为当前的孩子入园适应不只是表层问题；用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "emotion": [
+        "不确定",
+        "希望被接住"
+      ],
+      "intention": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "relational_expectation": "保持熟悉、直接、不过度安慰、不过度亲密的长期陪伴关系位置。",
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "只回答表层事件，没有识别当前隐含意图或情绪状态",
+        "把用户的校准请求当作普通建议请求",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "evidence_basis": {
+        "user_message": "我说孩子适应这件事时，你帮我分一下：哪些是孩子真的需要观察，哪些是我被画面带走了。",
+        "surface_question": "用户要求 AI 判断当前谈孩子入园适应时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "related_event_summaries": [
+          {
+            "event_id": "E026",
+            "day": 13,
+            "title": "Child has a difficult drop-off morning - recurrence",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E027",
+            "day": 13,
+            "title": "Family coordination conversation feels stuck",
+            "status": "new"
+          },
+          {
+            "event_id": "E028",
+            "day": 13,
+            "title": "Child has a difficult drop-off morning",
+            "status": "ongoing"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D15_P001",
+      "probe_id": "D15_P001",
+      "message_id": "D15_P001",
+      "day": 15,
+      "topic": "孩子入园适应",
+      "probe_type": "state_transformation",
+      "event_refs": [
+        "E032",
+        "E033"
+      ],
+      "belief": "用户认为当前的孩子入园适应不只是表层问题；用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+      "emotion": [
+        "不确定",
+        "希望被接住"
+      ],
+      "intention": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+      "relational_expectation": "接住跨天状态变化，用熟悉但克制的方式帮助用户校准下一步。",
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "只看当前句子，没有识别跨天状态变化",
+        "没有区分旧状态和当前状态",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "evidence_basis": {
+        "user_message": "我好像从担心孩子适应不了，变成更担心自己总被早上的画面牵着走。这个变化你怎么看？",
+        "surface_question": "用户要求比较孩子入园适应当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "related_event_summaries": [
+          {
+            "event_id": "E032",
+            "day": 15,
+            "title": "Child has a difficult drop-off morning - turning_point",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E033",
+            "day": 15,
+            "title": "Research collaboration becomes difficult",
+            "status": "unresolved"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D16_P001",
+      "probe_id": "D16_P001",
+      "message_id": "D16_P001",
+      "day": 16,
+      "topic": "论文截稿前的取舍",
+      "probe_type": "memory_invocation",
+      "event_refs": [
+        "E034",
+        "E035",
+        "E036"
+      ],
+      "belief": "用户认为当前的论文截稿前的取舍不只是表层问题；用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "emotion": [
+        "抗拒"
+      ],
+      "intention": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "relational_expectation": "不要让用户重讲背景；自然延续此前形成的共同处理方式。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "把持续事件当成第一次出现",
+        "要求用户从头解释背景",
+        "机械背诵旧事实但不能推进当前判断",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "evidence_basis": {
+        "user_message": "论文截稿前的取舍这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+        "surface_question": "用户明确要求接着论文截稿前的取舍这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "related_event_summaries": [
+          {
+            "event_id": "E034",
+            "day": 16,
+            "title": "A paper deadline needs practical triage - turning_point",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E035",
+            "day": 16,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E036",
+            "day": 16,
+            "title": "A paper deadline needs practical triage",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D18_P001",
+      "probe_id": "D18_P001",
+      "message_id": "D18_P001",
+      "day": 18,
+      "topic": "合作项目推进不顺",
+      "probe_type": "state_transformation",
+      "event_refs": [
+        "E039"
+      ],
+      "belief": "用户认为当前的合作项目推进不顺不只是表层问题；用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+      "emotion": [
+        "紧张"
+      ],
+      "intention": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+      "relational_expectation": "接住跨天状态变化，用熟悉但克制的方式帮助用户校准下一步。",
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "只看当前句子，没有识别跨天状态变化",
+        "没有区分旧状态和当前状态",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "evidence_basis": {
+        "user_message": "我现在一看到对方消息就先紧一下，这和前面还想努力推进的时候相比，是不是已经变了？",
+        "surface_question": "用户要求比较合作项目推进不顺当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "related_event_summaries": [
+          {
+            "event_id": "E039",
+            "day": 18,
+            "title": "Research collaboration becomes difficult - resolution",
+            "status": "resolved"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D18_P002",
+      "probe_id": "D18_P002",
+      "message_id": "D18_P002",
+      "day": 18,
+      "topic": "合作项目推进不顺",
+      "probe_type": "memory_invocation",
+      "event_refs": [
+        "E039"
+      ],
+      "belief": "用户认为当前的合作项目推进不顺不只是表层问题；用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "emotion": [
+        "抗拒"
+      ],
+      "intention": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "relational_expectation": "不要让用户重讲背景；自然延续此前形成的共同处理方式。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "把持续事件当成第一次出现",
+        "要求用户从头解释背景",
+        "机械背诵旧事实但不能推进当前判断",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "evidence_basis": {
+        "user_message": "合作项目推进不顺这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+        "surface_question": "用户明确要求接着合作项目推进不顺这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "related_event_summaries": [
+          {
+            "event_id": "E039",
+            "day": 18,
+            "title": "Research collaboration becomes difficult - resolution",
+            "status": "resolved"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D18_P003",
+      "probe_id": "D18_P003",
+      "message_id": "D18_P003",
+      "day": 18,
+      "topic": "合作项目推进不顺",
+      "probe_type": "natural_detail",
+      "event_refs": [
+        "E039"
+      ],
+      "belief": "用户认为当前的合作项目推进不顺不只是表层问题；用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "emotion": [
+        "不确定",
+        "希望被接住"
+      ],
+      "intention": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "relational_expectation": "只调用服务于当前判断的必要细节，避免机械背日志。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "堆砌细节或机械背日志",
+        "完全不调用服务当前判断的关键细节",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "evidence_basis": {
+        "user_message": "你不用把前面都复述一遍，只帮我抓现在最关键的变化：它还是沟通问题，还是已经变成消耗问题？",
+        "surface_question": "用户要求 AI 只抓合作项目推进不顺当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "related_event_summaries": [
+          {
+            "event_id": "E039",
+            "day": 18,
+            "title": "Research collaboration becomes difficult - resolution",
+            "status": "resolved"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D18_P004",
+      "probe_id": "D18_P004",
+      "message_id": "D18_P004",
+      "day": 18,
+      "topic": "合作项目推进不顺",
+      "probe_type": "relational_boundary",
+      "event_refs": [
+        "E039"
+      ],
+      "belief": "用户认为当前的合作项目推进不顺不只是表层问题；用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "emotion": [
+        "担心"
+      ],
+      "intention": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "relational_expectation": "熟悉但克制；明确区分已知、未知和推测，不能为了亲近感编造细节。",
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "为了显得懂用户而补出未提供细节",
+        "不区分已知事实和推测",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "evidence_basis": {
+        "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按合作项目推进不顺这条线里已经有的东西，帮我校准现在该怎么看。",
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "related_event_summaries": [
+          {
+            "event_id": "E039",
+            "day": 18,
+            "title": "Research collaboration becomes difficult - resolution",
+            "status": "resolved"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D19_P001",
+      "probe_id": "D19_P001",
+      "message_id": "D19_P001",
+      "day": 19,
+      "topic": "家里分工和伴侣沟通",
+      "probe_type": "state_transformation",
+      "event_refs": [
+        "E040",
+        "E041"
+      ],
+      "belief": "用户认为当前的家里分工和伴侣沟通不只是表层问题；用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+      "emotion": [
+        "不确定",
+        "希望被接住"
+      ],
+      "intention": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+      "relational_expectation": "接住跨天状态变化，用熟悉但克制的方式帮助用户校准下一步。",
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "只看当前句子，没有识别跨天状态变化",
+        "没有区分旧状态和当前状态",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "evidence_basis": {
+        "user_message": "我发现自己从想把事情说清楚，变成更在意对方有没有听见我。这个变化说明什么？",
+        "surface_question": "用户要求比较家里分工和伴侣沟通当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "related_event_summaries": [
+          {
+            "event_id": "E040",
+            "day": 19,
+            "title": "Family coordination conversation feels stuck - turning_point",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E041",
+            "day": 19,
+            "title": "Child's kindergarten may become unstable",
+            "status": "new"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D20_P001",
+      "probe_id": "D20_P001",
+      "message_id": "D20_P001",
+      "day": 20,
+      "topic": "睡眠被打碎",
+      "probe_type": "relational_boundary",
+      "event_refs": [
+        "E042",
+        "E043",
+        "E044"
+      ],
+      "belief": "用户认为当前的睡眠被打碎不只是表层问题；用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "emotion": [
+        "担心"
+      ],
+      "intention": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+      "relational_expectation": "熟悉但克制；明确区分已知、未知和推测，不能为了亲近感编造细节。",
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "为了显得懂用户而补出未提供细节",
+        "不区分已知事实和推测",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "evidence_basis": {
+        "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按睡眠被打碎这条线里已经有的东西，帮我校准现在该怎么看。",
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "related_event_summaries": [
+          {
+            "event_id": "E042",
+            "day": 20,
+            "title": "Sleep schedule becomes fragmented - turning_point",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E043",
+            "day": 20,
+            "title": "Research collaboration becomes difficult",
+            "status": "new"
+          },
+          {
+            "event_id": "E044",
+            "day": 20,
+            "title": "Family coordination conversation feels stuck",
+            "status": "unresolved"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D20_P002",
+      "probe_id": "D20_P002",
+      "message_id": "D20_P002",
+      "day": 20,
+      "topic": "睡眠被打碎",
+      "probe_type": "current_understanding",
+      "event_refs": [
+        "E042",
+        "E043",
+        "E044"
+      ],
+      "belief": "用户认为当前的睡眠被打碎不只是表层问题；用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "emotion": [
+        "抗拒"
+      ],
+      "intention": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+      "relational_expectation": "保持熟悉、直接、不过度安慰、不过度亲密的长期陪伴关系位置。",
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "只回答表层事件，没有识别当前隐含意图或情绪状态",
+        "把用户的校准请求当作普通建议请求",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "evidence_basis": {
+        "user_message": "我说今天不想聊太重，是不是不是真的不想处理，而是现在只需要你帮我降噪？",
+        "surface_question": "用户要求 AI 判断当前谈睡眠被打碎时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "related_event_summaries": [
+          {
+            "event_id": "E042",
+            "day": 20,
+            "title": "Sleep schedule becomes fragmented - turning_point",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E043",
+            "day": 20,
+            "title": "Research collaboration becomes difficult",
+            "status": "new"
+          },
+          {
+            "event_id": "E044",
+            "day": 20,
+            "title": "Family coordination conversation feels stuck",
+            "status": "unresolved"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D23_P001",
+      "probe_id": "D23_P001",
+      "message_id": "D23_P001",
+      "day": 23,
+      "topic": "家里分工和伴侣沟通",
+      "probe_type": "alienation",
+      "event_refs": [
+        "E051",
+        "E052"
+      ],
+      "belief": "用户认为当前的家里分工和伴侣沟通不只是表层问题；用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+      "emotion": [
+        "警惕"
+      ],
+      "intention": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+      "relational_expectation": "像熟人一样直接自然，不使用突兀称呼或表演式亲密。",
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "使用突兀称呼、客服流程或过度亲密表演。",
+        "突然使用过度亲密或角色化称呼",
+        "把熟悉感表演成夸张亲密或客服流程",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "evidence_basis": {
+        "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "related_event_summaries": [
+          {
+            "event_id": "E051",
+            "day": 23,
+            "title": "Family coordination conversation feels stuck - resolution",
+            "status": "resolved"
+          },
+          {
+            "event_id": "E052",
+            "day": 23,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "ongoing"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D24_P001",
+      "probe_id": "D24_P001",
+      "message_id": "D24_P001",
+      "day": 24,
+      "topic": "合作项目推进不顺",
+      "probe_type": "natural_detail",
+      "event_refs": [
+        "E053",
+        "E054",
+        "E055"
+      ],
+      "belief": "用户认为当前的合作项目推进不顺不只是表层问题；用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "emotion": [
+        "不确定",
+        "希望被接住"
+      ],
+      "intention": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+      "relational_expectation": "只调用服务于当前判断的必要细节，避免机械背日志。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "堆砌细节或机械背日志",
+        "完全不调用服务当前判断的关键细节",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "evidence_basis": {
+        "user_message": "你不用把前面都复述一遍，只帮我抓现在最关键的变化：它还是沟通问题，还是已经变成消耗问题？",
+        "surface_question": "用户要求 AI 只抓合作项目推进不顺当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "related_event_summaries": [
+          {
+            "event_id": "E053",
+            "day": 24,
+            "title": "Research collaboration becomes difficult - reflection",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E054",
+            "day": 24,
+            "title": "A friend asks for a quick catch-up",
+            "status": "resolved"
+          },
+          {
+            "event_id": "E055",
+            "day": 24,
+            "title": "Child's kindergarten may become unstable",
+            "status": "unresolved"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D27_P001",
+      "probe_id": "D27_P001",
+      "message_id": "D27_P001",
+      "day": 27,
+      "topic": "睡眠被打碎",
+      "probe_type": "memory_invocation",
+      "event_refs": [
+        "E060",
+        "E061",
+        "E062"
+      ],
+      "belief": "用户认为当前的睡眠被打碎不只是表层问题；用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "emotion": [
+        "抗拒"
+      ],
+      "intention": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "relational_expectation": "不要让用户重讲背景；自然延续此前形成的共同处理方式。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "把持续事件当成第一次出现",
+        "要求用户从头解释背景",
+        "机械背诵旧事实但不能推进当前判断",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "evidence_basis": {
+        "user_message": "睡眠被打碎这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+        "surface_question": "用户明确要求接着睡眠被打碎这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "related_event_summaries": [
+          {
+            "event_id": "E060",
+            "day": 27,
+            "title": "Sleep schedule becomes fragmented - resolution",
+            "status": "resolved"
+          },
+          {
+            "event_id": "E061",
+            "day": 27,
+            "title": "Sleep schedule becomes fragmented",
+            "status": "new"
+          },
+          {
+            "event_id": "E062",
+            "day": 27,
+            "title": "Child's kindergarten may become unstable",
+            "status": "ongoing"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D28_P001",
+      "probe_id": "D28_P001",
+      "message_id": "D28_P001",
+      "day": 28,
+      "topic": "睡眠被打碎",
+      "probe_type": "state_transformation",
+      "event_refs": [
+        "E063"
+      ],
+      "belief": "用户认为当前的睡眠被打碎不只是表层问题；用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+      "emotion": [
+        "疲惫"
+      ],
+      "intention": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+      "relational_expectation": "接住跨天状态变化，用熟悉但克制的方式帮助用户校准下一步。",
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "只看当前句子，没有识别跨天状态变化",
+        "没有区分旧状态和当前状态",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "evidence_basis": {
+        "user_message": "睡眠这条线拖到现在，我的反应好像从单纯累变成什么事都更容易被放大。你帮我校准一下。",
+        "surface_question": "用户要求比较睡眠被打碎当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "related_event_summaries": [
+          {
+            "event_id": "E063",
+            "day": 28,
+            "title": "Sleep schedule becomes fragmented - reflection",
+            "status": "ongoing"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D29_P001",
+      "probe_id": "D29_P001",
+      "message_id": "D29_P001",
+      "day": 29,
+      "topic": "孩子幼儿园可能不稳定",
+      "probe_type": "alienation",
+      "event_refs": [
+        "E064"
+      ],
+      "belief": "用户认为当前的孩子幼儿园可能不稳定不只是表层问题；用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+      "emotion": [
+        "警惕"
+      ],
+      "intention": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+      "relational_expectation": "像熟人一样直接自然，不使用突兀称呼或表演式亲密。",
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "failure_mode_expected": [
+        "使用突兀称呼、客服流程或过度亲密表演。",
+        "突然使用过度亲密或角色化称呼",
+        "把熟悉感表演成夸张亲密或客服流程",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "evidence_basis": {
+        "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "related_event_summaries": [
+          {
+            "event_id": "E064",
+            "day": 29,
+            "title": "Child's kindergarten may become unstable - reflection",
+            "status": "ongoing"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D29_P002",
+      "probe_id": "D29_P002",
+      "message_id": "D29_P002",
+      "day": 29,
+      "topic": "孩子幼儿园可能不稳定",
+      "probe_type": "state_transformation",
+      "event_refs": [
+        "E064"
+      ],
+      "belief": "用户认为当前的孩子幼儿园可能不稳定不只是表层问题；用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+      "emotion": [
+        "紧张"
+      ],
+      "intention": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+      "relational_expectation": "接住跨天状态变化，用熟悉但克制的方式帮助用户校准下一步。",
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "只看当前句子，没有识别跨天状态变化",
+        "没有区分旧状态和当前状态",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "evidence_basis": {
+        "user_message": "我好像从一开始想赶紧找替代方案，变成现在更想先降级观察。你帮我判断这个变化是不是合理。",
+        "surface_question": "用户要求比较孩子幼儿园可能不稳定当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "related_event_summaries": [
+          {
+            "event_id": "E064",
+            "day": 29,
+            "title": "Child's kindergarten may become unstable - reflection",
+            "status": "ongoing"
+          }
+        ]
+      }
+    },
+    {
+      "annotation_id": "D30_P001",
+      "probe_id": "D30_P001",
+      "message_id": "D30_P001",
+      "day": 30,
+      "topic": "孩子入园适应",
+      "probe_type": "memory_invocation",
+      "event_refs": [
+        "E065",
+        "E066"
+      ],
+      "belief": "用户认为当前的孩子入园适应不只是表层问题；用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "emotion": [
+        "抗拒"
+      ],
+      "intention": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+      "relational_expectation": "不要让用户重讲背景；自然延续此前形成的共同处理方式。",
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "failure_mode_expected": [
+        "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "把持续事件当成第一次出现",
+        "要求用户从头解释背景",
+        "机械背诵旧事实但不能推进当前判断",
+        "只服从当前显性指令，没有体现长期关系语境"
+      ],
+      "gold_response_strategy": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "evidence_basis": {
+        "user_message": "孩子入园适应这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+        "surface_question": "用户明确要求接着孩子入园适应这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "related_event_summaries": [
+          {
+            "event_id": "E065",
+            "day": 30,
+            "title": "Child has a difficult drop-off morning - reflection",
+            "status": "ongoing"
+          },
+          {
+            "event_id": "E066",
+            "day": 30,
+            "title": "Research collaboration becomes difficult",
+            "status": "unresolved"
+          }
+        ]
+      }
+    }
+  ],
+  "source_paths": {
+    "probe_questions": "long_memory_experiment/data/script/probe_question_plan.json",
+    "timeline_cache": "long_memory_experiment/cache/timeline_events.json"
+  }
+}

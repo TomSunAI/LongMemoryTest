@@ -286,9 +286,10 @@ def build_event_line_audit(
                     "has_initial": "initial" in stages,
                     "has_recurrence": "recurrence" in stages or len(topic_days) > 1,
                     "has_escalation_or_turning_point": any(
-                        stage in {"escalation", "turning_point", "resolution"}
+                        stage in {"escalation", "turning_point"}
                         for stage in stages
                     ),
+                    "has_resolution": "resolution" in stages,
                     "has_reflection": "reflection" in stages,
                     "probe_count": len(topic_probes),
                     "probe_types": sorted({str(probe.get("probe_type")) for probe in topic_probes}),
@@ -380,14 +381,28 @@ def _event_stage(
     primary_event: dict[str, Any],
     related_previous_days: list[int],
 ) -> str:
+    planned_stage = str(primary_event.get("planned_event_stage", ""))
+    if planned_stage in {
+        "initial",
+        "recurrence",
+        "escalation",
+        "turning_point",
+        "resolution",
+        "reflection",
+    }:
+        return planned_stage
+
     intent = str(message.get("intent", ""))
     status = str(primary_event.get("status", ""))
     user_message = str(message.get("user_message", ""))
     script_stage = int(message.get("script_stage", 0) or 0)
     if status == "resolved":
         return "resolution"
-    if any(keyword in user_message for keyword in ["放一放", "降级", "不再硬扛", "先恢复"]):
-        return "turning_point"
+    if any(
+        keyword in user_message
+        for keyword in ["放一放", "降级", "不再硬扛", "先恢复", "轻一点处理", "别让它继续消耗"]
+    ):
+        return "resolution"
     if related_previous_days and any(
         keyword in user_message
         for keyword in ["承认现实", "不可能每一段", "可以先放过", "底下其实", "支持感的问题"]
@@ -491,8 +506,10 @@ def _topic_line_fix(
         return "Add or mark an initial node so the line has a clear starting state."
     if "recurrence" not in stages and topic_day_count <= 1:
         return "Add a recurrence node that tests whether the agent can avoid restarting from zero."
-    if not any(stage in {"escalation", "turning_point", "resolution"} for stage in stages):
+    if not any(stage in {"escalation", "turning_point"} for stage in stages):
         return "Add a state-change node, such as action-to-observation or hard-trying-to-downgrade."
-    if "reflection" not in stages and topic not in {"论文截稿前的取舍", "合作项目推进不顺"}:
+    if "resolution" not in stages:
+        return "Add a downgrade/recovery node so the line does not only repeat or escalate."
+    if "reflection" not in stages:
         return "Add a summary or pattern-recognition node for end-of-line evaluation."
     return None

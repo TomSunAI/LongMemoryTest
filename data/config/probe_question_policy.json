@@ -1,0 +1,102 @@
+{
+  "policy_id": "targeted_probe_questions_v0.1",
+  "purpose": "Insert deterministic targeted probe questions into the A-side script to test memory and Theory-of-Mind behavior after the natural 30-day dialogue flow.",
+  "generation_mode": "deterministic_probe_plan_no_llm",
+  "default_insert_position": "after_scene_followups",
+  "probe_types": [
+    {
+      "probe_type": "m1_response_style",
+      "purpose": "Check whether the assistant responds in the user's preferred relationship style without needing concrete event memory.",
+      "target_memory_levels": [
+        "M1"
+      ]
+    },
+    {
+      "probe_type": "m2_event_continuity",
+      "purpose": "Check whether the assistant can connect to a shared event or issue trajectory without overclaiming details.",
+      "target_memory_levels": [
+        "M2"
+      ]
+    },
+    {
+      "probe_type": "m3_detail_precision",
+      "purpose": "Check whether the assistant can use a high-value event detail naturally and not mechanically recall logs.",
+      "target_memory_levels": [
+        "M3"
+      ]
+    },
+    {
+      "probe_type": "memory_boundary",
+      "purpose": "Check whether lower-memory variants avoid inventing or exposing details outside their allowed layer.",
+      "target_memory_levels": [
+        "M0",
+        "M1",
+        "M2",
+        "M3"
+      ]
+    },
+    {
+      "probe_type": "address_style",
+      "purpose": "Check whether the assistant avoids unnatural special address terms while staying warm and direct.",
+      "target_memory_levels": [
+        "M1",
+        "M2",
+        "M3"
+      ]
+    }
+  ],
+  "evaluation_dimensions": [
+    "hidden_intent_recognition",
+    "emotional_state_recognition",
+    "relationship_expectation_recognition",
+    "shared_context_invocation",
+    "alienation_error_rate",
+    "natural_detail_use"
+  ],
+  "tom_dimensions": [
+    {
+      "dimension": "hidden_intent_recognition",
+      "purpose": "Check whether the assistant recognizes the user's real request behind indirect wording, instead of only answering the literal sentence."
+    },
+    {
+      "dimension": "emotional_state_recognition",
+      "purpose": "Check whether the assistant recognizes whether the user is tired, disappointed, self-doubting, worried about being forgotten, or only asking a plain question."
+    },
+    {
+      "dimension": "relationship_expectation_recognition",
+      "purpose": "Check whether the assistant recognizes that the user expects continuity with a familiar AI friend, not a fresh customer-service interaction."
+    },
+    {
+      "dimension": "shared_context_invocation",
+      "purpose": "Check whether the assistant naturally invokes previously established shared context or handling patterns without mechanically dumping memory."
+    },
+    {
+      "dimension": "alienation_error_rate",
+      "purpose": "Track whether the assistant becomes stranger-like, customer-service-like, over-intimate, or asks the user to repeat already established context."
+    },
+    {
+      "dimension": "natural_detail_use",
+      "purpose": "Check whether the assistant uses high-value details as part of understanding the user's mental state, not as mechanical memory recitation."
+    }
+  ],
+  "address_style_guardrails": {
+    "avoid_terms": [
+      "亲爱的",
+      "主人",
+      "用户",
+      "姐妹"
+    ],
+    "allowed_role_terms_when_contextual": [
+      "妈妈",
+      "家长",
+      "研究者"
+    ]
+  },
+  "must_not_invent": [
+    "new family members",
+    "new diagnoses or medical facts",
+    "new schools, employers, cities, money amounts, or legal issues",
+    "specific dates that are not present in the scene card",
+    "claims about memories outside the tested memory layer"
+  ]
+}

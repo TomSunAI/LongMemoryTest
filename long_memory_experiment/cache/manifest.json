@@ -1,0 +1,72 @@
+{
+  "schema_version": "experiment_cache_manifest_v1",
+  "updated_at": "2026-06-03T02:32:54.329953Z",
+  "note": "stage D memory condition stores refreshed",
+  "files": {
+    "bei_annotations": {
+      "path": "long_memory_experiment/data/script/bei_annotations.json",
+      "sha256": "683adc4e9ef0e3062e2486ffeeb32d91b0c20c146ba8bc97c00adec0d2208c06",
+      "exists": true
+    },
+    "canonical_timeline": {
+      "path": "long_memory_experiment/data/script/timeline.json",
+      "sha256": "b80d5c68e243b2e5f399efcf650183973b40ac66bac7f96279d077c6766873ae",
+      "exists": true
+    },
+    "daily_scene_cards": {
+      "path": "long_memory_experiment/data/script/daily_scene_cards.json",
+      "sha256": "c12d8f48be52be21e0827073a16960fee5410537218683d6a5e0ffe9a55ddb27",
+      "exists": true
+    },
+    "daily_user_message": {
+      "path": "long_memory_experiment/data/script/daily_user_message.json",
+      "sha256": "a2b20b8225e4b5cb26a88db46124a84b1f4f6242ca85d262788e1ec98f672d41",
+      "exists": true
+    },
+    "event_line_audit": {
+      "path": "long_memory_experiment/data/script/event_line_audit.json",
+      "sha256": "fd81f33ebcd45e80621db8b7b3cc3ae24c1b6e9cc4df97dd19a2fb6d02b26d42",
+      "exists": true
+    },
+    "event_timeline_cache": {
+      "path": "long_memory_experiment/cache/timeline_events.json",
+      "sha256": "d00fbfcd54753c56d4c5eb4fe9ea8d438bcb7a74e99901d4009942b1816240e4",
+      "exists": true
+    },
+    "m0_generic_agent_config": {
+      "path": "long_memory_experiment/data/memory_conditions/m0_generic_agent_config.json",
+      "sha256": "bfc1968a47a944218c5a45c2220e490dfbe456bdb7290cb04a37852f4e73c067",
+      "exists": true
+    },
+    "m1_conclusion_memory": {
+      "path": "long_memory_experiment/data/memory_conditions/m1_conclusion_memory.json",
+      "sha256": "21fe1cd05b83472ab18955bb1847549886d1bee2dad783a2d2e25504dcc7dabe",
+      "exists": true
+    },
+    "m2_event_memory": {
+      "path": "long_memory_experiment/data/memory_conditions/m2_event_memory.json",
+      "sha256": "7917bd5355e284e9fafd5fe58c742c9d0ad80ddec5c0f79a8968bcc165c4f4db",
+      "exists": true
+    },
+    "m3_relational_anchor_memory": {
+      "path": "long_memory_experiment/data/memory_conditions/m3_relational_anchor_memory.json",
+      "sha256": "94c2ec706ed666accd6552c967e27001866a089cff9e997cb60cf6c079167aa5",
+      "exists": true
+    },
+    "memory_conditions_cache": {
+      "path": "long_memory_experiment/cache/memory_conditions_combined.json",
+      "sha256": "96d1a8abe0aab8755cfe61b2886a3d97a6ebfa04e11b23db6702a238c7c88874",
+      "exists": true
+    },
+    "mva_summary_memory_alias": {
+      "path": "long_memory_experiment/data/memory_conditions/mva_summary_memory.json",
+      "sha256": "21fe1cd05b83472ab18955bb1847549886d1bee2dad783a2d2e25504dcc7dabe",
+      "exists": true
+    },
+    "probe_question_plan": {
+      "path": "long_memory_experiment/data/script/probe_question_plan.json",
+      "sha256": "dca0a61d0aa60bab90dced3e3b2a76521d2e990782263049d61b20da91fc86bc",
+      "exists": true
+    }
+  }
+}

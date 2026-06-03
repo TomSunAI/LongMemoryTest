@@ -9,6 +9,8 @@ from openai import OpenAI
 
 DEFAULT_POIXE_BASE_URL = "https://api.poixe.com/v1"
 DEFAULT_POIXE_MODEL = "gpt-5.2"
+DEFAULT_DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+DEFAULT_DEEPSEEK_MODEL = "deepseek-v4-pro"
 
 
 class LLMConfigError(RuntimeError):
@@ -42,9 +44,14 @@ def get_llm_config(provider: str | None = None) -> LLMConfig:
     load_dotenv_local()
 
     selected_provider = (provider or os.getenv("LLM_PROVIDER") or "poixe").lower()
-    if selected_provider != "poixe":
-        raise LLMConfigError(f"Unsupported LLM_PROVIDER: {selected_provider}")
+    if selected_provider == "poixe":
+        return _get_poixe_config()
+    if selected_provider == "deepseek":
+        return _get_deepseek_config()
+    raise LLMConfigError(f"Unsupported LLM_PROVIDER: {selected_provider}")
 
+
+def _get_poixe_config() -> LLMConfig:
     api_key = os.getenv("POIXE_API_KEY")
     if not api_key:
         raise LLMConfigError(
@@ -56,6 +63,21 @@ def get_llm_config(provider: str | None = None) -> LLMConfig:
         api_key=api_key,
         base_url=os.getenv("POIXE_BASE_URL", DEFAULT_POIXE_BASE_URL),
         model=os.getenv("POIXE_MODEL", DEFAULT_POIXE_MODEL),
+    )
+
+
+def _get_deepseek_config() -> LLMConfig:
+    api_key = os.getenv("DEEPSEEK_API_KEY")
+    if not api_key:
+        raise LLMConfigError(
+            "DEEPSEEK_API_KEY is missing. Copy .env.example to .env.local and set it locally."
+        )
+
+    return LLMConfig(
+        provider="deepseek",
+        api_key=api_key,
+        base_url=os.getenv("DEEPSEEK_BASE_URL", DEFAULT_DEEPSEEK_BASE_URL),
+        model=os.getenv("DEEPSEEK_MODEL", DEFAULT_DEEPSEEK_MODEL),
     )
 
 

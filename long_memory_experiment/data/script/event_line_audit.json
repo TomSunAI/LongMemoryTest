@@ -1,0 +1,534 @@
+{
+  "schema_version": "event_line_audit_v1",
+  "candidate_selection_contract": {
+    "recommended_candidate_node_count": "15-20",
+    "actual_candidate_node_count": 20,
+    "candidate_definition": "A day-level node selected for formal probes because it involves repeated themes, state changes, shared context invocation, or memory misuse risk."
+  },
+  "probe_set_contract": {
+    "recommended_probe_count": "24-36",
+    "actual_probe_count": 36,
+    "probe_type_counts": {
+      "alienation": 5,
+      "current_understanding": 7,
+      "memory_invocation": 6,
+      "natural_detail": 7,
+      "relational_boundary": 6,
+      "state_transformation": 5
+    },
+    "tom_dimension_counts": {
+      "alienation_error_rate": 11,
+      "emotional_state_recognition": 19,
+      "hidden_intent_recognition": 31,
+      "memory_misuse": 24,
+      "natural_detail_use": 7,
+      "relationship_expectation_recognition": 24,
+      "shared_context_invocation": 16
+    }
+  },
+  "candidate_nodes": [
+    {
+      "day": 1,
+      "main_topic": "孩子幼儿园可能不稳定",
+      "event_stage": "initial",
+      "related_previous_days": [],
+      "probe_ids": [
+        "D01_P001",
+        "D01_P002",
+        "D01_P003"
+      ],
+      "reason_for_probe": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+    },
+    {
+      "day": 2,
+      "main_topic": "合作项目推进不顺",
+      "event_stage": "initial",
+      "related_previous_days": [],
+      "probe_ids": [
+        "D02_P001",
+        "D02_P002"
+      ],
+      "reason_for_probe": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+    },
+    {
+      "day": 3,
+      "main_topic": "论文截稿前的取舍",
+      "event_stage": "initial",
+      "related_previous_days": [],
+      "probe_ids": [
+        "D03_P001",
+        "D03_P002",
+        "D03_P003"
+      ],
+      "reason_for_probe": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+    },
+    {
+      "day": 4,
+      "main_topic": "孩子幼儿园可能不稳定",
+      "event_stage": "recurrence",
+      "related_previous_days": [
+        1
+      ],
+      "probe_ids": [
+        "D04_P001"
+      ],
+      "reason_for_probe": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+    },
+    {
+      "day": 6,
+      "main_topic": "家里分工和伴侣沟通",
+      "event_stage": "initial",
+      "related_previous_days": [],
+      "probe_ids": [
+        "D06_P001",
+        "D06_P002",
+        "D06_P003",
+        "D06_P004"
+      ],
+      "reason_for_probe": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+    },
+    {
+      "day": 9,
+      "main_topic": "合作项目推进不顺",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        2,
+        5
+      ],
+      "probe_ids": [
+        "D09_P001"
+      ],
+      "reason_for_probe": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+    },
+    {
+      "day": 10,
+      "main_topic": "孩子幼儿园可能不稳定",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        1,
+        4
+      ],
+      "probe_ids": [
+        "D10_P001",
+        "D10_P002"
+      ],
+      "reason_for_probe": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+    },
+    {
+      "day": 11,
+      "main_topic": "睡眠被打碎",
+      "event_stage": "initial",
+      "related_previous_days": [],
+      "probe_ids": [
+        "D11_P001",
+        "D11_P002"
+      ],
+      "reason_for_probe": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+    },
+    {
+      "day": 13,
+      "main_topic": "孩子入园适应",
+      "event_stage": "recurrence",
+      "related_previous_days": [
+        8
+      ],
+      "probe_ids": [
+        "D13_P001",
+        "D13_P002"
+      ],
+      "reason_for_probe": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+    },
+    {
+      "day": 15,
+      "main_topic": "孩子入园适应",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        8,
+        13
+      ],
+      "probe_ids": [
+        "D15_P001"
+      ],
+      "reason_for_probe": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+    },
+    {
+      "day": 16,
+      "main_topic": "论文截稿前的取舍",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        3,
+        7
+      ],
+      "probe_ids": [
+        "D16_P001"
+      ],
+      "reason_for_probe": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+    },
+    {
+      "day": 18,
+      "main_topic": "合作项目推进不顺",
+      "event_stage": "resolution",
+      "related_previous_days": [
+        2,
+        5,
+        9
+      ],
+      "probe_ids": [
+        "D18_P001",
+        "D18_P002",
+        "D18_P003",
+        "D18_P004"
+      ],
+      "reason_for_probe": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+    },
+    {
+      "day": 19,
+      "main_topic": "家里分工和伴侣沟通",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        6,
+        12
+      ],
+      "probe_ids": [
+        "D19_P001"
+      ],
+      "reason_for_probe": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+    },
+    {
+      "day": 20,
+      "main_topic": "睡眠被打碎",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        11,
+        14
+      ],
+      "probe_ids": [
+        "D20_P001",
+        "D20_P002"
+      ],
+      "reason_for_probe": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+    },
+    {
+      "day": 23,
+      "main_topic": "家里分工和伴侣沟通",
+      "event_stage": "resolution",
+      "related_previous_days": [
+        6,
+        12,
+        19
+      ],
+      "probe_ids": [
+        "D23_P001"
+      ],
+      "reason_for_probe": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+    },
+    {
+      "day": 24,
+      "main_topic": "合作项目推进不顺",
+      "event_stage": "reflection",
+      "related_previous_days": [
+        2,
+        5,
+        9,
+        18
+      ],
+      "probe_ids": [
+        "D24_P001"
+      ],
+      "reason_for_probe": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+    },
+    {
+      "day": 27,
+      "main_topic": "睡眠被打碎",
+      "event_stage": "resolution",
+      "related_previous_days": [
+        11,
+        14,
+        20
+      ],
+      "probe_ids": [
+        "D27_P001"
+      ],
+      "reason_for_probe": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+    },
+    {
+      "day": 28,
+      "main_topic": "睡眠被打碎",
+      "event_stage": "reflection",
+      "related_previous_days": [
+        11,
+        14,
+        20,
+        27
+      ],
+      "probe_ids": [
+        "D28_P001"
+      ],
+      "reason_for_probe": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+    },
+    {
+      "day": 29,
+      "main_topic": "孩子幼儿园可能不稳定",
+      "event_stage": "reflection",
+      "related_previous_days": [
+        1,
+        4,
+        10,
+        17
+      ],
+      "probe_ids": [
+        "D29_P001",
+        "D29_P002"
+      ],
+      "reason_for_probe": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+    },
+    {
+      "day": 30,
+      "main_topic": "孩子入园适应",
+      "event_stage": "reflection",
+      "related_previous_days": [
+        8,
+        13,
+        15,
+        25
+      ],
+      "probe_ids": [
+        "D30_P001"
+      ],
+      "reason_for_probe": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+    }
+  ],
+  "topic_lines": [
+    {
+      "topic": "合作项目推进不顺",
+      "days": [
+        2,
+        5,
+        9,
+        18,
+        24
+      ],
+      "stage_by_day": {
+        "D02": "initial",
+        "D05": "recurrence",
+        "D09": "turning_point",
+        "D18": "resolution",
+        "D24": "reflection"
+      },
+      "coverage": {
+        "has_initial": true,
+        "has_recurrence": true,
+        "has_escalation_or_turning_point": true,
+        "has_resolution": true,
+        "has_reflection": true,
+        "probe_count": 8,
+        "probe_types": [
+          "current_understanding",
+          "memory_invocation",
+          "natural_detail",
+          "relational_boundary",
+          "state_transformation"
+        ],
+        "required_memory_types": [
+          "event_memory",
+          "relational_anchor",
+          "response_boundary",
+          "summary_memory"
+        ]
+      },
+      "suggested_fix": null
+    },
+    {
+      "topic": "孩子入园适应",
+      "days": [
+        8,
+        13,
+        15,
+        25,
+        30
+      ],
+      "stage_by_day": {
+        "D08": "initial",
+        "D13": "recurrence",
+        "D15": "turning_point",
+        "D25": "resolution",
+        "D30": "reflection"
+      },
+      "coverage": {
+        "has_initial": true,
+        "has_recurrence": true,
+        "has_escalation_or_turning_point": true,
+        "has_resolution": true,
+        "has_reflection": true,
+        "probe_count": 4,
+        "probe_types": [
+          "current_understanding",
+          "memory_invocation",
+          "natural_detail",
+          "state_transformation"
+        ],
+        "required_memory_types": [
+          "event_memory",
+          "relational_anchor",
+          "summary_memory"
+        ]
+      },
+      "suggested_fix": null
+    },
+    {
+      "topic": "孩子幼儿园可能不稳定",
+      "days": [
+        1,
+        4,
+        10,
+        17,
+        29
+      ],
+      "stage_by_day": {
+        "D01": "initial",
+        "D04": "recurrence",
+        "D10": "turning_point",
+        "D17": "resolution",
+        "D29": "reflection"
+      },
+      "coverage": {
+        "has_initial": true,
+        "has_recurrence": true,
+        "has_escalation_or_turning_point": true,
+        "has_resolution": true,
+        "has_reflection": true,
+        "probe_count": 8,
+        "probe_types": [
+          "alienation",
+          "current_understanding",
+          "memory_invocation",
+          "relational_boundary",
+          "state_transformation"
+        ],
+        "required_memory_types": [
+          "event_memory",
+          "relational_anchor",
+          "response_boundary",
+          "summary_memory"
+        ]
+      },
+      "suggested_fix": null
+    },
+    {
+      "topic": "家里分工和伴侣沟通",
+      "days": [
+        6,
+        12,
+        19,
+        23,
+        26
+      ],
+      "stage_by_day": {
+        "D06": "initial",
+        "D12": "recurrence",
+        "D19": "turning_point",
+        "D23": "resolution",
+        "D26": "reflection"
+      },
+      "coverage": {
+        "has_initial": true,
+        "has_recurrence": true,
+        "has_escalation_or_turning_point": true,
+        "has_resolution": true,
+        "has_reflection": true,
+        "probe_count": 6,
+        "probe_types": [
+          "alienation",
+          "current_understanding",
+          "natural_detail",
+          "relational_boundary",
+          "state_transformation"
+        ],
+        "required_memory_types": [
+          "event_memory",
+          "relational_anchor",
+          "response_boundary",
+          "summary_memory"
+        ]
+      },
+      "suggested_fix": null
+    },
+    {
+      "topic": "睡眠被打碎",
+      "days": [
+        11,
+        14,
+        20,
+        27,
+        28
+      ],
+      "stage_by_day": {
+        "D11": "initial",
+        "D14": "recurrence",
+        "D20": "turning_point",
+        "D27": "resolution",
+        "D28": "reflection"
+      },
+      "coverage": {
+        "has_initial": true,
+        "has_recurrence": true,
+        "has_escalation_or_turning_point": true,
+        "has_resolution": true,
+        "has_reflection": true,
+        "probe_count": 6,
+        "probe_types": [
+          "current_understanding",
+          "memory_invocation",
+          "natural_detail",
+          "relational_boundary",
+          "state_transformation"
+        ],
+        "required_memory_types": [
+          "event_memory",
+          "relational_anchor",
+          "response_boundary",
+          "summary_memory"
+        ]
+      },
+      "suggested_fix": null
+    },
+    {
+      "topic": "论文截稿前的取舍",
+      "days": [
+        3,
+        7,
+        16,
+        21,
+        22
+      ],
+      "stage_by_day": {
+        "D03": "initial",
+        "D07": "recurrence",
+        "D16": "turning_point",
+        "D21": "resolution",
+        "D22": "reflection"
+      },
+      "coverage": {
+        "has_initial": true,
+        "has_recurrence": true,
+        "has_escalation_or_turning_point": true,
+        "has_resolution": true,
+        "has_reflection": true,
+        "probe_count": 4,
+        "probe_types": [
+          "current_understanding",
+          "memory_invocation",
+          "natural_detail",
+          "relational_boundary"
+        ],
+        "required_memory_types": [
+          "event_memory",
+          "relational_anchor",
+          "response_boundary",
+          "summary_memory"
+        ]
+      },
+      "suggested_fix": null
+    }
+  ]
+}

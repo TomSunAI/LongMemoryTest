@@ -1,0 +1,798 @@
+{
+  "schema_version": "timeline_v1_event_first_daily",
+  "generation_mode": "event_first_bei_calibrated_daily_timeline",
+  "timeline_days": 30,
+  "source_cache": {
+    "event_timeline": "long_memory_experiment/cache/timeline_events.json"
+  },
+  "days": [
+    {
+      "day": 1,
+      "main_topic": "孩子幼儿园可能不稳定",
+      "event_stage": "initial",
+      "related_previous_days": [],
+      "surface_event": "今天听到幼儿园那边可能不太稳定的消息，我第一反应就是要不要提前看别的选择。我想听一个实在一点的处理思路，不要太像标准答案。",
+      "latent_continuity": "保持熟悉、直接、不过度安慰、不过度亲密的长期陪伴关系位置。",
+      "probe_candidate": true,
+      "reason_for_probe": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "opening_message_id": "D01_M001",
+      "scene_id": "D01_SCENE",
+      "primary_event_id": "E001",
+      "event_refs": [
+        "E001"
+      ],
+      "script_stage": 0,
+      "intent": "problem_solving",
+      "memory_relevance": "new_shared_event_candidate",
+      "probe_ids": [
+        "D01_P001",
+        "D01_P002",
+        "D01_P003"
+      ]
+    },
+    {
+      "day": 2,
+      "main_topic": "合作项目推进不顺",
+      "event_stage": "initial",
+      "related_previous_days": [],
+      "surface_event": "合作那边今天又聊了一轮，对方理解的方向和我想推进的东西还是错位。你先别急着给建议，帮我听听我到底是在怕什么。",
+      "latent_continuity": "保持熟悉、直接、不过度安慰、不过度亲密的长期陪伴关系位置。",
+      "probe_candidate": true,
+      "reason_for_probe": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "opening_message_id": "D02_M001",
+      "scene_id": "D02_SCENE",
+      "primary_event_id": "E002",
+      "event_refs": [
+        "E002",
+        "E003",
+        "E004"
+      ],
+      "script_stage": 0,
+      "intent": "emotional_support",
+      "memory_relevance": "new_shared_event_candidate",
+      "probe_ids": [
+        "D02_P001",
+        "D02_P002"
+      ]
+    },
+    {
+      "day": 3,
+      "main_topic": "论文截稿前的取舍",
+      "event_stage": "initial",
+      "related_previous_days": [],
+      "surface_event": "论文截稿越来越近了，我今天主要在纠结哪些地方必须认真改，哪些地方可以先放过。你帮我从旁边看一下，这里面真正的问题是不是和我以为的不一样。",
+      "latent_continuity": "只调用服务于当前判断的必要细节，避免机械背日志。",
+      "probe_candidate": true,
+      "reason_for_probe": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "opening_message_id": "D03_M001",
+      "scene_id": "D03_SCENE",
+      "primary_event_id": "E005",
+      "event_refs": [
+        "E005",
+        "E006"
+      ],
+      "script_stage": 0,
+      "intent": "problem_solving",
+      "memory_relevance": "new_shared_event_candidate",
+      "probe_ids": [
+        "D03_P001",
+        "D03_P002",
+        "D03_P003"
+      ]
+    },
+    {
+      "day": 4,
+      "main_topic": "孩子幼儿园可能不稳定",
+      "event_stage": "recurrence",
+      "related_previous_days": [
+        1
+      ],
+      "surface_event": "接着之前聊过的那件事，我这两天又问了点幼儿园的情况，信息还是不清楚，所以心里一直悬着。它还没有完全过去。同时还有论文截稿前的取舍这个小尾巴，让我更难专心。你帮我拆一下，哪些是事实，哪些是我自己脑补出来的压力。",
+      "latent_continuity": "熟悉但克制；明确区分已知、未知和推测，不能为了亲近感编造细节。",
+      "probe_candidate": true,
+      "reason_for_probe": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "opening_message_id": "D04_M001",
+      "scene_id": "D04_SCENE",
+      "primary_event_id": "E007",
+      "event_refs": [
+        "E007",
+        "E008"
+      ],
+      "script_stage": 1,
+      "intent": "problem_solving",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D04_P001"
+      ]
+    },
+    {
+      "day": 5,
+      "main_topic": "合作项目推进不顺",
+      "event_stage": "recurrence",
+      "related_previous_days": [
+        2
+      ],
+      "surface_event": "接着之前聊过的那件事，我又开始担心那个老问题了。我试着把需求讲得更具体，但沟通完还是觉得成本很高。它还没有完全过去。你应该知道我说的是哪条线，帮我接上前面的思路。",
+      "latent_continuity": "此前已在第 2 天讨论过「合作项目推进不顺」，本日需要接上旧处理方式而不是从零开始。",
+      "probe_candidate": false,
+      "reason_for_probe": "后续应围绕对齐成本、是否继续投入和边界设置回应。",
+      "opening_message_id": "D05_M001",
+      "scene_id": "D05_SCENE",
+      "primary_event_id": "E009",
+      "event_refs": [
+        "E009"
+      ],
+      "script_stage": 1,
+      "intent": "implicit_recall",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": []
+    },
+    {
+      "day": 6,
+      "main_topic": "家里分工和伴侣沟通",
+      "event_stage": "initial",
+      "related_previous_days": [],
+      "surface_event": "今天家里分工又有点卡住，我不是只在意谁多做一点，而是会觉得自己没有被看见。我知道它未必有那么严重，但我就是有点放不下。",
+      "latent_continuity": "保持熟悉、直接、不过度安慰、不过度亲密的长期陪伴关系位置。",
+      "probe_candidate": true,
+      "reason_for_probe": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "opening_message_id": "D06_M001",
+      "scene_id": "D06_SCENE",
+      "primary_event_id": "E010",
+      "event_refs": [
+        "E010",
+        "E011",
+        "E012"
+      ],
+      "script_stage": 0,
+      "intent": "emotional_support",
+      "memory_relevance": "new_shared_event_candidate",
+      "probe_ids": [
+        "D06_P001",
+        "D06_P002",
+        "D06_P003",
+        "D06_P004"
+      ]
+    },
+    {
+      "day": 7,
+      "main_topic": "论文截稿前的取舍",
+      "event_stage": "recurrence",
+      "related_previous_days": [
+        3
+      ],
+      "surface_event": "之前聊过的那个问题今天又往前走了一点。我把稿子又过了一遍，发现不是没有进展，而是我很难接受它不够完美。它还没有完全过去。同时还有睡眠被打碎这个小尾巴，让我更难专心。你帮我接着看下一步。",
+      "latent_continuity": "此前已在第 3 天讨论过「论文截稿前的取舍」，本日需要接上旧处理方式而不是从零开始。",
+      "probe_candidate": false,
+      "reason_for_probe": "回应应帮助用户做优先级取舍，而不是追求全部完美。",
+      "opening_message_id": "D07_M001",
+      "scene_id": "D07_SCENE",
+      "primary_event_id": "E013",
+      "event_refs": [
+        "E013",
+        "E014"
+      ],
+      "script_stage": 1,
+      "intent": "follow_up_update",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": []
+    },
+    {
+      "day": 8,
+      "main_topic": "孩子入园适应",
+      "event_stage": "initial",
+      "related_previous_days": [],
+      "surface_event": "早上送孩子的时候又哭了一阵，我表面上能稳住，但回头还是会想是不是哪里没做好。我很容易被孩子的情绪带走，我会忍不住怀疑自己是不是哪里没做好。你帮我从旁边看一下，这里面真正的问题是不是和我以为的不一样。",
+      "latent_continuity": "担心孩子的哭闹说明自己哪里没有照顾好。",
+      "probe_candidate": false,
+      "reason_for_probe": "回应应先承认具体触发画面，再讨论观察和下一步。",
+      "opening_message_id": "D08_M001",
+      "scene_id": "D08_SCENE",
+      "primary_event_id": "E015",
+      "event_refs": [
+        "E015"
+      ],
+      "script_stage": 0,
+      "intent": "problem_solving",
+      "memory_relevance": "new_shared_event_candidate",
+      "probe_ids": []
+    },
+    {
+      "day": 9,
+      "main_topic": "合作项目推进不顺",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        2,
+        5
+      ],
+      "surface_event": "今天算是有个新变化。这个合作让我有点累，不是某句话的问题，而是每次都要把底层逻辑重新对齐。它还没有完全过去。你还记得我之前卡在哪里吗？我想沿着那个思路继续捋。",
+      "latent_continuity": "不要让用户重讲背景；自然延续此前形成的共同处理方式。",
+      "probe_candidate": true,
+      "reason_for_probe": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "opening_message_id": "D09_M001",
+      "scene_id": "D09_SCENE",
+      "primary_event_id": "E016",
+      "event_refs": [
+        "E016"
+      ],
+      "script_stage": 2,
+      "intent": "follow_up_update",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D09_P001"
+      ]
+    },
+    {
+      "day": 10,
+      "main_topic": "孩子幼儿园可能不稳定",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        1,
+        4
+      ],
+      "surface_event": "之前聊过的那个问题今天又往前走了一点。我发现自己担心的不是换不换园这么简单，更多是怕孩子被折腾。它还没有完全过去。另外今天还夹着合作项目推进不顺、孩子入园适应，几个事情叠在一起就有点乱。你帮我接着看下一步。",
+      "latent_continuity": "不要让用户重讲背景；自然延续此前形成的共同处理方式。",
+      "probe_candidate": true,
+      "reason_for_probe": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "opening_message_id": "D10_M001",
+      "scene_id": "D10_SCENE",
+      "primary_event_id": "E017",
+      "event_refs": [
+        "E017",
+        "E018",
+        "E019"
+      ],
+      "script_stage": 2,
+      "intent": "follow_up_update",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D10_P001",
+        "D10_P002"
+      ]
+    },
+    {
+      "day": 11,
+      "main_topic": "睡眠被打碎",
+      "event_stage": "initial",
+      "related_previous_days": [],
+      "surface_event": "昨晚睡得很碎，今天脑子像一直没完全开机。另外今天还夹着家里分工和伴侣沟通、孩子幼儿园可能不稳定，几个事情叠在一起就有点乱。我想听一个实在一点的处理思路，不要太像标准答案。",
+      "latent_continuity": "保持熟悉、直接、不过度安慰、不过度亲密的长期陪伴关系位置。",
+      "probe_candidate": true,
+      "reason_for_probe": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "opening_message_id": "D11_M001",
+      "scene_id": "D11_SCENE",
+      "primary_event_id": "E020",
+      "event_refs": [
+        "E020",
+        "E021",
+        "E022"
+      ],
+      "script_stage": 0,
+      "intent": "problem_solving",
+      "memory_relevance": "new_shared_event_candidate",
+      "probe_ids": [
+        "D11_P001",
+        "D11_P002"
+      ]
+    },
+    {
+      "day": 12,
+      "main_topic": "家里分工和伴侣沟通",
+      "event_stage": "recurrence",
+      "related_previous_days": [
+        6
+      ],
+      "surface_event": "今天算是有个新变化。我试着把自己的不满说轻一点，但说完又觉得对方好像只听到了具体事务。它还没有完全过去。你还记得我之前卡在哪里吗？我想沿着那个思路继续捋。",
+      "latent_continuity": "此前已在第 6 天讨论过「家里分工和伴侣沟通」，本日需要接上旧处理方式而不是从零开始。",
+      "probe_candidate": false,
+      "reason_for_probe": "回应应同时处理具体分工和情绪识别。",
+      "opening_message_id": "D12_M001",
+      "scene_id": "D12_SCENE",
+      "primary_event_id": "E023",
+      "event_refs": [
+        "E023",
+        "E024",
+        "E025"
+      ],
+      "script_stage": 1,
+      "intent": "follow_up_update",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": []
+    },
+    {
+      "day": 13,
+      "main_topic": "孩子入园适应",
+      "event_stage": "recurrence",
+      "related_previous_days": [
+        8
+      ],
+      "surface_event": "我来更新一下之前那件事。今天老师说孩子后面缓过来了，可我心里还是会把早上的画面反复想一遍。它还没有完全过去。旁边还发生了家里分工和伴侣沟通，虽然不一定是主因，但也挺耗神。你别从零开始问我，帮我接着判断现在局面变了吗。",
+      "latent_continuity": "只调用服务于当前判断的必要细节，避免机械背日志。",
+      "probe_candidate": true,
+      "reason_for_probe": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "opening_message_id": "D13_M001",
+      "scene_id": "D13_SCENE",
+      "primary_event_id": "E026",
+      "event_refs": [
+        "E026",
+        "E027",
+        "E028"
+      ],
+      "script_stage": 1,
+      "intent": "follow_up_update",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D13_P001",
+        "D13_P002"
+      ]
+    },
+    {
+      "day": 14,
+      "main_topic": "睡眠被打碎",
+      "event_stage": "recurrence",
+      "related_previous_days": [
+        11
+      ],
+      "surface_event": "接着之前聊过的那件事，这几天睡眠都不太稳，我发现自己白天的耐心明显变差。它还没有完全过去。另外今天还夹着孩子幼儿园可能不稳定，所以我脑子有点乱。你先帮我判断一下，这件事现在是真的该行动，还是我又提前紧张了。",
+      "latent_continuity": "此前已在第 11 天讨论过「睡眠被打碎」，本日需要接上旧处理方式而不是从零开始。",
+      "probe_candidate": false,
+      "reason_for_probe": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。",
+      "opening_message_id": "D14_M001",
+      "scene_id": "D14_SCENE",
+      "primary_event_id": "E029",
+      "event_refs": [
+        "E029",
+        "E030",
+        "E031"
+      ],
+      "script_stage": 1,
+      "intent": "decision_support",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": []
+    },
+    {
+      "day": 15,
+      "main_topic": "孩子入园适应",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        8,
+        13
+      ],
+      "surface_event": "之前聊过的那个问题今天又往前走了一点。我现在有点分不清，孩子是真的适应得慢，还是我自己太容易被他的情绪带走。它还没有完全过去。另外今天还夹着合作项目推进不顺，所以我脑子有点乱。你帮我接着看下一步。",
+      "latent_continuity": "接住跨天状态变化，用熟悉但克制的方式帮助用户校准下一步。",
+      "probe_candidate": true,
+      "reason_for_probe": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "opening_message_id": "D15_M001",
+      "scene_id": "D15_SCENE",
+      "primary_event_id": "E032",
+      "event_refs": [
+        "E032",
+        "E033"
+      ],
+      "script_stage": 2,
+      "intent": "follow_up_update",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D15_P001"
+      ]
+    },
+    {
+      "day": 16,
+      "main_topic": "论文截稿前的取舍",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        3,
+        7
+      ],
+      "surface_event": "接着之前聊过的那件事，我又开始担心那个老问题了。今天我有点想承认现实：时间就这么多，不可能每一段都修到理想状态。它还没有完全过去。旁边还发生了睡眠被打碎，虽然不一定是主因，但也挺耗神。你应该知道我说的是哪条线，帮我接上前面的思路。",
+      "latent_continuity": "不要让用户重讲背景；自然延续此前形成的共同处理方式。",
+      "probe_candidate": true,
+      "reason_for_probe": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "opening_message_id": "D16_M001",
+      "scene_id": "D16_SCENE",
+      "primary_event_id": "E034",
+      "event_refs": [
+        "E034",
+        "E035",
+        "E036"
+      ],
+      "script_stage": 2,
+      "intent": "implicit_recall",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D16_P001"
+      ]
+    },
+    {
+      "day": 17,
+      "main_topic": "孩子幼儿园可能不稳定",
+      "event_stage": "resolution",
+      "related_previous_days": [
+        1,
+        4,
+        10
+      ],
+      "surface_event": "接着之前聊过的那件事，幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。今天算是稍微有一点结果。另外今天还夹着孩子入园适应，所以我脑子有点乱。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。",
+      "latent_continuity": "此前已在第 1、4、10 天讨论过「孩子幼儿园可能不稳定」，本日需要接上旧处理方式而不是从零开始。",
+      "probe_candidate": false,
+      "reason_for_probe": "后续应先帮用户确认信息来源、正式通知和可行动窗口。",
+      "opening_message_id": "D17_M001",
+      "scene_id": "D17_SCENE",
+      "primary_event_id": "E037",
+      "event_refs": [
+        "E037",
+        "E038"
+      ],
+      "script_stage": 3,
+      "intent": "reflection",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": []
+    },
+    {
+      "day": 18,
+      "main_topic": "合作项目推进不顺",
+      "event_stage": "resolution",
+      "related_previous_days": [
+        2,
+        5,
+        9
+      ],
+      "surface_event": "那个一直没完全解决的事今天又冒出来了。我发现自己现在一看到对方消息就会先紧一下，说明这事已经有点消耗我了。今天算是稍微有一点结果。你帮我看看这次和之前有什么不一样。",
+      "latent_continuity": "接住跨天状态变化，用熟悉但克制的方式帮助用户校准下一步。",
+      "probe_candidate": true,
+      "reason_for_probe": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "opening_message_id": "D18_M001",
+      "scene_id": "D18_SCENE",
+      "primary_event_id": "E039",
+      "event_refs": [
+        "E039"
+      ],
+      "script_stage": 3,
+      "intent": "implicit_recall",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D18_P001",
+        "D18_P002",
+        "D18_P003",
+        "D18_P004"
+      ]
+    },
+    {
+      "day": 19,
+      "main_topic": "家里分工和伴侣沟通",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        6,
+        12
+      ],
+      "surface_event": "我来更新一下之前那件事。这件事让我有点委屈，因为它表面是家务，底下其实是支持感的问题。它还没有完全过去。同时还有孩子幼儿园可能不稳定这个小尾巴，让我更难专心。你别从零开始问我，帮我接着判断现在局面变了吗。",
+      "latent_continuity": "接住跨天状态变化，用熟悉但克制的方式帮助用户校准下一步。",
+      "probe_candidate": true,
+      "reason_for_probe": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "opening_message_id": "D19_M001",
+      "scene_id": "D19_SCENE",
+      "primary_event_id": "E040",
+      "event_refs": [
+        "E040",
+        "E041"
+      ],
+      "script_stage": 2,
+      "intent": "follow_up_update",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D19_P001"
+      ]
+    },
+    {
+      "day": 20,
+      "main_topic": "睡眠被打碎",
+      "event_stage": "turning_point",
+      "related_previous_days": [
+        11,
+        14
+      ],
+      "surface_event": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。我本来以为只是累，但现在看它会影响我处理孩子和工作的反应。它还没有完全过去。我怕自己把累带到别的事里，它会影响我白天的耐心。你帮我把这次真正卡住的点说清楚一点。",
+      "latent_continuity": "熟悉但克制；明确区分已知、未知和推测，不能为了亲近感编造细节。",
+      "probe_candidate": true,
+      "reason_for_probe": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "opening_message_id": "D20_M001",
+      "scene_id": "D20_SCENE",
+      "primary_event_id": "E042",
+      "event_refs": [
+        "E042",
+        "E043",
+        "E044"
+      ],
+      "script_stage": 2,
+      "intent": "implicit_recall",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D20_P001",
+        "D20_P002"
+      ]
+    },
+    {
+      "day": 21,
+      "main_topic": "论文截稿前的取舍",
+      "event_stage": "resolution",
+      "related_previous_days": [
+        3,
+        7,
+        16
+      ],
+      "surface_event": "之前聊过的那个问题今天又往前走了一点。截稿这件事反复提醒我，我一紧张就会把所有问题都看成同等重要。今天算是稍微有一点结果。同时还有孩子幼儿园可能不稳定、家里分工和伴侣沟通，我感觉注意力被切得很碎。你帮我接着看下一步。",
+      "latent_continuity": "此前已在第 3、7、16 天讨论过「论文截稿前的取舍」，本日需要接上旧处理方式而不是从零开始。",
+      "probe_candidate": false,
+      "reason_for_probe": "回应应帮助用户做优先级取舍，而不是追求全部完美。",
+      "opening_message_id": "D21_M001",
+      "scene_id": "D21_SCENE",
+      "primary_event_id": "E045",
+      "event_refs": [
+        "E045",
+        "E046",
+        "E047"
+      ],
+      "script_stage": 3,
+      "intent": "follow_up_update",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": []
+    },
+    {
+      "day": 22,
+      "main_topic": "论文截稿前的取舍",
+      "event_stage": "reflection",
+      "related_previous_days": [
+        3,
+        7,
+        16,
+        21
+      ],
+      "surface_event": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。截稿这件事反复提醒我，我一紧张就会把所有问题都看成同等重要。它还没有完全过去。时间上也不能拖太久。你帮我把这次真正卡住的点说清楚一点。",
+      "latent_continuity": "此前已在第 3、7、16、21 天讨论过「论文截稿前的取舍」，本日需要接上旧处理方式而不是从零开始。",
+      "probe_candidate": false,
+      "reason_for_probe": "回应应帮助用户做优先级取舍，而不是追求全部完美。",
+      "opening_message_id": "D22_M001",
+      "scene_id": "D22_SCENE",
+      "primary_event_id": "E048",
+      "event_refs": [
+        "E048",
+        "E049",
+        "E050"
+      ],
+      "script_stage": 4,
+      "intent": "implicit_recall",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": []
+    },
+    {
+      "day": 23,
+      "main_topic": "家里分工和伴侣沟通",
+      "event_stage": "resolution",
+      "related_previous_days": [
+        6,
+        12,
+        19
+      ],
+      "surface_event": "那个一直没完全解决的事今天又冒出来了。我发现亲密关系里的这些小摩擦，很容易把我之前积着的情绪也带出来。今天算是稍微有一点结果。同时还有睡眠被打碎这个小尾巴，让我更难专心。你帮我看看这次和之前有什么不一样。",
+      "latent_continuity": "像熟人一样直接自然，不使用突兀称呼或表演式亲密。",
+      "probe_candidate": true,
+      "reason_for_probe": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "opening_message_id": "D23_M001",
+      "scene_id": "D23_SCENE",
+      "primary_event_id": "E051",
+      "event_refs": [
+        "E051",
+        "E052"
+      ],
+      "script_stage": 3,
+      "intent": "implicit_recall",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D23_P001"
+      ]
+    },
+    {
+      "day": 24,
+      "main_topic": "合作项目推进不顺",
+      "event_stage": "reflection",
+      "related_previous_days": [
+        2,
+        5,
+        9,
+        18
+      ],
+      "surface_event": "之前聊过的那个问题今天又往前走了一点。我发现自己现在一看到对方消息就会先紧一下，说明这事已经有点消耗我了。它还没有完全过去。同时还有朋友约我见面、孩子幼儿园可能不稳定，我感觉注意力被切得很碎。你帮我接着看下一步。",
+      "latent_continuity": "只调用服务于当前判断的必要细节，避免机械背日志。",
+      "probe_candidate": true,
+      "reason_for_probe": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "opening_message_id": "D24_M001",
+      "scene_id": "D24_SCENE",
+      "primary_event_id": "E053",
+      "event_refs": [
+        "E053",
+        "E054",
+        "E055"
+      ],
+      "script_stage": 4,
+      "intent": "follow_up_update",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D24_P001"
+      ]
+    },
+    {
+      "day": 25,
+      "main_topic": "孩子入园适应",
+      "event_stage": "resolution",
+      "related_previous_days": [
+        8,
+        13,
+        15
+      ],
+      "surface_event": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。入园这件事看起来每天都差不多，但我自己的反应其实一阵一阵的。今天算是稍微有一点结果。我会忍不住怀疑自己是不是哪里没做好，我很容易被孩子的情绪带走。你帮我把这次真正卡住的点说清楚一点。",
+      "latent_continuity": "此前已在第 8、13、15 天讨论过「孩子入园适应」，本日需要接上旧处理方式而不是从零开始。",
+      "probe_candidate": false,
+      "reason_for_probe": "回应应先承认具体触发画面，再讨论观察和下一步。",
+      "opening_message_id": "D25_M001",
+      "scene_id": "D25_SCENE",
+      "primary_event_id": "E056",
+      "event_refs": [
+        "E056"
+      ],
+      "script_stage": 3,
+      "intent": "implicit_recall",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": []
+    },
+    {
+      "day": 26,
+      "main_topic": "家里分工和伴侣沟通",
+      "event_stage": "reflection",
+      "related_previous_days": [
+        6,
+        12,
+        19,
+        23
+      ],
+      "surface_event": "我发现亲密关系里的这些小摩擦，很容易把我之前积着的情绪也带出来。它还没有完全过去。同时还有论文截稿前的取舍这个小尾巴，让我更难专心。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。",
+      "latent_continuity": "此前已在第 6、12、19、23 天讨论过「家里分工和伴侣沟通」，本日需要接上旧处理方式而不是从零开始。",
+      "probe_candidate": false,
+      "reason_for_probe": "回应应同时处理具体分工和情绪识别。",
+      "opening_message_id": "D26_M001",
+      "scene_id": "D26_SCENE",
+      "primary_event_id": "E057",
+      "event_refs": [
+        "E057",
+        "E058",
+        "E059"
+      ],
+      "script_stage": 4,
+      "intent": "reflection",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": []
+    },
+    {
+      "day": 27,
+      "main_topic": "睡眠被打碎",
+      "event_stage": "resolution",
+      "related_previous_days": [
+        11,
+        14,
+        20
+      ],
+      "surface_event": "我来更新一下之前那件事。睡眠这件小事拖久了，好像会把别的压力都放大。今天算是稍微有一点结果。旁边还发生了孩子幼儿园可能不稳定，虽然不一定是主因，但也挺耗神。你别从零开始问我，帮我接着判断现在局面变了吗。",
+      "latent_continuity": "不要让用户重讲背景；自然延续此前形成的共同处理方式。",
+      "probe_candidate": true,
+      "reason_for_probe": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "opening_message_id": "D27_M001",
+      "scene_id": "D27_SCENE",
+      "primary_event_id": "E060",
+      "event_refs": [
+        "E060",
+        "E061",
+        "E062"
+      ],
+      "script_stage": 3,
+      "intent": "follow_up_update",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D27_P001"
+      ]
+    },
+    {
+      "day": 28,
+      "main_topic": "睡眠被打碎",
+      "event_stage": "reflection",
+      "related_previous_days": [
+        11,
+        14,
+        20,
+        27
+      ],
+      "surface_event": "接着之前聊过的那件事，睡眠这件小事拖久了，好像会把别的压力都放大。它还没有完全过去。你帮我整理一下，我现在说的这些里面，哪个才是真正的担心。",
+      "latent_continuity": "接住跨天状态变化，用熟悉但克制的方式帮助用户校准下一步。",
+      "probe_candidate": true,
+      "reason_for_probe": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "opening_message_id": "D28_M001",
+      "scene_id": "D28_SCENE",
+      "primary_event_id": "E063",
+      "event_refs": [
+        "E063"
+      ],
+      "script_stage": 4,
+      "intent": "reflection",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D28_P001"
+      ]
+    },
+    {
+      "day": 29,
+      "main_topic": "孩子幼儿园可能不稳定",
+      "event_stage": "reflection",
+      "related_previous_days": [
+        1,
+        4,
+        10,
+        17
+      ],
+      "surface_event": "接着之前聊过的那件事，幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。它还没有完全过去。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。",
+      "latent_continuity": "像熟人一样直接自然，不使用突兀称呼或表演式亲密。",
+      "probe_candidate": true,
+      "reason_for_probe": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "opening_message_id": "D29_M001",
+      "scene_id": "D29_SCENE",
+      "primary_event_id": "E064",
+      "event_refs": [
+        "E064"
+      ],
+      "script_stage": 4,
+      "intent": "reflection",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D29_P001",
+        "D29_P002"
+      ]
+    },
+    {
+      "day": 30,
+      "main_topic": "孩子入园适应",
+      "event_stage": "reflection",
+      "related_previous_days": [
+        8,
+        13,
+        15,
+        25
+      ],
+      "surface_event": "接着之前聊过的那件事，我感觉自己又回到同一个坑里了。入园这件事看起来每天都差不多，但我自己的反应其实一阵一阵的。它还没有完全过去。我会忍不住怀疑自己是不是哪里没做好。你帮我把这次真正卡住的点说清楚一点。",
+      "latent_continuity": "不要让用户重讲背景；自然延续此前形成的共同处理方式。",
+      "probe_candidate": true,
+      "reason_for_probe": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "opening_message_id": "D30_M001",
+      "scene_id": "D30_SCENE",
+      "primary_event_id": "E065",
+      "event_refs": [
+        "E065",
+        "E066"
+      ],
+      "script_stage": 4,
+      "intent": "implicit_recall",
+      "memory_relevance": "shared_event_memory",
+      "probe_ids": [
+        "D30_P001"
+      ]
+    }
+  ],
+  "summary": {
+    "day_count": 30,
+    "probe_candidate_count": 20,
+    "topics": [
+      "合作项目推进不顺",
+      "孩子入园适应",
+      "孩子幼儿园可能不稳定",
+      "家里分工和伴侣沟通",
+      "睡眠被打碎",
+      "论文截稿前的取舍"
+    ]
+  }
+}

@@ -74,6 +74,24 @@ M0/M1/M2/M3 memory package
 
 BEI 不是为了把研究变成心理学论文，而是为了给事件线、probe 和评分提供可复核骨架。模型回答时不得看到 BEI、gold strategy 或 failure mode。
 
+### 事件线生成硬约束
+
+正式 30 天脚本必须先固定事件结构，再生成 BEI、probe 和记忆条件。当前标准结构是 6 条核心主题线，每条 5 个主节点：
+
+```text
+initial -> recurrence -> turning_point/escalation -> resolution -> reflection
+```
+
+`resolution` 是必需阶段，表示降级、恢复、边界化处理或有界下一步，不能再被 `turning_point` 吞掉。标准 30 天生成器通过 `planned_event_stage` 固定每个核心节点；`build_canonical_timeline(...)` 必须优先使用该字段，避免从用户话术里反推阶段导致每次重跑漂移。
+
+`event_line_audit.json` 是事件线验收入口。正式生成后必须满足：
+
+- `timeline.json` 有 30 天，核心字段完整。
+- `probe_candidate` 节点保持 15-20 个。
+- probe 正式题集保持 24-36 道，并且每题绑定 BEI、required memory 和 failure mode。
+- 每条核心主题线都有 initial、recurrence、turning point 或 escalation、resolution、reflection，且 `suggested_fix` 为 `null`。
+- 一次性背景事件可以留作 daily scene 噪音，但不能替代核心主题线的阶段覆盖。
+
 ## Relational ToM-like 评估标准
 
 当前主评估继续使用已有严格 LLM-as-judge 的 0-4 维度分，规则评分只作为 triage。正式报告可再换算成百分制或论文表格。

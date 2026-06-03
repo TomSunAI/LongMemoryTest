@@ -16,6 +16,11 @@ from long_memory_test.agents.daily_message_generator import (  # noqa: E402
     generate_daily_user_messages,
 )
 from long_memory_test.agents.event_stream_generator import write_json  # noqa: E402
+from long_memory_test.experiment_cache import (  # noqa: E402
+    CACHE_TIMELINE_EVENTS_PATH,
+    DAILY_USER_MESSAGE_PATH,
+    update_cache_manifest,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -25,13 +30,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--timeline",
         type=Path,
-        default=REPO_ROOT / "sample_output/timeline.json",
-        help="Path to timeline.json.",
+        default=CACHE_TIMELINE_EVENTS_PATH,
+        help="Path to cached event-level timeline.json.",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=REPO_ROOT / "sample_output/daily_user_message.json",
+        default=DAILY_USER_MESSAGE_PATH,
         help="Output path for daily_user_message.json.",
     )
     parser.add_argument(
@@ -49,6 +54,13 @@ def main() -> None:
         DailyMessageConfig(timeline_path=args.timeline, seed=args.seed)
     )
     write_json(args.output, result)
+    update_cache_manifest(
+        {
+            "event_timeline_cache": args.timeline,
+            "daily_user_message": args.output,
+        },
+        note="daily user messages refreshed",
+    )
     print(f"Wrote {len(result['messages'])} daily messages to {args.output}")
 
 

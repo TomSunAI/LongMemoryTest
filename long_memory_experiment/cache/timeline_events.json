@@ -1,0 +1,3050 @@
+{
+  "persona_id": "user_001",
+  "timeline_days": 30,
+  "seed": 42,
+  "events": [
+    {
+      "event_id": "E001",
+      "day": 1,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "mainline",
+      "title": "Child's kindergarten may become unstable",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans. This is the first point in a continuing event chain.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 5,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E001:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E001",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E001:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E001",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ],
+      "planned_event_stage": "initial"
+    },
+    {
+      "event_id": "E002",
+      "day": 2,
+      "date": null,
+      "domain": "career",
+      "event_type": "mainline",
+      "title": "Research collaboration becomes difficult",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "description": "The user discusses a collaboration where concepts and implementation levels are not aligned. This is the first point in a continuing event chain.",
+      "emotional_intensity": 4,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E002:collaboration_logic_misaligned",
+          "template_anchor_id": "collaboration_logic_misaligned",
+          "event_id": "E002",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "detail_id": "E002:collaboration_realigning_cost",
+          "template_anchor_id": "collaboration_realigning_cost",
+          "event_id": "E002",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ],
+      "planned_event_stage": "initial"
+    },
+    {
+      "event_id": "E003",
+      "day": 2,
+      "date": null,
+      "domain": "career",
+      "event_type": "side",
+      "title": "Research collaboration becomes difficult",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "description": "The user discusses a collaboration where concepts and implementation levels are not aligned.",
+      "emotional_intensity": 3,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "unresolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E003:collaboration_logic_misaligned",
+          "template_anchor_id": "collaboration_logic_misaligned",
+          "event_id": "E003",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "detail_id": "E003:collaboration_realigning_cost",
+          "template_anchor_id": "collaboration_realigning_cost",
+          "event_id": "E003",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ]
+    },
+    {
+      "event_id": "E004",
+      "day": 2,
+      "date": null,
+      "domain": "career",
+      "event_type": "side",
+      "title": "Research collaboration becomes difficult",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "description": "The user discusses a collaboration where concepts and implementation levels are not aligned.",
+      "emotional_intensity": 5,
+      "decision_impact": 4,
+      "time_sensitivity": 3,
+      "status": "unresolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E004:collaboration_logic_misaligned",
+          "template_anchor_id": "collaboration_logic_misaligned",
+          "event_id": "E004",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "detail_id": "E004:collaboration_realigning_cost",
+          "template_anchor_id": "collaboration_realigning_cost",
+          "event_id": "E004",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ]
+    },
+    {
+      "event_id": "E005",
+      "day": 3,
+      "date": null,
+      "domain": "career",
+      "event_type": "mainline",
+      "title": "A paper deadline needs practical triage",
+      "participants": [
+        "user",
+        "student",
+        "collaborator"
+      ],
+      "description": "The user needs to decide which parts of a paper draft deserve careful revision and which parts can be simplified before the deadline. This is the first point in a continuing event chain.",
+      "emotional_intensity": 2,
+      "decision_impact": 3,
+      "time_sensitivity": 5,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E005:paper_deadline_triage",
+          "template_anchor_id": "paper_deadline_triage",
+          "event_id": "E005",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
+          "expected_response_mode": "回应应帮助用户做优先级取舍，而不是追求全部完美。"
+        },
+        {
+          "detail_id": "E005:perfectionism_blocks_delivery",
+          "template_anchor_id": "perfectionism_blocks_delivery",
+          "event_id": "E005",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户很难接受稿件不够完美，但现实时间不允许逐段打磨。",
+          "expected_response_mode": "回应应接住完美主义和交付压力的冲突。"
+        }
+      ],
+      "planned_event_stage": "initial"
+    },
+    {
+      "event_id": "E006",
+      "day": 3,
+      "date": null,
+      "domain": "self_management",
+      "event_type": "background",
+      "title": "Sleep schedule becomes fragmented",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "description": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day.",
+      "emotional_intensity": 2,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": false,
+      "related_event_id": null,
+      "source_template_id": "self_management_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E006:fragmented_sleep_amplifies_reactivity",
+          "template_anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "event_id": "E006",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "detail_id": "E006:fatigue_driving_response",
+          "template_anchor_id": "fatigue_driving_response",
+          "event_id": "E006",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ]
+    },
+    {
+      "event_id": "E007",
+      "day": 4,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "mainline",
+      "title": "Child's kindergarten may become unstable - recurrence",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans. This recurrence tests whether the agent can connect the repeated line without restarting from zero.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 4,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E001",
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E007:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E007",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E007:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E007",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ],
+      "planned_event_stage": "recurrence"
+    },
+    {
+      "event_id": "E008",
+      "day": 4,
+      "date": null,
+      "domain": "career",
+      "event_type": "side",
+      "title": "A paper deadline needs practical triage",
+      "participants": [
+        "user",
+        "student",
+        "collaborator"
+      ],
+      "description": "The user needs to decide which parts of a paper draft deserve careful revision and which parts can be simplified before the deadline.",
+      "emotional_intensity": 2,
+      "decision_impact": 4,
+      "time_sensitivity": 4,
+      "status": "unresolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E008:paper_deadline_triage",
+          "template_anchor_id": "paper_deadline_triage",
+          "event_id": "E008",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
+          "expected_response_mode": "回应应帮助用户做优先级取舍，而不是追求全部完美。"
+        },
+        {
+          "detail_id": "E008:perfectionism_blocks_delivery",
+          "template_anchor_id": "perfectionism_blocks_delivery",
+          "event_id": "E008",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户很难接受稿件不够完美，但现实时间不允许逐段打磨。",
+          "expected_response_mode": "回应应接住完美主义和交付压力的冲突。"
+        }
+      ]
+    },
+    {
+      "event_id": "E009",
+      "day": 5,
+      "date": null,
+      "domain": "career",
+      "event_type": "mainline",
+      "title": "Research collaboration becomes difficult - recurrence",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "description": "The user discusses a collaboration where concepts and implementation levels are not aligned. This recurrence tests whether the agent can connect the repeated line without restarting from zero.",
+      "emotional_intensity": 4,
+      "decision_impact": 3,
+      "time_sensitivity": 1,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E002",
+      "source_template_id": "career_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E009:collaboration_logic_misaligned",
+          "template_anchor_id": "collaboration_logic_misaligned",
+          "event_id": "E009",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "detail_id": "E009:collaboration_realigning_cost",
+          "template_anchor_id": "collaboration_realigning_cost",
+          "event_id": "E009",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ],
+      "planned_event_stage": "recurrence"
+    },
+    {
+      "event_id": "E010",
+      "day": 6,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "mainline",
+      "title": "Family coordination conversation feels stuck",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient. This is the first point in a continuing event chain.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 2,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E010:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E010",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E010:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E010",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ],
+      "planned_event_stage": "initial"
+    },
+    {
+      "event_id": "E011",
+      "day": 6,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "side",
+      "title": "Child's kindergarten may become unstable",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans.",
+      "emotional_intensity": 5,
+      "decision_impact": 5,
+      "time_sensitivity": 5,
+      "status": "unresolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E011:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E011",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E011:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E011",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ]
+    },
+    {
+      "event_id": "E012",
+      "day": 6,
+      "date": null,
+      "domain": "self_management",
+      "event_type": "background",
+      "title": "Sleep schedule becomes fragmented",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "description": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day.",
+      "emotional_intensity": 3,
+      "decision_impact": 4,
+      "time_sensitivity": 1,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": false,
+      "related_event_id": null,
+      "source_template_id": "self_management_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E012:fragmented_sleep_amplifies_reactivity",
+          "template_anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "event_id": "E012",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "detail_id": "E012:fatigue_driving_response",
+          "template_anchor_id": "fatigue_driving_response",
+          "event_id": "E012",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ]
+    },
+    {
+      "event_id": "E013",
+      "day": 7,
+      "date": null,
+      "domain": "career",
+      "event_type": "mainline",
+      "title": "A paper deadline needs practical triage - recurrence",
+      "participants": [
+        "user",
+        "student",
+        "collaborator"
+      ],
+      "description": "The user needs to decide which parts of a paper draft deserve careful revision and which parts can be simplified before the deadline. This recurrence tests whether the agent can connect the repeated line without restarting from zero.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 3,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E005",
+      "source_template_id": "career_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E013:paper_deadline_triage",
+          "template_anchor_id": "paper_deadline_triage",
+          "event_id": "E013",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
+          "expected_response_mode": "回应应帮助用户做优先级取舍，而不是追求全部完美。"
+        },
+        {
+          "detail_id": "E013:perfectionism_blocks_delivery",
+          "template_anchor_id": "perfectionism_blocks_delivery",
+          "event_id": "E013",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户很难接受稿件不够完美，但现实时间不允许逐段打磨。",
+          "expected_response_mode": "回应应接住完美主义和交付压力的冲突。"
+        }
+      ],
+      "planned_event_stage": "recurrence"
+    },
+    {
+      "event_id": "E014",
+      "day": 7,
+      "date": null,
+      "domain": "self_management",
+      "event_type": "background",
+      "title": "Sleep schedule becomes fragmented",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "description": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day.",
+      "emotional_intensity": 3,
+      "decision_impact": 2,
+      "time_sensitivity": 2,
+      "status": "unresolved",
+      "follow_up_needed": true,
+      "should_be_remembered": false,
+      "related_event_id": null,
+      "source_template_id": "self_management_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E014:fragmented_sleep_amplifies_reactivity",
+          "template_anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "event_id": "E014",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "detail_id": "E014:fatigue_driving_response",
+          "template_anchor_id": "fatigue_driving_response",
+          "event_id": "E014",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ]
+    },
+    {
+      "event_id": "E015",
+      "day": 8,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "mainline",
+      "title": "Child has a difficult drop-off morning",
+      "participants": [
+        "user",
+        "child",
+        "teacher"
+      ],
+      "description": "The child cries during kindergarten drop-off, making the user worry about adaptation and whether recent family changes are affecting the child. This is the first point in a continuing event chain.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 3,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E015:dropoff_crying_replayed",
+          "template_anchor_id": "dropoff_crying_replayed",
+          "event_id": "E015",
+          "detail_type": "event_trigger",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "孩子早上入园哭闹后，用户会反复回想门口那个画面。",
+          "expected_response_mode": "回应应先承认具体触发画面，再讨论观察和下一步。"
+        },
+        {
+          "detail_id": "E015:child_adaptation_or_parent_reactivity",
+          "template_anchor_id": "child_adaptation_or_parent_reactivity",
+          "event_id": "E015",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户分不清孩子是真的适应慢，还是自己太容易被孩子情绪带走。",
+          "expected_response_mode": "回应应帮用户区分孩子状态、家长反应和需要向老师确认的信息。"
+        }
+      ],
+      "planned_event_stage": "initial"
+    },
+    {
+      "event_id": "E016",
+      "day": 9,
+      "date": null,
+      "domain": "career",
+      "event_type": "mainline",
+      "title": "Research collaboration becomes difficult - turning_point",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "description": "The user discusses a collaboration where concepts and implementation levels are not aligned. This node marks a meaningful state change or decision point in the continuing line.",
+      "emotional_intensity": 4,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E002",
+      "source_template_id": "career_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E016:collaboration_logic_misaligned",
+          "template_anchor_id": "collaboration_logic_misaligned",
+          "event_id": "E016",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "detail_id": "E016:collaboration_realigning_cost",
+          "template_anchor_id": "collaboration_realigning_cost",
+          "event_id": "E016",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ],
+      "planned_event_stage": "turning_point"
+    },
+    {
+      "event_id": "E017",
+      "day": 10,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "mainline",
+      "title": "Child's kindergarten may become unstable - turning_point",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans. This node marks a meaningful state change or decision point in the continuing line.",
+      "emotional_intensity": 5,
+      "decision_impact": 4,
+      "time_sensitivity": 4,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E001",
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E017:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E017",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E017:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E017",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ],
+      "planned_event_stage": "turning_point"
+    },
+    {
+      "event_id": "E018",
+      "day": 10,
+      "date": null,
+      "domain": "career",
+      "event_type": "side",
+      "title": "Research collaboration becomes difficult",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "description": "The user discusses a collaboration where concepts and implementation levels are not aligned.",
+      "emotional_intensity": 4,
+      "decision_impact": 3,
+      "time_sensitivity": 3,
+      "status": "unresolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E018:collaboration_logic_misaligned",
+          "template_anchor_id": "collaboration_logic_misaligned",
+          "event_id": "E018",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "detail_id": "E018:collaboration_realigning_cost",
+          "template_anchor_id": "collaboration_realigning_cost",
+          "event_id": "E018",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ]
+    },
+    {
+      "event_id": "E019",
+      "day": 10,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "side",
+      "title": "Child has a difficult drop-off morning",
+      "participants": [
+        "user",
+        "child",
+        "teacher"
+      ],
+      "description": "The child cries during kindergarten drop-off, making the user worry about adaptation and whether recent family changes are affecting the child.",
+      "emotional_intensity": 4,
+      "decision_impact": 3,
+      "time_sensitivity": 3,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E019:dropoff_crying_replayed",
+          "template_anchor_id": "dropoff_crying_replayed",
+          "event_id": "E019",
+          "detail_type": "event_trigger",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "孩子早上入园哭闹后，用户会反复回想门口那个画面。",
+          "expected_response_mode": "回应应先承认具体触发画面，再讨论观察和下一步。"
+        },
+        {
+          "detail_id": "E019:child_adaptation_or_parent_reactivity",
+          "template_anchor_id": "child_adaptation_or_parent_reactivity",
+          "event_id": "E019",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户分不清孩子是真的适应慢，还是自己太容易被孩子情绪带走。",
+          "expected_response_mode": "回应应帮用户区分孩子状态、家长反应和需要向老师确认的信息。"
+        }
+      ]
+    },
+    {
+      "event_id": "E020",
+      "day": 11,
+      "date": null,
+      "domain": "self_management",
+      "event_type": "mainline",
+      "title": "Sleep schedule becomes fragmented",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "description": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day. This is the first point in a continuing event chain.",
+      "emotional_intensity": 4,
+      "decision_impact": 2,
+      "time_sensitivity": 2,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "self_management_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E020:fragmented_sleep_amplifies_reactivity",
+          "template_anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "event_id": "E020",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "detail_id": "E020:fatigue_driving_response",
+          "template_anchor_id": "fatigue_driving_response",
+          "event_id": "E020",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ],
+      "planned_event_stage": "initial"
+    },
+    {
+      "event_id": "E021",
+      "day": 11,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "side",
+      "title": "Family coordination conversation feels stuck",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient.",
+      "emotional_intensity": 5,
+      "decision_impact": 2,
+      "time_sensitivity": 2,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E021:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E021",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E021:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E021",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ]
+    },
+    {
+      "event_id": "E022",
+      "day": 11,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "side",
+      "title": "Child's kindergarten may become unstable",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans.",
+      "emotional_intensity": 5,
+      "decision_impact": 5,
+      "time_sensitivity": 4,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E022:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E022",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E022:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E022",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ]
+    },
+    {
+      "event_id": "E023",
+      "day": 12,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "mainline",
+      "title": "Family coordination conversation feels stuck - recurrence",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient. This recurrence tests whether the agent can connect the repeated line without restarting from zero.",
+      "emotional_intensity": 4,
+      "decision_impact": 3,
+      "time_sensitivity": 1,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E010",
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E023:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E023",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E023:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E023",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ],
+      "planned_event_stage": "recurrence"
+    },
+    {
+      "event_id": "E024",
+      "day": 12,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "side",
+      "title": "Family coordination conversation feels stuck",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient.",
+      "emotional_intensity": 3,
+      "decision_impact": 2,
+      "time_sensitivity": 2,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E024:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E024",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E024:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E024",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ]
+    },
+    {
+      "event_id": "E025",
+      "day": 12,
+      "date": null,
+      "domain": "career",
+      "event_type": "side",
+      "title": "A paper deadline needs practical triage",
+      "participants": [
+        "user",
+        "student",
+        "collaborator"
+      ],
+      "description": "The user needs to decide which parts of a paper draft deserve careful revision and which parts can be simplified before the deadline.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 4,
+      "status": "unresolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E025:paper_deadline_triage",
+          "template_anchor_id": "paper_deadline_triage",
+          "event_id": "E025",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
+          "expected_response_mode": "回应应帮助用户做优先级取舍，而不是追求全部完美。"
+        },
+        {
+          "detail_id": "E025:perfectionism_blocks_delivery",
+          "template_anchor_id": "perfectionism_blocks_delivery",
+          "event_id": "E025",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户很难接受稿件不够完美，但现实时间不允许逐段打磨。",
+          "expected_response_mode": "回应应接住完美主义和交付压力的冲突。"
+        }
+      ]
+    },
+    {
+      "event_id": "E026",
+      "day": 13,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "mainline",
+      "title": "Child has a difficult drop-off morning - recurrence",
+      "participants": [
+        "user",
+        "child",
+        "teacher"
+      ],
+      "description": "The child cries during kindergarten drop-off, making the user worry about adaptation and whether recent family changes are affecting the child. This recurrence tests whether the agent can connect the repeated line without restarting from zero.",
+      "emotional_intensity": 5,
+      "decision_impact": 2,
+      "time_sensitivity": 4,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E015",
+      "source_template_id": "parenting_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E026:dropoff_crying_replayed",
+          "template_anchor_id": "dropoff_crying_replayed",
+          "event_id": "E026",
+          "detail_type": "event_trigger",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "孩子早上入园哭闹后，用户会反复回想门口那个画面。",
+          "expected_response_mode": "回应应先承认具体触发画面，再讨论观察和下一步。"
+        },
+        {
+          "detail_id": "E026:child_adaptation_or_parent_reactivity",
+          "template_anchor_id": "child_adaptation_or_parent_reactivity",
+          "event_id": "E026",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户分不清孩子是真的适应慢，还是自己太容易被孩子情绪带走。",
+          "expected_response_mode": "回应应帮用户区分孩子状态、家长反应和需要向老师确认的信息。"
+        }
+      ],
+      "planned_event_stage": "recurrence"
+    },
+    {
+      "event_id": "E027",
+      "day": 13,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "side",
+      "title": "Family coordination conversation feels stuck",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient.",
+      "emotional_intensity": 5,
+      "decision_impact": 4,
+      "time_sensitivity": 2,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E027:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E027",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E027:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E027",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ]
+    },
+    {
+      "event_id": "E028",
+      "day": 13,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "side",
+      "title": "Child has a difficult drop-off morning",
+      "participants": [
+        "user",
+        "child",
+        "teacher"
+      ],
+      "description": "The child cries during kindergarten drop-off, making the user worry about adaptation and whether recent family changes are affecting the child.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 4,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E028:dropoff_crying_replayed",
+          "template_anchor_id": "dropoff_crying_replayed",
+          "event_id": "E028",
+          "detail_type": "event_trigger",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "孩子早上入园哭闹后，用户会反复回想门口那个画面。",
+          "expected_response_mode": "回应应先承认具体触发画面，再讨论观察和下一步。"
+        },
+        {
+          "detail_id": "E028:child_adaptation_or_parent_reactivity",
+          "template_anchor_id": "child_adaptation_or_parent_reactivity",
+          "event_id": "E028",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户分不清孩子是真的适应慢，还是自己太容易被孩子情绪带走。",
+          "expected_response_mode": "回应应帮用户区分孩子状态、家长反应和需要向老师确认的信息。"
+        }
+      ]
+    },
+    {
+      "event_id": "E029",
+      "day": 14,
+      "date": null,
+      "domain": "self_management",
+      "event_type": "mainline",
+      "title": "Sleep schedule becomes fragmented - recurrence",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "description": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day. This recurrence tests whether the agent can connect the repeated line without restarting from zero.",
+      "emotional_intensity": 2,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E020",
+      "source_template_id": "self_management_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E029:fragmented_sleep_amplifies_reactivity",
+          "template_anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "event_id": "E029",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "detail_id": "E029:fatigue_driving_response",
+          "template_anchor_id": "fatigue_driving_response",
+          "event_id": "E029",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ],
+      "planned_event_stage": "recurrence"
+    },
+    {
+      "event_id": "E030",
+      "day": 14,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "side",
+      "title": "Child's kindergarten may become unstable",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans.",
+      "emotional_intensity": 4,
+      "decision_impact": 5,
+      "time_sensitivity": 5,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E030:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E030",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E030:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E030",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ]
+    },
+    {
+      "event_id": "E031",
+      "day": 14,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "side",
+      "title": "Child's kindergarten may become unstable",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans.",
+      "emotional_intensity": 5,
+      "decision_impact": 5,
+      "time_sensitivity": 5,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E031:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E031",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E031:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E031",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ]
+    },
+    {
+      "event_id": "E032",
+      "day": 15,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "mainline",
+      "title": "Child has a difficult drop-off morning - turning_point",
+      "participants": [
+        "user",
+        "child",
+        "teacher"
+      ],
+      "description": "The child cries during kindergarten drop-off, making the user worry about adaptation and whether recent family changes are affecting the child. This node marks a meaningful state change or decision point in the continuing line.",
+      "emotional_intensity": 4,
+      "decision_impact": 2,
+      "time_sensitivity": 2,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E015",
+      "source_template_id": "parenting_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E032:dropoff_crying_replayed",
+          "template_anchor_id": "dropoff_crying_replayed",
+          "event_id": "E032",
+          "detail_type": "event_trigger",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "孩子早上入园哭闹后，用户会反复回想门口那个画面。",
+          "expected_response_mode": "回应应先承认具体触发画面，再讨论观察和下一步。"
+        },
+        {
+          "detail_id": "E032:child_adaptation_or_parent_reactivity",
+          "template_anchor_id": "child_adaptation_or_parent_reactivity",
+          "event_id": "E032",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户分不清孩子是真的适应慢，还是自己太容易被孩子情绪带走。",
+          "expected_response_mode": "回应应帮用户区分孩子状态、家长反应和需要向老师确认的信息。"
+        }
+      ],
+      "planned_event_stage": "turning_point"
+    },
+    {
+      "event_id": "E033",
+      "day": 15,
+      "date": null,
+      "domain": "career",
+      "event_type": "side",
+      "title": "Research collaboration becomes difficult",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "description": "The user discusses a collaboration where concepts and implementation levels are not aligned.",
+      "emotional_intensity": 5,
+      "decision_impact": 2,
+      "time_sensitivity": 1,
+      "status": "unresolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E033:collaboration_logic_misaligned",
+          "template_anchor_id": "collaboration_logic_misaligned",
+          "event_id": "E033",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "detail_id": "E033:collaboration_realigning_cost",
+          "template_anchor_id": "collaboration_realigning_cost",
+          "event_id": "E033",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ]
+    },
+    {
+      "event_id": "E034",
+      "day": 16,
+      "date": null,
+      "domain": "career",
+      "event_type": "mainline",
+      "title": "A paper deadline needs practical triage - turning_point",
+      "participants": [
+        "user",
+        "student",
+        "collaborator"
+      ],
+      "description": "The user needs to decide which parts of a paper draft deserve careful revision and which parts can be simplified before the deadline. This node marks a meaningful state change or decision point in the continuing line.",
+      "emotional_intensity": 3,
+      "decision_impact": 4,
+      "time_sensitivity": 3,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E005",
+      "source_template_id": "career_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E034:paper_deadline_triage",
+          "template_anchor_id": "paper_deadline_triage",
+          "event_id": "E034",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
+          "expected_response_mode": "回应应帮助用户做优先级取舍，而不是追求全部完美。"
+        },
+        {
+          "detail_id": "E034:perfectionism_blocks_delivery",
+          "template_anchor_id": "perfectionism_blocks_delivery",
+          "event_id": "E034",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户很难接受稿件不够完美，但现实时间不允许逐段打磨。",
+          "expected_response_mode": "回应应接住完美主义和交付压力的冲突。"
+        }
+      ],
+      "planned_event_stage": "turning_point"
+    },
+    {
+      "event_id": "E035",
+      "day": 16,
+      "date": null,
+      "domain": "self_management",
+      "event_type": "background",
+      "title": "Sleep schedule becomes fragmented",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "description": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day.",
+      "emotional_intensity": 3,
+      "decision_impact": 3,
+      "time_sensitivity": 3,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": false,
+      "related_event_id": null,
+      "source_template_id": "self_management_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E035:fragmented_sleep_amplifies_reactivity",
+          "template_anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "event_id": "E035",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "detail_id": "E035:fatigue_driving_response",
+          "template_anchor_id": "fatigue_driving_response",
+          "event_id": "E035",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ]
+    },
+    {
+      "event_id": "E036",
+      "day": 16,
+      "date": null,
+      "domain": "career",
+      "event_type": "side",
+      "title": "A paper deadline needs practical triage",
+      "participants": [
+        "user",
+        "student",
+        "collaborator"
+      ],
+      "description": "The user needs to decide which parts of a paper draft deserve careful revision and which parts can be simplified before the deadline.",
+      "emotional_intensity": 2,
+      "decision_impact": 4,
+      "time_sensitivity": 5,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E036:paper_deadline_triage",
+          "template_anchor_id": "paper_deadline_triage",
+          "event_id": "E036",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
+          "expected_response_mode": "回应应帮助用户做优先级取舍，而不是追求全部完美。"
+        },
+        {
+          "detail_id": "E036:perfectionism_blocks_delivery",
+          "template_anchor_id": "perfectionism_blocks_delivery",
+          "event_id": "E036",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户很难接受稿件不够完美，但现实时间不允许逐段打磨。",
+          "expected_response_mode": "回应应接住完美主义和交付压力的冲突。"
+        }
+      ]
+    },
+    {
+      "event_id": "E037",
+      "day": 17,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "mainline",
+      "title": "Child's kindergarten may become unstable - resolution",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans. This node marks downgrade, recovery, or a bounded next step rather than continued escalation.",
+      "emotional_intensity": 5,
+      "decision_impact": 4,
+      "time_sensitivity": 5,
+      "status": "resolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E001",
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E037:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E037",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E037:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E037",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ],
+      "planned_event_stage": "resolution"
+    },
+    {
+      "event_id": "E038",
+      "day": 17,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "side",
+      "title": "Child has a difficult drop-off morning",
+      "participants": [
+        "user",
+        "child",
+        "teacher"
+      ],
+      "description": "The child cries during kindergarten drop-off, making the user worry about adaptation and whether recent family changes are affecting the child.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 4,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E038:dropoff_crying_replayed",
+          "template_anchor_id": "dropoff_crying_replayed",
+          "event_id": "E038",
+          "detail_type": "event_trigger",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "孩子早上入园哭闹后，用户会反复回想门口那个画面。",
+          "expected_response_mode": "回应应先承认具体触发画面，再讨论观察和下一步。"
+        },
+        {
+          "detail_id": "E038:child_adaptation_or_parent_reactivity",
+          "template_anchor_id": "child_adaptation_or_parent_reactivity",
+          "event_id": "E038",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户分不清孩子是真的适应慢，还是自己太容易被孩子情绪带走。",
+          "expected_response_mode": "回应应帮用户区分孩子状态、家长反应和需要向老师确认的信息。"
+        }
+      ]
+    },
+    {
+      "event_id": "E039",
+      "day": 18,
+      "date": null,
+      "domain": "career",
+      "event_type": "mainline",
+      "title": "Research collaboration becomes difficult - resolution",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "description": "The user discusses a collaboration where concepts and implementation levels are not aligned. This node marks downgrade, recovery, or a bounded next step rather than continued escalation.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 2,
+      "status": "resolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E002",
+      "source_template_id": "career_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E039:collaboration_logic_misaligned",
+          "template_anchor_id": "collaboration_logic_misaligned",
+          "event_id": "E039",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "detail_id": "E039:collaboration_realigning_cost",
+          "template_anchor_id": "collaboration_realigning_cost",
+          "event_id": "E039",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ],
+      "planned_event_stage": "resolution"
+    },
+    {
+      "event_id": "E040",
+      "day": 19,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "mainline",
+      "title": "Family coordination conversation feels stuck - turning_point",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient. This node marks a meaningful state change or decision point in the continuing line.",
+      "emotional_intensity": 4,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E010",
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E040:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E040",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E040:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E040",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ],
+      "planned_event_stage": "turning_point"
+    },
+    {
+      "event_id": "E041",
+      "day": 19,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "side",
+      "title": "Child's kindergarten may become unstable",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans.",
+      "emotional_intensity": 4,
+      "decision_impact": 5,
+      "time_sensitivity": 4,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E041:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E041",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E041:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E041",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ]
+    },
+    {
+      "event_id": "E042",
+      "day": 20,
+      "date": null,
+      "domain": "self_management",
+      "event_type": "mainline",
+      "title": "Sleep schedule becomes fragmented - turning_point",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "description": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day. This node marks a meaningful state change or decision point in the continuing line.",
+      "emotional_intensity": 3,
+      "decision_impact": 3,
+      "time_sensitivity": 1,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E020",
+      "source_template_id": "self_management_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E042:fragmented_sleep_amplifies_reactivity",
+          "template_anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "event_id": "E042",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "detail_id": "E042:fatigue_driving_response",
+          "template_anchor_id": "fatigue_driving_response",
+          "event_id": "E042",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ],
+      "planned_event_stage": "turning_point"
+    },
+    {
+      "event_id": "E043",
+      "day": 20,
+      "date": null,
+      "domain": "career",
+      "event_type": "side",
+      "title": "Research collaboration becomes difficult",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "description": "The user discusses a collaboration where concepts and implementation levels are not aligned.",
+      "emotional_intensity": 3,
+      "decision_impact": 2,
+      "time_sensitivity": 2,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E043:collaboration_logic_misaligned",
+          "template_anchor_id": "collaboration_logic_misaligned",
+          "event_id": "E043",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "detail_id": "E043:collaboration_realigning_cost",
+          "template_anchor_id": "collaboration_realigning_cost",
+          "event_id": "E043",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ]
+    },
+    {
+      "event_id": "E044",
+      "day": 20,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "side",
+      "title": "Family coordination conversation feels stuck",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient.",
+      "emotional_intensity": 5,
+      "decision_impact": 2,
+      "time_sensitivity": 2,
+      "status": "unresolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E044:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E044",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E044:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E044",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ]
+    },
+    {
+      "event_id": "E045",
+      "day": 21,
+      "date": null,
+      "domain": "career",
+      "event_type": "mainline",
+      "title": "A paper deadline needs practical triage - resolution",
+      "participants": [
+        "user",
+        "student",
+        "collaborator"
+      ],
+      "description": "The user needs to decide which parts of a paper draft deserve careful revision and which parts can be simplified before the deadline. This node marks downgrade, recovery, or a bounded next step rather than continued escalation.",
+      "emotional_intensity": 3,
+      "decision_impact": 4,
+      "time_sensitivity": 4,
+      "status": "resolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E005",
+      "source_template_id": "career_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E045:paper_deadline_triage",
+          "template_anchor_id": "paper_deadline_triage",
+          "event_id": "E045",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
+          "expected_response_mode": "回应应帮助用户做优先级取舍，而不是追求全部完美。"
+        },
+        {
+          "detail_id": "E045:perfectionism_blocks_delivery",
+          "template_anchor_id": "perfectionism_blocks_delivery",
+          "event_id": "E045",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户很难接受稿件不够完美，但现实时间不允许逐段打磨。",
+          "expected_response_mode": "回应应接住完美主义和交付压力的冲突。"
+        }
+      ],
+      "planned_event_stage": "resolution"
+    },
+    {
+      "event_id": "E046",
+      "day": 21,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "side",
+      "title": "Child's kindergarten may become unstable",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans.",
+      "emotional_intensity": 5,
+      "decision_impact": 5,
+      "time_sensitivity": 5,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E046:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E046",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E046:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E046",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ]
+    },
+    {
+      "event_id": "E047",
+      "day": 21,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "side",
+      "title": "Family coordination conversation feels stuck",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient.",
+      "emotional_intensity": 4,
+      "decision_impact": 3,
+      "time_sensitivity": 3,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E047:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E047",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E047:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E047",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ]
+    },
+    {
+      "event_id": "E048",
+      "day": 22,
+      "date": null,
+      "domain": "career",
+      "event_type": "mainline",
+      "title": "A paper deadline needs practical triage - reflection",
+      "participants": [
+        "user",
+        "student",
+        "collaborator"
+      ],
+      "description": "The user needs to decide which parts of a paper draft deserve careful revision and which parts can be simplified before the deadline. This node asks for summary, pattern recognition, or end-of-line consolidation.",
+      "emotional_intensity": 4,
+      "decision_impact": 5,
+      "time_sensitivity": 4,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E005",
+      "source_template_id": "career_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E048:paper_deadline_triage",
+          "template_anchor_id": "paper_deadline_triage",
+          "event_id": "E048",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
+          "expected_response_mode": "回应应帮助用户做优先级取舍，而不是追求全部完美。"
+        },
+        {
+          "detail_id": "E048:perfectionism_blocks_delivery",
+          "template_anchor_id": "perfectionism_blocks_delivery",
+          "event_id": "E048",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户很难接受稿件不够完美，但现实时间不允许逐段打磨。",
+          "expected_response_mode": "回应应接住完美主义和交付压力的冲突。"
+        }
+      ],
+      "planned_event_stage": "reflection"
+    },
+    {
+      "event_id": "E049",
+      "day": 22,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "side",
+      "title": "Family coordination conversation feels stuck",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient.",
+      "emotional_intensity": 4,
+      "decision_impact": 2,
+      "time_sensitivity": 1,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E049:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E049",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E049:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E049",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ]
+    },
+    {
+      "event_id": "E050",
+      "day": 22,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "side",
+      "title": "Family coordination conversation feels stuck",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient.",
+      "emotional_intensity": 3,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E050:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E050",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E050:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E050",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ]
+    },
+    {
+      "event_id": "E051",
+      "day": 23,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "mainline",
+      "title": "Family coordination conversation feels stuck - resolution",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient. This node marks downgrade, recovery, or a bounded next step rather than continued escalation.",
+      "emotional_intensity": 4,
+      "decision_impact": 3,
+      "time_sensitivity": 1,
+      "status": "resolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E010",
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E051:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E051",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E051:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E051",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ],
+      "planned_event_stage": "resolution"
+    },
+    {
+      "event_id": "E052",
+      "day": 23,
+      "date": null,
+      "domain": "self_management",
+      "event_type": "background",
+      "title": "Sleep schedule becomes fragmented",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "description": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day.",
+      "emotional_intensity": 3,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": false,
+      "related_event_id": null,
+      "source_template_id": "self_management_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E052:fragmented_sleep_amplifies_reactivity",
+          "template_anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "event_id": "E052",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "detail_id": "E052:fatigue_driving_response",
+          "template_anchor_id": "fatigue_driving_response",
+          "event_id": "E052",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ]
+    },
+    {
+      "event_id": "E053",
+      "day": 24,
+      "date": null,
+      "domain": "career",
+      "event_type": "mainline",
+      "title": "Research collaboration becomes difficult - reflection",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "description": "The user discusses a collaboration where concepts and implementation levels are not aligned. This node asks for summary, pattern recognition, or end-of-line consolidation.",
+      "emotional_intensity": 4,
+      "decision_impact": 2,
+      "time_sensitivity": 2,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E002",
+      "source_template_id": "career_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E053:collaboration_logic_misaligned",
+          "template_anchor_id": "collaboration_logic_misaligned",
+          "event_id": "E053",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "detail_id": "E053:collaboration_realigning_cost",
+          "template_anchor_id": "collaboration_realigning_cost",
+          "event_id": "E053",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ],
+      "planned_event_stage": "reflection"
+    },
+    {
+      "event_id": "E054",
+      "day": 24,
+      "date": null,
+      "domain": "friendship",
+      "event_type": "background",
+      "title": "A friend asks for a quick catch-up",
+      "participants": [
+        "user",
+        "friend"
+      ],
+      "description": "A friend invites the user to catch up, but the user is unsure whether to spend limited free time socializing or recovering alone.",
+      "emotional_intensity": 2,
+      "decision_impact": 1,
+      "time_sensitivity": 2,
+      "status": "resolved",
+      "follow_up_needed": false,
+      "should_be_remembered": false,
+      "related_event_id": null,
+      "source_template_id": "friendship_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E054:friendship_low_social_battery",
+          "template_anchor_id": "friendship_low_social_battery",
+          "event_id": "E054",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "用户想维持朋友关系，但最近社交电量偏低，更需要恢复空间。",
+          "expected_response_mode": "回应应允许轻量维护关系，而不是默认建议立刻赴约。"
+        },
+        {
+          "detail_id": "E054:social_plan_as_state_signal",
+          "template_anchor_id": "social_plan_as_state_signal",
+          "event_id": "E054",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "用户会把是否想见朋友当成观察自身状态的信号。",
+          "expected_response_mode": "回应应把邀约当成状态观察点，而不是单纯社交选择。"
+        }
+      ]
+    },
+    {
+      "event_id": "E055",
+      "day": 24,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "side",
+      "title": "Child's kindergarten may become unstable",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans.",
+      "emotional_intensity": 5,
+      "decision_impact": 5,
+      "time_sensitivity": 5,
+      "status": "unresolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E055:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E055",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E055:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E055",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ]
+    },
+    {
+      "event_id": "E056",
+      "day": 25,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "mainline",
+      "title": "Child has a difficult drop-off morning - resolution",
+      "participants": [
+        "user",
+        "child",
+        "teacher"
+      ],
+      "description": "The child cries during kindergarten drop-off, making the user worry about adaptation and whether recent family changes are affecting the child. This node marks downgrade, recovery, or a bounded next step rather than continued escalation.",
+      "emotional_intensity": 5,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "resolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E015",
+      "source_template_id": "parenting_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E056:dropoff_crying_replayed",
+          "template_anchor_id": "dropoff_crying_replayed",
+          "event_id": "E056",
+          "detail_type": "event_trigger",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "孩子早上入园哭闹后，用户会反复回想门口那个画面。",
+          "expected_response_mode": "回应应先承认具体触发画面，再讨论观察和下一步。"
+        },
+        {
+          "detail_id": "E056:child_adaptation_or_parent_reactivity",
+          "template_anchor_id": "child_adaptation_or_parent_reactivity",
+          "event_id": "E056",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户分不清孩子是真的适应慢，还是自己太容易被孩子情绪带走。",
+          "expected_response_mode": "回应应帮用户区分孩子状态、家长反应和需要向老师确认的信息。"
+        }
+      ],
+      "planned_event_stage": "resolution"
+    },
+    {
+      "event_id": "E057",
+      "day": 26,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "mainline",
+      "title": "Family coordination conversation feels stuck - reflection",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient. This node asks for summary, pattern recognition, or end-of-line consolidation.",
+      "emotional_intensity": 4,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E010",
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E057:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E057",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E057:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E057",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ],
+      "planned_event_stage": "reflection"
+    },
+    {
+      "event_id": "E058",
+      "day": 26,
+      "date": null,
+      "domain": "career",
+      "event_type": "side",
+      "title": "A paper deadline needs practical triage",
+      "participants": [
+        "user",
+        "student",
+        "collaborator"
+      ],
+      "description": "The user needs to decide which parts of a paper draft deserve careful revision and which parts can be simplified before the deadline.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 3,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E058:paper_deadline_triage",
+          "template_anchor_id": "paper_deadline_triage",
+          "event_id": "E058",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
+          "expected_response_mode": "回应应帮助用户做优先级取舍，而不是追求全部完美。"
+        },
+        {
+          "detail_id": "E058:perfectionism_blocks_delivery",
+          "template_anchor_id": "perfectionism_blocks_delivery",
+          "event_id": "E058",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户很难接受稿件不够完美，但现实时间不允许逐段打磨。",
+          "expected_response_mode": "回应应接住完美主义和交付压力的冲突。"
+        }
+      ]
+    },
+    {
+      "event_id": "E059",
+      "day": 26,
+      "date": null,
+      "domain": "intimate_relationship",
+      "event_type": "side",
+      "title": "Family coordination conversation feels stuck",
+      "participants": [
+        "user",
+        "partner"
+      ],
+      "description": "The user tries to discuss family coordination with the partner but feels that practical support and emotional recognition are both insufficient.",
+      "emotional_intensity": 3,
+      "decision_impact": 2,
+      "time_sensitivity": 2,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "intimate_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E059:family_coordination_support_gap",
+          "template_anchor_id": "family_coordination_support_gap",
+          "event_id": "E059",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "detail_id": "E059:partner_hears_task_not_emotion",
+          "template_anchor_id": "partner_hears_task_not_emotion",
+          "event_id": "E059",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ]
+    },
+    {
+      "event_id": "E060",
+      "day": 27,
+      "date": null,
+      "domain": "self_management",
+      "event_type": "mainline",
+      "title": "Sleep schedule becomes fragmented - resolution",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "description": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day. This node marks downgrade, recovery, or a bounded next step rather than continued escalation.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 3,
+      "status": "resolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E020",
+      "source_template_id": "self_management_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E060:fragmented_sleep_amplifies_reactivity",
+          "template_anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "event_id": "E060",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "detail_id": "E060:fatigue_driving_response",
+          "template_anchor_id": "fatigue_driving_response",
+          "event_id": "E060",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ],
+      "planned_event_stage": "resolution"
+    },
+    {
+      "event_id": "E061",
+      "day": 27,
+      "date": null,
+      "domain": "self_management",
+      "event_type": "background",
+      "title": "Sleep schedule becomes fragmented",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "description": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day.",
+      "emotional_intensity": 4,
+      "decision_impact": 4,
+      "time_sensitivity": 1,
+      "status": "new",
+      "follow_up_needed": true,
+      "should_be_remembered": false,
+      "related_event_id": null,
+      "source_template_id": "self_management_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E061:fragmented_sleep_amplifies_reactivity",
+          "template_anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "event_id": "E061",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "detail_id": "E061:fatigue_driving_response",
+          "template_anchor_id": "fatigue_driving_response",
+          "event_id": "E061",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": false,
+          "detail_retention": "session_or_pattern_only",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ]
+    },
+    {
+      "event_id": "E062",
+      "day": 27,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "side",
+      "title": "Child's kindergarten may become unstable",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans.",
+      "emotional_intensity": 4,
+      "decision_impact": 5,
+      "time_sensitivity": 5,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E062:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E062",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E062:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E062",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ]
+    },
+    {
+      "event_id": "E063",
+      "day": 28,
+      "date": null,
+      "domain": "self_management",
+      "event_type": "mainline",
+      "title": "Sleep schedule becomes fragmented - reflection",
+      "participants": [
+        "user",
+        "child"
+      ],
+      "description": "The user notices that late-night work and child-related interruptions have made sleep fragmented, affecting patience and focus the next day. This node asks for summary, pattern recognition, or end-of-line consolidation.",
+      "emotional_intensity": 3,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E020",
+      "source_template_id": "self_management_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E063:fragmented_sleep_amplifies_reactivity",
+          "template_anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "event_id": "E063",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "detail_id": "E063:fatigue_driving_response",
+          "template_anchor_id": "fatigue_driving_response",
+          "event_id": "E063",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ],
+      "planned_event_stage": "reflection"
+    },
+    {
+      "event_id": "E064",
+      "day": 29,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "mainline",
+      "title": "Child's kindergarten may become unstable - reflection",
+      "participants": [
+        "user",
+        "child",
+        "teacher",
+        "education bureau"
+      ],
+      "description": "The user learns that the child's current kindergarten may face closure or instability and needs to consider alternative plans. This node asks for summary, pattern recognition, or end-of-line consolidation.",
+      "emotional_intensity": 5,
+      "decision_impact": 5,
+      "time_sensitivity": 5,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E001",
+      "source_template_id": "parenting_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E064:kindergarten_information_vague",
+          "template_anchor_id": "kindergarten_information_vague",
+          "event_id": "E064",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "detail_id": "E064:child_stability_not_school_choice",
+          "template_anchor_id": "child_stability_not_school_choice",
+          "event_id": "E064",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ],
+      "planned_event_stage": "reflection"
+    },
+    {
+      "event_id": "E065",
+      "day": 30,
+      "date": null,
+      "domain": "parenting",
+      "event_type": "mainline",
+      "title": "Child has a difficult drop-off morning - reflection",
+      "participants": [
+        "user",
+        "child",
+        "teacher"
+      ],
+      "description": "The child cries during kindergarten drop-off, making the user worry about adaptation and whether recent family changes are affecting the child. This node asks for summary, pattern recognition, or end-of-line consolidation.",
+      "emotional_intensity": 5,
+      "decision_impact": 3,
+      "time_sensitivity": 3,
+      "status": "ongoing",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": "E015",
+      "source_template_id": "parenting_002",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E065:dropoff_crying_replayed",
+          "template_anchor_id": "dropoff_crying_replayed",
+          "event_id": "E065",
+          "detail_type": "event_trigger",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "孩子早上入园哭闹后，用户会反复回想门口那个画面。",
+          "expected_response_mode": "回应应先承认具体触发画面，再讨论观察和下一步。"
+        },
+        {
+          "detail_id": "E065:child_adaptation_or_parent_reactivity",
+          "template_anchor_id": "child_adaptation_or_parent_reactivity",
+          "event_id": "E065",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户分不清孩子是真的适应慢，还是自己太容易被孩子情绪带走。",
+          "expected_response_mode": "回应应帮用户区分孩子状态、家长反应和需要向老师确认的信息。"
+        }
+      ],
+      "planned_event_stage": "reflection"
+    },
+    {
+      "event_id": "E066",
+      "day": 30,
+      "date": null,
+      "domain": "career",
+      "event_type": "side",
+      "title": "Research collaboration becomes difficult",
+      "participants": [
+        "user",
+        "collaborator"
+      ],
+      "description": "The user discusses a collaboration where concepts and implementation levels are not aligned.",
+      "emotional_intensity": 4,
+      "decision_impact": 3,
+      "time_sensitivity": 2,
+      "status": "unresolved",
+      "follow_up_needed": true,
+      "should_be_remembered": true,
+      "related_event_id": null,
+      "source_template_id": "career_001",
+      "memory_detail_anchors": [
+        {
+          "detail_id": "E066:collaboration_logic_misaligned",
+          "template_anchor_id": "collaboration_logic_misaligned",
+          "event_id": "E066",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "detail_id": "E066:collaboration_realigning_cost",
+          "template_anchor_id": "collaboration_realigning_cost",
+          "event_id": "E066",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "should_be_remembered": true,
+          "detail_retention": "long_term",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ]
+    }
+  ]
+}

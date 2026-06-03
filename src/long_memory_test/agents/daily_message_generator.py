@@ -20,6 +20,15 @@ class DailyMessageGenerationError(ValueError):
     """Raised when timeline data cannot produce daily user messages."""
 
 
+CORE_STAGE_ORDER = {
+    "initial": 0,
+    "recurrence": 1,
+    "turning_point": 2,
+    "resolution": 3,
+    "reflection": 4,
+}
+
+
 def generate_daily_user_messages(config: DailyMessageConfig) -> dict[str, Any]:
     timeline = load_json(config.timeline_path)
     events = _validate_timeline(timeline)
@@ -85,12 +94,20 @@ def generate_daily_user_messages(config: DailyMessageConfig) -> dict[str, Any]:
     return {
         "persona_id": timeline.get("persona_id", "unknown"),
         "timeline_days": timeline_days,
-        "source_timeline_path": str(config.timeline_path),
+        "source_timeline_path": _display_path(config.timeline_path),
         "seed": config.seed,
         "generation_mode": "scripted_v0.2_no_llm",
         "messages": messages,
         "summary": _summarize_messages(messages),
     }
+
+
+def _display_path(path: Path) -> str:
+    resolved = path.resolve()
+    try:
+        return str(resolved.relative_to(Path.cwd().resolve()))
+    except ValueError:
+        return str(path)
 
 
 def _validate_timeline(timeline: dict[str, Any]) -> list[dict[str, Any]]:
@@ -138,6 +155,16 @@ def _choose_primary_event(
     recent_primary_topics: list[str],
     rng: random.Random,
 ) -> dict[str, Any]:
+    mainline_events = [event for event in events if event.get("event_type") == "mainline"]
+    if mainline_events:
+        return sorted(
+            mainline_events,
+            key=lambda item: (
+                CORE_STAGE_ORDER.get(str(item.get("planned_event_stage", "")), 99),
+                str(item.get("event_id", "")),
+            ),
+        )[0]
+
     follow_ups = [event for event in events if event.get("related_event_id")]
     if follow_ups:
         return sorted(follow_ups, key=_event_priority, reverse=True)[0]

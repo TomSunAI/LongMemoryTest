@@ -15,7 +15,23 @@
       "default_decision_impact": 5,
       "default_time_sensitivity": 5,
       "follow_up_needed": true,
-      "should_be_remembered": true
+      "should_be_remembered": true,
+      "memory_detail_anchors": [
+        {
+          "anchor_id": "kindergarten_information_vague",
+          "detail_type": "event_status",
+          "min_memory_level": "M2",
+          "text": "幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
+          "expected_response_mode": "后续应先帮用户确认信息来源、正式通知和可行动窗口。"
+        },
+        {
+          "anchor_id": "child_stability_not_school_choice",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "text": "用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。",
+          "expected_response_mode": "回应应接住孩子稳定感，而不是只给换园清单。"
+        }
+      ]
     },
     {
       "template_id": "career_001",
@@ -30,7 +46,23 @@
       "default_decision_impact": 3,
       "default_time_sensitivity": 2,
       "follow_up_needed": true,
-      "should_be_remembered": true
+      "should_be_remembered": true,
+      "memory_detail_anchors": [
+        {
+          "anchor_id": "collaboration_logic_misaligned",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "text": "合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
+          "expected_response_mode": "后续应围绕对齐成本、是否继续投入和边界设置回应。"
+        },
+        {
+          "anchor_id": "collaboration_realigning_cost",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "text": "用户真正累的是每次都要重新对齐底层逻辑，担心它吞掉有限精力。",
+          "expected_response_mode": "回应应识别持续消耗，而不是只建议再沟通一次。"
+        }
+      ]
     },
     {
       "template_id": "intimate_001",
@@ -45,7 +77,23 @@
       "default_decision_impact": 3,
       "default_time_sensitivity": 2,
       "follow_up_needed": true,
-      "should_be_remembered": true
+      "should_be_remembered": true,
+      "memory_detail_anchors": [
+        {
+          "anchor_id": "family_coordination_support_gap",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "text": "家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
+          "expected_response_mode": "回应应同时处理具体分工和情绪识别。"
+        },
+        {
+          "anchor_id": "partner_hears_task_not_emotion",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "text": "用户担心自己说具体事务时，对方只听到任务，没有听到真实情绪。",
+          "expected_response_mode": "回应应帮用户把事务诉求和情绪诉求分开表达。"
+        }
+      ]
     },
     {
       "template_id": "self_management_001",
@@ -60,7 +108,23 @@
       "default_decision_impact": 3,
       "default_time_sensitivity": 2,
       "follow_up_needed": true,
-      "should_be_remembered": false
+      "should_be_remembered": false,
+      "memory_detail_anchors": [
+        {
+          "anchor_id": "fragmented_sleep_amplifies_reactivity",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "text": "睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
+          "expected_response_mode": "回应应把疲惫作为判断变量，而不是把所有情绪都归因于事件本身。"
+        },
+        {
+          "anchor_id": "fatigue_driving_response",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "text": "用户不确定自己是在处理事件，还是在被疲惫推着走。",
+          "expected_response_mode": "回应应帮助用户区分事实压力和疲惫放大。"
+        }
+      ]
     },
     {
       "template_id": "friendship_001",
@@ -75,7 +139,23 @@
       "default_decision_impact": 2,
       "default_time_sensitivity": 2,
       "follow_up_needed": false,
-      "should_be_remembered": false
+      "should_be_remembered": false,
+      "memory_detail_anchors": [
+        {
+          "anchor_id": "friendship_low_social_battery",
+          "detail_type": "state_pattern",
+          "min_memory_level": "M2",
+          "text": "用户想维持朋友关系，但最近社交电量偏低，更需要恢复空间。",
+          "expected_response_mode": "回应应允许轻量维护关系，而不是默认建议立刻赴约。"
+        },
+        {
+          "anchor_id": "social_plan_as_state_signal",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "text": "用户会把是否想见朋友当成观察自身状态的信号。",
+          "expected_response_mode": "回应应把邀约当成状态观察点，而不是单纯社交选择。"
+        }
+      ]
     },
     {
       "template_id": "career_002",
@@ -91,7 +171,23 @@
       "default_decision_impact": 4,
       "default_time_sensitivity": 4,
       "follow_up_needed": true,
-      "should_be_remembered": true
+      "should_be_remembered": true,
+      "memory_detail_anchors": [
+        {
+          "anchor_id": "paper_deadline_triage",
+          "detail_type": "event_pattern",
+          "min_memory_level": "M2",
+          "text": "论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
+          "expected_response_mode": "回应应帮助用户做优先级取舍，而不是追求全部完美。"
+        },
+        {
+          "anchor_id": "perfectionism_blocks_delivery",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "text": "用户很难接受稿件不够完美，但现实时间不允许逐段打磨。",
+          "expected_response_mode": "回应应接住完美主义和交付压力的冲突。"
+        }
+      ]
     },
     {
       "template_id": "parenting_002",
@@ -107,7 +203,23 @@
       "default_decision_impact": 3,
       "default_time_sensitivity": 3,
       "follow_up_needed": true,
-      "should_be_remembered": true
+      "should_be_remembered": true,
+      "memory_detail_anchors": [
+        {
+          "anchor_id": "dropoff_crying_replayed",
+          "detail_type": "event_trigger",
+          "min_memory_level": "M2",
+          "text": "孩子早上入园哭闹后，用户会反复回想门口那个画面。",
+          "expected_response_mode": "回应应先承认具体触发画面，再讨论观察和下一步。"
+        },
+        {
+          "anchor_id": "child_adaptation_or_parent_reactivity",
+          "detail_type": "underlying_concern",
+          "min_memory_level": "M3",
+          "text": "用户分不清孩子是真的适应慢，还是自己太容易被孩子情绪带走。",
+          "expected_response_mode": "回应应帮用户区分孩子状态、家长反应和需要向老师确认的信息。"
+        }
+      ]
     }
   ]
 }

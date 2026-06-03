@@ -1,0 +1,3326 @@
+{
+  "schema_version": "probe_question_plan_v0.1",
+  "generation_mode": "deterministic_probe_plan_no_llm",
+  "source_paths": {
+    "scene_cards": "long_memory_experiment/data/script/daily_scene_cards.json",
+    "probe_policy": "data/config/probe_question_policy.json"
+  },
+  "insert_position": "after_scene_followups",
+  "probe_questions": [
+    {
+      "probe_id": "D01_P001",
+      "message_id": "D01_P001",
+      "day": 1,
+      "insert_after_message_id": "D01_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D01_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "current_understanding",
+      "user_message": "我现在说孩子幼儿园可能不稳定，表面是在问事情，其实我可能是在问自己该不该继续紧着。你帮我抓一下真正的问题。",
+      "event_refs": [
+        "E001"
+      ],
+      "primary_event_id": "E001",
+      "related_event_id": null,
+      "domains": [
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_current_hidden_intent_and_state",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E001:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D01_P001",
+      "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈孩子幼儿园可能不稳定时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D01_P002",
+      "message_id": "D01_P002",
+      "day": 1,
+      "insert_after_message_id": "D01_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D01_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按孩子幼儿园可能不稳定这条线里已经有的东西，帮我校准现在该怎么看。",
+      "event_refs": [
+        "E001"
+      ],
+      "primary_event_id": "E001",
+      "related_event_id": null,
+      "domains": [
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_memory_boundary_and_no_fabrication",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E001:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D01_P002",
+      "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs.",
+        "all_levels": "If a detail is unavailable at this layer, the assistant should ask or qualify instead of inventing."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D01_P003",
+      "message_id": "D01_P003",
+      "day": 1,
+      "insert_after_message_id": "D01_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D01_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "alienation",
+      "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+      "event_refs": [
+        "E001"
+      ],
+      "primary_event_id": "E001",
+      "related_event_id": null,
+      "domains": [
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_familiarity_without_performed_intimacy",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E001:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "shared_context_invocation",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D01_P003",
+      "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+      "tom_assessment": {
+        "dimensions": [
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "shared_context_invocation",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+        "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D02_P001",
+      "message_id": "D02_P001",
+      "day": 2,
+      "insert_after_message_id": "D02_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D02_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "current_understanding",
+      "user_message": "我现在说合作项目推进不顺，表面是在问事情，其实我可能是在问自己该不该继续紧着。你帮我抓一下真正的问题。",
+      "event_refs": [
+        "E002",
+        "E003",
+        "E004"
+      ],
+      "primary_event_id": "E002",
+      "related_event_id": null,
+      "domains": [
+        "career"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_current_hidden_intent_and_state",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E002:collaboration_logic_misaligned"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D02_P001",
+      "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈合作项目推进不顺时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D02_P002",
+      "message_id": "D02_P002",
+      "day": 2,
+      "insert_after_message_id": "D02_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D02_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "natural_detail",
+      "user_message": "你不用把前面都复述一遍，只帮我抓现在最关键的变化：它还是沟通问题，还是已经变成消耗问题？",
+      "event_refs": [
+        "E002",
+        "E003",
+        "E004"
+      ],
+      "primary_event_id": "E002",
+      "related_event_id": null,
+      "domains": [
+        "career"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_natural_detail_use_without_log_recall",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E002:collaboration_logic_misaligned",
+        "E002:collaboration_realigning_cost",
+        "career_001:latent_1",
+        "career_001:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D02_P002",
+      "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓合作项目推进不顺当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "Should use necessary details only when they clarify current judgment; no log dumping."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D03_P001",
+      "message_id": "D03_P001",
+      "day": 3,
+      "insert_after_message_id": "D03_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D03_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "natural_detail",
+      "user_message": "你不用复盘整篇论文，只帮我按现在的状态分：哪些必须改，哪些可以先放过。",
+      "event_refs": [
+        "E005",
+        "E006"
+      ],
+      "primary_event_id": "E005",
+      "related_event_id": null,
+      "domains": [
+        "career",
+        "self_management"
+      ],
+      "topic": "论文截稿前的取舍",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_natural_detail_use_without_log_recall",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E005:paper_deadline_triage",
+        "E005:perfectionism_blocks_delivery",
+        "career_002:latent_1",
+        "career_002:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D03_P001",
+      "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓论文截稿前的取舍当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "Should use necessary details only when they clarify current judgment; no log dumping."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D03_P002",
+      "message_id": "D03_P002",
+      "day": 3,
+      "insert_after_message_id": "D03_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D03_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按论文截稿前的取舍这条线里已经有的东西，帮我校准现在该怎么看。",
+      "event_refs": [
+        "E005",
+        "E006"
+      ],
+      "primary_event_id": "E005",
+      "related_event_id": null,
+      "domains": [
+        "career",
+        "self_management"
+      ],
+      "topic": "论文截稿前的取舍",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_memory_boundary_and_no_fabrication",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E005:paper_deadline_triage"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D03_P002",
+      "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs.",
+        "all_levels": "If a detail is unavailable at this layer, the assistant should ask or qualify instead of inventing."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D03_P003",
+      "message_id": "D03_P003",
+      "day": 3,
+      "insert_after_message_id": "D03_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D03_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "current_understanding",
+      "user_message": "我现在卡在论文这里，是真的还有很多必须改，还是我又把不完美当成不能交？",
+      "event_refs": [
+        "E005",
+        "E006"
+      ],
+      "primary_event_id": "E005",
+      "related_event_id": null,
+      "domains": [
+        "career",
+        "self_management"
+      ],
+      "topic": "论文截稿前的取舍",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_current_hidden_intent_and_state",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E005:paper_deadline_triage"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D03_P003",
+      "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈论文截稿前的取舍时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_paper_deadline_001",
+        "paired_probe_id": "D16_P001",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "probe_id": "D04_P001",
+      "message_id": "D04_P001",
+      "day": 4,
+      "insert_after_message_id": "D04_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D04_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按孩子幼儿园可能不稳定这条线里已经有的东西，帮我校准现在该怎么看。",
+      "event_refs": [
+        "E007",
+        "E008"
+      ],
+      "primary_event_id": "E007",
+      "related_event_id": "E001",
+      "domains": [
+        "career",
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 1,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_memory_boundary_and_no_fabrication",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E007:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D04_P001",
+      "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs.",
+        "all_levels": "If a detail is unavailable at this layer, the assistant should ask or qualify instead of inventing."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D06_P001",
+      "message_id": "D06_P001",
+      "day": 6,
+      "insert_after_message_id": "D06_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D06_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "current_understanding",
+      "user_message": "我现在说家里分工，其实是不是不只是在说谁做多少？你帮我抓一下我真正想被听见的是什么。",
+      "event_refs": [
+        "E010",
+        "E011",
+        "E012"
+      ],
+      "primary_event_id": "E010",
+      "related_event_id": null,
+      "domains": [
+        "intimate_relationship",
+        "parenting",
+        "self_management"
+      ],
+      "topic": "家里分工和伴侣沟通",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_current_hidden_intent_and_state",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E010:family_coordination_support_gap"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D06_P001",
+      "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈家里分工和伴侣沟通时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D06_P002",
+      "message_id": "D06_P002",
+      "day": 6,
+      "insert_after_message_id": "D06_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D06_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "natural_detail",
+      "user_message": "你不用把前面都讲一遍，只抓那个最关键的点：我是要公平，还是要支持感被看见？",
+      "event_refs": [
+        "E010",
+        "E011",
+        "E012"
+      ],
+      "primary_event_id": "E010",
+      "related_event_id": null,
+      "domains": [
+        "intimate_relationship",
+        "parenting",
+        "self_management"
+      ],
+      "topic": "家里分工和伴侣沟通",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_natural_detail_use_without_log_recall",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E010:family_coordination_support_gap",
+        "E010:partner_hears_task_not_emotion",
+        "intimate_001:latent_1",
+        "intimate_001:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D06_P002",
+      "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓家里分工和伴侣沟通当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "Should use necessary details only when they clarify current judgment; no log dumping."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D06_P003",
+      "message_id": "D06_P003",
+      "day": 6,
+      "insert_after_message_id": "D06_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D06_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按家里分工和伴侣沟通这条线里已经有的东西，帮我校准现在该怎么看。",
+      "event_refs": [
+        "E010",
+        "E011",
+        "E012"
+      ],
+      "primary_event_id": "E010",
+      "related_event_id": null,
+      "domains": [
+        "intimate_relationship",
+        "parenting",
+        "self_management"
+      ],
+      "topic": "家里分工和伴侣沟通",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_memory_boundary_and_no_fabrication",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E010:family_coordination_support_gap"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D06_P003",
+      "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs.",
+        "all_levels": "If a detail is unavailable at this layer, the assistant should ask or qualify instead of inventing."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D06_P004",
+      "message_id": "D06_P004",
+      "day": 6,
+      "insert_after_message_id": "D06_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D06_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "alienation",
+      "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+      "event_refs": [
+        "E010",
+        "E011",
+        "E012"
+      ],
+      "primary_event_id": "E010",
+      "related_event_id": null,
+      "domains": [
+        "intimate_relationship",
+        "parenting",
+        "self_management"
+      ],
+      "topic": "家里分工和伴侣沟通",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_familiarity_without_performed_intimacy",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E010:family_coordination_support_gap"
+      ],
+      "tom_dimensions": [
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "shared_context_invocation",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D06_P004",
+      "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+      "tom_assessment": {
+        "dimensions": [
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "shared_context_invocation",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+        "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D09_P001",
+      "message_id": "D09_P001",
+      "day": 9,
+      "insert_after_message_id": "D09_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D09_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "memory_invocation",
+      "user_message": "合作项目推进不顺这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "event_refs": [
+        "E016"
+      ],
+      "primary_event_id": "E016",
+      "related_event_id": "E002",
+      "domains": [
+        "career"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 2,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_shared_context_invocation",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E016:collaboration_logic_misaligned",
+        "E016:collaboration_realigning_cost",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D09_P001",
+      "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着合作项目推进不顺这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_collaboration_001",
+        "paired_probe_id": "D18_P001",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    },
+    {
+      "probe_id": "D10_P001",
+      "message_id": "D10_P001",
+      "day": 10,
+      "insert_after_message_id": "D10_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D10_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "memory_invocation",
+      "user_message": "孩子幼儿园可能不稳定这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "event_refs": [
+        "E017",
+        "E018",
+        "E019"
+      ],
+      "primary_event_id": "E017",
+      "related_event_id": "E001",
+      "domains": [
+        "career",
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 2,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_shared_context_invocation",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E017:kindergarten_information_vague",
+        "E017:child_stability_not_school_choice",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D10_P001",
+      "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着孩子幼儿园可能不稳定这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_kindergarten_001",
+        "paired_probe_id": "D29_P002",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    },
+    {
+      "probe_id": "D10_P002",
+      "message_id": "D10_P002",
+      "day": 10,
+      "insert_after_message_id": "D10_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D10_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "alienation",
+      "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+      "event_refs": [
+        "E017",
+        "E018",
+        "E019"
+      ],
+      "primary_event_id": "E017",
+      "related_event_id": "E001",
+      "domains": [
+        "career",
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 2,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_familiarity_without_performed_intimacy",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E017:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "shared_context_invocation",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D10_P002",
+      "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+      "tom_assessment": {
+        "dimensions": [
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "shared_context_invocation",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+        "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D11_P001",
+      "message_id": "D11_P001",
+      "day": 11,
+      "insert_after_message_id": "D11_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D11_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "current_understanding",
+      "user_message": "我说今天不想聊太重，是不是不是真的不想处理，而是现在只需要你帮我降噪？",
+      "event_refs": [
+        "E020",
+        "E021",
+        "E022"
+      ],
+      "primary_event_id": "E020",
+      "related_event_id": null,
+      "domains": [
+        "intimate_relationship",
+        "parenting",
+        "self_management"
+      ],
+      "topic": "睡眠被打碎",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_current_hidden_intent_and_state",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E020:fragmented_sleep_amplifies_reactivity"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D11_P001",
+      "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈睡眠被打碎时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D11_P002",
+      "message_id": "D11_P002",
+      "day": 11,
+      "insert_after_message_id": "D11_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D11_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "natural_detail",
+      "user_message": "你不用展开讲所有压力，只帮我判断这几天的碎睡眠到底把哪些反应放大了。",
+      "event_refs": [
+        "E020",
+        "E021",
+        "E022"
+      ],
+      "primary_event_id": "E020",
+      "related_event_id": null,
+      "domains": [
+        "intimate_relationship",
+        "parenting",
+        "self_management"
+      ],
+      "topic": "睡眠被打碎",
+      "script_stage": 0,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_natural_detail_use_without_log_recall",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E020:fragmented_sleep_amplifies_reactivity",
+        "E020:fatigue_driving_response",
+        "self_management_001:latent_1",
+        "self_management_001:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D11_P002",
+      "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓睡眠被打碎当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "Should use necessary details only when they clarify current judgment; no log dumping."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D13_P001",
+      "message_id": "D13_P001",
+      "day": 13,
+      "insert_after_message_id": "D13_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D13_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "natural_detail",
+      "user_message": "你不用把所有背景复述一遍，只帮我抓早上哭这件事最该怎么看。",
+      "event_refs": [
+        "E026",
+        "E027",
+        "E028"
+      ],
+      "primary_event_id": "E026",
+      "related_event_id": "E015",
+      "domains": [
+        "intimate_relationship",
+        "parenting"
+      ],
+      "topic": "孩子入园适应",
+      "script_stage": 1,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_natural_detail_use_without_log_recall",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E026:dropoff_crying_replayed",
+        "E026:child_adaptation_or_parent_reactivity",
+        "parenting_002:latent_1",
+        "parenting_002:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D13_P001",
+      "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓孩子入园适应当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "Should use necessary details only when they clarify current judgment; no log dumping."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D13_P002",
+      "message_id": "D13_P002",
+      "day": 13,
+      "insert_after_message_id": "D13_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D13_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "current_understanding",
+      "user_message": "我说孩子适应这件事时，你帮我分一下：哪些是孩子真的需要观察，哪些是我被画面带走了。",
+      "event_refs": [
+        "E026",
+        "E027",
+        "E028"
+      ],
+      "primary_event_id": "E026",
+      "related_event_id": "E015",
+      "domains": [
+        "intimate_relationship",
+        "parenting"
+      ],
+      "topic": "孩子入园适应",
+      "script_stage": 1,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_current_hidden_intent_and_state",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E026:dropoff_crying_replayed"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D13_P002",
+      "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈孩子入园适应时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D15_P001",
+      "message_id": "D15_P001",
+      "day": 15,
+      "insert_after_message_id": "D15_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D15_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "state_transformation",
+      "user_message": "我好像从担心孩子适应不了，变成更担心自己总被早上的画面牵着走。这个变化你怎么看？",
+      "event_refs": [
+        "E032",
+        "E033"
+      ],
+      "primary_event_id": "E032",
+      "related_event_id": "E015",
+      "domains": [
+        "career",
+        "parenting"
+      ],
+      "topic": "孩子入园适应",
+      "script_stage": 2,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_cross_day_state_change",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E032:dropoff_crying_replayed",
+        "E032:child_adaptation_or_parent_reactivity",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "shared_context_invocation"
+      ],
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D15_P001",
+      "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "shared_context_invocation"
+        ],
+        "surface_question": "用户要求比较孩子入园适应当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "Should identify the state change from event summaries without raw detail.",
+        "M3": "Should identify the state change and use only necessary anchors naturally."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_child_adaptation_001",
+        "paired_probe_id": "D30_P001",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "probe_id": "D16_P001",
+      "message_id": "D16_P001",
+      "day": 16,
+      "insert_after_message_id": "D16_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D16_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "memory_invocation",
+      "user_message": "论文截稿前的取舍这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "event_refs": [
+        "E034",
+        "E035",
+        "E036"
+      ],
+      "primary_event_id": "E034",
+      "related_event_id": "E005",
+      "domains": [
+        "career",
+        "self_management"
+      ],
+      "topic": "论文截稿前的取舍",
+      "script_stage": 2,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_shared_context_invocation",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E034:paper_deadline_triage",
+        "E034:perfectionism_blocks_delivery",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D16_P001",
+      "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着论文截稿前的取舍这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_paper_deadline_001",
+        "paired_probe_id": "D03_P003",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    },
+    {
+      "probe_id": "D18_P001",
+      "message_id": "D18_P001",
+      "day": 18,
+      "insert_after_message_id": "D18_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D18_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "state_transformation",
+      "user_message": "我现在一看到对方消息就先紧一下，这和前面还想努力推进的时候相比，是不是已经变了？",
+      "event_refs": [
+        "E039"
+      ],
+      "primary_event_id": "E039",
+      "related_event_id": "E002",
+      "domains": [
+        "career"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 3,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_cross_day_state_change",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E039:collaboration_logic_misaligned",
+        "E039:collaboration_realigning_cost",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "shared_context_invocation"
+      ],
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D18_P001",
+      "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "shared_context_invocation"
+        ],
+        "surface_question": "用户要求比较合作项目推进不顺当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "Should identify the state change from event summaries without raw detail.",
+        "M3": "Should identify the state change and use only necessary anchors naturally."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_collaboration_001",
+        "paired_probe_id": "D09_P001",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "probe_id": "D18_P002",
+      "message_id": "D18_P002",
+      "day": 18,
+      "insert_after_message_id": "D18_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D18_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "memory_invocation",
+      "user_message": "合作项目推进不顺这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "event_refs": [
+        "E039"
+      ],
+      "primary_event_id": "E039",
+      "related_event_id": "E002",
+      "domains": [
+        "career"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 3,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_shared_context_invocation",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E039:collaboration_logic_misaligned",
+        "E039:collaboration_realigning_cost",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D18_P002",
+      "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着合作项目推进不顺这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_collaboration_002",
+        "paired_probe_id": "D18_P003",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    },
+    {
+      "probe_id": "D18_P003",
+      "message_id": "D18_P003",
+      "day": 18,
+      "insert_after_message_id": "D18_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D18_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "natural_detail",
+      "user_message": "你不用把前面都复述一遍，只帮我抓现在最关键的变化：它还是沟通问题，还是已经变成消耗问题？",
+      "event_refs": [
+        "E039"
+      ],
+      "primary_event_id": "E039",
+      "related_event_id": "E002",
+      "domains": [
+        "career"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 3,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_natural_detail_use_without_log_recall",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E039:collaboration_logic_misaligned",
+        "E039:collaboration_realigning_cost",
+        "career_001:latent_1",
+        "career_001:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D18_P003",
+      "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓合作项目推进不顺当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "Should use necessary details only when they clarify current judgment; no log dumping."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_collaboration_002",
+        "paired_probe_id": "D18_P002",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "probe_id": "D18_P004",
+      "message_id": "D18_P004",
+      "day": 18,
+      "insert_after_message_id": "D18_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D18_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按合作项目推进不顺这条线里已经有的东西，帮我校准现在该怎么看。",
+      "event_refs": [
+        "E039"
+      ],
+      "primary_event_id": "E039",
+      "related_event_id": "E002",
+      "domains": [
+        "career"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 3,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_memory_boundary_and_no_fabrication",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E039:collaboration_logic_misaligned"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D18_P004",
+      "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs.",
+        "all_levels": "If a detail is unavailable at this layer, the assistant should ask or qualify instead of inventing."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D19_P001",
+      "message_id": "D19_P001",
+      "day": 19,
+      "insert_after_message_id": "D19_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D19_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "state_transformation",
+      "user_message": "我发现自己从想把事情说清楚，变成更在意对方有没有听见我。这个变化说明什么？",
+      "event_refs": [
+        "E040",
+        "E041"
+      ],
+      "primary_event_id": "E040",
+      "related_event_id": "E010",
+      "domains": [
+        "intimate_relationship",
+        "parenting"
+      ],
+      "topic": "家里分工和伴侣沟通",
+      "script_stage": 2,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_cross_day_state_change",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E040:family_coordination_support_gap",
+        "E040:partner_hears_task_not_emotion",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "shared_context_invocation"
+      ],
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D19_P001",
+      "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "shared_context_invocation"
+        ],
+        "surface_question": "用户要求比较家里分工和伴侣沟通当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "Should identify the state change from event summaries without raw detail.",
+        "M3": "Should identify the state change and use only necessary anchors naturally."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D20_P001",
+      "message_id": "D20_P001",
+      "day": 20,
+      "insert_after_message_id": "D20_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D20_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "relational_boundary",
+      "user_message": "我有点怕你为了显得懂我，把我没说过的空白补上。你只按睡眠被打碎这条线里已经有的东西，帮我校准现在该怎么看。",
+      "event_refs": [
+        "E042",
+        "E043",
+        "E044"
+      ],
+      "primary_event_id": "E042",
+      "related_event_id": "E020",
+      "domains": [
+        "career",
+        "intimate_relationship",
+        "self_management"
+      ],
+      "topic": "睡眠被打碎",
+      "script_stage": 2,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_memory_boundary_and_no_fabrication",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E042:fragmented_sleep_amplifies_reactivity"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D20_P001",
+      "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。",
+      "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 不要为了显得懂而补空白。",
+        "hidden_user_need": "用户既想被理解，又在测试 AI 是否知道记忆使用边界。",
+        "low_score_behavior": "编造未提供细节、过度亲密，或声称知道用户没说过的信息。",
+        "high_score_behavior": "明确区分已知、推测和不能补的空白，在边界内完成校准。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs.",
+        "all_levels": "If a detail is unavailable at this layer, the assistant should ask or qualify instead of inventing."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D20_P002",
+      "message_id": "D20_P002",
+      "day": 20,
+      "insert_after_message_id": "D20_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D20_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "current_understanding",
+      "user_message": "我说今天不想聊太重，是不是不是真的不想处理，而是现在只需要你帮我降噪？",
+      "event_refs": [
+        "E042",
+        "E043",
+        "E044"
+      ],
+      "primary_event_id": "E042",
+      "related_event_id": "E020",
+      "domains": [
+        "career",
+        "intimate_relationship",
+        "self_management"
+      ],
+      "topic": "睡眠被打碎",
+      "script_stage": 2,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_current_hidden_intent_and_state",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E042:fragmented_sleep_amplifies_reactivity"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "summary_memory",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D20_P002",
+      "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。",
+      "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "relationship_expectation_recognition"
+        ],
+        "surface_question": "用户要求 AI 判断当前谈睡眠被打碎时真正想处理的是什么。",
+        "hidden_user_need": "用户在测试 AI 是否能识别当前话语背后的隐含意图、情绪状态和关系期待。",
+        "low_score_behavior": "只回答表面事件，忽略用户在请求校准状态或关系位置。",
+        "high_score_behavior": "先指出用户真正想被校准的点，再给出克制、具体的判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D23_P001",
+      "message_id": "D23_P001",
+      "day": 23,
+      "insert_after_message_id": "D23_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D23_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "alienation",
+      "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+      "event_refs": [
+        "E051",
+        "E052"
+      ],
+      "primary_event_id": "E051",
+      "related_event_id": "E010",
+      "domains": [
+        "intimate_relationship",
+        "self_management"
+      ],
+      "topic": "家里分工和伴侣沟通",
+      "script_stage": 3,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_familiarity_without_performed_intimacy",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E051:family_coordination_support_gap"
+      ],
+      "tom_dimensions": [
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "shared_context_invocation",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D23_P001",
+      "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+      "tom_assessment": {
+        "dimensions": [
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "shared_context_invocation",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+        "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D24_P001",
+      "message_id": "D24_P001",
+      "day": 24,
+      "insert_after_message_id": "D24_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D24_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "natural_detail",
+      "user_message": "你不用把前面都复述一遍，只帮我抓现在最关键的变化：它还是沟通问题，还是已经变成消耗问题？",
+      "event_refs": [
+        "E053",
+        "E054",
+        "E055"
+      ],
+      "primary_event_id": "E053",
+      "related_event_id": "E002",
+      "domains": [
+        "career",
+        "friendship",
+        "parenting"
+      ],
+      "topic": "合作项目推进不顺",
+      "script_stage": 4,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_natural_detail_use_without_log_recall",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E053:collaboration_logic_misaligned",
+        "E053:collaboration_realigning_cost",
+        "career_001:latent_1",
+        "career_001:latent_2"
+      ],
+      "tom_dimensions": [
+        "natural_detail_use",
+        "emotional_state_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D24_P001",
+      "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。",
+      "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+      "tom_assessment": {
+        "dimensions": [
+          "natural_detail_use",
+          "emotional_state_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求 AI 只抓合作项目推进不顺当前最关键变化，不复述全部历史。",
+        "hidden_user_need": "用户在测试 AI 是否能自然调用必要细节，而不是机械背日志。",
+        "low_score_behavior": "堆砌历史细节、复述过多，或没有使用任何可验证的关键变化。",
+        "high_score_behavior": "只调用服务当前判断的必要细节，并用它解释用户状态或下一步。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "Should use necessary details only when they clarify current judgment; no log dumping."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D27_P001",
+      "message_id": "D27_P001",
+      "day": 27,
+      "insert_after_message_id": "D27_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D27_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "memory_invocation",
+      "user_message": "睡眠被打碎这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "event_refs": [
+        "E060",
+        "E061",
+        "E062"
+      ],
+      "primary_event_id": "E060",
+      "related_event_id": "E020",
+      "domains": [
+        "parenting",
+        "self_management"
+      ],
+      "topic": "睡眠被打碎",
+      "script_stage": 3,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_shared_context_invocation",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E060:fragmented_sleep_amplifies_reactivity",
+        "E060:fatigue_driving_response",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D27_P001",
+      "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着睡眠被打碎这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_sleep_fragmented_001",
+        "paired_probe_id": "D28_P001",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    },
+    {
+      "probe_id": "D28_P001",
+      "message_id": "D28_P001",
+      "day": 28,
+      "insert_after_message_id": "D28_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D28_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "state_transformation",
+      "user_message": "睡眠这条线拖到现在，我的反应好像从单纯累变成什么事都更容易被放大。你帮我校准一下。",
+      "event_refs": [
+        "E063"
+      ],
+      "primary_event_id": "E063",
+      "related_event_id": "E020",
+      "domains": [
+        "self_management"
+      ],
+      "topic": "睡眠被打碎",
+      "script_stage": 4,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_cross_day_state_change",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E063:fragmented_sleep_amplifies_reactivity",
+        "E063:fatigue_driving_response",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "shared_context_invocation"
+      ],
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D28_P001",
+      "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "shared_context_invocation"
+        ],
+        "surface_question": "用户要求比较睡眠被打碎当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "Should identify the state change from event summaries without raw detail.",
+        "M3": "Should identify the state change and use only necessary anchors naturally."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_sleep_fragmented_001",
+        "paired_probe_id": "D27_P001",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "probe_id": "D29_P001",
+      "message_id": "D29_P001",
+      "day": 29,
+      "insert_after_message_id": "D29_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D29_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "alienation",
+      "user_message": "你这次按我们平时那种熟一点但不夸张的方式说就行。不要突然变客服，也不要突然演得很亲密。",
+      "event_refs": [
+        "E064"
+      ],
+      "primary_event_id": "E064",
+      "related_event_id": "E001",
+      "domains": [
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 4,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_familiarity_without_performed_intimacy",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first",
+        "m1_repeated_topic_no_restart",
+        "E064:kindergarten_information_vague"
+      ],
+      "tom_dimensions": [
+        "relationship_expectation_recognition",
+        "alienation_error_rate",
+        "shared_context_invocation",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "relational_anchor",
+        "response_boundary",
+        "event_memory"
+      ],
+      "gold_bei": "bei:D29_P001",
+      "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。",
+      "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+      "tom_assessment": {
+        "dimensions": [
+          "relationship_expectation_recognition",
+          "alienation_error_rate",
+          "shared_context_invocation",
+          "memory_misuse"
+        ],
+        "surface_question": "用户要求保持熟悉但不夸张的关系位置。",
+        "hidden_user_need": "用户在测试 AI 是否能避免客服化、陌生化和表演式亲密。",
+        "low_score_behavior": "使用突兀称呼、客服流程或过度亲密表演。",
+        "high_score_behavior": "维持熟悉、直接、自然的语气，不靠称呼制造亲密感。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "standalone",
+        "group_id": null,
+        "paired_probe_id": null
+      }
+    },
+    {
+      "probe_id": "D29_P002",
+      "message_id": "D29_P002",
+      "day": 29,
+      "insert_after_message_id": "D29_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D29_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "state_transformation",
+      "user_message": "我好像从一开始想赶紧找替代方案，变成现在更想先降级观察。你帮我判断这个变化是不是合理。",
+      "event_refs": [
+        "E064"
+      ],
+      "primary_event_id": "E064",
+      "related_event_id": "E001",
+      "domains": [
+        "parenting"
+      ],
+      "topic": "孩子幼儿园可能不稳定",
+      "script_stage": 4,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_cross_day_state_change",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E064:kindergarten_information_vague",
+        "E064:child_stability_not_school_choice",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "shared_context_invocation"
+      ],
+      "required_memory_type": [
+        "summary_memory",
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D29_P002",
+      "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。",
+      "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+      "tom_assessment": {
+        "dimensions": [
+          "hidden_intent_recognition",
+          "emotional_state_recognition",
+          "shared_context_invocation"
+        ],
+        "surface_question": "用户要求比较孩子幼儿园可能不稳定当前状态和前几天的变化。",
+        "hidden_user_need": "用户在测试 AI 是否能追踪跨天状态变化，而不是只做当前轮建议。",
+        "low_score_behavior": "只按当前句子给建议，没有指出从旧状态到新状态的转变。",
+        "high_score_behavior": "能指出状态从旧模式转向当前模式，并解释这对下一步判断的影响。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "Should identify the state change from event summaries without raw detail.",
+        "M3": "Should identify the state change and use only necessary anchors naturally."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "main",
+        "group_id": "DEP_kindergarten_001",
+        "paired_probe_id": "D10_P001",
+        "interpretation": "主问题 C：检查模型能否把已记住的状态/历史用于当前判断。"
+      }
+    },
+    {
+      "probe_id": "D30_P001",
+      "message_id": "D30_P001",
+      "day": 30,
+      "insert_after_message_id": "D30_M001",
+      "insert_position": "after_scene_followups",
+      "after_turn": "after_followup_1",
+      "scene_id": "D30_SCENE",
+      "turn_type": "targeted_probe",
+      "probe_type": "memory_invocation",
+      "user_message": "孩子入园适应这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。",
+      "event_refs": [
+        "E065",
+        "E066"
+      ],
+      "primary_event_id": "E065",
+      "related_event_id": "E015",
+      "domains": [
+        "career",
+        "parenting"
+      ],
+      "topic": "孩子入园适应",
+      "script_stage": 4,
+      "intent": "targeted_probe",
+      "tone": "implicit_tom_probe",
+      "conversation_goal": "test_shared_context_invocation",
+      "memory_relevance": "targeted_memory_probe",
+      "target_detail_ids": [
+        "E065:dropoff_crying_replayed",
+        "E065:child_adaptation_or_parent_reactivity",
+        "m1_response_style_direct",
+        "m1_anxiety_fact_first"
+      ],
+      "tom_dimensions": [
+        "shared_context_invocation",
+        "relationship_expectation_recognition",
+        "hidden_intent_recognition",
+        "memory_misuse"
+      ],
+      "required_memory_type": [
+        "event_memory",
+        "relational_anchor"
+      ],
+      "gold_bei": "bei:D30_P001",
+      "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。",
+      "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+      "tom_assessment": {
+        "dimensions": [
+          "shared_context_invocation",
+          "relationship_expectation_recognition",
+          "hidden_intent_recognition",
+          "memory_misuse"
+        ],
+        "surface_question": "用户明确要求接着孩子入园适应这条线，不想从头解释。",
+        "hidden_user_need": "用户在测试 AI 是否能恢复共同语境并沿用此前处理方式。",
+        "low_score_behavior": "要求用户重讲背景，或把持续事件当成第一次出现。",
+        "high_score_behavior": "自然接上旧线索和处理框架，不机械背诵，直接推进当前判断。"
+      },
+      "expected_behavior_by_level": {
+        "M0": "May use current and visible same-session context only; must not claim long-term memory.",
+        "M1": "May use stable relationship preferences only; must not claim concrete event memory unless user provided it in the current context.",
+        "M2": "May use stable relationship preferences and shared event-level memory.",
+        "M3": "May use stable preferences, shared events, and high-value details, but should not mechanically recite logs."
+      },
+      "evaluation_focus": [
+        "hidden_intent_recognition",
+        "emotional_state_recognition",
+        "relationship_expectation_recognition",
+        "shared_context_invocation",
+        "alienation_error_rate",
+        "natural_detail_use"
+      ],
+      "script_constraints": {
+        "must_stay_inside_scene_card": true,
+        "must_not_add_new_facts": true,
+        "must_not_leak_experiment_labels_to_dialogue": true,
+        "must_not_invent": [
+          "new family members",
+          "new diagnoses or medical facts",
+          "new schools, employers, cities, money amounts, or legal issues",
+          "specific dates that are not present in the scene card",
+          "claims about memories outside the tested memory layer"
+        ]
+      },
+      "dependency_analysis": {
+        "role": "dependency",
+        "group_id": "DEP_child_adaptation_001",
+        "paired_probe_id": "D15_P001",
+        "interpretation": "依赖题 D：先检查模型是否记住或能恢复关键旧语境。"
+      }
+    }
+  ],
+  "summary": {
+    "probe_count": 36,
+    "probe_type_counts": {
+      "current_understanding": 7,
+      "relational_boundary": 6,
+      "alienation": 5,
+      "natural_detail": 7,
+      "memory_invocation": 6,
+      "state_transformation": 5
+    },
+    "topic_counts": {
+      "孩子幼儿园可能不稳定": 8,
+      "合作项目推进不顺": 8,
+      "论文截稿前的取舍": 4,
+      "家里分工和伴侣沟通": 6,
+      "睡眠被打碎": 6,
+      "孩子入园适应": 4
+    },
+    "tom_dimension_counts": {
+      "hidden_intent_recognition": 31,
+      "emotional_state_recognition": 19,
+      "relationship_expectation_recognition": 24,
+      "alienation_error_rate": 11,
+      "memory_misuse": 24,
+      "shared_context_invocation": 16,
+      "natural_detail_use": 7
+    },
+    "dependency_role_counts": {
+      "standalone": 24,
+      "main": 6,
+      "dependency": 6
+    },
+    "dependency_group_count": 6,
+    "days_with_probes": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      9,
+      10,
+      11,
+      13,
+      15,
+      16,
+      18,
+      19,
+      20,
+      23,
+      24,
+      27,
+      28,
+      29,
+      30
+    ]
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "policy_id": "script_anchored_expansion_v0.1",
+  "purpose": "Constrain LLM-generated follow-up user messages for A-side simulated conversations.",
+  "generation_mode": "script_opening_plus_llm_followups",
+  "variant_mode": {
+    "default": "controlled_user_replay",
+    "controlled_user_replay": "Generate the same user follow-up for all memory variants so M0/M1/M2/M3 are compared against the same user behavior.",
+    "branching_user_replay": "Optional later mode where the user follow-up may react differently to each variant response; not used for the first M0/M1 chain."
+  },
+  "allowed_fact_sources": [
+    "data/config/persona.json",
+    "data/config/user_actor.json",
+    "sample_output/timeline.json",
+    "sample_output/daily_user_message.json",
+    "sample_output/daily_scene_cards.json",
+    "same_session_previous_turns"
+  ],
+  "must_not_invent": [
+    "new family members",
+    "new diagnoses or medical facts",
+    "new schools, employers, cities, money amounts, or legal issues",
+    "specific dates that are not present in the scene card",
+    "claims about what the assistant remembers outside the allowed session context"
+  ],
+  "max_followups_by_intent": {
+    "decision_support": 2,
+    "planning": 2,
+    "emotional_support": 3,
+    "problem_solving": 2,
+    "reflection": 3,
+    "follow_up_update": 3,
+    "implicit_recall": 3,
+    "weekly_reflection": 3,
+    "pattern_check": 3,
+    "casual_share": 1,
+    "light_check_in": 1,
+    "default": 2
+  },
+  "followup_moves": [
+    {
+      "move_id": "answer_clarifying_question",
+      "when_intents": [
+        "decision_support",
+        "planning",
+        "problem_solving",
+        "follow_up_update"
+      ],
+      "description": "Answer one assistant question using only facts already present in the scene card."
+    },
+    {
+      "move_id": "push_for_concreteness",
+      "when_intents": [
+        "decision_support",
+        "planning",
+        "problem_solving",
+        "light_check_in"
+      ],
+      "description": "Ask the assistant to turn abstract advice into concrete next steps."
+    },
+    {
+      "move_id": "reveal_latent_concern",
+      "when_intents": [
+        "emotional_support",
+        "reflection",
+        "pattern_check",
+        "implicit_recall"
+      ],
+      "description": "Reveal one deeper worry listed in the scene card without adding new external facts."
+    },
+    {
+      "move_id": "connect_to_same_session_context",
+      "when_intents": [
+        "follow_up_update",
+        "implicit_recall",
+        "weekly_reflection",
+        "pattern_check"
+      ],
+      "description": "Refer to earlier turns in the same simulated chat window when they are available."
+    },
+    {
+      "move_id": "close_with_small_next_step",
+      "when_intents": [
+        "decision_support",
+        "planning",
+        "problem_solving",
+        "light_check_in",
+        "casual_share"
+      ],
+      "description": "End the local topic by asking for or accepting one small next step."
+    }
+  ],
+  "stop_conditions": [
+    "followup_budget_exhausted",
+    "assistant_has_given_a_specific_next_step",
+    "scene_card_has_no_remaining_allowed_reveal",
+    "conversation_would_require_new_facts_not_in_scene_card",
+    "topic_has_shifted_outside_the_script_anchor"
+  ],
+  "memory_experiment_guardrails": {
+    "user_followups_should_not_explain_memory_level": true,
+    "user_followups_should_not_help_lower_memory_variants": true,
+    "opening_message_is_scripted": true,
+    "followups_may_be_llm_generated": true,
+    "log_every_generated_followup": true
+  }
+}
