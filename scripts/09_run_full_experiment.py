@@ -42,6 +42,11 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Optional comma-separated opening message ids. Omit to run all 30 days.",
     )
+    parser.add_argument(
+        "--all-message-ids",
+        action="store_true",
+        help="Compatibility flag. The full runner already uses all 30 days when --message-ids is omitted.",
+    )
     parser.add_argument("--scene-followups", type=int, default=1)
     parser.add_argument("--conditions", default="M0,M1,M2,M3")
     parser.add_argument("--m0-letta-agent-id", default=os.getenv("LETTA_M0_AGENT_ID"))
