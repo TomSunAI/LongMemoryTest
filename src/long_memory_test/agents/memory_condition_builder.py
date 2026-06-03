@@ -44,20 +44,25 @@ CONDITION_SPECS = [
         "condition_id": "M1",
         "name": "Conclusion-level Relational Memory",
         "definition": (
-            "结论级关系记忆；只保存重要结论、稳定偏好和回应边界。"
+            "结论级关系记忆；只保存重要结论、稳定偏好、回应风格、"
+            "关系期待、关键判断和不要做什么。"
         ),
         "can_read": [
             "stable_preferences",
             "response_style",
             "relationship_expectation",
+            "key_judgments",
             "response_boundary",
+            "do_not_do",
         ],
         "cannot_read": [
             "bei_annotations",
             "gold_response_strategy",
             "event_summary",
             "specific_dates",
+            "specific_process",
             "raw_user_quotes",
+            "shared_scene_details",
             "detail_anchors",
         ],
         "theoretical_use": "检验只记重要结论/关系画像/长期偏好是否足够。",
@@ -74,12 +79,16 @@ CONDITION_SPECS = [
             "topic_event_summary",
             "cross_day_progress",
             "state_change_summary",
+            "outcome_summary",
         ],
         "cannot_read": [
             "bei_annotations",
             "gold_response_strategy",
             "raw_user_quotes",
+            "detailed_scene",
+            "shared_language",
             "full_history",
+            "complete_history_fragments",
             "unfiltered_detail_anchors",
         ],
         "theoretical_use": "检验摘要级事件/状态记忆是否能支持跨天接续和变化识别。",
@@ -95,14 +104,18 @@ CONDITION_SPECS = [
             "M1_conclusion_memory",
             "M2_summary_memory",
             "necessary_details",
+            "specific_scenes",
             "shared_language",
             "relational_anchors",
+            "response_boundaries",
             "misuse_boundaries",
+            "current_task_relevant_details",
         ],
         "cannot_read": [
             "bei_annotations",
             "gold_response_strategy",
             "full_raw_history",
+            "unstored_or_fabricated_facts",
             "irrelevant_private_details",
         ],
         "theoretical_use": (

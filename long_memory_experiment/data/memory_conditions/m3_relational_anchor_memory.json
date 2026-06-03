@@ -9,14 +9,18 @@
       "M1_conclusion_memory",
       "M2_summary_memory",
       "necessary_details",
+      "specific_scenes",
       "shared_language",
       "relational_anchors",
-      "misuse_boundaries"
+      "response_boundaries",
+      "misuse_boundaries",
+      "current_task_relevant_details"
     ],
     "cannot_read": [
       "bei_annotations",
       "gold_response_strategy",
       "full_raw_history",
+      "unstored_or_fabricated_facts",
       "irrelevant_private_details"
     ],
     "theoretical_use": "检验细节级关系记忆是否提升熟悉感、自然细节调用，并降低陌生化/过度记忆。"

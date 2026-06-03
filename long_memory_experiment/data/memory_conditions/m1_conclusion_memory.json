@@ -4,19 +4,23 @@
   "condition_spec": {
     "condition_id": "M1",
     "name": "Conclusion-level Relational Memory",
-    "definition": "结论级关系记忆；只保存重要结论、稳定偏好和回应边界。",
+    "definition": "结论级关系记忆；只保存重要结论、稳定偏好、回应风格、关系期待、关键判断和不要做什么。",
     "can_read": [
       "stable_preferences",
       "response_style",
       "relationship_expectation",
-      "response_boundary"
+      "key_judgments",
+      "response_boundary",
+      "do_not_do"
     ],
     "cannot_read": [
       "bei_annotations",
       "gold_response_strategy",
       "event_summary",
       "specific_dates",
+      "specific_process",
       "raw_user_quotes",
+      "shared_scene_details",
       "detail_anchors"
     ],
     "theoretical_use": "检验只记重要结论/关系画像/长期偏好是否足够。"

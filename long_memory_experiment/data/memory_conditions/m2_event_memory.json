@@ -9,13 +9,17 @@
       "M1_conclusion_memory",
       "topic_event_summary",
       "cross_day_progress",
-      "state_change_summary"
+      "state_change_summary",
+      "outcome_summary"
     ],
     "cannot_read": [
       "bei_annotations",
       "gold_response_strategy",
       "raw_user_quotes",
+      "detailed_scene",
+      "shared_language",
       "full_history",
+      "complete_history_fragments",
       "unfiltered_detail_anchors"
     ],
     "theoretical_use": "检验摘要级事件/状态记忆是否能支持跨天接续和变化识别。"
