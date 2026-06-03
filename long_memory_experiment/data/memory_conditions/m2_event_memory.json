@@ -4,9 +4,8 @@
   "condition_spec": {
     "condition_id": "M2",
     "name": "Summary-level Relational Memory",
-    "definition": "Letta M0 默认记忆 + M1 + 摘要级记忆，保存关键事件线、跨天主题进展、状态变化和处理结果摘要。",
+    "definition": "M1 + 摘要级记忆，保存关键事件线、跨天主题进展、状态变化和处理结果摘要。",
     "can_read": [
-      "M0_letta_default_memory",
       "M1_conclusion_memory",
       "topic_event_summary",
       "cross_day_progress",

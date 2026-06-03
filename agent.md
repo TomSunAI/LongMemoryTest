@@ -16,20 +16,22 @@
 
 ## 当前记忆实验条件
 
-正式条件采用 docx 中的累计层级定义：
+正式条件分成一个独立 baseline 和一条累计关系记忆线：
 
 - `M0`：Generic Agent Memory Baseline。主流 agent 框架自带普通长短期记忆强基线，不读人工设计的关系记忆、BEI、事件轨迹或关系锚点。
-- `M1`：Conclusion-level Relational Memory。M0 + 结论级关系记忆，只保存稳定偏好、回应风格、关系期待、关键判断和不要做什么。
+- `M1`：Conclusion-level Relational Memory。只读结论级关系记忆，保存稳定偏好、回应风格、关系期待、关键判断和不要做什么；不叠加 M0 Letta 默认记忆。
 - `M2`：Summary-level Relational Memory。M1 + 摘要级记忆，保存关键事件线、跨天主题进展、用户状态变化和处理结果摘要。
 - `M3`：Detail-level / Relational Anchor Memory。M2 + 必要细节、具体场景、共同语言、关系锚点、回应边界和误用风险。
 
-主实验采用累计条件：`M2` 包含 `M1`，`M3` 包含 `M1 + M2`。这样实验问题是“关系记忆写入层级逐步加深是否提升长期陪伴 ToM-like 表现”，不是“非累积信息类型横向比较”。
+主实验采用关系记忆累计条件：`M2` 包含 `M1`，`M3` 包含 `M1 + M2`。`M0` 不参与这个累计链，只作为 Letta generic memory 的独立强基线。这样实验问题是“关系记忆写入层级逐步加深是否提升长期陪伴 ToM-like 表现”，同时用 `M0` 单独检验通用 agent memory 是否已经足够。
 
 ### 当前 M0 Letta 实现边界
 
-当前实现中，`M0` 必须调用 Letta 默认 memory，不能再用手工构造的 generic 摘要模拟。运行四条件时需要提供 `--m0-letta-agent-id` 或环境变量 `LETTA_M0_AGENT_ID`；如果缺失，runner 会直接报错。
+当前实现中，`M0` 必须调用 Letta 默认 memory，不能再用手工构造的 generic 摘要模拟。只有运行 `M0` 条件时才需要提供 `--m0-letta-agent-id` 或环境变量 `LETTA_M0_AGENT_ID`；如果只跑 `M1/M2/M3`，不需要 Letta agent id。
 
 M0 的职责是提供 Letta 自带的普通 agent memory baseline，包括 Letta runtime 可返回的 core memory、普通用户画像、普通历史检索或普通摘要。M0 不能读取本实验人工整理的 `timeline.json`、`bei_annotations.json`、事件轨迹、关系锚点、failure mode 或 gold strategy。
+
+M1/M2/M3 与 M0 没有读取继承关系。它们不读 Letta M0 baseline，只读本实验构造的关系记忆 payload：M1 读结论，M2 读 M1+事件摘要，M3 读 M1+M2+必要细节和调用边界。
 
 `timeline.json` 是实验脚本和评测用的 ground truth：它决定每天问什么、哪些天是复现/升级/转折、probe 如何插入，以及最终如何评分。它不是被测模型回答时的可读记忆。正式运行时流程是：
 
@@ -39,9 +41,9 @@ timeline / probe plan 决定 user_message
 同一个 user_message 发给 M0/M1/M2/M3
 ↓
 M0 只读 Letta 默认 memory
-M1 读同一份 Letta M0 baseline + 结论级关系记忆
-M2 读同一份 Letta M0 baseline + M1 + 摘要级事件记忆
-M3 读同一份 Letta M0 baseline + M1 + M2 + 细节级关系锚点
+M1 只读结论级关系记忆
+M2 读 M1 + 摘要级事件记忆
+M3 读 M1 + M2 + 细节级关系锚点
 ↓
 评测器再用 timeline / BEI / probe metadata 评分
 ```
@@ -182,9 +184,9 @@ B-V0.1 的目标不是让记忆判断完全智能，而是先把记忆层级边�
 实验中四组 Agent 的主要差异应体现在 B 的记忆载荷边界：
 
 - `M0`：A 可读同窗口共享 user turns + Letta 默认普通记忆；B 不返回人工设计的关系记忆、BEI、事件轨迹或关系锚点。
-- `M1`：A 可读同一份 Letta M0 baseline + 结论级关系记忆。
-- `M2`：A 可读同一份 Letta M0 baseline + M1 + 摘要级事件线/状态变化记忆。
-- `M3`：A 可读同一份 Letta M0 baseline + M1 + M2 + 必要细节、共同语言、关系锚点和调用边界。
+- `M1`：A 可读结论级关系记忆；不读 Letta M0 baseline。
+- `M2`：A 可读 M1 + 摘要级事件线/状态变化记忆；不读 Letta M0 baseline。
+- `M3`：A 可读 M1 + M2 + 必要细节、共同语言、关系锚点和调用边界；不读 Letta M0 baseline。
 
 ### 对话日志约定
 

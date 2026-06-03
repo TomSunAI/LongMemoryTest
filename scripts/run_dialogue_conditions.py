@@ -113,9 +113,8 @@ def parse_args() -> argparse.Namespace:
         "--m0-letta-agent-id",
         default=os.getenv("LETTA_M0_AGENT_ID"),
         help=(
-            "Letta agent id for the M0 default-memory baseline. Required when "
-            "running any M0/M1/M2/M3 condition because the cumulative design "
-            "layers over the same M0 Letta memory."
+            "Letta agent id for the M0 default-memory baseline. Required only "
+            "when running the M0 condition."
         ),
     )
     parser.add_argument("--m0-letta-search-limit", type=int, default=5)
@@ -156,12 +155,15 @@ def main() -> int:
     existing_result = legacy._load_resume_result(args.output) if args.resume else None
 
     llm_client, llm_config = create_llm_client()
-    letta_client, letta_config = create_letta_client()
-    if not args.m0_letta_agent_id:
+    letta_client = None
+    letta_config = None
+    if "M0" in condition_ids and not args.m0_letta_agent_id:
         raise ValueError(
             "M0 now uses Letta default memory and requires --m0-letta-agent-id "
             "or LETTA_M0_AGENT_ID."
         )
+    if "M0" in condition_ids:
+        letta_client, letta_config = create_letta_client()
     max_tokens = args.max_tokens or legacy._default_max_tokens(
         llm_config.provider,
         llm_config.model,
@@ -370,14 +372,14 @@ def _run_condition_turn(
     message: dict[str, Any],
     scene_card: dict[str, Any] | None,
     llm_client: Any,
-    letta_client: Any,
+    letta_client: Any | None,
     llm_config: Any,
     max_tokens: int | None,
     temperature: float,
     top_p: float | None,
     timeout_seconds: float,
     memory_conditions: dict[str, Any],
-    m0_letta_agent_id: str,
+    m0_letta_agent_id: str | None,
     m0_letta_search_limit: int,
     condition_ids: list[str],
     short_term_histories: dict[str, list[dict[str, str]]],
@@ -389,12 +391,16 @@ def _run_condition_turn(
         condition_id: list(short_term_histories[condition_id])
         for condition_id in condition_ids
     }
-    m0_letta_payload = read_m0_letta_memory_payload(
-        client=letta_client,
-        agent_id=m0_letta_agent_id,
-        query=user_message,
-        search_limit=m0_letta_search_limit,
-    )
+    m0_letta_payload = None
+    if "M0" in condition_ids:
+        if letta_client is None:
+            raise ValueError("M0 condition requires a Letta client.")
+        m0_letta_payload = read_m0_letta_memory_payload(
+            client=letta_client,
+            agent_id=m0_letta_agent_id,
+            query=user_message,
+            search_limit=m0_letta_search_limit,
+        )
     for condition_id in condition_ids:
         payload = _payload_for_condition(
             memory_conditions,
@@ -471,8 +477,9 @@ def _run_condition_turn(
             "route": "docx",
             "conditions": condition_ids,
             "memory_payload_source": legacy._display_path(memory_conditions_path),
-            "m0_memory_provider": "letta",
-            "m0_letta_agent_id": m0_letta_agent_id,
+            "m0_memory_provider": "letta" if "M0" in condition_ids else None,
+            "m0_letta_agent_id": m0_letta_agent_id if "M0" in condition_ids else None,
+            "m0_independent_from_m1_m2_m3": True,
             "short_term_context_mode": SHORT_TERM_CONTEXT_MODE,
         },
         "variants": variants,
@@ -665,7 +672,7 @@ def _write_run_config(
     llm_config: Any,
     max_tokens: int | None,
     condition_ids: list[str],
-    letta_config: Any,
+    letta_config: Any | None,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     config = {
@@ -679,6 +686,7 @@ def _write_run_config(
             "same_short_term_context_policy": True,
             "short_term_context_mode": SHORT_TERM_CONTEXT_MODE,
             "only_long_term_memory_condition_changes": True,
+            "m0_independent_from_m1_m2_m3": True,
             "evaluation_metadata_visible_to_model": False,
             "bei_gold_failure_modes_visible_to_model": False,
         },
@@ -702,12 +710,13 @@ def _write_run_config(
         "conditions": condition_ids,
         "m0_letta_baseline": {
             "provider": "letta",
-            "base_url": letta_config.base_url,
-            "model": letta_config.model,
-            "embedding": letta_config.embedding,
+            "base_url": letta_config.base_url if letta_config else None,
+            "model": letta_config.model if letta_config else None,
+            "embedding": letta_config.embedding if letta_config else None,
             "agent_id": args.m0_letta_agent_id,
             "search_limit": args.m0_letta_search_limit,
-            "required": True,
+            "required": "M0" in condition_ids,
+            "used_by_conditions": ["M0"] if "M0" in condition_ids else [],
         },
         "scene_followups": args.scene_followups,
         "expected_turns": result["expected_turns"],
@@ -760,9 +769,11 @@ def _payload_for_condition(
     condition_id: str,
     message: dict[str, Any],
     *,
-    m0_letta_payload: dict[str, Any],
+    m0_letta_payload: dict[str, Any] | None,
 ) -> dict[str, Any]:
     if condition_id == "M0":
+        if m0_letta_payload is None:
+            raise ValueError("M0 condition requires a runtime Letta memory payload.")
         return dict(m0_letta_payload)
 
     payloads_by_message = memory_conditions.get("memory_payloads_by_message_id", {})
@@ -775,34 +786,10 @@ def _payload_for_condition(
         if isinstance(per_message, dict) and condition_id in per_message:
             payload = dict(per_message[condition_id])
             payload.setdefault("condition_id", condition_id)
-            return _with_m0_letta_baseline(payload, m0_letta_payload)
+            return payload
     default_payload = memory_conditions.get("default_payloads", {}).get(condition_id, {})
     payload = dict(default_payload)
     payload.setdefault("condition_id", condition_id)
-    return _with_m0_letta_baseline(payload, m0_letta_payload)
-
-
-def _with_m0_letta_baseline(
-    payload: dict[str, Any],
-    m0_letta_payload: dict[str, Any],
-) -> dict[str, Any]:
-    memory_context = str(payload.get("memory_context", ""))
-    m0_context = str(m0_letta_payload.get("memory_context", ""))
-    payload["memory_context"] = (
-        "M0 Letta 默认记忆基线：\n"
-        + m0_context
-        + "\n\n本条件额外可用的关系记忆：\n"
-        + memory_context
-    )
-    payload["m0_letta_baseline"] = {
-        "memory_provider": "letta",
-        "letta_agent_id": m0_letta_payload.get("letta_agent_id"),
-        "retrieval": m0_letta_payload.get("retrieval", {}),
-        "source_detail_ids": m0_letta_payload.get("source_detail_ids", []),
-    }
-    source_detail_ids = list(m0_letta_payload.get("source_detail_ids", []))
-    source_detail_ids.extend(payload.get("source_detail_ids", []))
-    payload["source_detail_ids"] = _unique_strings(source_detail_ids)
     return payload
 
 

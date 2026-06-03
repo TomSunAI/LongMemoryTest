@@ -109,15 +109,49 @@ class DocxRoutePipelineTests(unittest.TestCase):
         )
 
         payloads = conditions["memory_payloads_by_message_id"]["D10_P001"]
+        specs = {
+            item["condition_id"]: item
+            for item in conditions["condition_specs"]
+        }
         self.assertIn("Letta 默认记忆基线", payloads["M0"]["memory_context"])
         self.assertTrue(payloads["M0"]["requires_runtime_letta"])
         self.assertNotIn("第 10 天", payloads["M0"]["memory_context"])
+        self.assertNotIn("M0_letta_default_memory", specs["M1"]["can_read"])
+        self.assertNotIn("M0_letta_default_memory", specs["M2"]["can_read"])
+        self.assertNotIn("M0_letta_default_memory", specs["M3"]["can_read"])
+        self.assertNotIn("Letta M0 默认记忆 +", specs["M1"]["definition"])
+        self.assertNotIn("Letta M0 默认记忆 +", specs["M2"]["definition"])
+        self.assertNotIn("Letta M0 默认记忆 +", specs["M3"]["definition"])
         self.assertIn("结论级关系记忆", payloads["M2"]["memory_context"])
         self.assertIn("摘要级事件记忆", payloads["M2"]["memory_context"])
         self.assertIn("细节级关系锚点", payloads["M3"]["memory_context"])
         self.assertIn("使用边界", payloads["M3"]["memory_context"])
         self.assertNotIn("误用风险", payloads["M3"]["memory_context"])
         self.assertNotIn("- 关系锚点：", payloads["M3"]["memory_context"])
+
+    def test_runner_payload_for_relational_conditions_does_not_attach_m0(self) -> None:
+        conditions = generate_memory_conditions(
+            timeline=_timeline_doc(),
+            daily_messages=_daily_messages_doc(),
+            probe_question_plan=_probe_doc(),
+            bei_annotations={},
+        )
+
+        payload = runner._payload_for_condition(
+            conditions,
+            "M2",
+            _probe_doc()["probe_questions"][0],
+            m0_letta_payload={
+                "condition_id": "M0",
+                "memory_context": "M0 Letta 默认记忆：不应拼入 M2",
+                "source_detail_ids": ["m0_source"],
+            },
+        )
+
+        self.assertIn("摘要级事件记忆", payload["memory_context"])
+        self.assertNotIn("M0 Letta 默认记忆", payload["memory_context"])
+        self.assertNotIn("m0_letta_baseline", payload)
+        self.assertNotIn("m0_source", payload.get("source_detail_ids", []))
 
     def test_runner_prompt_blinds_condition_labels(self) -> None:
         prompt = runner._build_condition_system_prompt(

@@ -4,9 +4,8 @@
   "condition_spec": {
     "condition_id": "M1",
     "name": "Conclusion-level Relational Memory",
-    "definition": "Letta M0 默认记忆 + 结论级关系记忆，只保存重要结论、稳定偏好和回应边界。",
+    "definition": "结论级关系记忆；只保存重要结论、稳定偏好和回应边界。",
     "can_read": [
-      "M0_letta_default_memory",
       "stable_preferences",
       "response_style",
       "relationship_expectation",

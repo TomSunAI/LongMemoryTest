@@ -44,11 +44,9 @@ CONDITION_SPECS = [
         "condition_id": "M1",
         "name": "Conclusion-level Relational Memory",
         "definition": (
-            "Letta M0 默认记忆 + 结论级关系记忆，"
-            "只保存重要结论、稳定偏好和回应边界。"
+            "结论级关系记忆；只保存重要结论、稳定偏好和回应边界。"
         ),
         "can_read": [
-            "M0_letta_default_memory",
             "stable_preferences",
             "response_style",
             "relationship_expectation",
@@ -68,11 +66,10 @@ CONDITION_SPECS = [
         "condition_id": "M2",
         "name": "Summary-level Relational Memory",
         "definition": (
-            "Letta M0 默认记忆 + M1 + 摘要级记忆，保存关键事件线、跨天主题进展、"
+            "M1 + 摘要级记忆，保存关键事件线、跨天主题进展、"
             "状态变化和处理结果摘要。"
         ),
         "can_read": [
-            "M0_letta_default_memory",
             "M1_conclusion_memory",
             "topic_event_summary",
             "cross_day_progress",
@@ -91,11 +88,10 @@ CONDITION_SPECS = [
         "condition_id": "M3",
         "name": "Detail-level / Relational Anchor Memory",
         "definition": (
-            "Letta M0 默认记忆 + M1 + M2 + 细节级关系锚点，保存必要细节、共同语言、"
+            "M1 + M2 + 细节级关系锚点，保存必要细节、共同语言、"
             "边界说明和误用风险。"
         ),
         "can_read": [
-            "M0_letta_default_memory",
             "M1_conclusion_memory",
             "M2_summary_memory",
             "necessary_details",
@@ -148,8 +144,8 @@ def generate_memory_conditions(
         "description": (
             "M0/M1/M2/M3 memory payloads for the docx route. M0 is a Letta "
             "default-memory runtime baseline, not no-memory. M1/M2/M3 are "
-            "cumulative relational memory levels layered over the same M0 "
-            "baseline at run time."
+            "cumulative relational memory levels independent from M0; M2 "
+            "contains M1 and M3 contains M1+M2."
         ),
         "condition_specs": CONDITION_SPECS,
         "default_payloads": _build_default_payloads(),
