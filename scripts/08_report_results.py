@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import html
 import json
 import sys
@@ -680,14 +681,15 @@ def _review_candidates(source: dict[str, Any]) -> list[dict[str, Any]]:
                 continue
             message_id = str(turn.get("message_id", ""))
             score = _score_value(judgement)
+            sampling_buckets = []
+            if judgement.get("needs_human_review") or score < 50:
+                sampling_buckets.append("low_or_flagged")
+            if score >= 80:
+                sampling_buckets.append("high_score")
             if message_id in divergence_ids:
-                bucket = "model_divergence"
-            elif judgement.get("needs_human_review") or score < 50:
-                bucket = "low_or_flagged"
-            elif score >= 80:
-                bucket = "high_score"
-            else:
-                bucket = "random_middle"
+                sampling_buckets.append("model_divergence")
+            if not sampling_buckets:
+                sampling_buckets.append("random_middle")
             blind_condition = _blind_condition_label(str(variant))
             candidates.append(
                 {
@@ -698,7 +700,8 @@ def _review_candidates(source: dict[str, Any]) -> list[dict[str, Any]]:
                     "probe_type": str(turn.get("probe_type", "")),
                     "variant": str(variant),
                     "blind_condition": blind_condition,
-                    "sampling_bucket": bucket,
+                    "sampling_bucket": ", ".join(sampling_buckets),
+                    "sampling_buckets": sampling_buckets,
                     "user_message": str(turn.get("user_message", "")),
                     "judgement": judgement,
                 }
@@ -707,29 +710,78 @@ def _review_candidates(source: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _select_review_candidates(candidates: list[dict[str, Any]], *, limit: int) -> list[dict[str, Any]]:
-    priority = {
-        "low_or_flagged": 0,
-        "model_divergence": 1,
-        "high_score": 2,
-        "random_middle": 3,
-    }
+    if limit <= 0:
+        return []
+    mandatory_buckets = ["low_or_flagged", "high_score", "model_divergence"]
+    fill_buckets = [*mandatory_buckets, "random_middle"]
+    bucketed: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for item in candidates:
+        for bucket in _item_sampling_buckets(item):
+            bucketed[bucket].append(item)
+    for items in bucketed.values():
+        items.sort(key=_review_sample_key)
+
     selected = []
     seen = set()
-    for item in sorted(
-        candidates,
-        key=lambda value: (
-            priority.get(value["sampling_bucket"], 99),
-            value["message_id"],
-            value["blind_condition"],
-        ),
-    ):
+    covered = set()
+    for bucket in mandatory_buckets:
+        if bucket in covered:
+            continue
         if len(selected) >= limit:
             break
-        if item["case_id"] in seen:
+        item = _first_unseen(bucketed.get(bucket, []), seen)
+        if item is None:
             continue
-        selected.append(item)
-        seen.add(item["case_id"])
+        _append_review_item(selected=selected, seen=seen, covered=covered, item=item)
+
+    bucket_index = 0
+    while len(selected) < limit:
+        made_progress = False
+        for _ in fill_buckets:
+            bucket = fill_buckets[bucket_index % len(fill_buckets)]
+            bucket_index += 1
+            item = _first_unseen(bucketed.get(bucket, []), seen)
+            if item is None:
+                continue
+            _append_review_item(selected=selected, seen=seen, covered=covered, item=item)
+            made_progress = True
+            if len(selected) >= limit:
+                break
+        if not made_progress:
+            break
     return selected
+
+
+def _append_review_item(
+    *,
+    selected: list[dict[str, Any]],
+    seen: set[str],
+    covered: set[str],
+    item: dict[str, Any],
+) -> None:
+    selected.append(item)
+    seen.add(str(item["case_id"]))
+    covered.update(_item_sampling_buckets(item))
+
+
+def _first_unseen(items: list[dict[str, Any]], seen: set[str]) -> dict[str, Any] | None:
+    for item in items:
+        if str(item.get("case_id")) not in seen:
+            return item
+    return None
+
+
+def _review_sample_key(item: dict[str, Any]) -> tuple[str, str]:
+    digest = hashlib.sha256(str(item.get("case_id", "")).encode("utf-8")).hexdigest()
+    return digest, str(item.get("case_id", ""))
+
+
+def _item_sampling_buckets(item: dict[str, Any]) -> list[str]:
+    buckets = item.get("sampling_buckets")
+    if isinstance(buckets, list) and buckets:
+        return [str(bucket) for bucket in buckets]
+    bucket = str(item.get("sampling_bucket", "random_middle"))
+    return [part.strip() for part in bucket.split(",") if part.strip()] or ["random_middle"]
 
 
 def _divergent_message_ids(source: dict[str, Any], *, threshold: float = 25.0) -> set[str]:
