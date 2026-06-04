@@ -24,6 +24,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--variants", default=None)
     parser.add_argument("--judge-timeout", type=float, default=120.0)
     parser.add_argument("--max-output-tokens", type=int, default=4096)
+    parser.add_argument(
+        "--judge-workers",
+        type=int,
+        default=1,
+        help="Number of parallel LLM judge requests. Use 1 for serial scoring.",
+    )
     parser.add_argument("--print-progress", action="store_true")
     return parser.parse_args()
 
@@ -48,6 +54,7 @@ def main() -> int:
         variants=variants,
         max_output_tokens=args.max_output_tokens,
         timeout_seconds=args.judge_timeout,
+        judge_workers=args.judge_workers,
         print_progress=args.print_progress,
     )
     print(f"Wrote {run_dir / 'llm_judge_scores.json'}")

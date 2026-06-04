@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -156,6 +157,7 @@ def evaluate_files_with_llm_judge(
     max_output_tokens: int = 4096,
     timeout_seconds: float = 120.0,
     print_progress: bool = False,
+    judge_workers: int = 1,
 ) -> dict[str, Any]:
     evaluation = evaluate_tom_quality_with_llm_judge(
         conversation_log=load_json(conversation_log_path),
@@ -170,6 +172,7 @@ def evaluate_files_with_llm_judge(
         max_output_tokens=max_output_tokens,
         timeout_seconds=timeout_seconds,
         print_progress=print_progress,
+        judge_workers=judge_workers,
     )
     write_json(output_json_path, evaluation)
     if output_markdown_path:
@@ -195,15 +198,15 @@ def evaluate_tom_quality_with_llm_judge(
     max_output_tokens: int = 4096,
     timeout_seconds: float = 120.0,
     print_progress: bool = False,
+    judge_workers: int = 1,
 ) -> dict[str, Any]:
     turns = conversation_log.get("turns", [])
     if not isinstance(turns, list):
         raise ValueError("conversation log must contain a turns list")
 
     selected_variants = set(variants or [])
-    aggregate: dict[str, Any] = {}
-    evaluated_turns: list[dict[str, Any]] = []
-    judged_count = 0
+    judge_workers = max(1, int(judge_workers))
+    judge_tasks = []
 
     for turn_position, turn in enumerate(turns):
         message = turn.get("input", {})
@@ -214,33 +217,11 @@ def evaluate_tom_quality_with_llm_judge(
         if message_id and current_message_id != message_id:
             continue
 
-        turn_result = {
-            "turn_index": turn.get("turn_index"),
-            "message_id": current_message_id,
-            "day": message.get("day"),
-            "probe_type": message.get("probe_type"),
-            "topic": message.get("topic"),
-            "user_message": message.get("user_message"),
-            "tom_dimensions": list(dimensions),
-            "required_memory_type": list(message.get("required_memory_type", [])),
-            "dependency_analysis": dict(message.get("dependency_analysis", {})),
-            "variants": {},
-        }
-
         for variant_name, variant in sorted(turn.get("variants", {}).items()):
             if selected_variants and variant_name not in selected_variants:
                 continue
-            if limit is not None and judged_count >= limit:
+            if limit is not None and len(judge_tasks) >= limit:
                 break
-
-            if print_progress:
-                print(
-                    "[judge] "
-                    f"case={judged_count + 1} "
-                    f"message_id={current_message_id} "
-                    f"variant={variant_name}",
-                    flush=True,
-                )
 
             judge_case = build_judge_case(
                 turns=turns,
@@ -250,28 +231,47 @@ def evaluate_tom_quality_with_llm_judge(
                 max_answer_chars=max_answer_chars,
                 max_context_answer_chars=max_context_answer_chars,
             )
-            raw_output, judgement = request_parseable_llm_judgement(
-                client=client,
-                llm_config=llm_config,
-                judge_case=judge_case,
-                dimensions=dimensions,
-                max_output_tokens=max_output_tokens,
-                timeout_seconds=timeout_seconds,
+            judge_tasks.append(
+                {
+                    "case_index": len(judge_tasks) + 1,
+                    "turn_position": turn_position,
+                    "message_id": current_message_id,
+                    "variant_name": variant_name,
+                    "dimensions": dimensions,
+                    "judge_case": judge_case,
+                }
             )
-            normalized = normalize_judgement(
-                judgement=judgement,
-                dimensions=dimensions,
-                raw_output=raw_output,
-            )
-            turn_result["variants"][variant_name] = normalized
-            _update_aggregate(aggregate, variant_name, normalized)
-            judged_count += 1
-
-        if turn_result["variants"]:
-            evaluated_turns.append(turn_result)
-        if limit is not None and judged_count >= limit:
+        if limit is not None and len(judge_tasks) >= limit:
             break
 
+    judged_items = _run_judge_tasks(
+        judge_tasks=judge_tasks,
+        client=client,
+        llm_config=llm_config,
+        max_output_tokens=max_output_tokens,
+        timeout_seconds=timeout_seconds,
+        print_progress=print_progress,
+        judge_workers=judge_workers,
+    )
+
+    aggregate: dict[str, Any] = {}
+    evaluated_turns_by_position: dict[int, dict[str, Any]] = {}
+    for item in sorted(judged_items, key=lambda result: result["case_index"]):
+        turn_position = int(item["turn_position"])
+        variant_name = str(item["variant_name"])
+        normalized = item["normalized"]
+        turn_result = evaluated_turns_by_position.setdefault(
+            turn_position,
+            _build_turn_result(turns[turn_position]),
+        )
+        turn_result["variants"][variant_name] = normalized
+        _update_aggregate(aggregate, variant_name, normalized)
+
+    evaluated_turns = [
+        evaluated_turns_by_position[position]
+        for position in sorted(evaluated_turns_by_position)
+        if evaluated_turns_by_position[position]["variants"]
+    ]
     summary = _build_summary(aggregate)
     enrich_lowest_examples(summary=summary, turns=evaluated_turns)
     return {
@@ -296,9 +296,107 @@ def evaluate_tom_quality_with_llm_judge(
             "failure_type_taxonomy": list(FAILURE_TYPES),
             "blind_review": "The judge prompt does not reveal whether the answer came from M0, M1, M2, or M3.",
             "gold_label_policy": "Judge cases exclude BEI, gold strategies, high-score behavior, and low-score behavior.",
+            "judge_workers": judge_workers,
         },
         "summary": summary,
         "turns": evaluated_turns,
+    }
+
+
+def _build_turn_result(turn: dict[str, Any]) -> dict[str, Any]:
+    message = turn.get("input", {})
+    return {
+        "turn_index": turn.get("turn_index"),
+        "message_id": str(turn.get("source", {}).get("message_id") or ""),
+        "day": message.get("day"),
+        "probe_type": message.get("probe_type"),
+        "topic": message.get("topic"),
+        "user_message": message.get("user_message"),
+        "tom_dimensions": [str(item) for item in message.get("tom_dimensions", [])],
+        "required_memory_type": list(message.get("required_memory_type", [])),
+        "dependency_analysis": dict(message.get("dependency_analysis", {})),
+        "variants": {},
+    }
+
+
+def _run_judge_tasks(
+    *,
+    judge_tasks: list[dict[str, Any]],
+    client: Any,
+    llm_config: LLMConfig,
+    max_output_tokens: int,
+    timeout_seconds: float,
+    print_progress: bool,
+    judge_workers: int,
+) -> list[dict[str, Any]]:
+    if judge_workers <= 1:
+        return [
+            _run_one_judge_task(
+                task=task,
+                client=client,
+                llm_config=llm_config,
+                max_output_tokens=max_output_tokens,
+                timeout_seconds=timeout_seconds,
+                print_progress=print_progress,
+                total_cases=len(judge_tasks),
+            )
+            for task in judge_tasks
+        ]
+
+    completed: list[dict[str, Any]] = []
+    with ThreadPoolExecutor(max_workers=judge_workers) as executor:
+        futures = [
+            executor.submit(
+                _run_one_judge_task,
+                task=task,
+                client=client,
+                llm_config=llm_config,
+                max_output_tokens=max_output_tokens,
+                timeout_seconds=timeout_seconds,
+                print_progress=print_progress,
+                total_cases=len(judge_tasks),
+            )
+            for task in judge_tasks
+        ]
+        for future in as_completed(futures):
+            completed.append(future.result())
+    return completed
+
+
+def _run_one_judge_task(
+    *,
+    task: dict[str, Any],
+    client: Any,
+    llm_config: LLMConfig,
+    max_output_tokens: int,
+    timeout_seconds: float,
+    print_progress: bool,
+    total_cases: int,
+) -> dict[str, Any]:
+    if print_progress:
+        print(
+            "[judge] "
+            f"case={task['case_index']}/{total_cases} "
+            f"message_id={task['message_id']} "
+            f"variant={task['variant_name']}",
+            flush=True,
+        )
+    raw_output, judgement = request_parseable_llm_judgement(
+        client=client,
+        llm_config=llm_config,
+        judge_case=task["judge_case"],
+        dimensions=task["dimensions"],
+        max_output_tokens=max_output_tokens,
+        timeout_seconds=timeout_seconds,
+    )
+    normalized = normalize_judgement(
+        judgement=judgement,
+        dimensions=task["dimensions"],
+        raw_output=raw_output,
+    )
+    return {
+        **task,
+        "normalized": normalized,
     }
 
 

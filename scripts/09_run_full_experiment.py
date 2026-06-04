@@ -59,6 +59,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--judge-timeout", type=float, default=600.0)
     parser.add_argument("--judge-max-output-tokens", type=int, default=4096)
     parser.add_argument(
+        "--judge-workers",
+        type=int,
+        default=1,
+        help="Number of parallel LLM judge requests. Use 1 for serial scoring.",
+    )
+    parser.add_argument(
         "--judge-limit",
         type=int,
         default=None,
@@ -156,6 +162,8 @@ def main() -> int:
             str(args.judge_timeout),
             "--max-output-tokens",
             str(args.judge_max_output_tokens),
+            "--judge-workers",
+            str(args.judge_workers),
         ]
         if args.judge_limit is not None:
             judge_cmd.extend(["--limit", str(args.judge_limit)])
