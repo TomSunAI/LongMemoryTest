@@ -5,7 +5,6 @@ import argparse
 import hashlib
 import importlib.util
 import json
-import os
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -20,11 +19,7 @@ if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
 from long_memory_test.llm import create_llm_client  # noqa: E402
-from long_memory_test.letta_memory import (  # noqa: E402
-    create_letta_client,
-    read_m0_letta_memory_payload,
-    write_m0_letta_turn_memory,
-)
+from long_memory_test.memory import LDAgentMemoryRuntime  # noqa: E402
 from long_memory_test.experiment_cache import (  # noqa: E402
     CACHE_MEMORY_CONDITIONS_PATH,
     DAILY_SCENE_CARDS_PATH,
@@ -119,49 +114,8 @@ def parse_args() -> argparse.Namespace:
         default=1,
         help="Number of parallel condition answer generations per user turn.",
     )
-    parser.add_argument(
-        "--m0-letta-agent-id",
-        default=os.getenv("LETTA_M0_AGENT_ID"),
-        help=(
-            "Letta agent id for the M0 default-memory baseline. Required only "
-            "when running the M0 condition."
-        ),
-    )
-    parser.add_argument("--m0-letta-search-limit", type=int, default=5)
-    parser.add_argument(
-        "--m0-letta-enable-message-search",
-        action="store_true",
-        help=(
-            "Enable Letta generic message search for M0. This requires the "
-            "Letta server to have message embeddings and Turbopuffer enabled."
-        ),
-    )
-    parser.add_argument(
-        "--m0-letta-enable-passage-search",
-        action="store_true",
-        help=(
-            "Enable Letta generic archival/passage search for M0. This requires "
-            "a working embedding provider for the Letta server."
-        ),
-    )
-    parser.add_argument(
-        "--m0-letta-full-retrieval",
-        action="store_true",
-        help=(
-            "Enable both M0 Letta message search and passage search. Use this "
-            "for the full generic Letta retrieval baseline after preflight passes."
-        ),
-    )
-    parser.add_argument(
-        "--disable-m0-letta-writeback",
-        action="store_true",
-        help=(
-            "Disable writing M0 user/assistant turns back to the Letta "
-            "m0_conversation_history core block. "
-            "By default M0 uses Letta read + explicit writeback so its generic "
-            "memory can grow across the run."
-        ),
-    )
+    parser.add_argument("--m0-ld-agent-top-k", type=int, default=5)
+    parser.add_argument("--m0-ld-agent-short-term-k", type=int, default=5)
     parser.add_argument("--print-progress", action="store_true")
     parser.add_argument("--print-mode", choices=["summary", "all"], default="summary")
     args = parser.parse_args()
@@ -178,7 +132,6 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    _configure_m0_letta_search_env(args)
     messages_doc = _load_json(args.daily_messages)
     message_ids = legacy._resolve_message_ids(args, messages_doc["messages"])
     messages = [
@@ -200,15 +153,6 @@ def main() -> int:
     existing_result = legacy._load_resume_result(args.output) if args.resume else None
 
     llm_client, llm_config = create_llm_client()
-    letta_client = None
-    letta_config = None
-    if "M0" in condition_ids and not args.m0_letta_agent_id:
-        raise ValueError(
-            "M0 now uses Letta default memory and requires --m0-letta-agent-id "
-            "or LETTA_M0_AGENT_ID."
-        )
-    if "M0" in condition_ids:
-        letta_client, letta_config = create_letta_client()
     max_tokens = args.max_tokens or legacy._default_max_tokens(
         llm_config.provider,
         llm_config.model,
@@ -240,6 +184,12 @@ def main() -> int:
         memory_conditions_path=args.memory_conditions,
         expected_turns=expected_turns,
     )
+    m0_memory_runtime = LDAgentMemoryRuntime.from_completed_turns(
+        result["turns"],
+        top_k=args.m0_ld_agent_top_k,
+        short_term_k=args.m0_ld_agent_short_term_k,
+    )
+    result["m0_ld_agent_memory"] = m0_memory_runtime.snapshot()
     _write_run_config(
         args.output.parent / "run_config.json",
         result=result,
@@ -247,7 +197,6 @@ def main() -> int:
         llm_config=llm_config,
         max_tokens=max_tokens,
         condition_ids=condition_ids,
-        letta_config=letta_config,
     )
 
     expected_message_ids = legacy._expected_message_id_sequence(
@@ -302,7 +251,6 @@ def main() -> int:
                     message=current_input,
                     scene_card=scene_card,
                     llm_client=llm_client,
-                    letta_client=letta_client,
                     llm_config=llm_config,
                     max_tokens=max_tokens,
                     temperature=args.temperature,
@@ -311,14 +259,13 @@ def main() -> int:
                     condition_workers=args.condition_workers,
                     print_condition_progress=args.print_progress,
                     memory_conditions=memory_conditions,
-                    m0_letta_agent_id=args.m0_letta_agent_id,
-                    m0_letta_search_limit=args.m0_letta_search_limit,
-                    m0_letta_writeback=not args.disable_m0_letta_writeback,
+                    m0_memory_runtime=m0_memory_runtime,
                     condition_ids=condition_ids,
                     short_term_histories=short_term_histories,
                     previous_message_ids=list(transcript_message_ids),
                 )
                 result["turns"].append(turn)
+                result["m0_ld_agent_memory"] = m0_memory_runtime.snapshot()
                 transcript_message_ids.append(current_message_id)
                 completed_message_ids.add(current_message_id)
                 completed_turn_inputs[current_message_id] = current_input
@@ -371,7 +318,6 @@ def main() -> int:
                 message=probe_question,
                 scene_card=scene_card,
                 llm_client=llm_client,
-                letta_client=letta_client,
                 llm_config=llm_config,
                 max_tokens=max_tokens,
                 temperature=args.temperature,
@@ -380,14 +326,13 @@ def main() -> int:
                 condition_workers=args.condition_workers,
                 print_condition_progress=args.print_progress,
                 memory_conditions=memory_conditions,
-                m0_letta_agent_id=args.m0_letta_agent_id,
-                m0_letta_search_limit=args.m0_letta_search_limit,
-                m0_letta_writeback=not args.disable_m0_letta_writeback,
+                m0_memory_runtime=m0_memory_runtime,
                 condition_ids=condition_ids,
                 short_term_histories=short_term_histories,
                 previous_message_ids=list(transcript_message_ids),
             )
             result["turns"].append(turn)
+            result["m0_ld_agent_memory"] = m0_memory_runtime.snapshot()
             transcript_message_ids.append(current_message_id)
             completed_message_ids.add(current_message_id)
             completed_turn_inputs[current_message_id] = probe_question
@@ -399,6 +344,8 @@ def main() -> int:
                 status="running",
             )
 
+    m0_memory_runtime.flush_current_session(reason="run_complete")
+    result["m0_ld_agent_memory"] = m0_memory_runtime.snapshot()
     _write_condition_checkpoint(
         output_path=args.output,
         conversation_log_path=args.conversation_log,
@@ -423,7 +370,6 @@ def _run_condition_turn(
     message: dict[str, Any],
     scene_card: dict[str, Any] | None,
     llm_client: Any,
-    letta_client: Any | None,
     llm_config: Any,
     max_tokens: int | None,
     temperature: float,
@@ -432,9 +378,7 @@ def _run_condition_turn(
     condition_workers: int,
     print_condition_progress: bool,
     memory_conditions: dict[str, Any],
-    m0_letta_agent_id: str | None,
-    m0_letta_search_limit: int,
-    m0_letta_writeback: bool,
+    m0_memory_runtime: LDAgentMemoryRuntime,
     condition_ids: list[str],
     short_term_histories: dict[str, list[dict[str, str]]],
     previous_message_ids: list[str],
@@ -445,16 +389,8 @@ def _run_condition_turn(
         condition_id: list(short_term_histories[condition_id])
         for condition_id in condition_ids
     }
-    m0_letta_payload = None
-    if "M0" in condition_ids:
-        if letta_client is None:
-            raise ValueError("M0 condition requires a Letta client.")
-        m0_letta_payload = read_m0_letta_memory_payload(
-            client=letta_client,
-            agent_id=m0_letta_agent_id,
-            query=user_message,
-            search_limit=m0_letta_search_limit,
-        )
+    memory_action_start = len(m0_memory_runtime.actions)
+    m0_ld_agent_payload = m0_memory_runtime.retrieve_payload(message)
     max_workers = max(1, min(int(condition_workers), len(condition_ids)))
 
     def run_one_condition(condition_id: str) -> tuple[str, dict[str, Any]]:
@@ -462,7 +398,7 @@ def _run_condition_turn(
             memory_conditions,
             condition_id,
             message,
-            m0_letta_payload=m0_letta_payload,
+            m0_ld_agent_payload=m0_ld_agent_payload,
         )
         if print_condition_progress:
             print(
@@ -524,23 +460,15 @@ def _run_condition_turn(
                 completed_condition_id, variant = future.result()
                 variants[completed_condition_id] = variant
     variants = {condition_id: variants[condition_id] for condition_id in condition_ids}
-    memory_actions = []
-    if m0_letta_writeback and "M0" in variants:
-        if letta_client is None:
-            raise ValueError("M0 Letta writeback requires a Letta client.")
-        m0_writeback_action = write_m0_letta_turn_memory(
-            client=letta_client,
-            agent_id=m0_letta_agent_id or "",
-            run_id=run_id,
-            message_id=str(message["message_id"]),
-            day=message.get("day"),
-            topic=message.get("topic"),
-            turn_type=message.get("turn_type", "scripted_opening"),
-            user_message=user_message,
-            assistant_answer=str(variants["M0"]["assistant_answer"]),
-        )
-        variants["M0"]["memory_writeback"] = m0_writeback_action
-        memory_actions.append(m0_writeback_action)
+    m0_answer = str(variants.get("M0", {}).get("assistant_answer", ""))
+    m0_record_action = m0_memory_runtime.record_completed_turn(
+        message=message,
+        assistant_answer=m0_answer,
+        run_id=run_id,
+    )
+    if "M0" in variants:
+        variants["M0"]["memory_writeback"] = m0_record_action
+    memory_actions = list(m0_memory_runtime.actions[memory_action_start:])
     for condition_id in condition_ids:
         _append_short_term_user_turn(short_term_histories[condition_id], user_message)
 
@@ -578,10 +506,9 @@ def _run_condition_turn(
             "route": "docx",
             "conditions": condition_ids,
             "memory_payload_source": legacy._display_path(memory_conditions_path),
-            "m0_memory_provider": "letta" if "M0" in condition_ids else None,
-            "m0_letta_agent_id": m0_letta_agent_id if "M0" in condition_ids else None,
-            "m0_letta_writeback_enabled": bool(m0_letta_writeback and "M0" in condition_ids),
-            "m0_independent_from_m1_m2_m3": True,
+            "m0_memory_provider": "ld_agent_memory",
+            "m0_ld_agent_reference": m0_ld_agent_payload.get("ld_agent_reference"),
+            "m1_m2_m3_share_m0_base_memory": True,
             "short_term_context_mode": SHORT_TERM_CONTEXT_MODE,
         },
         "variants": variants,
@@ -776,11 +703,8 @@ def _write_run_config(
     llm_config: Any,
     max_tokens: int | None,
     condition_ids: list[str],
-    letta_config: Any | None,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    m0_message_search_enabled = _m0_message_search_runtime_enabled(args)
-    m0_passage_search_enabled = _m0_passage_search_runtime_enabled(args)
     config = {
         "schema_version": "run_config_v1",
         "run_id": result["run_id"],
@@ -793,7 +717,7 @@ def _write_run_config(
             "short_term_context_mode": SHORT_TERM_CONTEXT_MODE,
             "only_long_term_memory_condition_changes": True,
             "same_condition_parallelism_for_all_conditions": True,
-            "m0_independent_from_m1_m2_m3": True,
+            "m1_m2_m3_share_m0_base_memory": True,
             "evaluation_metadata_visible_to_model": False,
             "bei_gold_failure_modes_visible_to_model": False,
         },
@@ -816,30 +740,30 @@ def _write_run_config(
             "memory_conditions": legacy._display_path(args.memory_conditions),
         },
         "conditions": condition_ids,
-        "m0_letta_baseline": {
-            "provider": "letta",
-            "base_url": letta_config.base_url if letta_config else None,
-            "model": letta_config.model if letta_config else None,
-            "embedding": letta_config.embedding if letta_config else None,
-            "agent_id": args.m0_letta_agent_id,
-            "search_limit": args.m0_letta_search_limit,
-            "writeback_enabled": bool("M0" in condition_ids and not args.disable_m0_letta_writeback),
-            "writeback_method": "agents.blocks.update",
-            "writeback_scope": (
-                "M0 user_message + M0 assistant_answer only, stored in "
-                "m0_conversation_history core block"
+        "m0_ld_agent_memory_baseline": {
+            "provider": "ld_agent_memory",
+            "ld_agent_reference": result.get("m0_ld_agent_memory", {}).get(
+                "ld_agent_reference"
             ),
-            "default_read_scope": (
-                "core memory blocks plus enabled generic Letta search channels"
-                if m0_message_search_enabled or m0_passage_search_enabled
-                else "core memory blocks only"
-            ),
-            "message_search_enabled": m0_message_search_enabled,
-            "passage_search_enabled": m0_passage_search_enabled,
-            "full_retrieval_enabled": bool(args.m0_letta_full_retrieval),
-            "required": "M0" in condition_ids,
-            "used_by_conditions": ["M0"] if "M0" in condition_ids else [],
-            "formal_run_note": "Use a fresh M0 Letta agent per formal run to avoid cross-run memory contamination.",
+            "top_k": args.m0_ld_agent_top_k,
+            "short_term_k": args.m0_ld_agent_short_term_k,
+            "uses_ld_agent_generator": False,
+            "uses_ld_agent_checkpoint": False,
+            "uses_letta": False,
+            "writeback_method": "local_session_summary_memory",
+            "long_term_memory_bank": [
+                "generic_event_memories",
+                "generic_persona_memories",
+            ],
+            "retrieval": {
+                "strategy": "ld_agent_topic_overlap_recency",
+                "top_k": args.m0_ld_agent_top_k,
+            },
+            "used_by_conditions": [
+                condition_id
+                for condition_id in condition_ids
+                if condition_id in {"M0", "M1", "M2", "M3"}
+            ],
         },
         "scene_followups": args.scene_followups,
         "expected_turns": result["expected_turns"],
@@ -854,40 +778,11 @@ def _write_run_config(
             "duplicate_message_ids_are_skipped": True,
             "input_hash_recorded_per_turn": True,
             "checkpoint_written_after_each_completed_turn": True,
-            "m0_letta_writeback_idempotent_by_run_id_and_message_id": True,
-            "m0_letta_writeback_uses_embedding_free_core_block": True,
-            "m0_full_retrieval_requires_embedding_and_turbopuffer_preflight": True,
+            "m0_ld_agent_memory_snapshot_persisted": True,
         },
     }
     result["run_config"] = config
     path.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
-
-def _configure_m0_letta_search_env(args: argparse.Namespace) -> None:
-    if args.m0_letta_full_retrieval or args.m0_letta_enable_message_search:
-        os.environ["M0_LETTA_ENABLE_MESSAGE_SEARCH"] = "1"
-    if args.m0_letta_full_retrieval or args.m0_letta_enable_passage_search:
-        os.environ["M0_LETTA_ENABLE_PASSAGE_SEARCH"] = "1"
-
-
-def _m0_message_search_runtime_enabled(args: argparse.Namespace) -> bool:
-    return bool(
-        args.m0_letta_full_retrieval
-        or args.m0_letta_enable_message_search
-        or _search_env_enabled("M0_LETTA_ENABLE_MESSAGE_SEARCH")
-    )
-
-
-def _m0_passage_search_runtime_enabled(args: argparse.Namespace) -> bool:
-    return bool(
-        args.m0_letta_full_retrieval
-        or args.m0_letta_enable_passage_search
-        or _search_env_enabled("M0_LETTA_ENABLE_PASSAGE_SEARCH")
-    )
-
-
-def _search_env_enabled(key: str) -> bool:
-    return os.getenv(key, "").strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _rebuild_runtime_state(
@@ -923,12 +818,10 @@ def _payload_for_condition(
     condition_id: str,
     message: dict[str, Any],
     *,
-    m0_letta_payload: dict[str, Any] | None,
+    m0_ld_agent_payload: dict[str, Any],
 ) -> dict[str, Any]:
     if condition_id == "M0":
-        if m0_letta_payload is None:
-            raise ValueError("M0 condition requires a runtime Letta memory payload.")
-        return dict(m0_letta_payload)
+        return dict(m0_ld_agent_payload)
 
     payloads_by_message = memory_conditions.get("memory_payloads_by_message_id", {})
     message_id = str(message.get("message_id", ""))
@@ -940,10 +833,44 @@ def _payload_for_condition(
         if isinstance(per_message, dict) and condition_id in per_message:
             payload = dict(per_message[condition_id])
             payload.setdefault("condition_id", condition_id)
-            return payload
+            return _with_m0_base_memory(payload, m0_ld_agent_payload)
     default_payload = memory_conditions.get("default_payloads", {}).get(condition_id, {})
     payload = dict(default_payload)
     payload.setdefault("condition_id", condition_id)
+    return _with_m0_base_memory(payload, m0_ld_agent_payload)
+
+
+def _with_m0_base_memory(
+    relational_payload: dict[str, Any],
+    m0_ld_agent_payload: dict[str, Any],
+) -> dict[str, Any]:
+    payload = dict(relational_payload)
+    if payload.get("condition_id") not in {"M1", "M2", "M3"}:
+        return payload
+    relational_context = str(payload.get("memory_context", "")).strip()
+    m0_context = str(m0_ld_agent_payload.get("memory_context", "")).strip()
+    payload["memory_context"] = "\n".join(
+        item
+        for item in [
+            m0_context,
+            relational_context,
+            "共同使用边界：LD-Agent 普通记忆只提供 generic event/persona context；关系记忆只按当前条件粒度使用。",
+        ]
+        if item
+    )
+    payload["m0_base_memory"] = {
+        "memory_provider": m0_ld_agent_payload.get("memory_provider"),
+        "source_detail_ids": list(m0_ld_agent_payload.get("source_detail_ids", [])),
+        "retrieval": dict(m0_ld_agent_payload.get("retrieval", {})),
+    }
+    payload["source_detail_ids"] = _unique_strings(
+        list(m0_ld_agent_payload.get("source_detail_ids", []))
+        + list(payload.get("source_detail_ids", []))
+    )
+    payload["retrieval"] = {
+        "m0_base": m0_ld_agent_payload.get("retrieval", {}),
+        "relational_payload_source": "memory_conditions",
+    }
     return payload
 
 

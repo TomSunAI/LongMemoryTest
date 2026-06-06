@@ -4,8 +4,10 @@
   "condition_spec": {
     "condition_id": "M1",
     "name": "Conclusion-level Relational Memory",
-    "definition": "结论级关系记忆；只保存重要结论、稳定偏好、回应风格、关系期待、关键判断和不要做什么。",
+    "definition": "M0 LD-Agent memory baseline + 结论级关系记忆；保存重要结论、稳定偏好、回应风格、关系期待、关键判断和不要做什么。",
     "can_read": [
+      "M0_generic_event_memory",
+      "M0_generic_persona_memory",
       "stable_preferences",
       "response_style",
       "relationship_expectation",

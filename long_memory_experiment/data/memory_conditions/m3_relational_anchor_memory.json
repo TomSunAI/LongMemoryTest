@@ -4,8 +4,10 @@
   "condition_spec": {
     "condition_id": "M3",
     "name": "Detail-level / Relational Anchor Memory",
-    "definition": "M1 + M2 + 细节级关系锚点，保存必要细节、共同语言、边界说明和误用风险。",
+    "definition": "M0 LD-Agent memory baseline + M1 + M2 + 细节级关系锚点，保存必要细节、共同语言、边界说明和误用风险。",
     "can_read": [
+      "M0_generic_event_memory",
+      "M0_generic_persona_memory",
       "M1_conclusion_memory",
       "M2_summary_memory",
       "necessary_details",

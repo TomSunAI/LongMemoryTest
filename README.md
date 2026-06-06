@@ -2,7 +2,7 @@
 
 长期关系记忆 Agent 实验平台。
 
-当前主线以《长期关系记忆实验 30 天脚本实现方案（细化版）M1 修正版》为准：事件先行、BEI 标注校准、M0/M1/M2/M3 记忆层级对照。`M0` 是 generic agent memory baseline，不是 no-memory；`M1/M2/M3` 是累计关系性记忆层级。
+当前主线以 Relational Memory 实验条件与 M0 实现方案为准：事件先行、BEI 标注校准、R0/R1 参照条件，以及 M0/M1/M2/M3 记忆层级对照。`M0` 是 LD-Agent memory-only generic baseline，不使用 LD-Agent 的 generator/checkpoint；`M1/M2/M3` 是在同一个 M0 普通记忆底座上追加的累计关系性记忆层级。
 
 当前已经实现 A-V0.1、A-V0.2、A-V0.3 场景卡准备和 A-V0.4 标准 ToM probe 题集：
 
@@ -49,7 +49,7 @@
 - 36 个标准 ToM probe，覆盖 current understanding、memory invocation、state transformation、relational boundary、alienation 和 natural detail。
 - 150 个 A 侧剧本单元：30 个每日开场、84 个 LLM follow-up slot、36 个 targeted probe。
 - docx 路线 BEI 标注：belief、emotion、intention、relational expectation、required memory、failure mode 和 gold strategy。
-- M0/M1/M2/M3 四组受控 memory payload。
+- M0/M1/M2/M3 四组受控 memory payload；M0 实际普通 event/persona memory 由运行时 LD-Agent memory adapter 写入和检索。
 - `event_line_audit.json` 验收 6 条核心主题线，每条都有 initial、recurrence、turning_point、resolution、reflection，且没有 suggested_fix。
 
 ## 运行
@@ -86,6 +86,8 @@ PYTHONPATH=src .venv/bin/python scripts/05_run_dialogue_conditions.py \
   --reset-conversation-log \
   --print-progress
 ```
+
+M0 在运行时使用本地 LD-Agent memory-only adapter：参考官方 `leolee99/LD-Agent` 的 `Module/EventMemory.py` 与 `Module/Personas.py`，保留 short-term session bank、session summary 写入 long-term event memory、persona extraction 和 topic/recency retrieval；回答生成仍使用本项目统一 LLM。
 
 运行 30 天完整 M0/M1/M2/M3 场景链路，并在自然 follow-up 后插入定向测试问题：
 
@@ -142,9 +144,6 @@ DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-v4-pro
 
 LLM_PROVIDER=poixe
-LETTA_BASE_URL=http://127.0.0.1:8283
-LETTA_MODEL=openai-proxy/deepseek-v4-pro
-LETTA_EMBEDDING=letta/letta-free
 ```
 
 `.env.local` 已加入 `.gitignore`，不要提交真实 key。
@@ -156,7 +155,7 @@ LETTA_EMBEDDING=letta/letta-free
 python3 scripts/poixe_smoke_test.py
 ```
 
-共享客户端位于 `src/long_memory_test/llm.py`。后续 A 的文本润色、B 的 Letta 记忆判断和对话实验都应通过这个入口读取模型配置。
+共享客户端位于 `src/long_memory_test/llm.py`。后续 A 的文本润色、运行时记忆写入和对话实验都应通过这个入口读取模型配置。
 
 切换到 DeepSeek 时，将本地 `.env.local` 中的 `LLM_PROVIDER` 改为：
 
@@ -166,18 +165,7 @@ LLM_PROVIDER=deepseek
 
 DeepSeek 官方 API 使用 OpenAI-compatible 格式，默认 base URL 为 `https://api.deepseek.com`。当前默认模型使用 `deepseek-v4-pro`，也就是官方价格表里当前价格更高的 DeepSeek 模型。
 
-本地 Letta server 使用 Docker 运行在 `http://127.0.0.1:8283`。DeepSeek 会映射为 Letta 的 OpenAI-compatible provider：
-
-```text
-OPENAI_API_KEY  <- DEEPSEEK_API_KEY
-OPENAI_API_BASE <- DEEPSEEK_BASE_URL
-```
-
-验证 Letta memory block 读写：
-
-```bash
-PYTHONPATH=src .venv/bin/python scripts/letta_memory_smoke.py
-```
+早期 Letta pilot 代码已归档到 `src/long_memory_test/legacy/letta_memory_legacy.py`，不参与正式实验。
 
 ## 项目结构
 
@@ -195,15 +183,17 @@ scripts/
   generate_daily_scene_cards.py
   generate_probe_question_plan.py
   poixe_smoke_test.py
-  letta_memory_smoke.py
 src/long_memory_test/agents/
   event_stream_generator.py
   daily_message_generator.py
   daily_scene_card_generator.py
   probe_question_generator.py
+src/long_memory_test/memory/
+  ld_agent_runtime.py
+  schema.py
 src/long_memory_test/
   llm.py
-  letta_memory.py
+  letta_memory.py  # archived compatibility wrapper only
 sample_output/
   timeline.json
   daily_user_message.json

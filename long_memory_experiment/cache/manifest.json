@@ -1,6 +1,6 @@
 {
   "schema_version": "experiment_cache_manifest_v1",
-  "updated_at": "2026-06-03T02:32:54.329953Z",
+  "updated_at": "2026-06-06T09:23:48.232169Z",
   "note": "stage D memory condition stores refreshed",
   "files": {
     "bei_annotations": {
@@ -35,32 +35,32 @@
     },
     "m0_generic_agent_config": {
       "path": "long_memory_experiment/data/memory_conditions/m0_generic_agent_config.json",
-      "sha256": "bfc1968a47a944218c5a45c2220e490dfbe456bdb7290cb04a37852f4e73c067",
+      "sha256": "e482eff37af132ab98c804b3886ed39009263358cd0a16eece4598291a5aa569",
       "exists": true
     },
     "m1_conclusion_memory": {
       "path": "long_memory_experiment/data/memory_conditions/m1_conclusion_memory.json",
-      "sha256": "21fe1cd05b83472ab18955bb1847549886d1bee2dad783a2d2e25504dcc7dabe",
+      "sha256": "8b5d86ccca88025a07000d0a8f5638b4fb3caf5433774da25a54adc18d605d16",
       "exists": true
     },
     "m2_event_memory": {
       "path": "long_memory_experiment/data/memory_conditions/m2_event_memory.json",
-      "sha256": "7917bd5355e284e9fafd5fe58c742c9d0ad80ddec5c0f79a8968bcc165c4f4db",
+      "sha256": "d22cf7b90c3e4f1c421534aff05104c86c26dceb10b394d675d13481244fc115",
       "exists": true
     },
     "m3_relational_anchor_memory": {
       "path": "long_memory_experiment/data/memory_conditions/m3_relational_anchor_memory.json",
-      "sha256": "94c2ec706ed666accd6552c967e27001866a089cff9e997cb60cf6c079167aa5",
+      "sha256": "318717e0e35fc8c1d6d317faef6627eb3f29ab1317e1f673ad219d1078aa74de",
       "exists": true
     },
     "memory_conditions_cache": {
       "path": "long_memory_experiment/cache/memory_conditions_combined.json",
-      "sha256": "96d1a8abe0aab8755cfe61b2886a3d97a6ebfa04e11b23db6702a238c7c88874",
+      "sha256": "87e7036cf94bc6aa022668b58d75aaab169f6bd3705582feb1c9344f9fce0eb7",
       "exists": true
     },
     "mva_summary_memory_alias": {
       "path": "long_memory_experiment/data/memory_conditions/mva_summary_memory.json",
-      "sha256": "21fe1cd05b83472ab18955bb1847549886d1bee2dad783a2d2e25504dcc7dabe",
+      "sha256": "8b5d86ccca88025a07000d0a8f5638b4fb3caf5433774da25a54adc18d605d16",
       "exists": true
     },
     "probe_question_plan": {

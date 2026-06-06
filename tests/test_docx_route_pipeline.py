@@ -9,6 +9,7 @@ from pathlib import Path
 
 from long_memory_test.agents.bei_annotator import generate_bei_annotations
 from long_memory_test.agents.memory_condition_builder import generate_memory_conditions
+from long_memory_test.memory import LDAgentMemoryRuntime
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -50,67 +51,6 @@ class _FakeClient:
 
     def with_options(self, **kwargs):
         return self
-
-
-class _FakeBlocks:
-    def __init__(self) -> None:
-        self.updated = []
-
-    def list(self, **kwargs):
-        return [
-            {
-                "label": "persona",
-                "value": "Generic M0 persona.",
-            },
-            {
-                "id": "block-history",
-                "label": "m0_conversation_history",
-                "value": "No M0 conversation turns have been written yet.",
-            }
-        ]
-
-    def update(self, block_label, **kwargs):
-        self.updated.append((block_label, kwargs))
-        return {
-            "id": "block-history",
-            "label": block_label,
-            "value": kwargs.get("value", ""),
-        }
-
-
-class _FakeTopBlocks:
-    def create(self, **kwargs):
-        return {"id": "block-created", **kwargs}
-
-
-class _FakeMessages:
-    def search(self, **kwargs):
-        return {"results": []}
-
-
-class _FakePassages:
-    def __init__(self) -> None:
-        self.created = []
-
-    def search(self, **kwargs):
-        return {"results": []}
-
-    def create(self, **kwargs):
-        self.created.append(kwargs)
-        return {"id": "passage-test"}
-
-
-class _FakeAgents:
-    def __init__(self) -> None:
-        self.blocks = _FakeBlocks()
-        self.passages = _FakePassages()
-
-
-class _FakeLetta:
-    def __init__(self) -> None:
-        self.agents = _FakeAgents()
-        self.messages = _FakeMessages()
-        self.blocks = _FakeTopBlocks()
 
 
 class DocxRoutePipelineTests(unittest.TestCase):
@@ -157,7 +97,7 @@ class DocxRoutePipelineTests(unittest.TestCase):
         self.assertTrue(annotation["failure_mode_expected"])
         self.assertEqual(annotation["emotion"], ["抗拒"])
 
-    def test_memory_conditions_make_m0_generic_and_m2_m3_cumulative(self) -> None:
+    def test_memory_conditions_make_m0_ld_agent_memory_and_m2_m3_cumulative(self) -> None:
         bei = generate_bei_annotations(
             probe_question_plan=_probe_doc(),
             timeline=_timeline_doc(),
@@ -174,15 +114,16 @@ class DocxRoutePipelineTests(unittest.TestCase):
             item["condition_id"]: item
             for item in conditions["condition_specs"]
         }
-        self.assertIn("Letta 默认记忆基线", payloads["M0"]["memory_context"])
-        self.assertTrue(payloads["M0"]["requires_runtime_letta"])
+        self.assertIn("LD-Agent memory-only", payloads["M0"]["memory_context"])
+        self.assertFalse(payloads["M0"]["requires_runtime_letta"])
+        self.assertTrue(payloads["M0"]["requires_runtime_ld_agent_memory"])
         self.assertNotIn("第 10 天", payloads["M0"]["memory_context"])
-        self.assertNotIn("M0_letta_default_memory", specs["M1"]["can_read"])
-        self.assertNotIn("M0_letta_default_memory", specs["M2"]["can_read"])
-        self.assertNotIn("M0_letta_default_memory", specs["M3"]["can_read"])
-        self.assertNotIn("Letta M0 默认记忆 +", specs["M1"]["definition"])
-        self.assertNotIn("Letta M0 默认记忆 +", specs["M2"]["definition"])
-        self.assertNotIn("Letta M0 默认记忆 +", specs["M3"]["definition"])
+        self.assertIn("M0_generic_event_memory", specs["M1"]["can_read"])
+        self.assertIn("M0_generic_event_memory", specs["M2"]["can_read"])
+        self.assertIn("M0_generic_event_memory", specs["M3"]["can_read"])
+        self.assertIn("M0 LD-Agent memory baseline +", specs["M1"]["definition"])
+        self.assertIn("M0 LD-Agent memory baseline +", specs["M2"]["definition"])
+        self.assertIn("M0 LD-Agent memory baseline +", specs["M3"]["definition"])
         self.assertIn("结论级关系记忆", payloads["M2"]["memory_context"])
         self.assertIn("摘要级事件记忆", payloads["M2"]["memory_context"])
         self.assertIn("细节级关系锚点", payloads["M3"]["memory_context"])
@@ -190,7 +131,7 @@ class DocxRoutePipelineTests(unittest.TestCase):
         self.assertNotIn("误用风险", payloads["M3"]["memory_context"])
         self.assertNotIn("- 关系锚点：", payloads["M3"]["memory_context"])
 
-    def test_runner_payload_for_relational_conditions_does_not_attach_m0(self) -> None:
+    def test_runner_payload_for_relational_conditions_attaches_m0_base_memory(self) -> None:
         conditions = generate_memory_conditions(
             timeline=_timeline_doc(),
             daily_messages=_daily_messages_doc(),
@@ -202,17 +143,19 @@ class DocxRoutePipelineTests(unittest.TestCase):
             conditions,
             "M2",
             _probe_doc()["probe_questions"][0],
-            m0_letta_payload={
+            m0_ld_agent_payload={
                 "condition_id": "M0",
-                "memory_context": "M0 Letta 默认记忆：不应拼入 M2",
+                "memory_provider": "ld_agent_memory",
+                "memory_context": "M0 LD-Agent 普通记忆：应拼入 M2",
                 "source_detail_ids": ["m0_source"],
+                "retrieval": {"strategy": "ld_agent_topic_overlap_recency"},
             },
         )
 
         self.assertIn("摘要级事件记忆", payload["memory_context"])
-        self.assertNotIn("M0 Letta 默认记忆", payload["memory_context"])
-        self.assertNotIn("m0_letta_baseline", payload)
-        self.assertNotIn("m0_source", payload.get("source_detail_ids", []))
+        self.assertIn("M0 LD-Agent 普通记忆", payload["memory_context"])
+        self.assertEqual(payload["m0_base_memory"]["memory_provider"], "ld_agent_memory")
+        self.assertIn("m0_source", payload.get("source_detail_ids", []))
 
     def test_runner_prompt_blinds_condition_labels(self) -> None:
         prompt = runner._build_condition_system_prompt(
@@ -280,9 +223,9 @@ class DocxRoutePipelineTests(unittest.TestCase):
         self.assertEqual(request["top_p"], 0.7)
         self.assertIn("摘要级事件记忆：测试", request["messages"][0]["content"])
 
-    def test_runner_writes_m0_turn_back_to_letta_core_block(self) -> None:
+    def test_runner_records_m0_turn_in_ld_agent_memory_runtime(self) -> None:
         client = _FakeClient()
-        letta = _FakeLetta()
+        memory_runtime = LDAgentMemoryRuntime()
         turn = runner._run_condition_turn(
             run_id="run-test",
             created_at="2026-06-05T00:00:00Z",
@@ -299,7 +242,6 @@ class DocxRoutePipelineTests(unittest.TestCase):
             },
             scene_card=None,
             llm_client=client,
-            letta_client=letta,
             llm_config=types.SimpleNamespace(provider="fake", base_url="fake", model="fake-model"),
             max_tokens=100,
             temperature=0.2,
@@ -311,29 +253,23 @@ class DocxRoutePipelineTests(unittest.TestCase):
                 "condition_specs": [
                     {
                         "condition_id": "M0",
-                        "definition": "Letta 默认记忆基线",
+                        "definition": "LD-Agent memory baseline",
                     }
                 ]
             },
-            m0_letta_agent_id="agent-test",
-            m0_letta_search_limit=5,
-            m0_letta_writeback=True,
+            m0_memory_runtime=memory_runtime,
             condition_ids=["M0"],
             short_term_histories={"M0": []},
             previous_message_ids=[],
         )
 
-        self.assertEqual(len(letta.agents.blocks.updated), 1)
-        block_label, update = letta.agents.blocks.updated[0]
-        self.assertEqual(block_label, "m0_conversation_history")
-        self.assertEqual(update["agent_id"], "agent-test")
-        self.assertIn("我今天又在想幼儿园这件事。", update["value"])
-        self.assertIn("m0_assistant_answer", update["value"])
-        self.assertIn("message_id: D01_M001", update["value"])
+        self.assertEqual(len(memory_runtime.short_term_session), 1)
+        self.assertEqual(memory_runtime.short_term_session[0]["message_id"], "D01_M001")
+        self.assertIn("我今天又在想幼儿园这件事。", memory_runtime.short_term_session[0]["user_message"])
         self.assertEqual(turn["memory_actions"][0]["status"], "success")
         self.assertEqual(
-            turn["variants"]["M0"]["memory_writeback"]["method"],
-            "agents.blocks.update",
+            turn["variants"]["M0"]["memory_writeback"]["action"],
+            "ld_agent_short_term_append",
         )
 
 

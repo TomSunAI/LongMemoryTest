@@ -16,21 +16,24 @@ REL_CONCLUSION_MEMORY = (
 CONDITION_SPECS = [
     {
         "condition_id": "M0",
-        "name": "Generic Agent Memory Baseline",
+        "name": "LD-Agent Memory Baseline",
         "definition": (
-            "Letta 默认记忆基线；可以读取 Letta 自带 core memory、普通用户画像、"
-            "普通会话摘要、普通检索片段和同窗口短期上下文。"
+            "LD-Agent memory-only 普通长短期记忆基线；可以读取同窗口短期上下文、"
+            "session summary 写入的普通 event memories、普通 persona memories "
+            "和运行时检索片段。"
         ),
         "can_read": [
             "same_session_short_term_context",
-            "letta_default_core_memory",
-            "letta_default_user_profile",
-            "letta_default_conversation_summary",
-            "letta_default_retrieved_history",
+            "ld_agent_short_term_memory_bank",
+            "generic_event_memory_bank",
+            "generic_persona_memory_bank",
+            "topic_recency_retrieved_generic_memory",
         ],
         "cannot_read": [
             "bei_annotations",
             "gold_response_strategy",
+            "probe_type",
+            "event_line_stage_labels",
             "relational_conclusion_memory",
             "relational_event_summary_memory",
             "relational_detail_anchor_memory",
@@ -44,10 +47,12 @@ CONDITION_SPECS = [
         "condition_id": "M1",
         "name": "Conclusion-level Relational Memory",
         "definition": (
-            "结论级关系记忆；只保存重要结论、稳定偏好、回应风格、"
-            "关系期待、关键判断和不要做什么。"
+            "M0 LD-Agent memory baseline + 结论级关系记忆；保存重要结论、"
+            "稳定偏好、回应风格、关系期待、关键判断和不要做什么。"
         ),
         "can_read": [
+            "M0_generic_event_memory",
+            "M0_generic_persona_memory",
             "stable_preferences",
             "response_style",
             "relationship_expectation",
@@ -71,10 +76,12 @@ CONDITION_SPECS = [
         "condition_id": "M2",
         "name": "Summary-level Relational Memory",
         "definition": (
-            "M1 + 摘要级记忆，保存关键事件线、跨天主题进展、"
-            "状态变化和处理结果摘要。"
+            "M0 LD-Agent memory baseline + M1 + 摘要级记忆，保存关键事件线、"
+            "跨天主题进展、状态变化和处理结果摘要。"
         ),
         "can_read": [
+            "M0_generic_event_memory",
+            "M0_generic_persona_memory",
             "M1_conclusion_memory",
             "topic_event_summary",
             "cross_day_progress",
@@ -97,10 +104,12 @@ CONDITION_SPECS = [
         "condition_id": "M3",
         "name": "Detail-level / Relational Anchor Memory",
         "definition": (
-            "M1 + M2 + 细节级关系锚点，保存必要细节、共同语言、"
-            "边界说明和误用风险。"
+            "M0 LD-Agent memory baseline + M1 + M2 + 细节级关系锚点，"
+            "保存必要细节、共同语言、边界说明和误用风险。"
         ),
         "can_read": [
+            "M0_generic_event_memory",
+            "M0_generic_persona_memory",
             "M1_conclusion_memory",
             "M2_summary_memory",
             "necessary_details",
@@ -155,10 +164,10 @@ def generate_memory_conditions(
         "schema_version": "memory_conditions_v0.1_docx_route",
         "generation_mode": "deterministic_docx_m0_m1_m2_m3_memory_packages",
         "description": (
-            "M0/M1/M2/M3 memory payloads for the docx route. M0 is a Letta "
-            "default-memory runtime baseline, not no-memory. M1/M2/M3 are "
-            "cumulative relational memory levels independent from M0; M2 "
-            "contains M1 and M3 contains M1+M2."
+            "M0/M1/M2/M3 memory payloads for the docx route. M0 is a runtime "
+            "LD-Agent memory-only baseline, not no-memory. M1/M2/M3 are "
+            "cumulative relational memory levels layered on the same M0 "
+            "generic memory; M2 contains M1 and M3 contains M1+M2."
         ),
         "condition_specs": CONDITION_SPECS,
         "default_payloads": _build_default_payloads(),
@@ -196,12 +205,12 @@ def _build_default_payloads() -> dict[str, dict[str, Any]]:
     return {
         "M0": {
             "condition_id": "M0",
-            "memory_provider": "letta",
-            "requires_runtime_letta": True,
+            "memory_provider": "ld_agent_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": True,
             "memory_context": (
-                "M0 使用运行时 Letta 默认记忆。此静态文件不生成手工 generic 摘要，"
-                "也不提供事件线天数、关系记忆、人工评测标注 "
-                "或关系锚点。"
+                "M0 使用运行时 LD-Agent memory-only baseline。此静态文件只声明边界，"
+                "不提供手工 generic 摘要、事件线阶段、关系记忆、人工评测标注或关系锚点。"
             ),
             "source_detail_ids": [],
         },
@@ -256,7 +265,6 @@ def _build_message_payloads(
         day=day,
         daily_messages=daily_messages,
     )
-    m0_context = _build_m0_context(topic=topic, topic_history=topic_history)
     m1_context = "结论级关系记忆：" + REL_CONCLUSION_MEMORY
     m2_context = m1_context + "\n摘要级事件记忆：\n" + _build_m2_summary(
         topic=topic,
@@ -270,9 +278,10 @@ def _build_message_payloads(
     return {
         "M0": {
             "condition_id": "M0",
-            "memory_provider": "letta",
-            "requires_runtime_letta": True,
-            "memory_context": m0_context,
+            "memory_provider": "ld_agent_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": True,
+            "memory_context": _build_m0_context(),
             "source_detail_ids": [],
         },
         "M1": {
@@ -296,11 +305,11 @@ def _build_message_payloads(
     }
 
 
-def _build_m0_context(*, topic: str, topic_history: list[dict[str, Any]]) -> str:
+def _build_m0_context() -> str:
     return (
-        "M0 使用运行时 Letta 默认记忆基线。本静态 payload 只声明边界："
-        "不得读取手工整理的关系记忆、事件轨迹、人工评测标注或关系锚点；"
-        "实际可用记忆必须由 Letta runtime 提供。"
+        "M0 使用运行时 LD-Agent memory-only 普通长短期记忆基线。本静态 payload "
+        "只声明边界：不得读取手工整理的关系记忆、事件线阶段、人工评测标注或关系锚点；"
+        "实际可用普通 event/persona memory 必须由 LD-Agent memory runtime 提供。"
     )
 
 
