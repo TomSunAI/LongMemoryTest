@@ -29,7 +29,7 @@
 
 当前实现中，`M0` 必须调用 Letta 默认 memory，不能再用手工构造的 generic 摘要模拟。只有运行 `M0` 条件时才需要提供 `--m0-letta-agent-id` 或环境变量 `LETTA_M0_AGENT_ID`；如果只跑 `M1/M2/M3`，不需要 Letta agent id。
 
-M0 的职责是提供 Letta 自带的普通 agent memory baseline，包括 Letta runtime 可返回的 core memory、普通用户画像、普通历史检索或普通摘要。M0 不能读取本实验人工整理的 `timeline.json`、`bei_annotations.json`、事件轨迹、关系锚点、failure mode 或 gold strategy。
+M0 的职责是提供 Letta 自带的普通 agent memory baseline，包括 Letta runtime 可返回的 core memory、普通用户画像、普通历史检索或普通摘要。当前 runner 采用受控 responder 方案：M0 仍由同一个 LLM client 生成回答，但每轮结束后会把该轮 M0 分支的 `user_message + M0 assistant_answer` 显式写回 Letta `m0_conversation_history` core block；后续 M0 turn 会通过 Letta core memory 读到这些历史。M0 不能读取本实验人工整理的 `timeline.json`、`bei_annotations.json`、事件轨迹、关系锚点、failure mode 或 gold strategy。
 
 M1/M2/M3 与 M0 没有读取继承关系。它们不读 Letta M0 baseline，只读本实验构造的关系记忆 payload：M1 读结论，M2 读 M1+事件摘要，M3 读 M1+M2+必要细节和调用边界。
 
@@ -49,6 +49,42 @@ M3 读 M1 + M2 + 细节级关系锚点
 ```
 
 当前 runner 使用 `shared_user_turns_only` 作为短期上下文策略：四个条件看到相同的历史 user turns，不再把各自不同的 assistant answer 带入后续 probe。这样后续回合的差异尽量只来自长期记忆权限，而不是前文回复分叉。
+
+### 四组记忆机制技术口径
+
+- `M0` 是 Letta-backed generic memory baseline。它不读本实验手工整理的 `timeline`、BEI、gold、failure mode，也不读 M1/M2/M3 关系记忆。当前有两个运行模式：
+  - `M0 core-block fallback`：默认模式。当前本地 Letta 容器未启用 message embedding / Turbopuffer，因此只读取 Letta core memory blocks，并把 M0 分支的 `user_message + M0 assistant_answer` 写回 Letta `m0_conversation_history` core block。写回按 `run_id + message_id` 幂等，避免断点恢复时重复写入。
+  - `M0 full-retrieval`：目标正式 baseline。启动时传 `--m0-letta-full-retrieval`，runner 会启用 `M0_LETTA_ENABLE_MESSAGE_SEARCH=1` 和 `M0_LETTA_ENABLE_PASSAGE_SEARCH=1`，从 Letta core blocks + generic message search + generic passage/archival search 读取普通 agent memory。该模式要求 Letta 服务端有可用 embedding endpoint，并启用 `USE_TPUF=true`、`EMBED_ALL_MESSAGES=true`、`TPUF_API_KEY`/`TURBOPUFFER_API_KEY`。启动前应先运行 `scripts/12_check_m0_letta_full_retrieval.py`。
+- `M1` 是结论级关系记忆。只读固定 payload 中的稳定偏好、回应风格、关系期待、关键判断和不要做什么；不读事件摘要、日期、原话、具体过程，也不读 M0 Letta。
+- `M2` 是摘要级关系记忆，累计包含 M1。除 M1 结论外，读取关键事件线、跨天主题进展、状态变化和处理结果摘要；不读原话、共同语言或完整历史片段，也不读 M0 Letta。
+- `M3` 是细节级 / relational anchor memory，累计包含 M1 + M2。除结论和摘要外，读取必要细节、共同语言、边界说明、误用风险和关系锚点；仍不允许读取完整历史全文，也不读 M0 Letta。
+
+### 当前记录：2026-06-06
+
+当前可以准确表述为：M0 已经接入 Letta 作为 generic memory storage baseline，但尚未接入 Letta 的 embedding-based message retrieval baseline。
+
+当前已具备：
+
+- Letta server 正常运行在 `http://127.0.0.1:8283`。
+- M0 可以读取 Letta core memory blocks。
+- M0 每轮会把本分支的 `user_message + M0 assistant_answer` 写回 Letta 的 `m0_conversation_history` core block。
+- 写回按 `run_id + message_id` 幂等，断点恢复时不会重复追加同一轮。
+- M1/M2/M3 与 M0 独立，不读 Letta M0 baseline；M2 累计 M1，M3 累计 M1+M2。
+
+当前尚未具备：
+
+- 没有可用的 embedding endpoint。当前 DeepSeek/Poixe chat endpoint 的 embedding smoke 均返回 `404`；当前 `.env.letta.local` 里的 key 指向官方 OpenAI embedding endpoint 时返回 `401 invalid_api_key`。
+- 没有 Turbopuffer 服务端配置：缺 `USE_TPUF=true`、`EMBED_ALL_MESSAGES=true`、`TPUF_API_KEY` / `TURBOPUFFER_API_KEY`。
+- 当前 Letta 容器实际启动环境仍是 `OPENAI_API_BASE=https://api.deepseek.com`，未携带 full-retrieval 所需 Turbopuffer 与 message embedding 环境变量。
+- 因此 `messages.search` 和 `passages.search` 不能作为正式 M0 检索能力使用；当前 M0 只能代表 Letta core-memory storage fallback，不能代表完整 Letta message-level semantic retrieval baseline。
+
+下一阶段规划：
+
+1. 先决定正式报告是否接受 `M0 core-block fallback` 作为暂定 baseline，或采购/配置 embedding key + Turbopuffer key 后跑 `M0 full-retrieval`。
+2. 若跑 `M0 full-retrieval`，按 `.env.letta.full_retrieval.example` 填入真实 OpenAI-compatible embedding key 和 Turbopuffer key。
+3. 用 full-retrieval 环境重建 Letta 容器，并创建一个全新的 M0 agent，避免和 core-block fallback run 发生记忆污染。
+4. 运行 `scripts/12_check_m0_letta_full_retrieval.py --m0-agent-id <new_agent_id>`，只有 embedding、Turbopuffer、message search、passage search 全部通过后再启动全量实验。
+5. 以单独 run 目录运行 `--m0-letta-full-retrieval`，并和现有 `M0 core-block fallback` 结果分开命名、分开汇报。
 
 ## Docx 数据生成口径
 
@@ -225,7 +261,7 @@ sample_output/conversation_log.json
 - `llm`：A 使用的 provider、base URL 和模型。
 - `memory_setup`：docx 路线、四个条件和 memory payload 来源。
 - `variants`：不同实验组的回复结果，例如 `M0`、`M1`、`M2`、`M3`。
-- `memory_actions`：本轮由 B 产生的记忆写入、更新或忽略动作。当前 M0/M1 probe 暂为空，后续 B-V0.1 会填充。
+- `memory_actions`：本轮记忆动作。当前 M0 默认会记录 `m0_letta_turn_writeback`，表示已把 M0 的用户输入和 M0 回答写入 Letta `m0_conversation_history` core block；M1/M2/M3 的 B 写入、更新或忽略动作仍待 B-V0.1 填充。
 
 当前主入口是 `scripts/run_dialogue_conditions.py`，负责生成 M0/M1/M2/M3 链式 probe 输出，并追加写入 `sample_output/conversation_log_docx_conditions.json`。它支持通过 `--message-ids` 一次运行多个消息，例如：
 
@@ -243,6 +279,32 @@ PYTHONPATH=src .venv/bin/python scripts/run_dialogue_conditions.py \
 定向测试问题由 `scripts/generate_probe_question_plan.py` 生成，输入是 `daily_scene_cards.json` 和 `data/config/probe_question_policy.json`，输出 `sample_output/probe_question_plan.json` 与 `sample_output/a_script_plan.json`。docx 路线还会运行 `scripts/annotate_bei.py` 补 `sample_output/bei_annotations.json`，再运行 `scripts/build_memory_conditions.py` 生成 `sample_output/memory_conditions.json`。运行四条件时加 `--probe-questions sample_output/probe_question_plan.json`，脚本会在每个开场消息的同日 follow-up 后插入对应 probe。
 
 长时间对话脚本必须可恢复。`run_dialogue_conditions.py` 每完成一个用户 turn 就把当前 run 原子写入 `--output`，并按 `run_id` 同步 `conversation_log_docx_conditions.json`，不再依赖最后一次性写文件。如果进程中断，使用同一组参数加 `--resume`，脚本会从 `--output` 读取已完成 turns，重建 M0/M1/M2/M3 短期上下文，跳过已完成 message_id，从下一个未完成 turn 继续。恢复时不能更换 `message_ids`、`--scene-followups`、`--probe-questions`、`--conditions` 或 `--memory-conditions`。
+
+正式长跑优先使用 supervisor：
+
+```bash
+PYTHONPATH=src .venv/bin/python scripts/10_supervise_full_experiment.py \
+  --run-dir long_memory_experiment/outputs/run_YYYYMMDD_HHMM_full \
+  --max-attempts 0 \
+  --retry-sleep 30 \
+  --scene-followups 1 \
+  --judge-workers 4
+```
+
+后台启动：
+
+```bash
+PYTHONPATH=src .venv/bin/python scripts/11_start_full_experiment_background.py \
+  --run-dir long_memory_experiment/outputs/run_YYYYMMDD_HHMM_full \
+  --max-attempts 0 \
+  --retry-sleep 30 \
+  --scene-followups 1 \
+  --judge-workers 4
+```
+
+后台脚本会写入 `background_supervisor.log`、`background_supervisor.pid.json` 和 `supervisor_status.json`。如果某一轮模型调用失败，supervisor 会用同一 run-dir 自动加 `--resume` 重试；已完成 turn 不会重跑，M0 Letta core block 写回也会按 `run_id + message_id` 跳过重复写入。
+
+`09_run_full_experiment.py` 默认使用 `--condition-workers 4`，即同一 user turn 下的 M0/M1/M2/M3 四个回答并行生成。并行不会改变实验输入：每个 condition 的 `user_message`、短期上下文快照和 memory payload 都在提交任务前固定；M0 写回仍在四组回答都完成后执行。
 
 DeepSeek provider 不做低额度人工截断。`deepseek-v4-*` 默认 `max_tokens` 使用官方最大输出上限 `384000`，让模型自行在任务完成时停止。日志中的 `llm.max_tokens` 必须记录实际请求上限，便于排查回答被截断、长请求等待和成本问题。
 
@@ -331,6 +393,8 @@ Poixe smoke test 位于 `scripts/poixe_smoke_test.py`，用于验证本地 key�
 - 默认 B 模型：`openai-proxy/deepseek-v4-pro`
 - 默认 embedding：`letta/letta-free`
 
+注意：上述 DeepSeek/Poixe chat endpoint 当前 embedding smoke 均返回 404，不能支撑 Letta message/passage embedding retrieval。若要跑 `M0 full-retrieval`，需使用 `.env.letta.full_retrieval.example` 的配置形态，提供真实 embedding endpoint 和 Turbopuffer key；`src/long_memory_test/letta_memory.py` 会先读 `.env.local`，再用 `.env.letta.local` 覆盖 Letta 专用配置。
+
 B 的 Letta 配置入口位于 `src/long_memory_test/letta_memory.py`。基础连通性测试位于 `scripts/letta_memory_smoke.py`，用于验证 B agent 可以创建，并且 memory block 可以被修改和读回。
 
 当前正式 Letta 记忆结构以 `docs/letta_current_memory_structure.md` 为准。`docs/letta_memory_levels.md` 只作为历史 pilot 文档保留。
@@ -339,7 +403,7 @@ B 的 Letta 配置入口位于 `src/long_memory_test/letta_memory.py`。基础�
 
 - `scripts/annotate_bei.py` 已能从现有 probe 生成 `sample_output/bei_annotations.json`。
 - `scripts/build_memory_conditions.py` 已能生成 `sample_output/memory_conditions.json`，其中 M0 是 generic agent memory baseline，M1/M2/M3 为累计关系记忆层级。
-- `scripts/run_dialogue_conditions.py` 已能按同一用户输入运行 M0/M1/M2/M3，并为每轮记录 memory payload、input hash、模型参数和四组回答。
+- `scripts/run_dialogue_conditions.py` 已能按同一用户输入运行 M0/M1/M2/M3，并为每轮记录 memory payload、input hash、模型参数和四组回答；M0 回答后默认写回 Letta `m0_conversation_history` core block，`--disable-m0-letta-writeback` 可关闭旧行为复现。`--m0-letta-full-retrieval` 可打开 M0 的 Letta message search 和 passage search，`run_config.json` 会记录实际 search 开关。
 - 旧 `scripts/run_m0_m1_dialogue_probe.py` 仅作为历史 pilot 工具保留。
 
 ## 核心数据流程

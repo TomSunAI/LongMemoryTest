@@ -51,8 +51,43 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--conditions", default="M0,M1,M2,M3")
     parser.add_argument("--m0-letta-agent-id", default=os.getenv("LETTA_M0_AGENT_ID"))
     parser.add_argument("--m0-letta-search-limit", type=int, default=5)
+    parser.add_argument(
+        "--m0-letta-enable-message-search",
+        action="store_true",
+        help=(
+            "Forward M0 Letta message search enablement to the dialogue runner. "
+            "Requires message embeddings and Turbopuffer in the Letta server."
+        ),
+    )
+    parser.add_argument(
+        "--m0-letta-enable-passage-search",
+        action="store_true",
+        help=(
+            "Forward M0 Letta passage search enablement to the dialogue runner. "
+            "Requires a working embedding provider in the Letta server."
+        ),
+    )
+    parser.add_argument(
+        "--m0-letta-full-retrieval",
+        action="store_true",
+        help=(
+            "Enable both M0 Letta message search and passage search for the full "
+            "generic Letta retrieval baseline."
+        ),
+    )
+    parser.add_argument(
+        "--disable-m0-letta-writeback",
+        action="store_true",
+        help="Disable explicit M0 user/assistant turn writeback to the Letta M0 core block.",
+    )
     parser.add_argument("--max-tokens", type=int, default=900)
     parser.add_argument("--llm-timeout", type=float, default=600.0)
+    parser.add_argument(
+        "--condition-workers",
+        type=int,
+        default=4,
+        help="Parallel condition answer generations per user turn.",
+    )
     parser.add_argument("--temperature", type=float, default=0.2)
     parser.add_argument("--top-p", type=float, default=1.0)
     parser.add_argument("--judge-provider", default="deepseek")
@@ -121,6 +156,8 @@ def main() -> int:
             str(args.m0_letta_search_limit),
             "--llm-timeout",
             str(args.llm_timeout),
+            "--condition-workers",
+            str(args.condition_workers),
             "--temperature",
             str(args.temperature),
             "--top-p",
@@ -136,6 +173,14 @@ def main() -> int:
             dialogue_cmd.append("--all-message-ids")
         if args.m0_letta_agent_id:
             dialogue_cmd.extend(["--m0-letta-agent-id", args.m0_letta_agent_id])
+        if args.m0_letta_enable_message_search:
+            dialogue_cmd.append("--m0-letta-enable-message-search")
+        if args.m0_letta_enable_passage_search:
+            dialogue_cmd.append("--m0-letta-enable-passage-search")
+        if args.m0_letta_full_retrieval:
+            dialogue_cmd.append("--m0-letta-full-retrieval")
+        if args.disable_m0_letta_writeback:
+            dialogue_cmd.append("--disable-m0-letta-writeback")
         if args.resume:
             dialogue_cmd.append("--resume")
         else:

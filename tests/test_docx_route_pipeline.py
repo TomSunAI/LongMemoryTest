@@ -52,6 +52,67 @@ class _FakeClient:
         return self
 
 
+class _FakeBlocks:
+    def __init__(self) -> None:
+        self.updated = []
+
+    def list(self, **kwargs):
+        return [
+            {
+                "label": "persona",
+                "value": "Generic M0 persona.",
+            },
+            {
+                "id": "block-history",
+                "label": "m0_conversation_history",
+                "value": "No M0 conversation turns have been written yet.",
+            }
+        ]
+
+    def update(self, block_label, **kwargs):
+        self.updated.append((block_label, kwargs))
+        return {
+            "id": "block-history",
+            "label": block_label,
+            "value": kwargs.get("value", ""),
+        }
+
+
+class _FakeTopBlocks:
+    def create(self, **kwargs):
+        return {"id": "block-created", **kwargs}
+
+
+class _FakeMessages:
+    def search(self, **kwargs):
+        return {"results": []}
+
+
+class _FakePassages:
+    def __init__(self) -> None:
+        self.created = []
+
+    def search(self, **kwargs):
+        return {"results": []}
+
+    def create(self, **kwargs):
+        self.created.append(kwargs)
+        return {"id": "passage-test"}
+
+
+class _FakeAgents:
+    def __init__(self) -> None:
+        self.blocks = _FakeBlocks()
+        self.passages = _FakePassages()
+
+
+class _FakeLetta:
+    def __init__(self) -> None:
+        self.agents = _FakeAgents()
+        self.messages = _FakeMessages()
+        self.blocks = _FakeTopBlocks()
+
+
 class DocxRoutePipelineTests(unittest.TestCase):
     def test_generate_bei_annotations_adds_required_memory_and_failure_modes(self) -> None:
         annotations = generate_bei_annotations(
@@ -218,6 +279,62 @@ class DocxRoutePipelineTests(unittest.TestCase):
         self.assertEqual(request["temperature"], 0.2)
         self.assertEqual(request["top_p"], 0.7)
         self.assertIn("摘要级事件记忆：测试", request["messages"][0]["content"])
+
+    def test_runner_writes_m0_turn_back_to_letta_core_block(self) -> None:
+        client = _FakeClient()
+        letta = _FakeLetta()
+        turn = runner._run_condition_turn(
+            run_id="run-test",
+            created_at="2026-06-05T00:00:00Z",
+            turn_index=1,
+            daily_messages_path=Path("daily.json"),
+            scene_cards_path=None,
+            memory_conditions_path=Path("memory.json"),
+            message={
+                "message_id": "D01_M001",
+                "day": 1,
+                "topic": "孩子幼儿园可能不稳定",
+                "turn_type": "scripted_opening",
+                "user_message": "我今天又在想幼儿园这件事。",
+            },
+            scene_card=None,
+            llm_client=client,
+            letta_client=letta,
+            llm_config=types.SimpleNamespace(provider="fake", base_url="fake", model="fake-model"),
+            max_tokens=100,
+            temperature=0.2,
+            top_p=1.0,
+            timeout_seconds=1,
+            condition_workers=1,
+            print_condition_progress=False,
+            memory_conditions={
+                "condition_specs": [
+                    {
+                        "condition_id": "M0",
+                        "definition": "Letta 默认记忆基线",
+                    }
+                ]
+            },
+            m0_letta_agent_id="agent-test",
+            m0_letta_search_limit=5,
+            m0_letta_writeback=True,
+            condition_ids=["M0"],
+            short_term_histories={"M0": []},
+            previous_message_ids=[],
+        )
+
+        self.assertEqual(len(letta.agents.blocks.updated), 1)
+        block_label, update = letta.agents.blocks.updated[0]
+        self.assertEqual(block_label, "m0_conversation_history")
+        self.assertEqual(update["agent_id"], "agent-test")
+        self.assertIn("我今天又在想幼儿园这件事。", update["value"])
+        self.assertIn("m0_assistant_answer", update["value"])
+        self.assertIn("message_id: D01_M001", update["value"])
+        self.assertEqual(turn["memory_actions"][0]["status"], "success")
+        self.assertEqual(
+            turn["variants"]["M0"]["memory_writeback"]["method"],
+            "agents.blocks.update",
+        )
 
 
 def _timeline_doc() -> dict:

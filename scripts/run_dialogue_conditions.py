@@ -7,6 +7,8 @@ import importlib.util
 import json
 import os
 import sys
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -21,6 +23,7 @@ from long_memory_test.llm import create_llm_client  # noqa: E402
 from long_memory_test.letta_memory import (  # noqa: E402
     create_letta_client,
     read_m0_letta_memory_payload,
+    write_m0_letta_turn_memory,
 )
 from long_memory_test.experiment_cache import (  # noqa: E402
     CACHE_MEMORY_CONDITIONS_PATH,
@@ -40,6 +43,7 @@ LEGACY_SPEC.loader.exec_module(legacy)
 
 DEFAULT_CONDITION_IDS = ["M0", "M1", "M2", "M3"]
 MIN_ASSISTANT_ANSWER_CHARS = 20
+ASSISTANT_ANSWER_MAX_ATTEMPTS = 4
 SHORT_TERM_CONTEXT_MODE = "shared_user_turns_only"
 
 
@@ -110,6 +114,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--temperature", type=float, default=0.2)
     parser.add_argument("--top-p", type=float, default=1.0)
     parser.add_argument(
+        "--condition-workers",
+        type=int,
+        default=1,
+        help="Number of parallel condition answer generations per user turn.",
+    )
+    parser.add_argument(
         "--m0-letta-agent-id",
         default=os.getenv("LETTA_M0_AGENT_ID"),
         help=(
@@ -118,6 +128,40 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument("--m0-letta-search-limit", type=int, default=5)
+    parser.add_argument(
+        "--m0-letta-enable-message-search",
+        action="store_true",
+        help=(
+            "Enable Letta generic message search for M0. This requires the "
+            "Letta server to have message embeddings and Turbopuffer enabled."
+        ),
+    )
+    parser.add_argument(
+        "--m0-letta-enable-passage-search",
+        action="store_true",
+        help=(
+            "Enable Letta generic archival/passage search for M0. This requires "
+            "a working embedding provider for the Letta server."
+        ),
+    )
+    parser.add_argument(
+        "--m0-letta-full-retrieval",
+        action="store_true",
+        help=(
+            "Enable both M0 Letta message search and passage search. Use this "
+            "for the full generic Letta retrieval baseline after preflight passes."
+        ),
+    )
+    parser.add_argument(
+        "--disable-m0-letta-writeback",
+        action="store_true",
+        help=(
+            "Disable writing M0 user/assistant turns back to the Letta "
+            "m0_conversation_history core block. "
+            "By default M0 uses Letta read + explicit writeback so its generic "
+            "memory can grow across the run."
+        ),
+    )
     parser.add_argument("--print-progress", action="store_true")
     parser.add_argument("--print-mode", choices=["summary", "all"], default="summary")
     args = parser.parse_args()
@@ -134,6 +178,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    _configure_m0_letta_search_env(args)
     messages_doc = _load_json(args.daily_messages)
     message_ids = legacy._resolve_message_ids(args, messages_doc["messages"])
     messages = [
@@ -263,9 +308,12 @@ def main() -> int:
                     temperature=args.temperature,
                     top_p=args.top_p,
                     timeout_seconds=args.llm_timeout,
+                    condition_workers=args.condition_workers,
+                    print_condition_progress=args.print_progress,
                     memory_conditions=memory_conditions,
                     m0_letta_agent_id=args.m0_letta_agent_id,
                     m0_letta_search_limit=args.m0_letta_search_limit,
+                    m0_letta_writeback=not args.disable_m0_letta_writeback,
                     condition_ids=condition_ids,
                     short_term_histories=short_term_histories,
                     previous_message_ids=list(transcript_message_ids),
@@ -329,9 +377,12 @@ def main() -> int:
                 temperature=args.temperature,
                 top_p=args.top_p,
                 timeout_seconds=args.llm_timeout,
+                condition_workers=args.condition_workers,
+                print_condition_progress=args.print_progress,
                 memory_conditions=memory_conditions,
                 m0_letta_agent_id=args.m0_letta_agent_id,
                 m0_letta_search_limit=args.m0_letta_search_limit,
+                m0_letta_writeback=not args.disable_m0_letta_writeback,
                 condition_ids=condition_ids,
                 short_term_histories=short_term_histories,
                 previous_message_ids=list(transcript_message_ids),
@@ -378,9 +429,12 @@ def _run_condition_turn(
     temperature: float,
     top_p: float | None,
     timeout_seconds: float,
+    condition_workers: int,
+    print_condition_progress: bool,
     memory_conditions: dict[str, Any],
     m0_letta_agent_id: str | None,
     m0_letta_search_limit: int,
+    m0_letta_writeback: bool,
     condition_ids: list[str],
     short_term_histories: dict[str, list[dict[str, str]]],
     previous_message_ids: list[str],
@@ -401,13 +455,22 @@ def _run_condition_turn(
             query=user_message,
             search_limit=m0_letta_search_limit,
         )
-    for condition_id in condition_ids:
+    max_workers = max(1, min(int(condition_workers), len(condition_ids)))
+
+    def run_one_condition(condition_id: str) -> tuple[str, dict[str, Any]]:
         payload = _payload_for_condition(
             memory_conditions,
             condition_id,
             message,
             m0_letta_payload=m0_letta_payload,
         )
+        if print_condition_progress:
+            print(
+                "[progress] "
+                f"turn {turn_index} message_id={message['message_id']} "
+                f"condition={condition_id} start",
+                flush=True,
+            )
         answer = _ask_a_condition(
             client=llm_client,
             model=llm_config.model,
@@ -421,7 +484,14 @@ def _run_condition_turn(
             temperature=temperature,
             top_p=top_p,
         )
-        variants[condition_id] = {
+        if print_condition_progress:
+            print(
+                "[progress] "
+                f"turn {turn_index} message_id={message['message_id']} "
+                f"condition={condition_id} complete",
+                flush=True,
+            )
+        return condition_id, {
             "memory_condition": condition_id,
             "memory_available": True,
             "memory_context": payload,
@@ -440,6 +510,37 @@ def _run_condition_turn(
             },
             "assistant_answer": answer,
         }
+    if max_workers == 1:
+        for condition_id in condition_ids:
+            completed_condition_id, variant = run_one_condition(condition_id)
+            variants[completed_condition_id] = variant
+    else:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(run_one_condition, condition_id): condition_id
+                for condition_id in condition_ids
+            }
+            for future in as_completed(futures):
+                completed_condition_id, variant = future.result()
+                variants[completed_condition_id] = variant
+    variants = {condition_id: variants[condition_id] for condition_id in condition_ids}
+    memory_actions = []
+    if m0_letta_writeback and "M0" in variants:
+        if letta_client is None:
+            raise ValueError("M0 Letta writeback requires a Letta client.")
+        m0_writeback_action = write_m0_letta_turn_memory(
+            client=letta_client,
+            agent_id=m0_letta_agent_id or "",
+            run_id=run_id,
+            message_id=str(message["message_id"]),
+            day=message.get("day"),
+            topic=message.get("topic"),
+            turn_type=message.get("turn_type", "scripted_opening"),
+            user_message=user_message,
+            assistant_answer=str(variants["M0"]["assistant_answer"]),
+        )
+        variants["M0"]["memory_writeback"] = m0_writeback_action
+        memory_actions.append(m0_writeback_action)
     for condition_id in condition_ids:
         _append_short_term_user_turn(short_term_histories[condition_id], user_message)
 
@@ -479,11 +580,12 @@ def _run_condition_turn(
             "memory_payload_source": legacy._display_path(memory_conditions_path),
             "m0_memory_provider": "letta" if "M0" in condition_ids else None,
             "m0_letta_agent_id": m0_letta_agent_id if "M0" in condition_ids else None,
+            "m0_letta_writeback_enabled": bool(m0_letta_writeback and "M0" in condition_ids),
             "m0_independent_from_m1_m2_m3": True,
             "short_term_context_mode": SHORT_TERM_CONTEXT_MODE,
         },
         "variants": variants,
-        "memory_actions": [],
+        "memory_actions": memory_actions,
     }
 
 
@@ -523,13 +625,15 @@ def _ask_a_condition(
     if top_p is not None:
         request_kwargs["top_p"] = top_p
     last_content = ""
-    for _attempt in range(2):
+    for attempt in range(ASSISTANT_ANSWER_MAX_ATTEMPTS):
         completion = request_client.chat.completions.create(**request_kwargs)
         last_content = completion.choices[0].message.content or ""
         if len(last_content.strip()) >= MIN_ASSISTANT_ANSWER_CHARS:
             return last_content
+        if attempt < ASSISTANT_ANSWER_MAX_ATTEMPTS - 1:
+            time.sleep(min(2.0, 0.5 * (attempt + 1)))
     raise RuntimeError(
-        "LLM returned an empty or degenerate assistant answer twice "
+        "LLM returned an empty or degenerate assistant answer repeatedly "
         f"for condition {condition_id}. Last answer: {last_content!r}"
     )
 
@@ -675,6 +779,8 @@ def _write_run_config(
     letta_config: Any | None,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    m0_message_search_enabled = _m0_message_search_runtime_enabled(args)
+    m0_passage_search_enabled = _m0_passage_search_runtime_enabled(args)
     config = {
         "schema_version": "run_config_v1",
         "run_id": result["run_id"],
@@ -686,6 +792,7 @@ def _write_run_config(
             "same_short_term_context_policy": True,
             "short_term_context_mode": SHORT_TERM_CONTEXT_MODE,
             "only_long_term_memory_condition_changes": True,
+            "same_condition_parallelism_for_all_conditions": True,
             "m0_independent_from_m1_m2_m3": True,
             "evaluation_metadata_visible_to_model": False,
             "bei_gold_failure_modes_visible_to_model": False,
@@ -698,6 +805,7 @@ def _write_run_config(
             "top_p": args.top_p,
             "max_tokens": max_tokens,
             "timeout_seconds": args.llm_timeout,
+            "condition_workers": args.condition_workers,
         },
         "inputs": {
             "daily_messages": legacy._display_path(args.daily_messages),
@@ -715,8 +823,23 @@ def _write_run_config(
             "embedding": letta_config.embedding if letta_config else None,
             "agent_id": args.m0_letta_agent_id,
             "search_limit": args.m0_letta_search_limit,
+            "writeback_enabled": bool("M0" in condition_ids and not args.disable_m0_letta_writeback),
+            "writeback_method": "agents.blocks.update",
+            "writeback_scope": (
+                "M0 user_message + M0 assistant_answer only, stored in "
+                "m0_conversation_history core block"
+            ),
+            "default_read_scope": (
+                "core memory blocks plus enabled generic Letta search channels"
+                if m0_message_search_enabled or m0_passage_search_enabled
+                else "core memory blocks only"
+            ),
+            "message_search_enabled": m0_message_search_enabled,
+            "passage_search_enabled": m0_passage_search_enabled,
+            "full_retrieval_enabled": bool(args.m0_letta_full_retrieval),
             "required": "M0" in condition_ids,
             "used_by_conditions": ["M0"] if "M0" in condition_ids else [],
+            "formal_run_note": "Use a fresh M0 Letta agent per formal run to avoid cross-run memory contamination.",
         },
         "scene_followups": args.scene_followups,
         "expected_turns": result["expected_turns"],
@@ -730,10 +853,41 @@ def _write_run_config(
             "completed_message_ids_are_persisted": True,
             "duplicate_message_ids_are_skipped": True,
             "input_hash_recorded_per_turn": True,
+            "checkpoint_written_after_each_completed_turn": True,
+            "m0_letta_writeback_idempotent_by_run_id_and_message_id": True,
+            "m0_letta_writeback_uses_embedding_free_core_block": True,
+            "m0_full_retrieval_requires_embedding_and_turbopuffer_preflight": True,
         },
     }
     result["run_config"] = config
     path.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _configure_m0_letta_search_env(args: argparse.Namespace) -> None:
+    if args.m0_letta_full_retrieval or args.m0_letta_enable_message_search:
+        os.environ["M0_LETTA_ENABLE_MESSAGE_SEARCH"] = "1"
+    if args.m0_letta_full_retrieval or args.m0_letta_enable_passage_search:
+        os.environ["M0_LETTA_ENABLE_PASSAGE_SEARCH"] = "1"
+
+
+def _m0_message_search_runtime_enabled(args: argparse.Namespace) -> bool:
+    return bool(
+        args.m0_letta_full_retrieval
+        or args.m0_letta_enable_message_search
+        or _search_env_enabled("M0_LETTA_ENABLE_MESSAGE_SEARCH")
+    )
+
+
+def _m0_passage_search_runtime_enabled(args: argparse.Namespace) -> bool:
+    return bool(
+        args.m0_letta_full_retrieval
+        or args.m0_letta_enable_passage_search
+        or _search_env_enabled("M0_LETTA_ENABLE_PASSAGE_SEARCH")
+    )
+
+
+def _search_env_enabled(key: str) -> bool:
+    return os.getenv(key, "").strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _rebuild_runtime_state(

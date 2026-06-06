@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from letta_client import Letta
@@ -17,6 +18,9 @@ CURATED_RELATIONAL_BLOCK_LABELS = {
     "m2_shared_events",
     "m3_event_details",
 }
+M0_CONVERSATION_BLOCK_LABEL = "m0_conversation_history"
+M0_LETTA_WRITEBACK_TAGS = ("long_memory_experiment", "m0_default_memory")
+M0_CORE_BLOCK_CHAR_LIMIT = 18000
 
 
 @dataclass(frozen=True)
@@ -27,12 +31,25 @@ class LettaConfig:
 
 
 def get_letta_config() -> LettaConfig:
-    load_dotenv_local()
+    _load_letta_env()
     return LettaConfig(
         base_url=os.getenv("LETTA_BASE_URL", DEFAULT_LETTA_BASE_URL),
         model=os.getenv("LETTA_MODEL", DEFAULT_LETTA_MODEL),
         embedding=os.getenv("LETTA_EMBEDDING", DEFAULT_LETTA_EMBEDDING),
     )
+
+
+def _load_letta_env() -> None:
+    load_dotenv_local()
+    letta_env_path = Path(".env.letta.local")
+    if not letta_env_path.exists():
+        return
+    for raw_line in letta_env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        os.environ[key.strip()] = value.strip().strip("'").strip('"')
 
 
 def create_letta_client(config: LettaConfig | None = None) -> tuple[Letta, LettaConfig]:
@@ -111,6 +128,16 @@ def create_m0_default_memory_agent(client: Letta, config: LettaConfig, name: str
                 "description": "Generic user profile for Letta default memory.",
                 "limit": 3000,
             },
+            {
+                "label": M0_CONVERSATION_BLOCK_LABEL,
+                "value": "No M0 conversation turns have been written yet.",
+                "description": (
+                    "M0 generic conversation history written by the controlled "
+                    "experiment runner. This is ordinary Letta core memory, not "
+                    "handcrafted relational memory."
+                ),
+                "limit": 20000,
+            },
         ],
     )
 
@@ -142,18 +169,33 @@ def read_m0_letta_memory_payload(
             continue
         included_blocks.append(block_data)
 
-    message_hits = _safe_message_search(
-        client=client,
-        agent_id=agent_id,
-        query=query,
-        search_limit=search_limit,
+    message_hits = (
+        _safe_message_search(
+            client=client,
+            agent_id=agent_id,
+            query=query,
+            search_limit=search_limit,
+        )
+        if _m0_message_search_enabled()
+        else []
     )
-    passage_hits = _safe_passage_search(
-        client=client,
-        agent_id=agent_id,
-        query=query,
-        search_limit=search_limit,
+    passage_hits = (
+        _safe_passage_search(
+            client=client,
+            agent_id=agent_id,
+            query=query,
+            search_limit=search_limit,
+        )
+        if _m0_passage_search_enabled()
+        else []
     )
+    block_source_ids = [
+        f"letta:block:{item.get('label') or item.get('id')}"
+        for item in included_blocks
+        if item.get("label") or item.get("id")
+    ]
+    message_hit_ids = [_hit_id(hit) for hit in message_hits]
+    passage_hit_ids = [_hit_id(hit) for hit in passage_hits]
 
     lines = [
         "Letta 默认记忆基线：以下内容来自运行时 Letta agent 的普通记忆，"
@@ -192,17 +234,157 @@ def read_m0_letta_memory_payload(
         "memory_provider": "letta",
         "letta_agent_id": agent_id,
         "memory_context": "\n".join(lines),
-        "source_detail_ids": [
-            f"letta:block:{item.get('label') or item.get('id')}"
-            for item in included_blocks
-            if item.get("label") or item.get("id")
-        ],
+        "source_detail_ids": (
+            block_source_ids
+            + [f"letta:message:{item}" for item in message_hit_ids if item]
+            + [f"letta:passage:{item}" for item in passage_hit_ids if item]
+        ),
         "retrieval": {
             "core_block_count": len(included_blocks),
             "message_hit_count": len(message_hits),
             "passage_hit_count": len(passage_hits),
+            "message_hit_ids": [item for item in message_hit_ids if item],
+            "passage_hit_ids": [item for item in passage_hit_ids if item],
             "excluded_block_labels": sorted(set(excluded_labels)),
         },
+    }
+
+
+def write_m0_letta_turn_memory(
+    *,
+    client: Letta,
+    agent_id: str,
+    run_id: str,
+    message_id: str,
+    day: int | str | None,
+    topic: str | None,
+    turn_type: str | None,
+    user_message: str,
+    assistant_answer: str,
+    created_at: str | None = None,
+) -> dict[str, Any]:
+    """Store the completed M0 turn in Letta archival memory.
+
+    The experiment keeps the responder LLM controlled across M0/M1/M2/M3, so
+    this writeback does not ask Letta to generate the answer. It stores only the
+    M0 branch's ordinary dialogue record in a generic Letta core-memory block.
+    """
+
+    if not agent_id:
+        raise ValueError("M0 Letta writeback requires a Letta agent id.")
+    text = _format_m0_turn_memory_text(
+        run_id=run_id,
+        message_id=message_id,
+        day=day,
+        topic=topic,
+        turn_type=turn_type,
+        user_message=user_message,
+        assistant_answer=assistant_answer,
+    )
+    block = _ensure_m0_conversation_block(
+        client=client,
+        agent_id=agent_id,
+    )
+    block_value = str(block.get("value") or "")
+    block_id = block.get("id")
+    if _m0_block_contains_turn(block_value, run_id=run_id, message_id=message_id):
+        return {
+            "action": "m0_letta_turn_writeback",
+            "condition_id": "M0",
+            "memory_provider": "letta",
+            "method": "agents.blocks.update",
+            "status": "skipped_existing",
+            "letta_agent_id": agent_id,
+            "run_id": run_id,
+            "message_id": message_id,
+            "block_label": M0_CONVERSATION_BLOCK_LABEL,
+            "block_id": block_id,
+            "text_char_count": len(text),
+        }
+
+    new_value = _append_m0_block_turn(block_value, text)
+    response = client.agents.blocks.update(
+        M0_CONVERSATION_BLOCK_LABEL,
+        agent_id=agent_id,
+        value=new_value,
+        limit=20000,
+    )
+    response_data = _model_to_dict(response)
+    return {
+        "action": "m0_letta_turn_writeback",
+        "condition_id": "M0",
+        "memory_provider": "letta",
+        "method": "agents.blocks.update",
+        "status": "success",
+        "letta_agent_id": agent_id,
+        "run_id": run_id,
+        "message_id": message_id,
+        "block_label": M0_CONVERSATION_BLOCK_LABEL,
+        "block_id": response_data.get("id") or block_id,
+        "text_char_count": len(text),
+    }
+
+
+def _ensure_m0_conversation_block(
+    *,
+    client: Letta,
+    agent_id: str,
+) -> dict[str, Any]:
+    blocks = [_model_to_dict(item) for item in client.agents.blocks.list(agent_id=agent_id, limit=100)]
+    for block in blocks:
+        if block.get("label") == M0_CONVERSATION_BLOCK_LABEL:
+            return block
+
+    block = client.blocks.create(
+        label=M0_CONVERSATION_BLOCK_LABEL,
+        value="No M0 conversation turns have been written yet.",
+        description=(
+            "M0 generic conversation history written by the controlled "
+            "experiment runner. This is ordinary Letta core memory, not "
+            "handcrafted relational memory."
+        ),
+        limit=20000,
+        tags=list(M0_LETTA_WRITEBACK_TAGS),
+    )
+    block_data = _model_to_dict(block)
+    block_id = block_data.get("id")
+    if not block_id:
+        raise RuntimeError("Created M0 conversation block did not return an id.")
+    client.agents.blocks.attach(
+        str(block_id),
+        agent_id=agent_id,
+    )
+    return block_data
+
+
+def _m0_block_contains_turn(block_value: str, *, run_id: str, message_id: str) -> bool:
+    return f"run_id: {run_id}" in block_value and f"message_id: {message_id}" in block_value
+
+
+def _append_m0_block_turn(block_value: str, turn_text: str) -> str:
+    existing = block_value.strip()
+    if not existing or existing == "No M0 conversation turns have been written yet.":
+        combined = turn_text.strip()
+    else:
+        combined = f"{existing}\n\n---\n\n{turn_text.strip()}"
+    if len(combined) <= M0_CORE_BLOCK_CHAR_LIMIT:
+        return combined
+    return "[older M0 conversation turns trimmed]\n" + combined[-M0_CORE_BLOCK_CHAR_LIMIT:]
+
+
+def _m0_passage_search_enabled() -> bool:
+    return os.getenv("M0_LETTA_ENABLE_PASSAGE_SEARCH", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+
+
+def _m0_message_search_enabled() -> bool:
+    return os.getenv("M0_LETTA_ENABLE_MESSAGE_SEARCH", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
     }
 
 
@@ -233,14 +415,55 @@ def _safe_passage_search(
     search_limit: int,
 ) -> list[dict[str, Any]]:
     try:
-        response = client.passages.search(
+        response = client.agents.passages.search(
             agent_id=agent_id,
             query=query,
-            limit=search_limit,
+            top_k=search_limit,
         )
     except Exception:
-        return []
+        try:
+            response = client.passages.search(
+                agent_id=agent_id,
+                query=query,
+                limit=search_limit,
+            )
+        except Exception:
+            return []
     return _extract_search_items(response)
+
+
+def _format_m0_turn_memory_text(
+    *,
+    run_id: str,
+    message_id: str,
+    day: int | str | None,
+    topic: str | None,
+    turn_type: str | None,
+    user_message: str,
+    assistant_answer: str,
+) -> str:
+    lines = [
+        "M0 Letta default-memory dialogue turn.",
+        f"run_id: {run_id}",
+        f"message_id: {message_id}",
+    ]
+    if day is not None:
+        lines.append(f"day: {day}")
+    if topic:
+        lines.append(f"topic: {topic}")
+    if turn_type:
+        lines.append(f"turn_type: {turn_type}")
+    lines.extend(
+        [
+            "",
+            "user_message:",
+            user_message.strip(),
+            "",
+            "m0_assistant_answer:",
+            assistant_answer.strip(),
+        ]
+    )
+    return "\n".join(lines)
 
 
 def _extract_search_items(response: Any) -> list[dict[str, Any]]:
@@ -261,6 +484,20 @@ def _hit_text(hit: dict[str, Any]) -> str:
             return value.strip()
         if isinstance(value, dict):
             nested = _hit_text(value)
+            if nested:
+                return nested
+    return ""
+
+
+def _hit_id(hit: dict[str, Any]) -> str:
+    for key in ["id", "message_id", "passage_id"]:
+        value = hit.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    for key in ["message", "passage", "metadata"]:
+        value = hit.get(key)
+        if isinstance(value, dict):
+            nested = _hit_id(value)
             if nested:
                 return nested
     return ""
