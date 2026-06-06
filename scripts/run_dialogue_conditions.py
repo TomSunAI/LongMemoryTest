@@ -184,11 +184,24 @@ def main() -> int:
         memory_conditions_path=args.memory_conditions,
         expected_turns=expected_turns,
     )
-    m0_memory_runtime = LDAgentMemoryRuntime.from_completed_turns(
-        result["turns"],
-        top_k=args.m0_ld_agent_top_k,
-        short_term_k=args.m0_ld_agent_short_term_k,
-    )
+    if existing_result and existing_result.get("m0_ld_agent_memory"):
+        m0_memory_runtime = LDAgentMemoryRuntime.from_snapshot(
+            existing_result.get("m0_ld_agent_memory"),
+            top_k=args.m0_ld_agent_top_k,
+            short_term_k=args.m0_ld_agent_short_term_k,
+            llm_client=llm_client,
+            llm_model=llm_config.model,
+            llm_timeout=args.llm_timeout,
+        )
+    else:
+        m0_memory_runtime = LDAgentMemoryRuntime.from_completed_turns(
+            result["turns"],
+            top_k=args.m0_ld_agent_top_k,
+            short_term_k=args.m0_ld_agent_short_term_k,
+            llm_client=llm_client,
+            llm_model=llm_config.model,
+            llm_timeout=args.llm_timeout,
+        )
     result["m0_ld_agent_memory"] = m0_memory_runtime.snapshot()
     _write_run_config(
         args.output.parent / "run_config.json",
@@ -750,13 +763,13 @@ def _write_run_config(
             "uses_ld_agent_generator": False,
             "uses_ld_agent_checkpoint": False,
             "uses_letta": False,
-            "writeback_method": "local_session_summary_memory",
+            "writeback_method": "ld_agent_session_summary_and_personas_traits",
             "long_term_memory_bank": [
                 "generic_event_memories",
                 "generic_persona_memories",
             ],
             "retrieval": {
-                "strategy": "ld_agent_topic_overlap_recency",
+                "strategy": "ld_agent_relevance_overlap_time_decay",
                 "top_k": args.m0_ld_agent_top_k,
             },
             "used_by_conditions": [

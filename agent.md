@@ -33,8 +33,12 @@
 
 - repository: `https://github.com/leolee99/LD-Agent`
 - pinned commit: `af3c15ab63efcb4ab83d635670b316d63977d106`
+- paper: Li et al., 2025, `Hello Again! LLM-powered Personalized Agent for Long-term Dialogue`, NAACL 2025, DOI `10.18653/v1/2025.naacl-long.272`
+- license: official code repository is MIT licensed
 - memory modules: `Module/EventMemory.py` 与 `Module/Personas.py`
 - intentionally not used: `Module/Generator.py`、ChatGLM3 generator、LoRA checkpoint、训练脚本、官方 response-generation model
+
+论文引用口径：本项目引用 LD-Agent 作为 M0 普通长期对话记忆基线的来源，但实验实现应表述为 `LD-Agent-compatible memory-only baseline` 或 `LD-Agent-inspired memory-only reproduction`。不能声称完整复现或使用 LD-Agent 的 response generator、ChatGLM3/LoRA checkpoint、训练流程或原版 ChromaDB/spaCy backend。
 
 本地实现入口：
 
@@ -42,12 +46,13 @@
 - `src/long_memory_test/memory/schema.py`
 - `scripts/run_dialogue_conditions.py`
 
-M0 的职责是提供普通 long-term personalized dialogue agent memory baseline：
+M0 的职责是提供普通 long-term personalized dialogue agent memory baseline。当前实现已从简化 `LD-Agent-style adapter` 收紧为 `LD-Agent-compatible memory reproduction`：
 
-- short-term memory bank：当前 day/session 内已发生的用户 turns。
-- long-term event memory bank：day/session boundary 时把当前 session 压缩成 generic event memory。
-- persona memory bank：从用户发言中抽取普通 persona / interaction preference。
-- retrieval：每个 probe/turn 到来时，按 topic overlap + recency 检索 top-k generic event/persona memories。
+- short-term memory bank：当前 day/session 内已发生的用户 turns，保留 LD 风格 `idx/time/dialog`。
+- long-term event memory bank：day/session boundary 时用当前实验 LLM 按 LD `context_summarize` 语义把当前 session 压缩成 generic event memory，并保存 `idx/dialog/time/topics/datatype/summary` metadata。
+- persona memory bank：按 LD `Personas.traits_update` 语义，用当前实验 LLM 从 inquiry/response 中抽取 user/agent traits。
+- retrieval：每个 probe/turn 到来时，按 LD `relevance_retrieve` 语义做 topic overlap + time decay 检索 event memory；persona traits 按 LD 最近 traits 窗口提供。
+- storage backend：为实验可恢复和可审计，使用 JSON checkpoint/snapshot；当前不引入 ChromaDB/spaCy，但 snapshot 明确记录 `uses_chromadb=false`、`uses_spacy=false`。
 
 M0 不能读取本实验人工整理的 relational memory、BEI、gold strategy、failure mode、judge 信息、probe type、event-line stage、M2/M3 detail anchors 或人工关系结论。M0 只能写普通事件摘要和普通 persona，例如“用户讨论过孩子入园适应相关压力”，不能写成“该事件体现了长期关系外溢模式”。
 
@@ -69,18 +74,30 @@ M1 读 M0 generic memory + 结论级关系记忆
 M2 读 M0 generic memory + M1 + 摘要级事件记忆
 M3 读 M0 generic memory + M1 + M2 + 细节级关系锚点
 ↓
-每轮结束后，M0 runtime 追加 short-term session；day/session boundary 时写入 long-term event/persona memory
+每轮结束后，M0 runtime 追加 short-term session 并更新 persona traits；day/session boundary 时写入 long-term event memory
 ↓
 评测器再用 timeline / BEI / probe metadata 评分
 ```
 
 当前 runner 使用 `shared_user_turns_only` 作为短期上下文策略：四个条件看到相同的历史 user turns，不再把各自不同的 assistant answer 带入后续 probe。这样后续回合的差异尽量只来自长期记忆条件，而不是前文回复分叉。
 
+### M0 完成标准
+
+M0 是 M1/M2/M3 的共同基石。后续任何关系型记忆实验必须先满足以下 M0 完成条件：
+
+- `M0` 能独立完成 LD-compatible memory-only 运行：short-term session、LLM session summary、persona traits、topic-overlap/time-decay retrieval。
+- `M0` 的 snapshot 可恢复：resume 时优先读取 `m0_ld_agent_memory`，不能因为重建导致已完成 turn 的记忆漂移。
+- `M0` 的 payload 不包含 `结论级关系记忆`、`摘要级事件记忆`、`细节级关系锚点`、BEI、gold strategy、failure mode、probe type 或人工事件阶段标签。
+- `M1/M2/M3` 必须读取同一份 M0 payload，再追加自己的关系型记忆文件；不能各自构造不同的普通记忆底座。
+- `M0` 的 summary/persona writer、retrieval strategy、LD reference、是否使用 ChromaDB/spaCy/generator/checkpoint 必须写入 run config 或 snapshot，保证实验可审计。
+
+当前自动化保护：`tests/test_ld_agent_memory_runtime.py` 覆盖 M0 写入、检索、snapshot 恢复、LLM summary/persona 和关系层隔离；`tests/test_docx_route_pipeline.py` 覆盖 M1/M2/M3 叠加同一份 M0 base memory。
+
 ### 当前记录：2026-06-06
 
 本轮重要改动已经完成：
 
-- 新增 `LDAgentMemoryRuntime`，实现 memory-only M0。
+- 新增 `LDAgentMemoryRuntime`，实现 memory-only M0；当前已收紧为 LD-compatible memory reproduction，包含 session summary、persona traits、topic-overlap/time-decay retrieval 和 LD metadata snapshot。
 - `run_dialogue_conditions.py` 从 Letta 切换为 LD-Agent memory runtime。
 - M1/M2/M3 的 payload 会自动合并同一份 M0 base memory，再追加各自 relational memory。
 - `memory_conditions_combined.json` 和 split memory condition files 已刷新为 `ld_agent_memory` 口径。
@@ -262,7 +279,7 @@ sample_output/conversation_log.json
 - `llm`：A 使用的 provider、base URL 和模型。
 - `memory_setup`：docx 路线、四个条件和 memory payload 来源。
 - `variants`：不同实验组的回复结果，例如 `M0`、`M1`、`M2`、`M3`。
-- `memory_actions`：本轮记忆动作。当前 M0 默认会记录 `ld_agent_short_term_append`，day/session boundary 时再记录 `ld_agent_event_memory_add/update` 和 `ld_agent_persona_memory_add/update`；M1/M2/M3 的关系记忆写入、更新或忽略动作仍待 B-V0.1 填充。
+- `memory_actions`：本轮记忆动作。当前 M0 默认会记录 `ld_agent_short_term_append`，每轮后按 LD Personas 语义记录 `ld_agent_persona_memory_add/update`，day/session boundary 时记录 `ld_agent_event_memory_add`；M1/M2/M3 的关系记忆写入、更新或忽略动作仍待 B-V0.1 填充。
 
 当前主入口是 `scripts/run_dialogue_conditions.py`，负责生成 M0/M1/M2/M3 链式 probe 输出，并追加写入 `sample_output/conversation_log_docx_conditions.json`。它支持通过 `--message-ids` 一次运行多个消息，例如：
 
@@ -303,7 +320,7 @@ PYTHONPATH=src .venv/bin/python scripts/11_start_full_experiment_background.py \
   --judge-workers 4
 ```
 
-后台脚本会写入 `background_supervisor.log`、`background_supervisor.pid.json` 和 `supervisor_status.json`。如果某一轮模型调用失败，supervisor 会用同一 run-dir 自动加 `--resume` 重试；已完成 turn 不会重跑，M0 LD-Agent memory runtime 会从已完成 turns 重建 short-term/long-term memory snapshot。
+后台脚本会写入 `background_supervisor.log`、`background_supervisor.pid.json` 和 `supervisor_status.json`。如果某一轮模型调用失败，supervisor 会用同一 run-dir 自动加 `--resume` 重试；已完成 turn 不会重跑，M0 LD-Agent memory runtime 优先从 `m0_ld_agent_memory` snapshot 恢复，缺失旧 snapshot 时才从已完成 turns 重建 short-term/long-term memory。
 
 `09_run_full_experiment.py` 默认使用 `--condition-workers 4`，即同一 user turn 下的 M0/M1/M2/M3 四个回答并行生成。并行不会改变实验输入：每个 condition 的 `user_message`、短期上下文快照和 memory payload 都在提交任务前固定；M0 memory runtime 记录在四组回答都完成后执行。
 
@@ -397,7 +414,7 @@ Letta 相关代码只作为历史 pilot 保留：
 
 - `scripts/annotate_bei.py` 已能从现有 probe 生成 `sample_output/bei_annotations.json`。
 - `scripts/build_memory_conditions.py` 已能生成 `sample_output/memory_conditions.json`，其中 M0 是 LD-Agent memory-only generic baseline，M1/M2/M3 为叠加在同一 M0 底座上的累计关系记忆层级。
-- `scripts/run_dialogue_conditions.py` 已能按同一用户输入运行 M0/M1/M2/M3，并为每轮记录 memory payload、input hash、模型参数和四组回答；M0 由 `LDAgentMemoryRuntime` 负责 short-term session、long-term event/persona memory 写入和 topic/recency retrieval。
+- `scripts/run_dialogue_conditions.py` 已能按同一用户输入运行 M0/M1/M2/M3，并为每轮记录 memory payload、input hash、模型参数和四组回答；M0 由 `LDAgentMemoryRuntime` 负责 LD-compatible short-term session、LLM session summary、persona traits、LD metadata snapshot 和 topic-overlap/time-decay retrieval。
 - 旧 `scripts/run_m0_m1_dialogue_probe.py` 仅作为历史 pilot 工具保留。
 
 ## 核心数据流程

@@ -17,6 +17,7 @@ class MemoryRecord:
     topic: str = ""
     created_day: int = 0
     updated_day: int = 0
+    ld_agent_metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -31,6 +32,7 @@ class MemoryRecord:
             "topic": self.topic,
             "created_day": self.created_day,
             "updated_day": self.updated_day,
+            "ld_agent_metadata": dict(self.ld_agent_metadata),
         }
 
     @classmethod
@@ -47,4 +49,5 @@ class MemoryRecord:
             topic=str(data.get("topic", "")),
             created_day=int(data.get("created_day", 0) or 0),
             updated_day=int(data.get("updated_day", 0) or 0),
+            ld_agent_metadata=dict(data.get("ld_agent_metadata", {}) or {}),
         )

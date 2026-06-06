@@ -87,7 +87,7 @@ PYTHONPATH=src .venv/bin/python scripts/05_run_dialogue_conditions.py \
   --print-progress
 ```
 
-M0 在运行时使用本地 LD-Agent memory-only adapter：参考官方 `leolee99/LD-Agent` 的 `Module/EventMemory.py` 与 `Module/Personas.py`，保留 short-term session bank、session summary 写入 long-term event memory、persona extraction 和 topic/recency retrieval；回答生成仍使用本项目统一 LLM。
+M0 在运行时使用本地 LD-Agent memory-only runtime：参考官方 `leolee99/LD-Agent` 的 `Module/EventMemory.py` 与 `Module/Personas.py`，保留 short-term session bank、LLM session summary 写入 long-term event memory、Personas-style trait extraction，以及 topic-overlap/time-decay retrieval；回答生成仍使用本项目统一 LLM。为保证实验可恢复和可审计，当前存储后端使用 JSON snapshot，不引入 LD 原版 ChromaDB/spaCy 运行依赖。
 
 运行 30 天完整 M0/M1/M2/M3 场景链路，并在自然 follow-up 后插入定向测试问题：
 

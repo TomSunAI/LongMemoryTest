@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import math
 import re
 from collections import OrderedDict
 from typing import Any
@@ -15,14 +16,35 @@ LD_AGENT_REFERENCE = {
     "usage": "memory_only_no_generator_or_checkpoint",
 }
 
+LD_EVENT_SUMMARY_SYSTEM_PROMPT = (
+    "You are good at extracting events and summarizing them in brief sentences. "
+    "You will be shown a conversation between User and Agent.\n"
+)
+LD_PERSONA_SYSTEM_PROMPT = (
+    "You excel at extracting user personal traits from their words, "
+    "a renowned local communication expert."
+)
+LD_PERSONA_EXAMPLES = (
+    "If no traits can be extracted in the sentence, you should reply 'NO_TRAIT'. "
+    "Given you some format examples of traits extraction, such as:\n"
+    "1. No, I have no longer serve in the millitary, I had served up the full term "
+    "that I signed up for, and now work outside of the millitary.\n"
+    "Extracted Traits: 'I now work elsewhere. I used to be in the military.'\n"
+    "2. That must a been some kind of endeavor. Its great that people are aware "
+    "of issues that arise in their homes, otherwise it can be very problematic "
+    "in the future.\n"
+    "'NO_TRAIT'\n"
+)
+
 
 class LDAgentMemoryRuntime:
-    """Local memory-only adapter for the LD-Agent M0 baseline.
+    """LD-Agent-compatible memory runtime for the M0 baseline.
 
-    The official LD-Agent memory design keeps a short-term memory bank for the
-    current session and writes a summarized session into long-term event memory
-    when the session changes. This adapter follows that memory behavior while
-    keeping response generation in this repository's controlled base LLM.
+    This keeps the experiment's responder model controlled while reproducing
+    LD-Agent's memory-side behavior: short-term session memory, session-level
+    event summarization, topic-overlap/time-decay retrieval, and Personas-style
+    trait extraction. Chroma/spaCy are not required in this backend; their roles
+    are represented by auditable JSON storage and deterministic topic tokens.
     """
 
     def __init__(
@@ -30,23 +52,49 @@ class LDAgentMemoryRuntime:
         *,
         top_k: int = 5,
         short_term_k: int = 5,
-        semantic_weight: float = 0.8,
-        recency_weight: float = 0.2,
+        llm_client: Any | None = None,
+        llm_model: str | None = None,
+        llm_timeout: float = 60.0,
+        max_user_personas: int = 5,
+        max_agent_personas: int = 5,
+        decay_temp: float = 1e-7,
     ) -> None:
         self.top_k = top_k
         self.short_term_k = short_term_k
-        self.semantic_weight = semantic_weight
-        self.recency_weight = recency_weight
+        self.llm_client = llm_client
+        self.llm_model = llm_model
+        self.llm_timeout = llm_timeout
+        self.max_user_personas = max_user_personas
+        self.max_agent_personas = max_agent_personas
+        self.decay_temp = decay_temp
         self.current_session_day: int | None = None
         self.short_term_session: list[dict[str, Any]] = []
         self.memories: OrderedDict[str, MemoryRecord] = OrderedDict()
+        self.user_traits: list[str] = []
+        self.agent_traits: list[str] = []
+        self.memory_llm_failures: list[dict[str, Any]] = []
         self.actions: list[dict[str, Any]] = []
 
     @classmethod
-    def from_snapshot(cls, snapshot: dict[str, Any] | None) -> "LDAgentMemoryRuntime":
+    def from_snapshot(
+        cls,
+        snapshot: dict[str, Any] | None,
+        *,
+        top_k: int | None = None,
+        short_term_k: int | None = None,
+        llm_client: Any | None = None,
+        llm_model: str | None = None,
+        llm_timeout: float = 60.0,
+    ) -> "LDAgentMemoryRuntime":
         runtime = cls(
-            top_k=int((snapshot or {}).get("top_k", 5) or 5),
-            short_term_k=int((snapshot or {}).get("short_term_k", 5) or 5),
+            top_k=int(top_k or (snapshot or {}).get("top_k", 5) or 5),
+            short_term_k=int(short_term_k or (snapshot or {}).get("short_term_k", 5) or 5),
+            llm_client=llm_client,
+            llm_model=llm_model,
+            llm_timeout=llm_timeout,
+            max_user_personas=int((snapshot or {}).get("max_user_personas", 5) or 5),
+            max_agent_personas=int((snapshot or {}).get("max_agent_personas", 5) or 5),
+            decay_temp=float((snapshot or {}).get("decay_temp", 1e-7) or 1e-7),
         )
         if not snapshot:
             return runtime
@@ -57,6 +105,9 @@ class LDAgentMemoryRuntime:
             for item in snapshot.get("memories", [])
             if isinstance(item, dict) and item.get("memory_id")
         )
+        runtime.user_traits = [str(item) for item in snapshot.get("user_traits", []) if item]
+        runtime.agent_traits = [str(item) for item in snapshot.get("agent_traits", []) if item]
+        runtime.memory_llm_failures = list(snapshot.get("memory_llm_failures", []))
         runtime.actions = list(snapshot.get("actions", []))
         return runtime
 
@@ -67,8 +118,17 @@ class LDAgentMemoryRuntime:
         *,
         top_k: int = 5,
         short_term_k: int = 5,
+        llm_client: Any | None = None,
+        llm_model: str | None = None,
+        llm_timeout: float = 60.0,
     ) -> "LDAgentMemoryRuntime":
-        runtime = cls(top_k=top_k, short_term_k=short_term_k)
+        runtime = cls(
+            top_k=top_k,
+            short_term_k=short_term_k,
+            llm_client=llm_client,
+            llm_model=llm_model,
+            llm_timeout=llm_timeout,
+        )
         for turn in turns:
             message = dict(turn.get("input", {}))
             variants = turn.get("variants", {})
@@ -84,13 +144,27 @@ class LDAgentMemoryRuntime:
 
     def snapshot(self) -> dict[str, Any]:
         return {
-            "schema_version": "ld_agent_memory_runtime_v1",
+            "schema_version": "ld_agent_memory_runtime_v2",
             "provider": "ld_agent_memory",
+            "compatibility_mode": "ld_agent_event_memory_and_personas_reproduction",
             "ld_agent_reference": dict(LD_AGENT_REFERENCE),
+            "uses_chromadb": False,
+            "uses_spacy": False,
+            "uses_ld_agent_generator": False,
+            "uses_ld_agent_checkpoint": False,
+            "summary_writer": "llm" if self._has_memory_llm() else "deterministic_fallback",
+            "persona_writer": "llm" if self._has_memory_llm() else "deterministic_fallback",
             "top_k": self.top_k,
             "short_term_k": self.short_term_k,
+            "max_user_personas": self.max_user_personas,
+            "max_agent_personas": self.max_agent_personas,
+            "decay_temp": self.decay_temp,
             "current_session_day": self.current_session_day,
             "short_term_session": list(self.short_term_session),
+            "user_traits": list(self.user_traits),
+            "agent_traits": list(self.agent_traits),
+            "memory_llm_failure_count": len(self.memory_llm_failures),
+            "memory_llm_failures": list(self.memory_llm_failures),
             "memories": [memory.to_dict() for memory in self.memories.values()],
             "actions": list(self.actions),
         }
@@ -99,22 +173,19 @@ class LDAgentMemoryRuntime:
         self.prepare_for_turn(message)
         query = self._query_text(message)
         current_day = _safe_int(message.get("day"))
-        event_hits = self._retrieve(
-            query=query,
-            current_day=current_day,
-            memory_type="event_memory",
-            top_k=self.top_k,
-        )
-        persona_hits = self._retrieve(
-            query=query,
-            current_day=current_day,
-            memory_type="persona_memory",
-            top_k=min(3, self.top_k),
-        )
+        event_hits = self._retrieve_event_memories(query=query, current_day=current_day)
+        persona_hits = self._current_persona_hits()
         short_term_lines = self._short_term_lines()
         lines = [
-            "LD-Agent memory baseline (memory-only M0).",
-            "Reference: leolee99/LD-Agent Module/EventMemory.py and Module/Personas.py; response generator/checkpoints are not used.",
+            "LD-Agent memory baseline (memory-only).",
+            (
+                "Reference: leolee99/LD-Agent Module/EventMemory.py and Module/Personas.py; "
+                "response generator/checkpoints are not used."
+            ),
+            (
+                "Implementation: LD-compatible JSON backend; reproduces short-term session "
+                "memory, session summary, persona traits, topic-overlap retrieval, and time decay."
+            ),
             "Short-term memory bank:",
         ]
         lines.extend(short_term_lines or ["- 当前 session 内暂无更早用户 turn。"])
@@ -123,17 +194,32 @@ class LDAgentMemoryRuntime:
             [
                 "- "
                 + item["memory"]["summary"]
-                + f" (source_session={item['memory']['source_session']}, importance={item['memory']['importance']})"
+                + (
+                    f" (source_session={item['memory']['source_session']}, "
+                    f"topics={item['memory'].get('ld_agent_metadata', {}).get('topics', '')}, "
+                    f"overlap={item['overlap_score']}, time_decay={item['time_decay']})"
+                )
                 for item in event_hits
             ]
             or ["- 当前没有检索到相关普通事件记忆。"]
         )
-        lines.append("Retrieved persona memories:")
-        lines.extend(
-            ["- " + item["memory"]["summary"] for item in persona_hits]
-            or ["- 当前没有检索到相关普通 persona 记忆。"]
+        lines.append("Persona traits:")
+        user_trait_lines = [
+            "- User: " + item["memory"]["summary"]
+            for item in persona_hits
+            if item["memory"].get("ld_agent_metadata", {}).get("speaker") == "user"
+        ]
+        agent_trait_lines = [
+            "- Agent: " + item["memory"]["summary"]
+            for item in persona_hits
+            if item["memory"].get("ld_agent_metadata", {}).get("speaker") == "agent"
+        ]
+        lines.extend(user_trait_lines or ["- User: 当前没有可用 user trait。"])
+        lines.extend(agent_trait_lines or ["- Agent: 当前没有可用 agent trait。"])
+        lines.append(
+            "Use memories only when relevant. Do not infer relational labels or use "
+            "probe/gold/judge metadata."
         )
-        lines.append("Use memories only when they are relevant. Do not infer relational labels or use probe/gold/judge metadata.")
         return {
             "condition_id": "M0",
             "memory_provider": "ld_agent_memory",
@@ -145,7 +231,7 @@ class LDAgentMemoryRuntime:
                 item["memory"]["memory_id"] for item in [*event_hits, *persona_hits]
             ],
             "retrieval": {
-                "strategy": "ld_agent_topic_overlap_recency",
+                "strategy": "ld_agent_relevance_overlap_time_decay",
                 "top_k": self.top_k,
                 "query": query,
                 "event_memory_count": len(event_hits),
@@ -178,13 +264,18 @@ class LDAgentMemoryRuntime:
         day = _safe_int(message.get("day"))
         if self.current_session_day is None and day > 0:
             self.current_session_day = day
+        turn_idx = len(self.short_term_session)
+        user_message = str(message.get("user_message", ""))
         turn = {
             "run_id": run_id,
+            "idx": turn_idx,
+            "time": _ld_time(day=day, idx=turn_idx),
+            "dialog": f"User: {user_message}",
             "message_id": str(message.get("message_id", "")),
             "day": day,
             "topic": str(message.get("topic", "")),
             "turn_type": str(message.get("turn_type", "scripted_opening")),
-            "user_message": str(message.get("user_message", "")),
+            "user_message": user_message,
             "assistant_answer": assistant_answer,
             "domains": [str(item) for item in message.get("domains", [])],
             "intent": str(message.get("intent", "")),
@@ -196,145 +287,295 @@ class LDAgentMemoryRuntime:
             "memory_provider": "ld_agent_memory",
             "message_id": turn["message_id"],
             "day": day,
+            "idx": turn_idx,
+            "time": turn["time"],
             "short_term_turn_count": len(self.short_term_session),
             "status": "success",
         }
         self.actions.append(action)
+        self.actions.extend(
+            self._update_personas(
+                inquiry=user_message,
+                response=assistant_answer,
+                source_turn_id=turn["message_id"],
+                day=day,
+            )
+        )
         return action
 
-    def flush_current_session(self, *, reason: str, next_day: int | None = None) -> list[dict[str, Any]]:
+    def flush_current_session(
+        self,
+        *,
+        reason: str,
+        next_day: int | None = None,
+    ) -> list[dict[str, Any]]:
         if not self.short_term_session:
             return []
         day = _safe_int(self.short_term_session[-1].get("day")) or self.current_session_day or 0
-        actions = []
-        actions.extend(self._write_event_memories(day=day, reason=reason))
-        actions.extend(self._write_persona_memories(day=day, reason=reason))
+        actions = self._write_session_event_memory(day=day, reason=reason)
         self.short_term_session = []
         if next_day is not None:
             self.current_session_day = next_day
         self.actions.extend(actions)
         return actions
 
-    def _write_event_memories(self, *, day: int, reason: str) -> list[dict[str, Any]]:
-        actions = []
-        for topic, turns in _group_by_topic(self.short_term_session).items():
-            if not topic:
-                topic = "普通对话主题"
-            summary = _build_event_summary(topic=topic, turns=turns)
-            raw_dialogue = _build_raw_dialogue(turns)
-            source_turn_ids = [str(turn.get("message_id")) for turn in turns if turn.get("message_id")]
-            memory_id = self._stable_memory_id("event_memory", topic)
-            existing = self.memories.get(memory_id)
-            if existing:
-                existing.summary = _merge_summary(existing.summary, summary)
-                existing.raw_dialogue = _merge_raw_dialogue(existing.raw_dialogue, raw_dialogue)
-                existing.source_turn_ids = _unique([*existing.source_turn_ids, *source_turn_ids])
-                existing.source_session = _merge_source_session(existing.source_session, f"D{day:02d}")
-                existing.timestamp = f"D{day:02d}"
-                existing.updated_day = day
-                existing.importance = max(existing.importance, _importance_from_turns(turns))
-                action_name = "ld_agent_event_memory_update"
-            else:
-                self.memories[memory_id] = MemoryRecord(
-                    memory_id=memory_id,
-                    memory_type="event_memory",
-                    summary=summary,
-                    raw_dialogue=raw_dialogue,
-                    source_session=f"D{day:02d}",
-                    source_turn_ids=source_turn_ids,
-                    timestamp=f"D{day:02d}",
-                    importance=_importance_from_turns(turns),
-                    topic=topic,
-                    created_day=day,
-                    updated_day=day,
-                )
-                action_name = "ld_agent_event_memory_add"
-            actions.append(
-                {
-                    "action": action_name,
-                    "memory_provider": "ld_agent_memory",
-                    "memory_id": memory_id,
-                    "memory_type": "event_memory",
-                    "source_session": f"D{day:02d}",
-                    "source_turn_ids": source_turn_ids,
-                    "reason": reason,
-                    "status": "success",
-                }
-            )
-        return actions
+    def _write_session_event_memory(self, *, day: int, reason: str) -> list[dict[str, Any]]:
+        context_lines = [
+            f"(line {idx + 1}) {turn.get('dialog', '')}."
+            for idx, turn in enumerate(self.short_term_session)
+            if turn.get("dialog")
+        ]
+        merged_context = "\n".join(context_lines)
+        summary = self._context_summarize(merged_context, len(context_lines))
+        topics = ",".join(_ld_topic_tokens(_session_topic_text(self.short_term_session)))
+        source_turn_ids = [
+            str(turn.get("message_id")) for turn in self.short_term_session if turn.get("message_id")
+        ]
+        session = f"D{day:02d}"
+        memory_id = self._stable_memory_id("event_memory", session + ":" + ",".join(source_turn_ids))
+        metadata = {
+            "idx": self._event_memory_count(),
+            "dialog": "",
+            "time": _ld_time(day=day, idx=len(self.short_term_session)),
+            "topics": topics,
+            "datatype": "text",
+            "summary": summary,
+        }
+        self.memories[memory_id] = MemoryRecord(
+            memory_id=memory_id,
+            memory_type="event_memory",
+            summary=summary,
+            raw_dialogue=_build_raw_dialogue(self.short_term_session),
+            source_session=session,
+            source_turn_ids=source_turn_ids,
+            timestamp=session,
+            importance=_importance_from_turns(self.short_term_session),
+            topic=topics,
+            created_day=day,
+            updated_day=day,
+            ld_agent_metadata=metadata,
+        )
+        return [
+            {
+                "action": "ld_agent_event_memory_add",
+                "memory_provider": "ld_agent_memory",
+                "memory_id": memory_id,
+                "memory_type": "event_memory",
+                "source_session": session,
+                "source_turn_ids": source_turn_ids,
+                "reason": reason,
+                "ld_agent_metadata": metadata,
+                "status": "success",
+            }
+        ]
 
-    def _write_persona_memories(self, *, day: int, reason: str) -> list[dict[str, Any]]:
-        traits = _extract_generic_persona_traits(self.short_term_session)
-        actions = []
-        for trait in traits:
-            memory_id = self._stable_memory_id("persona_memory", trait)
-            existing = self.memories.get(memory_id)
-            if existing:
-                existing.updated_day = day
-                existing.timestamp = f"D{day:02d}"
-                action_name = "ld_agent_persona_memory_update"
-            else:
-                self.memories[memory_id] = MemoryRecord(
-                    memory_id=memory_id,
-                    memory_type="persona_memory",
-                    summary=trait,
-                    source_session=f"D{day:02d}",
-                    source_turn_ids=[
-                        str(turn.get("message_id"))
-                        for turn in self.short_term_session
-                        if turn.get("message_id")
-                    ],
-                    timestamp=f"D{day:02d}",
-                    importance=3,
-                    topic="persona",
-                    created_day=day,
-                    updated_day=day,
-                )
-                action_name = "ld_agent_persona_memory_add"
-            actions.append(
-                {
-                    "action": action_name,
-                    "memory_provider": "ld_agent_memory",
-                    "memory_id": memory_id,
-                    "memory_type": "persona_memory",
-                    "source_session": f"D{day:02d}",
-                    "reason": reason,
-                    "status": "success",
-                }
-            )
-        return actions
-
-    def _retrieve(
+    def _update_personas(
         self,
         *,
-        query: str,
-        current_day: int,
-        memory_type: str,
-        top_k: int,
+        inquiry: str,
+        response: str,
+        source_turn_id: str,
+        day: int,
     ) -> list[dict[str, Any]]:
-        query_tokens = _tokens(query)
+        actions = []
+        user_trait = self._extract_persona_trait(inquiry)
+        if _is_valid_trait(user_trait) and user_trait not in self.user_traits:
+            self.user_traits.append(user_trait)
+            actions.append(
+                self._write_persona_memory(
+                    speaker="user",
+                    trait=user_trait,
+                    source_turn_id=source_turn_id,
+                    day=day,
+                )
+            )
+        agent_trait = self._extract_persona_trait(response)
+        if _is_valid_trait(agent_trait) and agent_trait not in self.agent_traits:
+            self.agent_traits.append(agent_trait)
+            actions.append(
+                self._write_persona_memory(
+                    speaker="agent",
+                    trait=agent_trait,
+                    source_turn_id=source_turn_id,
+                    day=day,
+                )
+            )
+        return actions
+
+    def _write_persona_memory(
+        self,
+        *,
+        speaker: str,
+        trait: str,
+        source_turn_id: str,
+        day: int,
+    ) -> dict[str, Any]:
+        memory_id = self._stable_memory_id("persona_memory", speaker + ":" + trait)
+        metadata = {
+            "speaker": speaker,
+            "datatype": "text",
+            "summary": trait,
+            "source": "LD-Agent Personas.traits_update",
+        }
+        action_name = "ld_agent_persona_memory_add"
+        existing = self.memories.get(memory_id)
+        if existing:
+            existing.updated_day = day
+            existing.timestamp = f"D{day:02d}"
+            existing.source_turn_ids = _unique([*existing.source_turn_ids, source_turn_id])
+            action_name = "ld_agent_persona_memory_update"
+        else:
+            self.memories[memory_id] = MemoryRecord(
+                memory_id=memory_id,
+                memory_type="persona_memory",
+                summary=trait,
+                source_session=f"D{day:02d}",
+                source_turn_ids=[source_turn_id],
+                timestamp=f"D{day:02d}",
+                importance=3,
+                topic="persona",
+                created_day=day,
+                updated_day=day,
+                ld_agent_metadata=metadata,
+            )
+        return {
+            "action": action_name,
+            "memory_provider": "ld_agent_memory",
+            "memory_id": memory_id,
+            "memory_type": "persona_memory",
+            "speaker": speaker,
+            "source_session": f"D{day:02d}",
+            "source_turn_ids": [source_turn_id],
+            "status": "success",
+        }
+
+    def _retrieve_event_memories(self, *, query: str, current_day: int) -> list[dict[str, Any]]:
+        query_topics = _ld_topic_tokens(query)
+        current_time = _ld_time(day=current_day, idx=0)
         scored = []
         for memory in self.memories.values():
-            if memory.memory_type != memory_type:
+            if memory.memory_type != "event_memory":
                 continue
-            relevance = _jaccard(query_tokens, _tokens(memory.summary + " " + memory.topic))
-            if memory.topic and memory.topic in query:
-                relevance = max(relevance, 0.35)
-            recency = _recency_score(current_day=current_day, memory_day=memory.updated_day)
-            score = self.semantic_weight * relevance + self.recency_weight * recency
-            if score <= 0:
+            metadata = memory.ld_agent_metadata or {}
+            retrieved_topics = [
+                item for item in str(metadata.get("topics", memory.topic)).split(",") if item
+            ]
+            overlap_count = len(set(query_topics) & set(retrieved_topics))
+            if not query_topics or not retrieved_topics:
+                overlap_score = 0.0
+            else:
+                overlap_score = 0.5 * (overlap_count / len(query_topics)) + 0.5 * (
+                    overlap_count / len(retrieved_topics)
+                )
+            time_gap = max(0.0, current_time - float(metadata.get("time", 0.0) or 0.0))
+            time_decay = math.exp(-self.decay_temp * time_gap)
+            overall_score = time_decay * overlap_score
+            if overlap_count <= 0:
                 continue
-            scored.append((score, relevance, recency, memory))
-        scored.sort(key=lambda item: (item[0], item[3].importance, item[3].updated_day), reverse=True)
+            scored.append((overall_score, overlap_score, overlap_count, time_decay, memory))
+        scored.sort(key=lambda item: (item[0], item[2], item[4].updated_day), reverse=True)
         return [
             {
                 "score": round(score, 4),
-                "semantic_relevance": round(relevance, 4),
-                "recency": round(recency, 4),
+                "overlap_score": round(overlap_score, 4),
+                "overlap_count": overlap_count,
+                "time_decay": round(time_decay, 4),
                 "memory": memory.to_dict(),
             }
-            for score, relevance, recency, memory in scored[:top_k]
+            for score, overlap_score, overlap_count, time_decay, memory in scored[: self.top_k]
         ]
+
+    def _current_persona_hits(self) -> list[dict[str, Any]]:
+        allowed_traits = set(
+            self.user_traits[-self.max_user_personas :]
+            + self.agent_traits[-self.max_agent_personas :]
+        )
+        hits = []
+        for memory in self.memories.values():
+            if memory.memory_type != "persona_memory" or memory.summary not in allowed_traits:
+                continue
+            hits.append({"score": 1.0, "memory": memory.to_dict()})
+        return hits
+
+    def _context_summarize(self, context: str, length: int) -> str:
+        if not context.strip():
+            return "NO_SUMMARY"
+        user_prompt = (
+            f"#Conversation#:\n{context}.\n"
+            "Based on the Conversation, please summarize the main points of the "
+            "conversation with brief sentences in English, within 20 words.\nSUMMARY:"
+        )
+        fallback = _fallback_session_summary(context, length)
+        return self._call_memory_llm(
+            task="EventSummary",
+            system_prompt=LD_EVENT_SUMMARY_SYSTEM_PROMPT,
+            user_prompt=user_prompt,
+            fallback=fallback,
+            max_tokens=160,
+        )
+
+    def _extract_persona_trait(self, sentence: str) -> str:
+        if not sentence.strip():
+            return "NO_TRAIT"
+        user_prompt = (
+            LD_PERSONA_EXAMPLES
+            + f"Please extract the personal traits who said this sentence "
+            f"(no more than 20 words):\n{sentence}\n"
+        )
+        fallback = _fallback_persona_trait(sentence)
+        return self._call_memory_llm(
+            task="PersonaExtraction",
+            system_prompt=LD_PERSONA_SYSTEM_PROMPT,
+            user_prompt=user_prompt,
+            fallback=fallback,
+            max_tokens=160,
+        )
+
+    def _call_memory_llm(
+        self,
+        *,
+        task: str,
+        system_prompt: str,
+        user_prompt: str,
+        fallback: str,
+        max_tokens: int,
+    ) -> str:
+        if not self._has_memory_llm():
+            return fallback
+        request_client = self.llm_client.with_options(
+            max_retries=0,
+            timeout=self.llm_timeout,
+        )
+        last_reason = "empty"
+        for attempt, token_limit in enumerate([max_tokens, max(500, max_tokens)], start=1):
+            try:
+                completion = request_client.chat.completions.create(
+                    model=self.llm_model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    max_tokens=token_limit,
+                    temperature=0.2,
+                )
+                content = (completion.choices[0].message.content or "").strip()
+                if content:
+                    return content
+                last_reason = f"empty_response_attempt_{attempt}_max_tokens_{token_limit}"
+            except Exception as exc:
+                last_reason = f"{type(exc).__name__}: {_truncate(str(exc), 240)}"
+                break
+        self.memory_llm_failures.append(
+            {
+                "task": task,
+                "reason": last_reason,
+                "fallback_used": True,
+            }
+        )
+        return fallback
+
+    def _has_memory_llm(self) -> bool:
+        return bool(self.llm_client is not None and self.llm_model)
 
     def _query_text(self, message: dict[str, Any]) -> str:
         recent = " ".join(
@@ -346,6 +587,7 @@ class LDAgentMemoryRuntime:
             for item in [
                 str(message.get("user_message", "")),
                 str(message.get("topic", "")),
+                " ".join(str(item) for item in message.get("domains", []) if item),
                 recent,
             ]
             if item
@@ -353,35 +595,31 @@ class LDAgentMemoryRuntime:
 
     def _short_term_lines(self) -> list[str]:
         lines = []
-        for turn in self.short_term_session[-self.short_term_k :]:
-            message_id = turn.get("message_id", "")
-            text = _truncate(str(turn.get("user_message", "")), 120)
+        for idx, turn in enumerate(self.short_term_session[-self.short_term_k :], start=1):
+            text = _truncate(str(turn.get("dialog") or turn.get("user_message", "")), 140)
             if text:
-                lines.append(f"- {message_id}: 用户说：{text}")
+                lines.append(f"- (line {idx}) {text}")
         return lines
+
+    def _event_memory_count(self) -> int:
+        return sum(1 for memory in self.memories.values() if memory.memory_type == "event_memory")
 
     def _stable_memory_id(self, memory_type: str, key: str) -> str:
         digest = hashlib.sha1(f"{memory_type}:{key}".encode("utf-8")).hexdigest()[:12]
         return f"m0_ld_agent:{memory_type}:{digest}"
 
 
-def _group_by_topic(turns: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
-    grouped: dict[str, list[dict[str, Any]]] = OrderedDict()
-    for turn in turns:
-        topic = str(turn.get("topic", ""))
-        grouped.setdefault(topic, []).append(turn)
-    return grouped
-
-
-def _build_event_summary(*, topic: str, turns: list[dict[str, Any]]) -> str:
-    snippets = [
-        _truncate(str(turn.get("user_message", "")).strip(), 90)
+def _session_topic_text(turns: list[dict[str, Any]]) -> str:
+    return " ".join(
+        item
         for turn in turns
-        if str(turn.get("user_message", "")).strip()
-    ]
-    if snippets:
-        return f"用户讨论过「{topic}」相关情况：" + "；".join(snippets[:3])
-    return f"用户讨论过「{topic}」相关情况。"
+        for item in [
+            str(turn.get("topic", "")),
+            str(turn.get("user_message", "")),
+            " ".join(str(domain) for domain in turn.get("domains", []) if domain),
+        ]
+        if item
+    )
 
 
 def _build_raw_dialogue(turns: list[dict[str, Any]]) -> str:
@@ -396,25 +634,22 @@ def _build_raw_dialogue(turns: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
-def _extract_generic_persona_traits(turns: list[dict[str, Any]]) -> list[str]:
-    text = "\n".join(str(turn.get("user_message", "")) for turn in turns)
-    traits = []
-    domains = _unique(
-        str(domain)
-        for turn in turns
-        for domain in turn.get("domains", [])
-        if domain
-    )
-    topics = _unique(str(turn.get("topic", "")) for turn in turns if turn.get("topic"))
-    if domains:
-        traits.append("用户近期讨论领域包括：" + "、".join(domains) + "。")
-    elif topics:
-        traits.append("用户近期讨论主题包括：" + "、".join(topics[:4]) + "。")
+def _fallback_session_summary(context: str, length: int) -> str:
+    clean = re.sub(r"\s+", " ", context).strip()
+    if not clean:
+        return "NO_SUMMARY"
+    return _truncate(f"Session summary from {length} line(s): {clean}", 220)
+
+
+def _fallback_persona_trait(sentence: str) -> str:
+    text = sentence.strip()
+    if len(text) < 4:
+        return "NO_TRAIT"
+    if any(marker in text for marker in ["我", "我的", "我们", "孩子", "工作", "论文"]):
+        return _truncate(text, 80)
     if any(marker in text for marker in ["实在一点", "标准答案", "别先安慰", "少废话"]):
-        traits.append("用户偏好直接、具体、少空泛安慰的回应。")
-    if any(marker in text for marker in ["下一步", "优先级", "处理思路", "判断一下"]):
-        traits.append("用户在压力场景中常希望先拆事实、选项和下一步。")
-    return _unique(traits)
+        return "用户希望回应更实在，少标准答案。"
+    return "NO_TRAIT"
 
 
 def _importance_from_turns(turns: list[dict[str, Any]]) -> int:
@@ -426,41 +661,27 @@ def _importance_from_turns(turns: list[dict[str, Any]]) -> int:
     return 3
 
 
-def _merge_summary(existing: str, new: str) -> str:
-    if new in existing:
-        return existing
-    return _truncate(existing + "；" + new, 600)
-
-
-def _merge_raw_dialogue(existing: str, new: str) -> str:
-    if not existing:
-        return new
-    return _truncate(existing + "\n" + new, 2400)
-
-
-def _merge_source_session(existing: str, new: str) -> str:
-    parts = _unique([item.strip() for item in (existing + "," + new).split(",") if item.strip()])
-    return ", ".join(parts)
-
-
-def _tokens(text: str) -> set[str]:
+def _ld_topic_tokens(text: str) -> list[str]:
     lowered = text.lower()
-    latin = re.findall(r"[a-z0-9_]+", lowered)
-    cjk = re.findall(r"[\u4e00-\u9fff]", text)
-    return set(latin + cjk)
+    tokens = set(re.findall(r"[a-z0-9_]{2,}", lowered))
+    for chunk in re.findall(r"[\u4e00-\u9fff]{2,}", text):
+        if len(chunk) <= 12:
+            tokens.add(chunk)
+        for size in (2, 3):
+            for idx in range(0, max(0, len(chunk) - size + 1)):
+                tokens.add(chunk[idx : idx + size])
+    return sorted(tokens)
 
 
-def _jaccard(left: set[str], right: set[str]) -> float:
-    if not left or not right:
-        return 0.0
-    return len(left & right) / len(left | right)
+def _ld_time(*, day: int, idx: int) -> float:
+    if day <= 0:
+        return float(idx)
+    return float(day * 24 * 60 * 60 + idx)
 
 
-def _recency_score(*, current_day: int, memory_day: int) -> float:
-    if current_day <= 0 or memory_day <= 0:
-        return 0.0
-    gap = max(0, current_day - memory_day)
-    return 1.0 / (1.0 + gap)
+def _is_valid_trait(trait: str) -> bool:
+    clean = trait.strip()
+    return bool(clean and "NO_TRAIT" not in clean and len(clean) > 3)
 
 
 def _safe_int(value: Any) -> int:
