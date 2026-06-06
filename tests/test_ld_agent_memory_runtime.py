@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import unittest
 import types
+from unittest import mock
 
 from long_memory_test.memory import LDAgentMemoryRuntime
 
@@ -43,6 +44,26 @@ class _FakeClient:
 
     def with_options(self, **kwargs):
         return self
+
+
+class _FakeChromaCollection:
+    def __init__(self) -> None:
+        self.upserts = []
+
+    def upsert(self, **kwargs):
+        self.upserts.append(kwargs)
+
+    def query(self, **kwargs):
+        ids = [item for upsert in self.upserts for item in upsert["ids"]]
+        return {"ids": [ids]}
+
+
+class _FakeChromaClient:
+    def __init__(self) -> None:
+        self.collection = _FakeChromaCollection()
+
+    def get_or_create_collection(self, **kwargs):
+        return self.collection
 
 
 class LDAgentMemoryRuntimeTests(unittest.TestCase):
@@ -201,6 +222,44 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
         ]
         for term in forbidden_terms:
             self.assertNotIn(term, payload["memory_context"])
+
+    def test_chroma_backend_stores_event_memory_and_retrieves_candidates(self) -> None:
+        fake_chroma_client = _FakeChromaClient()
+        fake_chroma_module = types.SimpleNamespace(
+            Client=lambda: fake_chroma_client,
+            PersistentClient=lambda path: fake_chroma_client,
+        )
+        with mock.patch("importlib.import_module", return_value=fake_chroma_module):
+            runtime = LDAgentMemoryRuntime(storage_backend="chroma")
+            runtime.record_completed_turn(
+                message={
+                    "message_id": "D01_M001",
+                    "day": 1,
+                    "topic": "孩子幼儿园可能不稳定",
+                    "user_message": "我想要一个实在一点的处理思路。",
+                },
+                assistant_answer="先拆事实和下一步。",
+                run_id="run-test",
+            )
+            payload = runtime.retrieve_payload(
+                {
+                    "message_id": "D02_M001",
+                    "day": 2,
+                    "topic": "孩子幼儿园可能不稳定",
+                    "user_message": "幼儿园这件事又绕回来了。",
+                }
+            )
+
+        snapshot = runtime.snapshot()
+        self.assertTrue(snapshot["uses_chromadb"])
+        self.assertEqual(snapshot["storage_backend"], "chroma")
+        self.assertEqual(len(fake_chroma_client.collection.upserts), 1)
+        self.assertGreaterEqual(payload["retrieval"]["event_memory_count"], 1)
+
+    def test_chroma_backend_requires_chromadb_dependency(self) -> None:
+        with mock.patch("importlib.import_module", side_effect=ImportError):
+            with self.assertRaisesRegex(RuntimeError, "chromadb is not installed"):
+                LDAgentMemoryRuntime(storage_backend="chroma")
 
 
 if __name__ == "__main__":

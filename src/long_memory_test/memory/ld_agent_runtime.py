@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import hashlib
+import importlib
 import math
 import re
 from collections import OrderedDict
+from pathlib import Path
 from typing import Any
 
 from long_memory_test.memory.schema import MemoryRecord
@@ -58,6 +60,9 @@ class LDAgentMemoryRuntime:
         max_user_personas: int = 5,
         max_agent_personas: int = 5,
         decay_temp: float = 1e-7,
+        storage_backend: str = "json",
+        chroma_path: str | Path | None = None,
+        chroma_collection: str = "ld_agent_m0_event_memory",
     ) -> None:
         self.top_k = top_k
         self.short_term_k = short_term_k
@@ -67,6 +72,9 @@ class LDAgentMemoryRuntime:
         self.max_user_personas = max_user_personas
         self.max_agent_personas = max_agent_personas
         self.decay_temp = decay_temp
+        self.storage_backend = _normalize_storage_backend(storage_backend)
+        self.chroma_path = str(chroma_path) if chroma_path else None
+        self.chroma_collection = chroma_collection
         self.current_session_day: int | None = None
         self.short_term_session: list[dict[str, Any]] = []
         self.memories: OrderedDict[str, MemoryRecord] = OrderedDict()
@@ -74,6 +82,10 @@ class LDAgentMemoryRuntime:
         self.agent_traits: list[str] = []
         self.memory_llm_failures: list[dict[str, Any]] = []
         self.actions: list[dict[str, Any]] = []
+        self._chroma_client: Any | None = None
+        self._chroma_collection: Any | None = None
+        if self.storage_backend == "chroma":
+            self._init_chroma()
 
     @classmethod
     def from_snapshot(
@@ -85,6 +97,8 @@ class LDAgentMemoryRuntime:
         llm_client: Any | None = None,
         llm_model: str | None = None,
         llm_timeout: float = 60.0,
+        storage_backend: str | None = None,
+        chroma_path: str | Path | None = None,
     ) -> "LDAgentMemoryRuntime":
         runtime = cls(
             top_k=int(top_k or (snapshot or {}).get("top_k", 5) or 5),
@@ -95,6 +109,12 @@ class LDAgentMemoryRuntime:
             max_user_personas=int((snapshot or {}).get("max_user_personas", 5) or 5),
             max_agent_personas=int((snapshot or {}).get("max_agent_personas", 5) or 5),
             decay_temp=float((snapshot or {}).get("decay_temp", 1e-7) or 1e-7),
+            storage_backend=storage_backend
+            or str((snapshot or {}).get("storage_backend", "json")),
+            chroma_path=chroma_path or (snapshot or {}).get("chroma_path"),
+            chroma_collection=str(
+                (snapshot or {}).get("chroma_collection", "ld_agent_m0_event_memory")
+            ),
         )
         if not snapshot:
             return runtime
@@ -121,6 +141,9 @@ class LDAgentMemoryRuntime:
         llm_client: Any | None = None,
         llm_model: str | None = None,
         llm_timeout: float = 60.0,
+        storage_backend: str = "json",
+        chroma_path: str | Path | None = None,
+        chroma_collection: str = "ld_agent_m0_event_memory",
     ) -> "LDAgentMemoryRuntime":
         runtime = cls(
             top_k=top_k,
@@ -128,6 +151,9 @@ class LDAgentMemoryRuntime:
             llm_client=llm_client,
             llm_model=llm_model,
             llm_timeout=llm_timeout,
+            storage_backend=storage_backend,
+            chroma_path=chroma_path,
+            chroma_collection=chroma_collection,
         )
         for turn in turns:
             message = dict(turn.get("input", {}))
@@ -148,7 +174,10 @@ class LDAgentMemoryRuntime:
             "provider": "ld_agent_memory",
             "compatibility_mode": "ld_agent_event_memory_and_personas_reproduction",
             "ld_agent_reference": dict(LD_AGENT_REFERENCE),
-            "uses_chromadb": False,
+            "storage_backend": self.storage_backend,
+            "uses_chromadb": self.storage_backend == "chroma",
+            "chroma_path": self.chroma_path,
+            "chroma_collection": self.chroma_collection,
             "uses_spacy": False,
             "uses_ld_agent_generator": False,
             "uses_ld_agent_checkpoint": False,
@@ -355,6 +384,7 @@ class LDAgentMemoryRuntime:
             updated_day=day,
             ld_agent_metadata=metadata,
         )
+        self._store_event_memory_in_chroma(memory_id=memory_id, summary=summary, metadata=metadata)
         return [
             {
                 "action": "ld_agent_event_memory_add",
@@ -452,9 +482,12 @@ class LDAgentMemoryRuntime:
     def _retrieve_event_memories(self, *, query: str, current_day: int) -> list[dict[str, Any]]:
         query_topics = _ld_topic_tokens(query)
         current_time = _ld_time(day=current_day, idx=0)
+        candidate_ids = self._chroma_candidate_ids(query=query)
         scored = []
         for memory in self.memories.values():
             if memory.memory_type != "event_memory":
+                continue
+            if candidate_ids is not None and memory.memory_id not in candidate_ids:
                 continue
             metadata = memory.ld_agent_metadata or {}
             retrieved_topics = [
@@ -484,6 +517,80 @@ class LDAgentMemoryRuntime:
             }
             for score, overlap_score, overlap_count, time_decay, memory in scored[: self.top_k]
         ]
+
+    def _init_chroma(self) -> None:
+        try:
+            chromadb = importlib.import_module("chromadb")
+        except ImportError as exc:
+            raise RuntimeError(
+                "ChromaDB backend requested but chromadb is not installed. "
+                "Install with `.venv/bin/pip install -e '.[chroma]'`."
+            ) from exc
+        if self.chroma_path:
+            Path(self.chroma_path).mkdir(parents=True, exist_ok=True)
+            self._chroma_client = chromadb.PersistentClient(path=self.chroma_path)
+        else:
+            self._chroma_client = chromadb.Client()
+        self._chroma_collection = self._chroma_client.get_or_create_collection(
+            name=self.chroma_collection,
+            embedding_function=_ChromaTopicEmbeddingFunction(),
+        )
+
+    def _store_event_memory_in_chroma(
+        self,
+        *,
+        memory_id: str,
+        summary: str,
+        metadata: dict[str, Any],
+    ) -> None:
+        if self.storage_backend != "chroma":
+            return
+        collection = self._chroma_collection
+        if collection is None:
+            self._init_chroma()
+            collection = self._chroma_collection
+        chroma_metadata = {
+            "memory_id": memory_id,
+            "idx": int(metadata.get("idx", 0) or 0),
+            "time": float(metadata.get("time", 0.0) or 0.0),
+            "topics": str(metadata.get("topics", "")),
+            "datatype": str(metadata.get("datatype", "text")),
+            "summary": str(metadata.get("summary", summary)),
+        }
+        try:
+            collection.upsert(
+                ids=[memory_id],
+                documents=[summary],
+                metadatas=[chroma_metadata],
+            )
+        except AttributeError:
+            collection.add(
+                ids=[memory_id],
+                documents=[summary],
+                metadatas=[chroma_metadata],
+            )
+
+    def _chroma_candidate_ids(self, *, query: str) -> set[str] | None:
+        if self.storage_backend != "chroma" or not self.memories:
+            return None
+        collection = self._chroma_collection
+        if collection is None:
+            self._init_chroma()
+            collection = self._chroma_collection
+        n_results = max(self.top_k * 4, self.top_k)
+        try:
+            results = collection.query(query_texts=[query], n_results=n_results)
+        except Exception as exc:
+            self.memory_llm_failures.append(
+                {
+                    "task": "ChromaRetrieve",
+                    "reason": f"{type(exc).__name__}: {_truncate(str(exc), 240)}",
+                    "fallback_used": True,
+                }
+            )
+            return None
+        ids = results.get("ids") or [[]]
+        return {str(item) for item in ids[0] if item}
 
     def _current_persona_hits(self) -> list[dict[str, Any]]:
         allowed_traits = set(
@@ -622,6 +729,29 @@ def _session_topic_text(turns: list[dict[str, Any]]) -> str:
     )
 
 
+class _ChromaTopicEmbeddingFunction:
+    """Small deterministic embedding function to keep Chroma local and auditable."""
+
+    def name(self) -> str:
+        return "longmemory_topic_embedding"
+
+    def __call__(self, input: Any) -> list[list[float]]:
+        return self._embed(input)
+
+    def embed_query(self, input: Any) -> list[list[float]]:
+        return self._embed(input)
+
+    def embed_documents(self, input: Any) -> list[list[float]]:
+        return self._embed(input)
+
+    def _embed(self, input: Any) -> list[list[float]]:
+        if isinstance(input, str):
+            texts = [input]
+        else:
+            texts = [str(item) for item in input]
+        return [_topic_embedding(text) for text in texts]
+
+
 def _build_raw_dialogue(turns: list[dict[str, Any]]) -> str:
     lines = []
     for turn in turns:
@@ -673,6 +803,17 @@ def _ld_topic_tokens(text: str) -> list[str]:
     return sorted(tokens)
 
 
+def _topic_embedding(text: str, dimensions: int = 64) -> list[float]:
+    vector = [0.0] * dimensions
+    for token in _ld_topic_tokens(text):
+        digest = hashlib.sha1(token.encode("utf-8")).digest()
+        index = int.from_bytes(digest[:4], "big") % dimensions
+        sign = 1.0 if digest[4] % 2 == 0 else -1.0
+        vector[index] += sign
+    norm = math.sqrt(sum(value * value for value in vector)) or 1.0
+    return [value / norm for value in vector]
+
+
 def _ld_time(*, day: int, idx: int) -> float:
     if day <= 0:
         return float(idx)
@@ -682,6 +823,13 @@ def _ld_time(*, day: int, idx: int) -> float:
 def _is_valid_trait(trait: str) -> bool:
     clean = trait.strip()
     return bool(clean and "NO_TRAIT" not in clean and len(clean) > 3)
+
+
+def _normalize_storage_backend(value: str) -> str:
+    backend = str(value or "json").strip().lower()
+    if backend not in {"json", "chroma"}:
+        raise ValueError(f"Unsupported LD-Agent memory storage backend: {value}")
+    return backend
 
 
 def _safe_int(value: Any) -> int:

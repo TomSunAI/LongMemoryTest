@@ -116,6 +116,18 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--m0-ld-agent-top-k", type=int, default=5)
     parser.add_argument("--m0-ld-agent-short-term-k", type=int, default=5)
+    parser.add_argument(
+        "--m0-ld-agent-storage-backend",
+        choices=["json", "chroma"],
+        default="json",
+        help="Storage backend for M0 LD-Agent memory runtime.",
+    )
+    parser.add_argument(
+        "--m0-ld-agent-chroma-path",
+        type=Path,
+        default=None,
+        help="Persistent ChromaDB directory when --m0-ld-agent-storage-backend=chroma.",
+    )
     parser.add_argument("--print-progress", action="store_true")
     parser.add_argument("--print-mode", choices=["summary", "all"], default="summary")
     args = parser.parse_args()
@@ -192,6 +204,8 @@ def main() -> int:
             llm_client=llm_client,
             llm_model=llm_config.model,
             llm_timeout=args.llm_timeout,
+            storage_backend=args.m0_ld_agent_storage_backend,
+            chroma_path=args.m0_ld_agent_chroma_path,
         )
     else:
         m0_memory_runtime = LDAgentMemoryRuntime.from_completed_turns(
@@ -201,6 +215,8 @@ def main() -> int:
             llm_client=llm_client,
             llm_model=llm_config.model,
             llm_timeout=args.llm_timeout,
+            storage_backend=args.m0_ld_agent_storage_backend,
+            chroma_path=args.m0_ld_agent_chroma_path,
         )
     result["m0_ld_agent_memory"] = m0_memory_runtime.snapshot()
     _write_run_config(
@@ -760,6 +776,12 @@ def _write_run_config(
             ),
             "top_k": args.m0_ld_agent_top_k,
             "short_term_k": args.m0_ld_agent_short_term_k,
+            "storage_backend": args.m0_ld_agent_storage_backend,
+            "chroma_path": (
+                legacy._display_path(args.m0_ld_agent_chroma_path)
+                if args.m0_ld_agent_chroma_path
+                else None
+            ),
             "uses_ld_agent_generator": False,
             "uses_ld_agent_checkpoint": False,
             "uses_letta": False,

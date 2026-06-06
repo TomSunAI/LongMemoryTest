@@ -52,7 +52,7 @@ M0 的职责是提供普通 long-term personalized dialogue agent memory baselin
 - long-term event memory bank：day/session boundary 时用当前实验 LLM 按 LD `context_summarize` 语义把当前 session 压缩成 generic event memory，并保存 `idx/dialog/time/topics/datatype/summary` metadata。
 - persona memory bank：按 LD `Personas.traits_update` 语义，用当前实验 LLM 从 inquiry/response 中抽取 user/agent traits。
 - retrieval：每个 probe/turn 到来时，按 LD `relevance_retrieve` 语义做 topic overlap + time decay 检索 event memory；persona traits 按 LD 最近 traits 窗口提供。
-- storage backend：为实验可恢复和可审计，使用 JSON checkpoint/snapshot；当前不引入 ChromaDB/spaCy，但 snapshot 明确记录 `uses_chromadb=false`、`uses_spacy=false`。
+- storage backend：默认使用 JSON checkpoint/snapshot 以保证实验可恢复和可审计；同时支持可选 ChromaDB storage backend，用于更贴近 LD 原版的长期事件记忆存储/候选检索。spaCy 不接入，中文实验继续使用可审计 topic tokenization。
 
 M0 不能读取本实验人工整理的 relational memory、BEI、gold strategy、failure mode、judge 信息、probe type、event-line stage、M2/M3 detail anchors 或人工关系结论。M0 只能写普通事件摘要和普通 persona，例如“用户讨论过孩子入园适应相关压力”，不能写成“该事件体现了长期关系外溢模式”。
 
@@ -89,20 +89,20 @@ M0 是 M1/M2/M3 的共同基石。后续任何关系型记忆实验必须先满�
 - `M0` 的 snapshot 可恢复：resume 时优先读取 `m0_ld_agent_memory`，不能因为重建导致已完成 turn 的记忆漂移。
 - `M0` 的 payload 不包含 `结论级关系记忆`、`摘要级事件记忆`、`细节级关系锚点`、BEI、gold strategy、failure mode、probe type 或人工事件阶段标签。
 - `M1/M2/M3` 必须读取同一份 M0 payload，再追加自己的关系型记忆文件；不能各自构造不同的普通记忆底座。
-- `M0` 的 summary/persona writer、retrieval strategy、LD reference、是否使用 ChromaDB/spaCy/generator/checkpoint 必须写入 run config 或 snapshot，保证实验可审计。
+- `M0` 的 summary/persona writer、retrieval strategy、storage backend、LD reference、是否使用 ChromaDB/spaCy/generator/checkpoint 必须写入 run config 或 snapshot，保证实验可审计。
 
-当前自动化保护：`tests/test_ld_agent_memory_runtime.py` 覆盖 M0 写入、检索、snapshot 恢复、LLM summary/persona 和关系层隔离；`tests/test_docx_route_pipeline.py` 覆盖 M1/M2/M3 叠加同一份 M0 base memory。
+当前自动化保护：`tests/test_ld_agent_memory_runtime.py` 覆盖 M0 写入、检索、snapshot 恢复、LLM summary/persona、ChromaDB optional backend 和关系层隔离；`tests/test_docx_route_pipeline.py` 覆盖 M1/M2/M3 叠加同一份 M0 base memory。
 
 ### 当前记录：2026-06-06
 
 本轮重要改动已经完成：
 
-- 新增 `LDAgentMemoryRuntime`，实现 memory-only M0；当前已收紧为 LD-compatible memory reproduction，包含 session summary、persona traits、topic-overlap/time-decay retrieval 和 LD metadata snapshot。
+- 新增 `LDAgentMemoryRuntime`，实现 memory-only M0；当前已收紧为 LD-compatible memory reproduction，包含 session summary、persona traits、topic-overlap/time-decay retrieval、可选 ChromaDB storage backend 和 LD metadata snapshot。
 - `run_dialogue_conditions.py` 从 Letta 切换为 LD-Agent memory runtime。
 - M1/M2/M3 的 payload 会自动合并同一份 M0 base memory，再追加各自 relational memory。
 - `memory_conditions_combined.json` 和 split memory condition files 已刷新为 `ld_agent_memory` 口径。
 - Letta 保留为 legacy，不参与正式实验。
-- 单元测试已补充并通过：`PYTHONPATH=src .venv/bin/python -m unittest discover -s tests`，当前 47 tests OK。
+- 单元测试已补充并通过：`PYTHONPATH=src .venv/bin/python -m unittest discover -s tests`，当前 52 tests OK。
 
 ## Docx 数据生成口径
 

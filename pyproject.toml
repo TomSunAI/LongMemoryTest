@@ -7,6 +7,11 @@ dependencies = [
   "openai>=1.0.0",
 ]
 
+[project.optional-dependencies]
+chroma = [
+  "chromadb>=0.5.0",
+]
+
 [tool.ruff]
 line-length = 100
 
