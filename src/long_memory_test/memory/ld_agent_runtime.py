@@ -255,6 +255,9 @@ class LDAgentMemoryRuntime:
             "requires_runtime_letta": False,
             "requires_runtime_ld_agent_memory": True,
             "ld_agent_reference": dict(LD_AGENT_REFERENCE),
+            "storage_backend": self.storage_backend,
+            "uses_chromadb": self.storage_backend == "chroma",
+            "uses_spacy": False,
             "memory_context": "\n".join(lines),
             "source_detail_ids": [
                 item["memory"]["memory_id"] for item in [*event_hits, *persona_hits]

@@ -148,14 +148,52 @@ class DocxRoutePipelineTests(unittest.TestCase):
                 "memory_provider": "ld_agent_memory",
                 "memory_context": "M0 LD-Agent 普通记忆：应拼入 M2",
                 "source_detail_ids": ["m0_source"],
-                "retrieval": {"strategy": "ld_agent_topic_overlap_recency"},
+                "storage_backend": "chroma",
+                "retrieval": {"strategy": "ld_agent_relevance_overlap_time_decay"},
             },
         )
 
         self.assertIn("摘要级事件记忆", payload["memory_context"])
         self.assertIn("M0 LD-Agent 普通记忆", payload["memory_context"])
+        self.assertIn("M0 基石记忆检索结果", payload["memory_context"])
+        self.assertIn("M2 关系型增量记忆层", payload["memory_context"])
         self.assertEqual(payload["m0_base_memory"]["memory_provider"], "ld_agent_memory")
         self.assertIn("m0_source", payload.get("source_detail_ids", []))
+        self.assertEqual(payload["memory_composition"]["base_condition"], "M0")
+        self.assertEqual(
+            payload["memory_composition"]["composition_rule"],
+            "M0_search_output_plus_relational_overlay",
+        )
+        self.assertTrue(payload["search_indexing_policy"]["uses_m0_search_indexing"])
+        self.assertEqual(
+            payload["search_indexing_policy"]["m0_retrieval_strategy"],
+            "ld_agent_relevance_overlap_time_decay",
+        )
+        self.assertEqual(payload["search_indexing_policy"]["m0_storage_backend"], "chroma")
+        self.assertFalse(
+            payload["search_indexing_policy"]["relational_layer_has_independent_generic_search"]
+        )
+        self.assertEqual(
+            payload["retrieval"]["strategy"],
+            "m0_base_search_plus_relational_overlay",
+        )
+
+    def test_relational_payload_requires_m0_base_context(self) -> None:
+        with self.assertRaisesRegex(ValueError, "requires a non-empty M0"):
+            runner._with_m0_base_memory(
+                {
+                    "condition_id": "M1",
+                    "memory_context": "结论级关系记忆：测试",
+                    "source_detail_ids": [],
+                },
+                {
+                    "condition_id": "M0",
+                    "memory_provider": "ld_agent_memory",
+                    "memory_context": "",
+                    "source_detail_ids": [],
+                    "retrieval": {},
+                },
+            )
 
     def test_runner_prompt_blinds_condition_labels(self) -> None:
         prompt = runner._build_condition_system_prompt(

@@ -89,9 +89,10 @@ M0 是 M1/M2/M3 的共同基石。后续任何关系型记忆实验必须先满�
 - `M0` 的 snapshot 可恢复：resume 时优先读取 `m0_ld_agent_memory`，不能因为重建导致已完成 turn 的记忆漂移。
 - `M0` 的 payload 不包含 `结论级关系记忆`、`摘要级事件记忆`、`细节级关系锚点`、BEI、gold strategy、failure mode、probe type 或人工事件阶段标签。
 - `M1/M2/M3` 必须读取同一份 M0 payload，再追加自己的关系型记忆文件；不能各自构造不同的普通记忆底座。
+- `M1/M2/M3` 的 searching/indexing 继承 M0：先使用 M0 的 LD-Agent generic event/persona search 输出，再叠加关系型 overlay。关系层不能单独实现另一套 generic search，也不能绕开 M0 的 storage backend / retrieval strategy。
 - `M0` 的 summary/persona writer、retrieval strategy、storage backend、LD reference、是否使用 ChromaDB/spaCy/generator/checkpoint 必须写入 run config 或 snapshot，保证实验可审计。
 
-当前自动化保护：`tests/test_ld_agent_memory_runtime.py` 覆盖 M0 写入、检索、snapshot 恢复、LLM summary/persona、ChromaDB optional backend 和关系层隔离；`tests/test_docx_route_pipeline.py` 覆盖 M1/M2/M3 叠加同一份 M0 base memory。
+当前自动化保护：`tests/test_ld_agent_memory_runtime.py` 覆盖 M0 写入、检索、snapshot 恢复、LLM summary/persona、ChromaDB optional backend 和关系层隔离；`tests/test_docx_route_pipeline.py` 覆盖 M1/M2/M3 叠加同一份 M0 base memory，并检查 `memory_composition` / `search_indexing_policy` 必须是 `M0_search_output_plus_relational_overlay`。
 
 ### 当前记录：2026-06-06
 

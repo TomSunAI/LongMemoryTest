@@ -90,6 +90,9 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
         )
 
         self.assertEqual(payload["memory_provider"], "ld_agent_memory")
+        self.assertEqual(payload["storage_backend"], "json")
+        self.assertFalse(payload["uses_chromadb"])
+        self.assertFalse(payload["uses_spacy"])
         self.assertGreaterEqual(payload["retrieval"]["event_memory_count"], 1)
         self.assertGreaterEqual(payload["retrieval"]["persona_memory_count"], 1)
         self.assertIn("Session summary", payload["memory_context"])

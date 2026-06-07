@@ -884,27 +884,64 @@ def _with_m0_base_memory(
         return payload
     relational_context = str(payload.get("memory_context", "")).strip()
     m0_context = str(m0_ld_agent_payload.get("memory_context", "")).strip()
+    if not m0_context:
+        raise ValueError(
+            f"{payload.get('condition_id')} requires a non-empty M0 LD-Agent base payload."
+        )
+    condition_id = str(payload.get("condition_id"))
+    m0_retrieval = dict(m0_ld_agent_payload.get("retrieval", {}))
+    m0_source_detail_ids = list(m0_ld_agent_payload.get("source_detail_ids", []))
+    relational_source_detail_ids = list(payload.get("source_detail_ids", []))
     payload["memory_context"] = "\n".join(
         item
         for item in [
+            "M0 基石记忆检索结果（所有 M1/M2/M3 条件共享同一份 M0 search/indexing 输出）：",
             m0_context,
+            f"{condition_id} 关系型增量记忆层（只能叠加在上面的 M0 检索结果之上）：",
             relational_context,
-            "共同使用边界：LD-Agent 普通记忆只提供 generic event/persona context；关系记忆只按当前条件粒度使用。",
+            (
+                "共同使用边界：先使用 M0 的 LD-Agent generic event/persona search 结果；"
+                "关系型记忆只作为当前条件允许的增量层使用，不能替换、绕开或重建 M0 底座。"
+            ),
         ]
         if item
     )
+    payload["memory_composition"] = {
+        "base_condition": "M0",
+        "base_provider": m0_ld_agent_payload.get("memory_provider"),
+        "base_payload_required": True,
+        "base_payload_shared_by": ["M1", "M2", "M3"],
+        "overlay_condition": condition_id,
+        "overlay_source": "memory_conditions",
+        "composition_rule": "M0_search_output_plus_relational_overlay",
+    }
+    payload["search_indexing_policy"] = {
+        "uses_m0_search_indexing": True,
+        "m0_retrieval_strategy": m0_retrieval.get("strategy"),
+        "m0_storage_backend": m0_ld_agent_payload.get("storage_backend")
+        or m0_ld_agent_payload.get("ld_agent_memory", {}).get("storage_backend"),
+        "relational_layer_has_independent_generic_search": False,
+        "relational_layer_role": "overlay_after_m0_search",
+    }
     payload["m0_base_memory"] = {
         "memory_provider": m0_ld_agent_payload.get("memory_provider"),
-        "source_detail_ids": list(m0_ld_agent_payload.get("source_detail_ids", [])),
-        "retrieval": dict(m0_ld_agent_payload.get("retrieval", {})),
+        "source_detail_ids": m0_source_detail_ids,
+        "retrieval": m0_retrieval,
+        "memory_context": m0_context,
+    }
+    payload["relational_overlay"] = {
+        "condition_id": condition_id,
+        "source_detail_ids": relational_source_detail_ids,
+        "memory_context": relational_context,
     }
     payload["source_detail_ids"] = _unique_strings(
-        list(m0_ld_agent_payload.get("source_detail_ids", []))
-        + list(payload.get("source_detail_ids", []))
+        m0_source_detail_ids + relational_source_detail_ids
     )
     payload["retrieval"] = {
-        "m0_base": m0_ld_agent_payload.get("retrieval", {}),
+        "strategy": "m0_base_search_plus_relational_overlay",
+        "m0_base": m0_retrieval,
         "relational_payload_source": "memory_conditions",
+        "relational_overlay_condition": condition_id,
     }
     return payload
 
