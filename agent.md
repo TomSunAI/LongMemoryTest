@@ -105,6 +105,21 @@ M0 是 M1/M2/M3 的共同基石。后续任何关系型记忆实验必须先满�
 - Letta 保留为 legacy，不参与正式实验。
 - 单元测试已补充并通过：`PYTHONPATH=src .venv/bin/python -m unittest discover -s tests`，当前 52 tests OK。
 
+### LD-Agent 技术归档：2026-06-08
+
+新增完整技术阅读归档：`docs/ld_agent_full_technical_review.html`。
+
+该 HTML 作为后续讨论 LD-Agent 论文、源码、实验链路和本项目 M0/M1/M2/M3 对比的主参考文档。当前已覆盖：
+
+- LD-Agent 总体思想、module 划分和 official repo 结构。
+- short-term event memory、long-term event memory 的 summary、storage、retrieval 机制。
+- EventMemory、Personas、Generator、Clients、LoRA map、DataLoader、Trainer 和 metrics 的源码级说明。
+- MSC / CC 数据集定义、实验数据规模、session 时间标注、MSC evaluation 的真实执行方式。
+- 当前开源 repo 中 MSC 链路完整、CC code/datasets 仍为 TODO 的复现边界。
+- 本项目 `LD-Agent-compatible memory-only M0` 与 LD 原版的复用点、改动点和不采用部分。
+
+后续如果继续追问 LD 论文或源码细节，优先以该 HTML 和本地 `/private/tmp/LD-Agent` 源码为上下文。
+
 ## Docx 数据生成口径
 
 本项目采用“事件先行 + BEI 标注校准”的路线：
