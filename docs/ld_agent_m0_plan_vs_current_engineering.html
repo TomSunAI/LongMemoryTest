@@ -1,0 +1,1622 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>计划实验与当前工程实现对比</title>
+  <style>
+    :root {
+      --ink: #172026;
+      --muted: #5f6b76;
+      --line: #d8e0e7;
+      --soft: #f5f8fa;
+      --soft-2: #eef5ff;
+      --accent: #1f6feb;
+      --green: #137333;
+      --amber: #9a6700;
+      --red: #b3261e;
+      --code: #111827;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #fff;
+      font: 15px/1.68 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 36px 28px 68px;
+    }
+    h1, h2, h3, h4 { margin: 0; line-height: 1.25; letter-spacing: 0; }
+    h1 { font-size: 32px; }
+    h2 {
+      margin-top: 34px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      font-size: 22px;
+    }
+    h3 { margin-top: 22px; font-size: 17px; }
+    h4 { margin-top: 16px; font-size: 15px; }
+    p { margin: 10px 0; }
+    ul, ol { margin: 8px 0 12px 22px; padding: 0; }
+    li { margin: 4px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      margin: 14px 0 20px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      vertical-align: top;
+      word-break: break-word;
+    }
+    th { background: var(--soft); text-align: left; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--code);
+      background: #eef2f6;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+    pre {
+      overflow: auto;
+      margin: 12px 0 18px;
+      padding: 13px 15px;
+      color: #eef6ff;
+      background: #111827;
+      border-radius: 8px;
+      line-height: 1.5;
+    }
+    pre code { color: inherit; background: transparent; padding: 0; }
+    .meta {
+      margin-top: 10px;
+      color: var(--muted);
+    }
+    .callout {
+      margin: 16px 0;
+      padding: 12px 14px;
+      border-left: 4px solid var(--accent);
+      background: var(--soft-2);
+    }
+    .note {
+      margin: 14px 0;
+      padding: 11px 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 14px 0 18px;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px 14px;
+      background: #fff;
+    }
+    .panel h3 { margin-top: 0; }
+    .tag {
+      display: inline-block;
+      margin: 0 4px 4px 0;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: #edf2f7;
+      color: #35424f;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .green { color: var(--green); font-weight: 600; }
+    .amber { color: var(--amber); font-weight: 600; }
+    .red { color: var(--red); font-weight: 600; }
+    .small { color: var(--muted); font-size: 13px; }
+    @media (max-width: 820px) {
+      main { padding: 24px 16px 48px; }
+      .grid { grid-template-columns: 1fr; }
+      table { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>计划实验与当前工程实现对比</h1>
+  <p class="meta">版本：2026-06-08 · 项目：LongMemoryTest · 范围：只展开两条路线和 1-5 节，不预设最终结论</p>
+
+  <div class="callout">
+    <strong>阅读方式：</strong>
+    这份文档先不判断哪条路线一定更好，只把“计划实验路线”和“当前工程路线”分别讲清楚。
+    重点是确认两者的实验对象、变量、输出结果和论文可解释性到底有什么区别。
+    后续是否采用、如何改 method 口径、是否做附录 sensitivity analysis，等待下一步讨论。
+  </div>
+
+  <h2>1. 先把两条路线说清楚</h2>
+  <p>
+    现在容易混在一起的点是：两条路线都叫 M0，也都参考 LD-Agent 的普通长期记忆思想；
+    但它们对“记忆”这个实验对象的定义不同。计划实验路线把记忆视为一份受控的结构化上下文；
+    当前工程路线把记忆视为一个会写入、压缩、检索并输出 payload 的 runtime。
+  </p>
+
+  <div class="grid">
+    <section class="panel">
+      <h3>路线 A：计划实验路线</h3>
+      <p>
+        计划实验路线的 M0 是 <strong>LD-Agent-style generic memory payload</strong>。
+        它复用 LD-Agent 的内容类型，但不复用 LD-Agent 的检索、存储、topic rerank 或运行时状态机。
+      </p>
+      <p>
+        在这条路线里，每个 probe 到来时，实验脚本直接给模型一份条件允许的记忆：
+        generic profile、user traits、agent traits、session summaries、ordinary event memories 和 recent context。
+      </p>
+      <p>
+        <span class="tag">pre-built payload</span>
+        <span class="tag">direct structured injection</span>
+        <span class="tag">主变量是记忆内容粒度</span>
+      </p>
+    </section>
+
+    <section class="panel">
+      <h3>路线 B：当前工程路线</h3>
+      <p>
+        当前工程路线的 M0 是 <strong>LD-Agent-compatible memory-only runtime</strong>。
+        它不使用 LD-Agent 的 Generator、ChatGLM3、LoRA 或 benchmark 评测链路，但保留记忆侧的运行行为。
+      </p>
+      <p>
+        在这条路线里，每个 turn 前，M0 runtime 先根据当前 user message 检索已有普通记忆；
+        每个 turn 后，只把 M0 条件的用户输入和 M0 回答写回普通记忆。M1/M2/M3 读取同一份 M0 search output，再追加关系记忆层。
+      </p>
+      <p>
+        <span class="tag">runtime memory</span>
+        <span class="tag">write / summarize / retrieve</span>
+        <span class="tag">M0 search output shared by overlays</span>
+      </p>
+    </section>
+  </div>
+
+  <h3>1.1 两条路线的最小流程</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>步骤</th>
+        <th>计划实验路线</th>
+        <th>当前工程路线</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>记忆来源</td>
+        <td>实验前由 trajectory、daily messages、event themes、probe annotations 或构造规则生成。</td>
+        <td>运行中由 <code>LDAgentMemoryRuntime</code> 从已完成 M0 turns 写入；也可从 snapshot 恢复。</td>
+      </tr>
+      <tr>
+        <td>probe 前发生什么</td>
+        <td>直接选择该 probe 对应的 condition-specific memory payload。</td>
+        <td><code>retrieve_payload(message)</code> 被调用；可能触发 day boundary flush，再检索 event/persona memory。</td>
+      </tr>
+      <tr>
+        <td>模型看到什么</td>
+        <td>预构造的结构化自然语言记忆。</td>
+        <td>M0 short-term session、retrieved long-term event memories、persona traits、retrieval metadata；M1/M2/M3 额外看到 relational overlay。</td>
+      </tr>
+      <tr>
+        <td>回答后发生什么</td>
+        <td>通常不改变 memory payload；下一个 probe 仍读预构造记忆。</td>
+        <td>四条件回答结束后，M0 runtime 记录 M0 turn，更新 short-term/persona；跨 day 时写 session summary。</td>
+      </tr>
+      <tr>
+        <td>主要控制变量</td>
+        <td>不同 memory representation 的内容差异。</td>
+        <td>同一 M0 runtime 的普通记忆检索输出，加上不同 relational overlay 粒度。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>1.2 两条路线中“M0”的含义不同</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>问题</th>
+        <th>计划实验路线中的 M0</th>
+        <th>当前工程路线中的 M0</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>M0 是什么？</td>
+        <td>一个强普通长期记忆条件，代表 persona + session summary + ordinary event memories。</td>
+        <td>一个普通长期记忆 runtime，代表 LD-Agent memory-side 的可运行基线。</td>
+      </tr>
+      <tr>
+        <td>M0 强在哪里？</td>
+        <td>它能直接读到被构造好的普通长期记忆内容，不缺失、不检索错。</td>
+        <td>它具备写入、摘要、persona、检索和恢复能力，更像一个真实长期记忆 agent 的普通记忆底座。</td>
+      </tr>
+      <tr>
+        <td>M0 弱在哪里？</td>
+        <td>不是一个完整 runtime，不能测试 memory write/retrieve 的实际行为。</td>
+        <td>会受到 summary 质量、topic tokenization、retrieval miss、time decay 等因素影响。</td>
+      </tr>
+      <tr>
+        <td>M0 不该看到什么？</td>
+        <td>不能看到 recurring event-line summaries、shared strategies、relational anchors、probe/gold/judge 信息。</td>
+        <td>同样不能看到关系记忆、BEI、gold strategy、probe type、failure mode、M2/M3 anchors；代码和测试对此有保护。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>1.3 两条路线回答的是不同层级的问题</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>研究问题层级</th>
+        <th>计划实验路线更直接回答</th>
+        <th>当前工程路线更直接回答</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>表征问题</td>
+        <td>当记忆内容都准确给到模型时，不同记忆粒度是否改变 relational expectation 表现？</td>
+        <td>在普通 runtime 检索输出相同的前提下，relational overlay 是否带来增量收益？</td>
+      </tr>
+      <tr>
+        <td>系统问题</td>
+        <td>不是主问题。计划实验故意弱化 retrieval/writeback 变量。</td>
+        <td>M0 是否能作为可审计、可恢复、可运行的普通长期记忆基线？</td>
+      </tr>
+      <tr>
+        <td>审稿质疑</td>
+        <td>可能被问：这是不是 oracle memory injection，而不是 agent memory baseline？</td>
+        <td>可能被问：结果是否混入 retrieval quality，而不只是 memory representation？</td>
+      </tr>
+      <tr>
+        <td>错误分析重点</td>
+        <td>underuse、overuse、wrong use、boundary overstep、alienation response。</td>
+        <td>除左侧外，还要看 retrieval miss、wrong event hit、summary too generic、persona noise。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>2. 计划实验会产出什么结果形态</h2>
+  <p>
+    本节统一使用“计划实验”这个名称。计划实验的核心是先构造好所有条件的记忆包，
+    再在同一个 prompt 外壳、同一个 responder model、同一个当前 user turn 下比较输出。
+  </p>
+
+  <h3>2.1 计划实验的目标</h3>
+  <p>
+    计划实验不是为了证明某个工程检索系统更好，而是为了把“普通长期记忆”和“关系型长期记忆”拆开。
+    更具体地说，它要让同一个模型在同一个当前用户输入下，只因为可读记忆层级不同而产生不同回答，
+    从而观察 relational expectation 是否真的需要更高粒度的关系记忆。
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>目标</th>
+        <th>对应比较</th>
+        <th>要观察的现象</th>
+        <th>需要避免的混淆</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>建立下界</td>
+        <td>Current-only vs 其他条件</td>
+        <td>没有长期记忆时，模型是否把用户当成陌生人，是否要求用户重讲背景，是否只能给泛化建议。</td>
+        <td>Current-only 仍应保留同一轮必要短上下文，不能故意削弱到不自然。</td>
+      </tr>
+      <tr>
+        <td>建立普通长期记忆基线</td>
+        <td>M0-plan vs Current-only</td>
+        <td>普通 persona、session summary、ordinary event memory 是否已经能改善个性化、连续性和具体性。</td>
+        <td>M0 不能看到关系型事件线、共同策略、BEI、gold strategy 或 probe 信息。</td>
+      </tr>
+      <tr>
+        <td>测试结论级关系记忆</td>
+        <td>M1-plan vs M0-plan</td>
+        <td>只加入稳定偏好、回应风格、关系期待、边界约束后，回复是否更像熟悉的长期陪伴对象。</td>
+        <td>M1 不能借用具体事件过程、日期、原话或细节锚点。</td>
+      </tr>
+      <tr>
+        <td>测试事件摘要级关系记忆</td>
+        <td>M2-plan vs M1-plan / M0-plan</td>
+        <td>加入跨天事件线、状态变化、prior handling strategy 后，是否更能接住“这条线又来了”“不用从头解释”。</td>
+        <td>M2 仍不能读取原始全文、具体场景细节、共同语言和未筛选细节。</td>
+      </tr>
+      <tr>
+        <td>测试细节锚点关系记忆</td>
+        <td>M3-plan vs M2-plan</td>
+        <td>加入必要细节、具体场景、共同语言和调用边界后，是否提升自然细节使用和熟悉感。</td>
+        <td>M3 要观察过度调用、机械背日志、越界熟悉和细节错配风险。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2.2 计划 M1/M2/M3 的核心区别</h3>
+  <p>
+    计划里的 M1/M2/M3 应该是<strong>粒度递增</strong>，而不是简单把内容越塞越多。
+    三层的关键差异不是“记得多不多”，而是“记忆表示是否从稳定关系结论，进入事件轨迹，再进入可控细节锚点”。
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>层级</th>
+        <th>一句话定义</th>
+        <th>保存什么</th>
+        <th>明确不保存什么</th>
+        <th>主要测试点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>M1-plan</strong><br>Conclusion-level</td>
+        <td>保存关系层面的稳定结论，不保存具体事件过程。</td>
+        <td>
+          稳定偏好、回应风格、关系期待、关键判断、边界约束、不要做什么。
+          例如：用户偏好直接自然、少废话；焦虑时需要先拆事实和行动边界；不喜欢客服式寒暄。
+        </td>
+        <td>
+          具体日期、跨天事件过程、原话、具体场景、细节锚点、BEI 标注、gold response strategy。
+        </td>
+        <td>
+          看抽象关系画像是否足以改善语气、边界、熟悉感和“不要陌生化”的基本能力。
+        </td>
+      </tr>
+      <tr>
+        <td><strong>M2-plan</strong><br>Event-summary</td>
+        <td>在 M1 基础上保存关系相关的事件轨迹和状态变化。</td>
+        <td>
+          跨天主题出现记录、事件线摘要、状态变化、阶段进展、处理结果摘要、prior handling strategy。
+          例如：幼儿园不稳定在 D1/D4/D10 持续出现；消息仍模糊；用户还没有正式通知。
+        </td>
+        <td>
+          原始全文、原话、完整历史片段、具体门口画面、共同短语、未筛选细节、细节级调用边界。
+        </td>
+        <td>
+          看模型能否接住“这是同一条线的延续”，并基于事件进展回应，而不是只重复稳定偏好。
+        </td>
+      </tr>
+      <tr>
+        <td><strong>M3-plan</strong><br>Detail-anchor</td>
+        <td>在 M2 基础上保存服务当前判断的必要细节和使用边界。</td>
+        <td>
+          具体场景、必要细节、共同语言、关系锚点、响应边界、误用边界、当前任务相关细节。
+          例如：用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园；回应应接住孩子稳定感。
+        </td>
+        <td>
+          未存事实、无关隐私细节、完整原始历史、为了显得熟悉而机械背诵的日志、和当前任务无关的细节。
+        </td>
+        <td>
+          看细节锚点是否提升 context specificity 和 natural detail use，同时观察 overuse、misrouting 和 boundary risk。
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2.3 M1/M2/M3 在同一条输入下的具体差别</h3>
+  <p>
+    下面用“孩子幼儿园可能不稳定”这条线做例子。假设当前用户说：
+    <code>这条线我不想从头解释了。</code>
+    三层关系记忆给模型的不是同一种信息。
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>层级</th>
+        <th>可用记忆示例</th>
+        <th>理想回应倾向</th>
+        <th>容易出现的失败</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>M1-plan</td>
+        <td>
+          用户偏好直接、自然、少废话；焦虑或反复卡住时，先拆事实、风险、行动边界和下一步；
+          用户期待熟悉但不过度亲密的长期陪伴对象。
+        </td>
+        <td>
+          先承认“不用从头讲”，用直接语气回应；给出简短下一步框架；避免客服式寒暄或空泛安慰。
+        </td>
+        <td>
+          只能知道用户喜欢什么回应方式，但不知道“这条线”具体是哪条、之前发展到哪一步。
+        </td>
+      </tr>
+      <tr>
+        <td>M2-plan</td>
+        <td>
+          “孩子幼儿园可能不稳定”曾在 D1、D4、D10 出现，是跨天持续主题；
+          幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。
+        </td>
+        <td>
+          能接上这是幼儿园不稳定这条持续线；先帮用户确认当前仍处在“信息模糊、未正式通知”的阶段；
+          把下一步限定在确认信息来源、正式通知和可行动窗口。
+        </td>
+        <td>
+          可能只复述“之前提过幼儿园”，但没有接住用户真正的情绪点；也可能把事件线和其他主题混起来。
+        </td>
+      </tr>
+      <tr>
+        <td>M3-plan</td>
+        <td>
+          用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园；
+          调用边界：回应应接住孩子稳定感，而不是只给换园清单。
+        </td>
+        <td>
+          自然说出“不只是换不换园，你更担心孩子又被现实变动折腾”这一层；
+          再把行动拆成确认通知、保护孩子稳定感、给自己留决策窗口。
+        </td>
+        <td>
+          可能机械背“孩子稳定感”这个锚点；或者在用户当前只想确认事实时，过度展开情绪解释。
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2.4 M1/M2/M3 和 probe 类型的关系</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>probe 类型</th>
+        <th>M1 主要能提供</th>
+        <th>M2 额外提供</th>
+        <th>M3 额外提供</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>P1 Current Understanding</td>
+        <td>根据稳定偏好，用合适语气理解当前请求。</td>
+        <td>把当前请求放回持续事件阶段。</td>
+        <td>用具体锚点识别当前话语背后的真实担心。</td>
+      </tr>
+      <tr>
+        <td>P2 Memory Invocation</td>
+        <td>知道应该避免陌生化，但缺少具体事件线。</td>
+        <td>知道该调用哪条跨天主题线。</td>
+        <td>知道调用哪个细节才自然，以及哪些细节不该硬提。</td>
+      </tr>
+      <tr>
+        <td>P3 State Transformation</td>
+        <td>知道用户焦虑时偏好事实优先。</td>
+        <td>知道用户状态如何从前几天推进到现在。</td>
+        <td>能抓住触发状态变化的具体场景或细节。</td>
+      </tr>
+      <tr>
+        <td>P4 Boundary</td>
+        <td>提供熟悉但不过度亲密的总体边界。</td>
+        <td>提供事件处理边界，例如当前信息还不够，不能替用户下结论。</td>
+        <td>提供细节调用边界，例如细节只能服务当前判断，不能机械背日志。</td>
+      </tr>
+      <tr>
+        <td>P5 Alienation Avoidance</td>
+        <td>知道不能像陌生客服一样让用户重讲。</td>
+        <td>能接住“这条线”具体指哪条持续事件。</td>
+        <td>能用一个自然细节让用户感到被记得，但不过度表演熟悉。</td>
+      </tr>
+      <tr>
+        <td>P6 Natural Detail Use</td>
+        <td>一般不负责细节；主要负责风格。</td>
+        <td>负责摘要级具体性。</td>
+        <td>负责必要细节和共同语境的自然调用。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2.5 计划实验的数据流</h3>
+  <pre><code>Controlled trajectory
+  ├─ persona / life domains
+  ├─ recurring event lines
+  ├─ daily interactions
+  ├─ targeted probes
+  └─ BEI / required memory / failure mode annotations
+        ↓
+Pre-built condition memory payloads
+  ├─ Current-only
+  ├─ M0-plan: generic profile + session summaries + ordinary event memories
+  ├─ M1-plan: conclusion-level relational memory
+  ├─ M2-plan: M1 + relational event summaries
+  ├─ M3-plan: M2 + detail anchors
+  └─ Oracle / relevant history
+        ↓
+Same responder model + same prompt shell
+        ↓
+Responses + D1-D4 scores + P1-P6 breakdown + error analysis</code></pre>
+
+  <h3>2.6 计划实验中的 memory payload 形态</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>条件</th>
+        <th>模型可读内容</th>
+        <th>实验想观察的差异</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Current-only</td>
+        <td>当前 user turn + 固定短上下文。</td>
+        <td>没有长期记忆时，模型是否泛化、陌生化、要求用户重讲背景。</td>
+      </tr>
+      <tr>
+        <td>M0-plan</td>
+        <td>user profile、user traits、agent traits、ordinary session summaries、ordinary event memories、recent context。</td>
+        <td>普通长期记忆是否已经足以支撑 relational expectation。</td>
+      </tr>
+      <tr>
+        <td>M1-plan</td>
+        <td>M0 不一定作为 base；主要增加稳定偏好、回应规范、关系期待、边界约束。</td>
+        <td>抽象结论是否能改善语气、边界和稳定响应规范。</td>
+      </tr>
+      <tr>
+        <td>M2-plan</td>
+        <td>M1 + 跨天事件线、状态变化、prior handling strategy、shared event trajectory。</td>
+        <td>事件轨迹是否改善 continuity-sensitive 和 context-specific responses。</td>
+      </tr>
+      <tr>
+        <td>M3-plan</td>
+        <td>M2 + 具体场景、共同语言、细节锚点、边界敏感 cues。</td>
+        <td>细节锚点是否提高 specificity，同时是否引入 overuse 或 boundary risk。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2.7 计划实验会得到的主要表格</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>结果表</th>
+        <th>内容</th>
+        <th>解释方式</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>主效果表</td>
+        <td>Current-only、M0-plan、M1-plan、M2-plan、M3-plan、Oracle 的总体分数。</td>
+        <td>看普通长期记忆与关系记忆的整体差距。</td>
+      </tr>
+      <tr>
+        <td>D1-D4 维度表</td>
+        <td>Situated Intent、Emotional Attunement、Contextual Specificity、Continuity-Sensitive Response。</td>
+        <td>看哪个 memory level 对哪类 ToM/关系期待能力更敏感。</td>
+      </tr>
+      <tr>
+        <td>P1-P6 probe 类型表</td>
+        <td>current understanding、memory invocation、state transformation、boundary、alienation avoidance、natural detail use。</td>
+        <td>看不同 probe 类型上 M0/M1/M2/M3 的差异模式。</td>
+      </tr>
+      <tr>
+        <td>错误类型表</td>
+        <td>underuse、overuse、wrong memory、shallow recall、boundary overstep、alienation response。</td>
+        <td>因为没有 runtime retrieval，错误更多归因于模型是否正确使用给定 memory。</td>
+      </tr>
+      <tr>
+        <td>案例分析表</td>
+        <td>每类 probe 的代表性成功/失败样本。</td>
+        <td>展示关系记忆和普通记忆在具体回复风格上的差别。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2.8 计划实验的优点和边界</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>优点</th>
+        <th>边界</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>变量干净，memory representation 的差异最清楚。</td>
+        <td>不能直接说明真实 runtime 是否能写入和检索出这些 memory。</td>
+      </tr>
+      <tr>
+        <td>便于人工检查 memory payload 是否泄漏 BEI、gold strategy 或关系锚点。</td>
+        <td>如果 memory 是按 probe 预构造，容易被质疑接近 oracle relevant memory。</td>
+      </tr>
+      <tr>
+        <td>运行成本低，不需要维护长期状态、snapshot 或恢复逻辑。</td>
+        <td>无法区分 retrieval failure、summary failure 和 response failure。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3. 当前工程实际结果形态</h2>
+  <p>
+    当前工程的 M0 是运行时对象，不是静态 payload。核心类是
+    <code>src/long_memory_test/memory/ld_agent_runtime.py</code> 里的 <code>LDAgentMemoryRuntime</code>。
+    它在注释里明确写了：保留 short-term session memory、session-level event summarization、
+    topic-overlap/time-decay retrieval 和 Personas-style trait extraction；不要求 Chroma/spaCy。
+  </p>
+
+  <h3>3.1 当前工程的 turn-level 流程</h3>
+  <pre><code>For each user turn:
+
+1. Build the shared current input
+   - message_id / day / topic / user_message / domains / turn_type
+
+2. Retrieve M0 payload before generation
+   - m0_memory_runtime.retrieve_payload(message)
+   - prepare_for_turn(message)
+   - if day boundary: flush previous short_term_session into event memory
+   - retrieve event memories with topic overlap + time decay
+   - collect current persona traits
+   - render M0 memory_context
+
+3. Build condition payloads
+   - M0: runtime M0 payload
+   - M1: M0 base payload + conclusion-level relational overlay
+   - M2: M0 base payload + M1 + event-summary relational overlay
+   - M3: M0 base payload + M1 + M2 + detail-anchor overlay
+
+4. Generate responses
+   - same responder model
+   - same current user_message
+   - condition-specific memory_context
+   - optional condition-level parallel workers
+
+5. Write back only M0
+   - record_completed_turn(message, M0 answer)
+   - append user turn to short_term_session
+   - update user/agent persona traits
+   - save checkpoint / snapshot</code></pre>
+
+  <h3>3.2 M0 runtime 内部状态</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>状态字段</th>
+        <th>当前工程含义</th>
+        <th>实验审计价值</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>current_session_day</code></td>
+        <td>当前 short-term session 属于哪一天；day 改变时触发 session flush。</td>
+        <td>能确认跨天记忆何时被压缩为 long-term event memory。</td>
+      </tr>
+      <tr>
+        <td><code>short_term_session</code></td>
+        <td>当前 session 内已完成的 M0 user turns 和对应 M0 answer。</td>
+        <td>能确认模型当前短上下文来自哪些真实已完成 turn。</td>
+      </tr>
+      <tr>
+        <td><code>memories</code></td>
+        <td>普通 event memory 和 persona memory 的统一存储，默认在 JSON snapshot 中恢复。</td>
+        <td>能检查 M0 是否泄漏关系记忆，或是否只保存 ordinary memory。</td>
+      </tr>
+      <tr>
+        <td><code>user_traits</code> / <code>agent_traits</code></td>
+        <td>Persona-style 抽取得到的 traits 列表。</td>
+        <td>能检查 persona 是否过度泛化、噪音过多或污染回答。</td>
+      </tr>
+      <tr>
+        <td><code>actions</code></td>
+        <td>记录 short-term append、event memory add、persona add/update 等记忆动作。</td>
+        <td>能重建每条 memory 的来源和写入时机。</td>
+      </tr>
+      <tr>
+        <td><code>memory_llm_failures</code></td>
+        <td>记录 summary/persona/Chroma retrieve 等失败与 fallback。</td>
+        <td>能避免把 LLM writer 失败误判成 memory representation 失败。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>3.3 M0 event memory 写入形态</h3>
+  <p>
+    当 day/session boundary 出现时，当前工程会把上一 session 的 short-term turns 拼成
+    <code>(line n) User: ...</code> 形式，然后生成一条 ordinary session summary。
+    这条 memory 的 metadata 模仿 LD-Agent event memory 的字段。
+  </p>
+  <pre><code>{
+  "memory_type": "event_memory",
+  "summary": "ordinary session-level summary",
+  "raw_dialogue": "User/Agent turns from the flushed session",
+  "source_session": "D01",
+  "source_turn_ids": ["D01_M001", "D01_M001_F001"],
+  "ld_agent_metadata": {
+    "idx": 0,
+    "dialog": "",
+    "time": 100000.0,
+    "topics": "幼儿园,稳定,孩子,...",
+    "datatype": "text",
+    "summary": "ordinary session-level summary"
+  }
+}</code></pre>
+
+  <h3>3.4 M0 persona memory 写入形态</h3>
+  <p>
+    每个 M0 turn 完成后，runtime 会从 user inquiry 和 M0 response 中抽取 traits。
+    user trait 和 agent trait 都写入普通 persona memory；这模拟 LD-Agent Personas 模块，
+    但不使用 LD 原版 LoRA extractor。
+  </p>
+  <pre><code>{
+  "memory_type": "persona_memory",
+  "summary": "User prefers concrete planning over generic reassurance.",
+  "source_session": "D01",
+  "source_turn_ids": ["D01_M001"],
+  "ld_agent_metadata": {
+    "speaker": "user",
+    "datatype": "text",
+    "summary": "User prefers concrete planning over generic reassurance.",
+    "source": "LD-Agent Personas.traits_update"
+  }
+}</code></pre>
+
+  <h3>3.5 M0 retrieval 输出形态</h3>
+  <p>
+    当前工程不是把所有 ordinary event memories 全部注入。它会根据当前 message 构造 query，
+    对 event memory 做 topic-overlap + time-decay scoring，返回 top-k hits。
+  </p>
+  <pre><code>{
+  "retrieval": {
+    "strategy": "ld_agent_relevance_overlap_time_decay",
+    "top_k": 5,
+    "query": "孩子幼儿园可能不稳定 ...",
+    "event_memory_count": 1,
+    "persona_memory_count": 3,
+    "event_hits": [
+      {
+        "score": 0.5123,
+        "overlap_score": 0.62,
+        "overlap_count": 4,
+        "time_decay": 0.826,
+        "memory": {
+          "memory_id": "event_memory_xxx",
+          "summary": "User discussed possible kindergarten instability and wanted practical planning.",
+          "source_session": "D01"
+        }
+      }
+    ],
+    "persona_hits": [...]
+  }
+}</code></pre>
+
+  <h3>3.6 M0 memory_context 输出形态</h3>
+  <p>
+    最终给 responder 的 M0 memory_context 是自然语言，但里面包含 retrieval 结果和审计线索：
+  </p>
+  <pre><code>LD-Agent memory baseline (memory-only).
+Reference: leolee99/LD-Agent Module/EventMemory.py and Module/Personas.py;
+response generator/checkpoints are not used.
+Implementation: LD-compatible JSON backend; reproduces short-term session memory,
+session summary, persona traits, topic-overlap retrieval, and time decay.
+
+Short-term memory bank:
+- [TURN ...] User: ...
+
+Retrieved long-term event memories:
+- User discussed possible kindergarten instability ...
+  (source_session=D01, topics=..., overlap=..., time_decay=...)
+
+Persona traits:
+- User: ...
+- Agent: ...
+
+Use memories only when relevant.
+Do not infer relational labels or use probe/gold/judge metadata.</code></pre>
+
+  <h3>3.7 M1/M2/M3 在当前工程里的形态</h3>
+  <p>
+    当前工程里，关系条件不是单独构造普通记忆，而是调用 <code>_with_m0_base_memory</code>：
+    先要求 M0 payload 非空，再追加当前 condition 的 relational overlay。
+  </p>
+  <pre><code>{
+  "memory_composition": {
+    "base_condition": "M0",
+    "base_provider": "ld_agent_memory",
+    "base_payload_required": true,
+    "base_payload_shared_by": ["M1", "M2", "M3"],
+    "overlay_condition": "M2",
+    "composition_rule": "M0_search_output_plus_relational_overlay"
+  },
+  "search_indexing_policy": {
+    "uses_m0_search_indexing": true,
+    "m0_retrieval_strategy": "ld_agent_relevance_overlap_time_decay",
+    "relational_layer_has_independent_generic_search": false,
+    "relational_layer_role": "overlay_after_m0_search"
+  }
+}</code></pre>
+
+  <h3>3.8 当前工程会产出的分析对象</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>对象</th>
+        <th>内容</th>
+        <th>能分析的问题</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>responses by condition</td>
+        <td>M0/M1/M2/M3 在同一 user message 下的回答。</td>
+        <td>关系 overlay 是否改变回答质量、语气、连续性和细节使用。</td>
+      </tr>
+      <tr>
+        <td>memory payload</td>
+        <td>每个 condition 实际传给 responder 的 memory_context。</td>
+        <td>模型看到的记忆是否符合权限边界。</td>
+      </tr>
+      <tr>
+        <td>M0 retrieval metadata</td>
+        <td>query、event hits、persona hits、overlap、time decay、source ids。</td>
+        <td>M0 失败是因为没记、没取回、取错，还是模型没用。</td>
+      </tr>
+      <tr>
+        <td>M0 snapshot</td>
+        <td>runtime 状态、memories、actions、writer/fallback 记录。</td>
+        <td>实验是否可恢复，普通记忆是否污染，记忆写入是否按预期发生。</td>
+      </tr>
+      <tr>
+        <td>composition policy</td>
+        <td>M1/M2/M3 是否共享同一份 M0 search output。</td>
+        <td>关系层是否只是 overlay，而不是另起一套普通检索系统。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>3.9 当前工程的污染控制和 answer 回流</h3>
+  <p>
+    当前工程已经采用隔离模式。M1/M2/M3 的回答会被保存到本轮日志的 <code>variants</code> 中，
+    用于后续评估和对比；但它们不会写回 M0 runtime，也不会写回 M1/M2/M3 关系记忆文件。
+    也就是说，M1/M2/M3 的 answer 是实验输出，不是后续记忆输入。
+  </p>
+  <pre><code>同一 user turn
+  ↓
+M0 / M1 / M2 / M3 并行或串行生成回答
+  ↓
+variants["M0"].assistant_answer  → 写回 M0 runtime
+variants["M1"].assistant_answer  → 只保存日志，不写回记忆
+variants["M2"].assistant_answer  → 只保存日志，不写回记忆
+variants["M3"].assistant_answer  → 只保存日志，不写回记忆</code></pre>
+  <table>
+    <thead>
+      <tr>
+        <th>隔离点</th>
+        <th>当前代码行为</th>
+        <th>为什么这样设计</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>长期普通记忆 writeback</td>
+        <td>只取 <code>variants["M0"]["assistant_answer"]</code> 调用 <code>m0_memory_runtime.record_completed_turn()</code>。</td>
+        <td>避免 M1/M2/M3 因为读了关系记忆而生成的更强回答，反向污染 M0 普通长期记忆。</td>
+      </tr>
+      <tr>
+        <td>M1/M2/M3 关系记忆 writeback</td>
+        <td>当前没有运行时写回；关系记忆来自预构造 <code>memory_conditions</code> payload。</td>
+        <td>保证同一轮比较中关系层是固定输入，而不是被模型输出动态改写。</td>
+      </tr>
+      <tr>
+        <td>短期上下文回流</td>
+        <td><code>SHORT_TERM_CONTEXT_MODE = shared_user_turns_only</code>，后续短期上下文只追加同一个 user turn，不追加任何 assistant answer。</td>
+        <td>避免 M0/M1/M2/M3 各自回答进入后续上下文，造成条件分叉和不可比较。</td>
+      </tr>
+      <tr>
+        <td>恢复运行</td>
+        <td>resume 时也只用已完成 turn 的 user_message 重建各条件短期上下文；M0 runtime 优先从 snapshot 恢复。</td>
+        <td>中断恢复后仍保持同一隔离策略，不把历史 assistant answer 混入各条件上下文。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>3.10 当前工程中的模型、提示词和 M1/M2/M3 构造函数</h3>
+  <p>
+    这里要分清两类事情：<strong>回答生成和 M0 memory writer 会调用 LLM</strong>；
+    <strong>M1/M2/M3 的关系记忆 payload 在当前对话运行时不调用模型生成</strong>。
+    M1/M2/M3 来自 <code>memory_condition_builder.py</code> 的确定性构造逻辑：
+    它读取已经生成好的 <code>timeline</code>、<code>daily_messages</code>、<code>probe_question_plan</code>
+    和事件里的 <code>memory_detail_anchors</code>，再拼出每条 message 对应的关系记忆载荷。
+  </p>
+
+  <h4>3.10.1 哪些链路调用模型</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>链路</th>
+        <th>使用模型</th>
+        <th>提示词/调用方式</th>
+        <th>输出去向</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>四条件回答生成</td>
+        <td>
+          <code>create_llm_client()</code> 读取 <code>.env.local</code>。
+          <code>LLM_PROVIDER</code> 默认 <code>poixe</code>，也支持 <code>deepseek</code>；
+          默认模型分别是 <code>gpt-5.2</code> 和 <code>deepseek-v4-pro</code>。
+          实际 run 会把 provider、model、temperature、top_p、max_tokens 写入 <code>run_config.json</code>。
+        </td>
+        <td>
+          <code>_ask_a_condition()</code> 组装 OpenAI-compatible messages：
+          第一条是 <code>_build_condition_system_prompt()</code> 生成的 system prompt；
+          中间插入 <code>short_term_history</code>，当前策略只含共享 user turns；
+          最后一条是当前 <code>user_message</code>。
+          请求参数包含 <code>model</code>、<code>max_tokens</code>、<code>temperature</code>、<code>top_p</code>。
+        </td>
+        <td>
+          输出为每个 condition 的 <code>assistant_answer</code>。
+          只有 M0 answer 进入 M0 runtime writeback；M1/M2/M3 answer 只用于评估和日志。
+        </td>
+      </tr>
+      <tr>
+        <td>M0 session summary writer</td>
+        <td>同一个 LLM client/model，通过 <code>LDAgentMemoryRuntime(llm_client, llm_model)</code> 传入。</td>
+        <td>
+          <code>_context_summarize()</code> 调 <code>_call_memory_llm(task="EventSummary")</code>。
+          system prompt 是 LD-style event summary：
+          “You are good at extracting events and summarizing them in brief sentences...”
+          user prompt 包含 <code>#Conversation#</code>，并要求
+          “summarize the main points ... within 20 words”。
+          temperature 固定 <code>0.2</code>；失败时落到 <code>_fallback_session_summary()</code>。
+        </td>
+        <td>
+          跨 day/session flush 时写入 M0 ordinary <code>event_memory</code>；
+          metadata 包含 <code>idx</code>、<code>dialog</code>、<code>time</code>、<code>topics</code>、<code>datatype</code>、<code>summary</code>。
+        </td>
+      </tr>
+      <tr>
+        <td>M0 persona trait writer</td>
+        <td>同一个 LLM client/model。</td>
+        <td>
+          <code>_extract_persona_trait()</code> 调 <code>_call_memory_llm(task="PersonaExtraction")</code>。
+          system prompt 是 LD-style persona extraction：
+          “You excel at extracting user personal traits...”
+          user prompt 包含 <code>NO_TRAIT</code> 规则和示例，并要求从当前 sentence 抽取不超过 20 words 的 trait。
+          输出通过 <code>_is_valid_trait()</code> 过滤：非空、不含 <code>NO_TRAIT</code>、长度大于 3。
+          失败时落到 <code>_fallback_persona_trait()</code>。
+        </td>
+        <td>
+          每个 M0 completed turn 后，分别从 user inquiry 和 M0 response 抽取 user/agent traits，
+          写入普通 <code>persona_memory</code>。
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>3.10.2 回答生成 system prompt 的实际外壳</h4>
+  <p>
+    四个条件共用同一个 prompt 外壳，唯一变化是 <code>memory_payload["memory_context"]</code>。
+    因此 M0/M1/M2/M3 的差异不是因为 prompt 人格不同，而是因为可读记忆不同。
+  </p>
+  <pre><code>你是 A，一个拟人、自然、长期陪伴型对话 Agent。
+你要回应当前用户输入，不要暴露实验设置。
+不要编造用户没有说过或没有在可用记忆中提供的事实。
+不要为了显得熟悉而机械背诵历史。
+如果历史记忆不足以确定，就明确区分已知和推测。
+回答要中文、自然、具体，优先给 1-3 个实在下一步，不要写成报告。
+
+本轮你只能使用下面这段可用长期记忆载荷；不要猜测或使用未列出的历史：
+{memory_payload["memory_context"]}
+如果这段记忆不足以确定，就说明哪些是已知、哪些只是推测。</code></pre>
+
+  <h4>3.10.3 M1/M2/M3 payload 构造总入口</h4>
+  <p>
+    <code>generate_memory_conditions()</code> 是关系记忆包的总入口。它先把 timeline 里的 events 建成
+    <code>events_by_id</code>，再把 daily messages 和 probe questions 合并成一个 messages 列表，按
+    <code>(day, message_id)</code> 排序，然后对每条 message 调 <code>_build_message_payloads()</code>。
+  </p>
+  <pre><code>generate_memory_conditions()
+  ↓
+events_by_id = {event_id: event}
+messages = daily_messages + probe_questions, sorted by (day, message_id)
+  ↓
+for each message:
+  payloads[message_id] = _build_message_payloads(message, events_by_id, daily_messages)</code></pre>
+
+  <p>
+    <code>_build_message_payloads()</code> 是每条 message 的 M1/M2/M3 构造入口。它的核心变量如下：
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>变量/函数</th>
+        <th>来源</th>
+        <th>作用</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>topic</code></td>
+        <td><code>message["topic"]</code></td>
+        <td>用于构造同主题历史 <code>topic_history</code>，也用于 M2 的“跨天持续主题”句子。</td>
+      </tr>
+      <tr>
+        <td><code>day</code></td>
+        <td><code>message["day"]</code></td>
+        <td>用于限制 <code>topic_history</code> 只看当前 day 及以前，不看未来 daily message。</td>
+      </tr>
+      <tr>
+        <td><code>related_events</code></td>
+        <td><code>_related_events()</code></td>
+        <td>从当前 message 的 <code>event_refs</code>、<code>primary_event_id</code>、<code>related_event_id</code> 找到相关 events，并按出现顺序去重。</td>
+      </tr>
+      <tr>
+        <td><code>topic_history</code></td>
+        <td><code>_topic_history()</code></td>
+        <td>扫描 <code>daily_messages["messages"]</code>，取同 topic 且 <code>day &lt;= current day</code> 的 daily messages。</td>
+      </tr>
+      <tr>
+        <td><code>m1_context</code></td>
+        <td><code>REL_CONCLUSION_MEMORY</code></td>
+        <td>固定的结论级关系记忆。</td>
+      </tr>
+      <tr>
+        <td><code>m2_context</code></td>
+        <td><code>m1_context + _build_m2_summary()</code></td>
+        <td>M2 是累计层：包含 M1，再追加摘要级事件记忆。</td>
+      </tr>
+      <tr>
+        <td><code>m3_context</code></td>
+        <td><code>m2_context + _build_m3_details()</code></td>
+        <td>M3 是累计层：包含 M1 + M2，再追加细节级关系锚点。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>3.10.4 M1：固定结论级关系记忆</h4>
+  <p>
+    M1 不读事件线，不读 details，不根据当前 message 动态筛选事件。它只拼接静态常量
+    <code>REL_CONCLUSION_MEMORY</code>，并给固定的 source ids：
+    <code>m1_response_style_direct</code> 和 <code>m1_anxiety_fact_first</code>。
+  </p>
+  <pre><code>M1 memory_context =
+  "结论级关系记忆：" + REL_CONCLUSION_MEMORY
+
+REL_CONCLUSION_MEMORY =
+  用户偏好直接、自然、少废话；
+  不喜欢客服式寒暄和空泛安慰；
+  焦虑或反复卡住时，先拆事实、脑补风险、行动边界和下一步；
+  用户期待 agent 像稳定熟悉的长期陪伴对象；
+  熟悉但不过度亲密，必要时明确区分已知和推测。</code></pre>
+
+  <h4>3.10.5 M2：<code>_build_m2_summary()</code> 的完整逻辑</h4>
+  <p>
+    M2 的目标是摘要级事件/状态记忆。它不是把原始 history 塞进去，而是把“同主题是否跨天出现”
+    和“相关事件的 M2 anchor 或事件状态摘要”转成自然语言。
+  </p>
+  <pre><code>_build_m2_summary(topic, topic_history, related_events):
+  lines = []
+
+  if topic_history:
+      days = ", ".join("D{day}" for each item in topic_history)
+      lines.append("- 「{topic}」曾在 {days} 出现，是跨天持续主题。")
+
+  for event in related_events[:6]:
+      anchors = [
+          anchor
+          for anchor in event["memory_detail_anchors"]
+          if anchor["min_memory_level"] == "M2"
+      ]
+
+      if anchors:
+          for anchor in anchors:
+              lines.append("- " + anchor["text"])
+      else:
+          lines.append("- D{event.day} {event.title}，状态：{event.status}。")
+
+  if lines:
+      return unique(lines), preserving order
+  else:
+      return "- 当前只有普通主题摘要，没有可追溯事件线。"</code></pre>
+
+  <table>
+    <thead>
+      <tr>
+        <th>M2 规则点</th>
+        <th>具体含义</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>同主题历史只来自 daily messages</td>
+        <td><code>_topic_history()</code> 只扫描 <code>daily_messages["messages"]</code>，并限制 <code>day &lt;= 当前 day</code>。probe 自身不会被当成 daily history。</td>
+      </tr>
+      <tr>
+        <td>相关事件来自 message refs</td>
+        <td><code>_related_events()</code> 只读取当前 message 上显式挂的 <code>event_refs</code>、<code>primary_event_id</code>、<code>related_event_id</code>，不会全文搜索 timeline。</td>
+      </tr>
+      <tr>
+        <td>最多处理前 6 个 related events</td>
+        <td><code>for event in related_events[:6]</code> 控制 M2 摘要长度，避免一次塞入过多事件。</td>
+      </tr>
+      <tr>
+        <td>优先使用 M2 anchors</td>
+        <td>如果 event 有 <code>min_memory_level == "M2"</code> 的 anchors，就只把这些 anchor 的 <code>text</code> 加入摘要。</td>
+      </tr>
+      <tr>
+        <td>没有 M2 anchor 时回退到事件标题/状态</td>
+        <td>回退句是 <code>D{day} {title}，状态：{status}。</code>，仍然是摘要级，不引入细节锚点。</td>
+      </tr>
+      <tr>
+        <td>去重但保持顺序</td>
+        <td><code>_unique_strings()</code> 保证重复 anchor 不重复出现，但不改变原始顺序。</td>
+      </tr>
+      <tr>
+        <td>M2 source_detail_ids</td>
+        <td><code>_source_detail_ids(related_events, max_level="M2")</code> 只收集 M2 anchors 的 <code>detail_id</code>。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>3.10.6 M3：<code>_build_m3_details()</code> 的完整逻辑</h4>
+  <p>
+    M3 的目标是细节级关系锚点。它在 M2 已经给出的摘要级事件线之上，选择可以服务当前判断的细节。
+    这里的关键不是“把所有细节都给模型”，而是通过 <code>min_memory_level</code> 和
+    <code>target_detail_ids</code> 控制哪些细节进入 M3。
+  </p>
+  <pre><code>_build_m3_details(message, related_events):
+  target_detail_ids = set(message.get("target_detail_ids", []))
+  lines = []
+
+  for event in related_events:
+      for anchor in event["memory_detail_anchors"]:
+          detail_id = anchor["detail_id"]
+          min_level = anchor["min_memory_level"]
+
+          if min_level == "M3" or detail_id in target_detail_ids:
+              lines.append("- " + anchor["text"])
+
+              if anchor["expected_response_mode"]:
+                  lines.append("  调用边界：" + anchor["expected_response_mode"])
+
+  lines.append("- 使用边界：细节只能服务当前判断，不能机械背日志，不能补未存事实。")
+  return unique(lines), preserving order</code></pre>
+
+  <table>
+    <thead>
+      <tr>
+        <th>M3 规则点</th>
+        <th>具体含义</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>M3 继承 M2</td>
+        <td><code>m3_context = m2_context + "\n细节级关系锚点：\n" + _build_m3_details(...)</code>，所以 M3 payload 包含 M1 结论、M2 摘要和 M3 细节。</td>
+      </tr>
+      <tr>
+        <td>遍历所有 related events</td>
+        <td>M3 没有 <code>[:6]</code> 截断；它遍历当前 message 显式关联到的所有 events。</td>
+      </tr>
+      <tr>
+        <td>默认纳入 M3 anchors</td>
+        <td>只要 anchor 的 <code>min_memory_level == "M3"</code>，就进入 M3 细节锚点。</td>
+      </tr>
+      <tr>
+        <td>target_detail_ids 可以强制纳入当前 probe 目标细节</td>
+        <td>如果当前 message 的 <code>target_detail_ids</code> 指向某个 detail，即便它不是 M3 level，也会被纳入 M3 details。这用于 targeted probe 对齐要测试的细节。</td>
+      </tr>
+      <tr>
+        <td>expected_response_mode 变成调用边界</td>
+        <td>如果 anchor 有 <code>expected_response_mode</code>，M3 不只给事实，还给“应该怎么用这个细节”的边界说明。</td>
+      </tr>
+      <tr>
+        <td>固定追加全局使用边界</td>
+        <td>每个 M3 details 最后都会追加：<code>细节只能服务当前判断，不能机械背日志，不能补未存事实。</code></td>
+      </tr>
+      <tr>
+        <td>M3 source_detail_ids</td>
+        <td><code>_source_detail_ids(related_events, max_level="M3")</code> 收集 M2 和 M3 anchors 的 <code>detail_id</code>，因为 M3 payload 同时包含 M2 摘要和 M3 细节。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>3.10.7 D10_P001 的 M2/M3 实际输出例子</h4>
+  <p>
+    下面是当前 cache 中 <code>D10_P001</code> 的关系记忆例子。它能看出 M2 和 M3 的差别：
+    M2 到事件摘要和状态线为止；M3 在此基础上追加“怎么自然使用细节”的调用边界。
+  </p>
+  <div class="grid">
+    <section class="panel">
+      <h3>M2 payload 核心</h3>
+      <pre><code>结论级关系记忆：
+用户偏好直接、自然、少废话的回应；...
+
+摘要级事件记忆：
+- 「孩子幼儿园可能不稳定」曾在 D1, D4, D10 出现，是跨天持续主题。
+- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。
+- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。
+- 孩子早上入园哭闹后，用户会反复回想门口那个画面。</code></pre>
+      <p class="small">
+        M2 的 source_detail_ids 只记录 M2 anchors，例如
+        <code>E017:kindergarten_information_vague</code>、
+        <code>E018:collaboration_logic_misaligned</code>。
+      </p>
+    </section>
+    <section class="panel">
+      <h3>M3 payload 核心</h3>
+      <pre><code>结论级关系记忆：
+用户偏好直接、自然、少废话的回应；...
+
+摘要级事件记忆：
+...同 M2...
+
+细节级关系锚点：
+- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。
+  调用边界：后续应先帮用户确认信息来源、正式通知和可行动窗口。
+- 用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园。
+  调用边界：回应应接住孩子稳定感，而不是只给换园清单。
+- 使用边界：细节只能服务当前判断，不能机械背日志，不能补未存事实。</code></pre>
+      <p class="small">
+        M3 的 source_detail_ids 包含 M2 + M3 anchors，例如
+        <code>E017:kindergarten_information_vague</code> 和
+        <code>E017:child_stability_not_school_choice</code>。
+      </p>
+    </section>
+  </div>
+
+  <h2>4. 逐项差异表</h2>
+  <p>
+    这一节只列差异，不给最终采用建议。每一项都对应后续 method 写法、实验结果解释或错误分析方式的不同。
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>维度</th>
+        <th>计划实验路线</th>
+        <th>当前工程路线</th>
+        <th>差异的技术含义</th>
+        <th>差异的论文含义</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>实验对象</td>
+        <td>受控 memory payload。</td>
+        <td>可运行的 memory runtime + retrieved payload。</td>
+        <td>一个比较“给定记忆内容”，一个比较“普通记忆系统输出 + 关系 overlay”。</td>
+        <td>claim 不能写成同一种。前者是 representation study，后者是 runtime baseline + overlay study。</td>
+      </tr>
+      <tr>
+        <td>M0 的定位</td>
+        <td>LD-Agent-style 内容结构基线。</td>
+        <td>LD-Agent-compatible memory-only 工程基线。</td>
+        <td>当前工程 M0 更接近 agent baseline，但引入 runtime 行为。</td>
+        <td>当前工程可以说 memory-side compatible；计划实验更适合说 inspired / style。</td>
+      </tr>
+      <tr>
+        <td>普通记忆是否 direct 注入</td>
+        <td>是。每个 probe 直接拿到允许的 ordinary memories。</td>
+        <td>不是。event memories 需要被 top-k retrieval 命中；persona traits 按窗口提供。</td>
+        <td>当前工程会出现 zero-hit、wrong-hit、low-overlap 等 retrieval-stage 现象。</td>
+        <td>当前工程的错误分析必须单独报告 retrieval 层，而不能全归因于 response model。</td>
+      </tr>
+      <tr>
+        <td>retrieval 变量</td>
+        <td>主实验显式排除 retrieval optimization。</td>
+        <td>使用固定 LD-style retrieval：topic overlap × time decay。</td>
+        <td>当前工程不是研究 retrieval optimization，但 retrieval 是系统组成。</td>
+        <td>method 应写“fixed auditable retrieval policy”，而不是“不做 retrieval”。</td>
+      </tr>
+      <tr>
+        <td>ChromaDB</td>
+        <td>不使用。</td>
+        <td>默认不使用；可选 backend。</td>
+        <td>默认 JSON 直接遍历所有 event memories，Chroma 只影响候选召回。</td>
+        <td>可以说主实验不依赖 ChromaDB；若开启 Chroma，需作为配置报告。</td>
+      </tr>
+      <tr>
+        <td>topic extraction</td>
+        <td>不使用 topic overlap/time decay，因此不需要 topic extraction。</td>
+        <td>不使用 spaCy；使用中文可审计 topic tokenization。</td>
+        <td>当前工程需要维护 topics 字段，并影响 retrieval hit。</td>
+        <td>需要说明为什么没有照搬 LD 的英文 spaCy noun lemma。</td>
+      </tr>
+      <tr>
+        <td>session summary</td>
+        <td>通常由构造数据或离线摘要预先生成。</td>
+        <td>day/session boundary 时由 runtime 生成；可用 LLM 或 deterministic fallback。</td>
+        <td>当前工程 summary 质量会影响后续 event memory 的可用性。</td>
+        <td>需要报告 summary writer、model、fallback 和 failure count。</td>
+      </tr>
+      <tr>
+        <td>persona traits</td>
+        <td>可以由 persona card、历史摘要或规则预构造。</td>
+        <td>每轮从 user inquiry 和 M0 response 中抽取 user/agent traits。</td>
+        <td>当前工程会产生 persona noise，也可能遗漏稳定 trait。</td>
+        <td>需要说明 persona 是普通记忆，不是 relational memory。</td>
+      </tr>
+      <tr>
+        <td>短期上下文</td>
+        <td>按实验固定 recent context。</td>
+        <td><code>short_term_session</code> 来自当前 session 已完成 M0 turns。</td>
+        <td>当前工程的 short-term context 会随运行推进自然变化。</td>
+        <td>需要说明所有条件同轮输入在生成前已固定，避免并行污染。</td>
+      </tr>
+      <tr>
+        <td>M1/M2/M3 是否累计</td>
+        <td>计划文字中可以设计为各自 payload，也可以设计为累计；需要明确。</td>
+        <td>明确累计：M1 = M0 + conclusion；M2 = M0 + M1 + event summary；M3 = M0 + M1 + M2 + details。</td>
+        <td>当前工程强制 relational payload 依附 M0 base memory。</td>
+        <td>更容易解释为 memory granularity 的增量层，但也意味着每层不是独立系统。</td>
+      </tr>
+      <tr>
+        <td>关系层是否有独立 generic search</td>
+        <td>如果 direct injection，每层可以直接拿到自己的记忆包。</td>
+        <td>没有。<code>relational_layer_has_independent_generic_search=false</code>。</td>
+        <td>当前工程防止 M1/M2/M3 绕开 M0 构造更强普通记忆。</td>
+        <td>能证明关系层是在同一普通记忆底座上的增量，而不是替换底座。</td>
+      </tr>
+      <tr>
+        <td>可恢复性</td>
+        <td>不是重点；payload 可重新生成。</td>
+        <td>是重点；snapshot 保存 runtime state，resume 优先从 snapshot 恢复。</td>
+        <td>当前工程适合长跑和中断恢复。</td>
+        <td>正式实验需要报告 run_config、snapshot schema 和恢复策略。</td>
+      </tr>
+      <tr>
+        <td>污染控制</td>
+        <td>因为 payload 预构造，条件之间天然不互相污染。</td>
+        <td>
+          只用 M0 answer 写回 M0 runtime；M1/M2/M3 answer 只保存到日志，不写回普通记忆或关系记忆。
+          短期上下文也只回流 shared user turns，不回流任何 assistant answer。
+        </td>
+        <td>当前工程通过 writeback scope 和 <code>shared_user_turns_only</code> 双重隔离避免条件分叉。</td>
+        <td>需要在 method 或 appendix 写清楚：M1/M2/M3 的回答是评估输出，不是后续记忆输入。</td>
+      </tr>
+      <tr>
+        <td>主失败类型</td>
+        <td>response model 不会用已给记忆，或用得过度/错误。</td>
+        <td>除了 response failure，还有 write failure、summary failure、retrieval failure、persona noise。</td>
+        <td>当前工程错误分析更复杂。</td>
+        <td>结果表最好增加 retrieval-stage diagnostics。</td>
+      </tr>
+      <tr>
+        <td>最强质疑</td>
+        <td>是不是 oracle memory injection？</td>
+        <td>是不是把 retrieval 质量混入 representation 结论？</td>
+        <td>两条路线需要不同的防御策略。</td>
+        <td>计划实验需要 sensitivity；当前工程需要 retrieval diagnostics。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>5. 当前工程和 LD-Agent 原版的关系</h2>
+  <p>
+    当前工程不是完整复现 LD-Agent，也不是只借一句“persona + event summary”的概念。
+    更准确地说，它是一个 <strong>memory-side compatible reproduction</strong>：
+    复现 LD-Agent 中和普通长期记忆有关的运行结构，同时替换或去掉不适合本实验的工程依赖、模型训练和 benchmark 链路。
+  </p>
+
+  <h3>5.1 LD-Agent 原版模块拆解</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>LD-Agent 原版模块</th>
+        <th>原版职责</th>
+        <th>是否进入当前工程主线</th>
+        <th>当前工程处理</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>Module/EventMemory.py</code></td>
+        <td>维护 short-term memory、session summary、long-term event memory、Chroma storage、relevance retrieval。</td>
+        <td><span class="green">部分进入</span></td>
+        <td>保留 short-term session、session summary、event metadata、topic-overlap/time-decay retrieval；默认不用 Chroma。</td>
+      </tr>
+      <tr>
+        <td><code>Module/Personas.py</code></td>
+        <td>从 user/agent utterances 抽取 persona traits，并在 response prompt 前提供 traits。</td>
+        <td><span class="green">部分进入</span></td>
+        <td>保留 Personas-style trait extraction 和 user/agent traits memory；不用 LD 原版 LoRA extractor。</td>
+      </tr>
+      <tr>
+        <td><code>Module/Generator.py</code></td>
+        <td>把 context、memory、user traits、agent traits 拼成 LD prompt 并生成 response。</td>
+        <td><span class="red">不进入</span></td>
+        <td>当前实验统一使用本项目 responder prompt，避免 generator 差异成为变量。</td>
+      </tr>
+      <tr>
+        <td><code>Module/Clients.py</code></td>
+        <td>支持 ChatGPT API、ChatGLM3、LoRA adapter 切换。</td>
+        <td><span class="red">不进入</span></td>
+        <td>当前工程使用本项目 LLM client；只保留 memory writer 调用逻辑。</td>
+      </tr>
+      <tr>
+        <td><code>Trainer/lora_tune.py</code></td>
+        <td>训练 EventSummary、PersonaExtraction、ResponseGenerator 三个 LoRA。</td>
+        <td><span class="red">不进入</span></td>
+        <td>不使用 LD checkpoint 或 LoRA，避免训练效果混入记忆变量。</td>
+      </tr>
+      <tr>
+        <td><code>DataLoader/MSC.py</code></td>
+        <td>用 MSC sequential test 跑长期对话离线评测；历史 response 使用 gold SPEAKER_2。</td>
+        <td><span class="red">不进入</span></td>
+        <td>当前实验使用 ReMem-RE controlled trajectories 和 targeted probes。</td>
+      </tr>
+      <tr>
+        <td><code>nlgeval</code></td>
+        <td>BLEU、ROUGE、Distinct 等开放域生成指标。</td>
+        <td><span class="red">不进入</span></td>
+        <td>当前实验使用 ToM / relational expectation 维度，不以 lexical overlap 为主。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>5.2 EventMemory 对照</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>机制</th>
+        <th>LD-Agent 原版</th>
+        <th>当前工程</th>
+        <th>差异说明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>short-term memory</td>
+        <td>当前 session 的原始 turns，源码中是 list；MSC 里 user query 和 gold response 都写入。</td>
+        <td><code>short_term_session</code> 保存当前 session 的 M0 user turn 和 M0 answer。</td>
+        <td>当前工程不用数据集 gold response 写历史，而是用 M0 条件回答写回，避免其他条件污染。</td>
+      </tr>
+      <tr>
+        <td>session boundary</td>
+        <td>根据时间间隔判断是否跨 session；超过阈值则 flush。</td>
+        <td>根据 day/session boundary flush；<code>prepare_for_turn</code> 在新 day 到来时写 event memory。</td>
+        <td>本实验已有 30 天 structured timeline，day boundary 比真实秒级间隔更可控。</td>
+      </tr>
+      <tr>
+        <td>session summary</td>
+        <td>把上一 session turns 拼成 conversation，生成 20 words 以内事件摘要。</td>
+        <td>同样拼接 line 格式，使用当前实验 LLM 或 deterministic fallback 生成 ordinary summary。</td>
+        <td>保留 summary 思想，但不使用 LD summarizer LoRA。</td>
+      </tr>
+      <tr>
+        <td>memory metadata</td>
+        <td><code>idx</code>、<code>dialog</code>、<code>time</code>、<code>topics</code>、<code>datatype</code>、<code>summary</code>。</td>
+        <td>保留同类 metadata，并写入 <code>ld_agent_metadata</code>。</td>
+        <td>用于审计兼容性和 retrieval 解释。</td>
+      </tr>
+      <tr>
+        <td>topic extraction</td>
+        <td>默认使用 spaCy <code>en_core_web_sm</code> 抽英文 noun lemma。</td>
+        <td>不使用 spaCy；用中文可审计 tokenization，结合 topic/domains/user text。</td>
+        <td>这是语言适配，不是完整照搬 LD 源码。</td>
+      </tr>
+      <tr>
+        <td>long-term retrieval</td>
+        <td>Chroma 候选召回 + topic overlap + time decay；默认 relevance_memory_number 较小。</td>
+        <td>默认 JSON 遍历所有 event memories，按 overlap × decay 排序；Chroma 可选。</td>
+        <td>当前工程保留 LD scoring 语义，但降低工程依赖和随机检索复杂度。</td>
+      </tr>
+      <tr>
+        <td>Chroma document</td>
+        <td>原版常把 topics 作为 document/key，summary 在 metadata。</td>
+        <td>JSON backend 直接保存 MemoryRecord；Chroma 可选时存 summary 并带 metadata。</td>
+        <td>当前工程优先可审计性，不追求 byte-level 复现。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>5.3 Personas 对照</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>机制</th>
+        <th>LD-Agent 原版</th>
+        <th>当前工程</th>
+        <th>差异说明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>user trait extraction</td>
+        <td>当前 user inquiry 可抽取 user trait，并参与当前/后续 persona bank。</td>
+        <td>每个 M0 completed turn 后，从 user_message 抽 user trait。</td>
+        <td>当前工程不让当前未完成 user turn 在检索前写入 memory，避免 probe 信息泄漏。</td>
+      </tr>
+      <tr>
+        <td>agent trait extraction</td>
+        <td>从 agent response 抽取 agent traits，影响后续 turns。</td>
+        <td>从 M0 answer 抽 agent trait，写入普通 persona memory。</td>
+        <td>只用 M0 answer，避免 M1/M2/M3 的关系性回答污染普通 agent traits。</td>
+      </tr>
+      <tr>
+        <td>NO_TRAIT</td>
+        <td>如果没有可抽取 trait，返回 NO_TRAIT，不写入。</td>
+        <td>保留同类过滤规则，并有 fallback。</td>
+        <td>当前工程需要关注 fallback traits 是否过泛。</td>
+      </tr>
+      <tr>
+        <td>persona window</td>
+        <td>原版 max_user_personas/max_agent_personas 默认逻辑存在特殊行为。</td>
+        <td>当前工程默认 max_user_personas=5、max_agent_personas=5。</td>
+        <td>当前工程更显式控制 persona 数量，避免 traits 无限制增长。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>5.4 Generator / LoRA / benchmark 为什么没有进入当前工程</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>未采用部分</th>
+        <th>如果采用会带来什么变量</th>
+        <th>当前工程为什么排除</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>LD-Agent Generator prompt</td>
+        <td>不同 prompt shell 会改变模型如何使用记忆。</td>
+        <td>本实验要比较 M0/M1/M2/M3 memory payload，因此 responder 外壳应统一。</td>
+      </tr>
+      <tr>
+        <td>ChatGLM3 + ResponseGenerator LoRA</td>
+        <td>模型可能因为训练过 LD prompt 而更会读 memory。</td>
+        <td>会把 generator training 能力混入记忆 representation 结果。</td>
+      </tr>
+      <tr>
+        <td>EventSummary / PersonaExtraction LoRA</td>
+        <td>summary 和 trait 质量受 LD 训练数据影响。</td>
+        <td>当前工程使用统一 LLM 或 fallback，且记录 writer/failure 状态。</td>
+      </tr>
+      <tr>
+        <td>MSC / CC 数据链路</td>
+        <td>开放域长期对话 benchmark 的 gold response、session 分布、评估指标会进入实验。</td>
+        <td>ReMem-RE 研究的是 controlled relational expectation probes，不是 MSC lexical overlap。</td>
+      </tr>
+      <tr>
+        <td>BLEU/ROUGE/Distinct 主指标</td>
+        <td>会奖励接近 gold response 的 lexical overlap。</td>
+        <td>当前实验关注隐含意图、情绪状态、共同语境、关系边界和陌生化错误。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>5.5 当前工程对 LD-Agent 的准确表述范围</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>表述</th>
+        <th>是否准确</th>
+        <th>原因</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>完整复现 LD-Agent</td>
+        <td><span class="red">不准确</span></td>
+        <td>没有使用 LD Generator、ChatGLM3、LoRA、MSC/QuickEval、原版 spaCy/Chroma 默认链路。</td>
+      </tr>
+      <tr>
+        <td>LD-Agent-style generic memory baseline</td>
+        <td><span class="amber">可用但偏弱</span></td>
+        <td>适合计划实验 direct payload 口径；对当前工程来说没体现 runtime retrieval/writeback。</td>
+      </tr>
+      <tr>
+        <td>LD-Agent-compatible memory-only baseline</td>
+        <td><span class="green">准确</span></td>
+        <td>当前工程复现记忆侧结构，不复现 generator/training/evaluation stack。</td>
+      </tr>
+      <tr>
+        <td>LD memory-side reproduction for generic long-term dialogue memory</td>
+        <td><span class="green">准确</span></td>
+        <td>强调复现范围是 memory side，并限定为 ordinary/generic long-term memory。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>后续留空：</strong>
+    本版先停在对比展开。下一步可以在你给出解释后，继续补第 6 节以后的决策、改文案或实验变体设计。
+  </div>
+</main>
+</body>
+</html>

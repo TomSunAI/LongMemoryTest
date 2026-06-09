@@ -120,6 +120,88 @@ M0 是 M1/M2/M3 的共同基石。后续任何关系型记忆实验必须先满�
 
 后续如果继续追问 LD 论文或源码细节，优先以该 HTML 和本地 `/private/tmp/LD-Agent` 源码为上下文。
 
+### M0/M1/M2/M3 对照设计归档：2026-06-08
+
+新增对照设计文档：
+
+- HTML: `docs/ld_agent_m0_plan_vs_current_engineering.html`
+- Word: `docs/ld_agent_m0_plan_vs_current_engineering.docx`
+
+该文档用于区分两条路线，不预设最终结论：
+
+- `计划实验路线`：把记忆视为预构造的结构化 `memory_payload`，直接注入给 responder。主变量是 memory representation / granularity。
+- `当前工程路线`：把 M0 作为 `LD-Agent-compatible memory-only runtime`，运行时写入、压缩、检索普通 event/persona memory；M1/M2/M3 共享同一份 M0 search output，再追加各自 relational overlay。
+
+当前工程中 `payload` 的含义：本轮某个 condition 允许 Agent 读取的“记忆包”。其中：
+
+- `memory_context`：真正写进 system prompt 给模型读的自然语言记忆。
+- `retrieval`：这段记忆怎么被检索或组合出来，用于审计和错误分析。
+- `source_detail_ids`：来源 detail/anchor id，用于追溯记忆来源。
+- `memory_composition` / `search_indexing_policy`：仅 M1/M2/M3 中出现，用于证明关系层是在同一 M0 base payload 上 overlay。
+
+当前工程的污染隔离策略已经采用“只评估、不回流”的模式：
+
+- M0/M1/M2/M3 四个 condition 都会生成 `assistant_answer` 并写入 `variants` 日志。
+- 只有 `variants["M0"]["assistant_answer"]` 会传入 `m0_memory_runtime.record_completed_turn(...)`，写回 M0 runtime。
+- M1/M2/M3 的回答不写回 M0 runtime，也不写回 M1/M2/M3 关系记忆文件；它们是评估输出，不是后续记忆输入。
+- 短期上下文策略固定为 `SHORT_TERM_CONTEXT_MODE = "shared_user_turns_only"`。后续 turn 只追加同一个 user message，不追加任何 condition 的 assistant answer，避免条件分叉。
+- resume 时同样只用历史 user turns 重建各条件短期上下文；M0 runtime 优先从 `m0_ld_agent_memory` snapshot 恢复。
+
+当前工程中的模型和提示词链路：
+
+- 四条件回答生成使用 `src/long_memory_test/llm.py:create_llm_client()`，从 `.env.local` 读取 `LLM_PROVIDER`、base URL 和 model。默认支持 `poixe/gpt-5.2` 与 `deepseek/deepseek-v4-pro`。
+- 回答生成统一经过 `scripts/run_dialogue_conditions.py:_build_condition_system_prompt()`。prompt 外壳固定为：长期陪伴型 Agent、不要暴露实验、不要编造未提供事实、不要机械背历史、记忆不足时区分已知和推测；然后插入 `memory_payload["memory_context"]`。
+- M0 session summary writer 走 `LDAgentMemoryRuntime._context_summarize()`，使用 LD-style EventSummary prompt；失败时使用 `_fallback_session_summary()`。
+- M0 persona trait writer 走 `LDAgentMemoryRuntime._extract_persona_trait()`，使用 LD-style PersonaExtraction prompt；失败时使用 `_fallback_persona_trait()`；输出通过 `_is_valid_trait()` 过滤。
+- M1/M2/M3 的关系记忆内容在当前对话运行时不调用模型生成，而是由 `src/long_memory_test/agents/memory_condition_builder.py` 根据 timeline、daily messages、probe plan 和 `memory_detail_anchors` 确定性构造。
+
+M1/M2/M3 构造函数级逻辑：
+
+- 总入口：`generate_memory_conditions(...)`
+  - 将 `timeline["events"]` 建成 `events_by_id`。
+  - 用 `_collect_messages(...)` 合并 `daily_messages["messages"]` 和 `probe_question_plan["probe_questions"]`，按 `(day, message_id)` 排序。
+  - 对每条 message 调 `_build_message_payloads(...)`。
+- `_build_message_payloads(...)`
+  - 读取 `topic = message["topic"]`、`day = message["day"]`。
+  - 用 `_related_events(...)` 从当前 message 的 `event_refs`、`primary_event_id`、`related_event_id` 找到显式关联 events，并按出现顺序去重；不会全文搜索 timeline。
+  - 用 `_topic_history(...)` 扫描 daily messages，取同 topic 且 `day <= 当前 day` 的历史 daily messages。
+  - 构造 `m1_context = "结论级关系记忆：" + REL_CONCLUSION_MEMORY`。
+  - 构造 `m2_context = m1_context + "\n摘要级事件记忆：\n" + _build_m2_summary(...)`。
+  - 构造 `m3_context = m2_context + "\n细节级关系锚点：\n" + _build_m3_details(...)`。
+
+M1 是固定结论级关系记忆：
+
+- 只使用静态常量 `REL_CONCLUSION_MEMORY`。
+- 保存用户稳定偏好和关系边界：直接、自然、少废话；不喜欢客服式寒暄和空泛安慰；焦虑或反复卡住时先拆事实、风险、行动边界和下一步；熟悉但不过度亲密；必要时区分已知和推测。
+- 不读具体事件线、具体日期、原话、细节锚点、BEI 或 gold response strategy。
+- 固定 `source_detail_ids`: `m1_response_style_direct`, `m1_anxiety_fact_first`。
+
+M2 是摘要级事件记忆，核心函数为 `_build_m2_summary(...)`：
+
+- 如果 `topic_history` 非空，先添加一句：`「{topic}」曾在 D... 出现，是跨天持续主题。`
+- 遍历 `related_events[:6]`，最多处理前 6 个相关事件。
+- 对每个 event，优先取 `event["memory_detail_anchors"]` 中 `min_memory_level == "M2"` 的 anchor，并把每个 anchor 的 `text` 加入摘要。
+- 如果该 event 没有 M2 anchor，则回退为摘要句：`D{event.day} {event.title}，状态：{event.status}。`
+- 最后用 `_unique_strings(...)` 去重并保持顺序。
+- 如果没有任何 line，则输出：`当前只有普通主题摘要，没有可追溯事件线。`
+- M2 的 `source_detail_ids` 由 `_source_detail_ids(related_events, max_level="M2")` 生成，只收集 M2 anchors 的 `detail_id`。
+
+M3 是细节级关系锚点，核心函数为 `_build_m3_details(...)`：
+
+- M3 是累计层：`m3_context` 包含 M1 + M2 + M3 details。
+- 先读取 `target_detail_ids = set(message.get("target_detail_ids", []))`。
+- 遍历当前 message 显式关联到的所有 `related_events` 及其中所有 `memory_detail_anchors`。
+- 一个 anchor 进入 M3 的条件是：`min_memory_level == "M3"`，或其 `detail_id` 被当前 message 的 `target_detail_ids` 指定。
+- 对进入 M3 的 anchor，先加入 `anchor["text"]`。
+- 如果 anchor 有 `expected_response_mode`，再加入一行 `调用边界：{expected_response_mode}`，说明这个细节应该怎样服务当前回应。
+- 每个 M3 details 末尾固定追加：`使用边界：细节只能服务当前判断，不能机械背日志，不能补未存事实。`
+- M3 的 `source_detail_ids` 由 `_source_detail_ids(related_events, max_level="M3")` 生成，收集 M2 和 M3 anchors 的 `detail_id`，因为 M3 payload 同时包含 M2 摘要和 M3 细节。
+
+代表例子 `D10_P001`：
+
+- M2 payload 会包含：`孩子幼儿园可能不稳定` 曾在 D1/D4/D10 出现；幼儿园消息仍模糊；用户还没有正式通知或具体原因；以及相关事件的摘要级 anchors。
+- M3 payload 在 M2 基础上增加：用户真正担心的是孩子被现实变动反复折腾，而不只是换不换幼儿园；调用边界是接住孩子稳定感，而不是只给换园清单。
+
 ## Docx 数据生成口径
 
 本项目采用“事件先行 + BEI 标注校准”的路线：
