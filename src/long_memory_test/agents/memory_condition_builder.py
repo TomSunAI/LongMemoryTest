@@ -19,15 +19,15 @@ CONDITION_SPECS = [
         "name": "LD-Agent Memory Baseline",
         "definition": (
             "LD-Agent memory-only 普通长短期记忆基线；可以读取同窗口短期上下文、"
-            "session summary 写入的普通 event memories、普通 persona memories "
+            "completed session 写入的普通 session-summary memories、普通 persona/fact memories "
             "和运行时检索片段。"
         ),
         "can_read": [
             "same_session_short_term_context",
             "ld_agent_short_term_memory_bank",
-            "generic_event_memory_bank",
+            "session_summary_memory_bank",
             "generic_persona_memory_bank",
-            "topic_recency_retrieved_generic_memory",
+            "topic_overlap_time_decay_retrieved_session_memory",
         ],
         "cannot_read": [
             "bei_annotations",
@@ -47,12 +47,12 @@ CONDITION_SPECS = [
         "condition_id": "M1",
         "name": "Conclusion-level Relational Memory",
         "definition": (
-            "M0 LD-Agent memory baseline + 结论级关系记忆；保存重要结论、"
-            "稳定偏好、回应风格、关系期待、关键判断和不要做什么。"
+            "相对 M0 的结论级关系记忆增强条件；使用独立 runtime namespace，"
+            "不读取 M0 或其他条件的 payload，只保存重要结论、稳定偏好、"
+            "回应风格、关系期待、关键判断和不要做什么。"
         ),
         "can_read": [
-            "M0_generic_event_memory",
-            "M0_generic_persona_memory",
+            "condition_isolated_conclusion_memory",
             "stable_preferences",
             "response_style",
             "relationship_expectation",
@@ -76,14 +76,13 @@ CONDITION_SPECS = [
         "condition_id": "M2",
         "name": "Summary-level Relational Memory",
         "definition": (
-            "M0 LD-Agent memory baseline + M1 + 摘要级记忆，保存关键事件线、"
-            "跨天主题进展、状态变化和处理结果摘要。"
+            "相对 M0/M1 的摘要级关系记忆增强条件；使用独立 runtime namespace，"
+            "不读取 M0/M1 的 payload，在自身 namespace 内保存结论级关系记忆"
+            "和关键事件线、跨天主题进展、状态变化和处理结果摘要。"
         ),
         "can_read": [
-            "M0_generic_event_memory",
-            "M0_generic_persona_memory",
-            "M1_conclusion_memory",
-            "topic_event_summary",
+            "condition_isolated_conclusion_memory",
+            "condition_isolated_event_line_summary_memory",
             "cross_day_progress",
             "state_change_summary",
             "outcome_summary",
@@ -104,14 +103,14 @@ CONDITION_SPECS = [
         "condition_id": "M3",
         "name": "Detail-level / Relational Anchor Memory",
         "definition": (
-            "M0 LD-Agent memory baseline + M1 + M2 + 细节级关系锚点，"
-            "保存必要细节、共同语言、边界说明和误用风险。"
+            "相对 M0/M1/M2 的细节级关系锚点增强条件；使用独立 runtime namespace，"
+            "不读取其他条件的 payload，在自身 namespace 内保存结论级关系记忆、"
+            "摘要级事件线记忆、必要细节、共同语言、边界说明和误用风险。"
         ),
         "can_read": [
-            "M0_generic_event_memory",
-            "M0_generic_persona_memory",
-            "M1_conclusion_memory",
-            "M2_summary_memory",
+            "condition_isolated_conclusion_memory",
+            "condition_isolated_event_line_summary_memory",
+            "condition_isolated_detail_anchor_memory",
             "necessary_details",
             "specific_scenes",
             "shared_language",
@@ -141,6 +140,7 @@ def generate_memory_conditions(
     daily_messages: dict[str, Any],
     probe_question_plan: dict[str, Any],
     bei_annotations: dict[str, Any],
+    tau_contract: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     events_by_id = {
         str(event.get("event_id")): event
@@ -152,12 +152,18 @@ def generate_memory_conditions(
         probe_question_plan=probe_question_plan,
     )
     payloads = OrderedDict()
+    tau_bindings = (
+        tau_contract.get("message_bindings", {})
+        if isinstance(tau_contract, dict)
+        else {}
+    )
     for message in messages:
         message_id = str(message["message_id"])
         payloads[message_id] = _build_message_payloads(
             message=message,
             events_by_id=events_by_id,
             daily_messages=daily_messages,
+            tau_binding=dict(tau_bindings.get(message_id) or message.get("tau") or {}),
         )
 
     return {
@@ -166,9 +172,12 @@ def generate_memory_conditions(
         "description": (
             "M0/M1/M2/M3 memory payloads for the docx route. M0 is a runtime "
             "LD-Agent memory-only baseline, not no-memory. M1/M2/M3 are "
-            "cumulative relational memory levels layered on the same M0 "
-            "generic memory; M2 contains M1 and M3 contains M1+M2."
+            "relational memory enhancement conditions backed by independent "
+            "runtime namespaces; M2 writes its own M1-level content, and M3 "
+            "writes its own M1+M2-level content, but no condition shares "
+            "another condition's runtime payload."
         ),
+        "tau_contract": _tau_contract_reference(tau_contract),
         "condition_specs": CONDITION_SPECS,
         "default_payloads": _build_default_payloads(),
         "memory_payloads_by_message_id": payloads,
@@ -176,6 +185,11 @@ def generate_memory_conditions(
             "message_payload_count": len(payloads),
             "condition_count": len(CONDITION_SPECS),
             "conditions": [item["condition_id"] for item in CONDITION_SPECS],
+            "tau_bound_message_count": sum(
+                1
+                for payload_by_condition in payloads.values()
+                if payload_by_condition.get("M0", {}).get("tau")
+            ),
         },
     }
 
@@ -216,6 +230,9 @@ def _build_default_payloads() -> dict[str, dict[str, Any]]:
         },
         "M1": {
             "condition_id": "M1",
+            "memory_provider": "condition_isolated_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
             "memory_context": "结论级关系记忆：" + REL_CONCLUSION_MEMORY,
             "source_detail_ids": [
                 "m1_response_style_direct",
@@ -224,6 +241,9 @@ def _build_default_payloads() -> dict[str, dict[str, Any]]:
         },
         "M2": {
             "condition_id": "M2",
+            "memory_provider": "condition_isolated_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
             "memory_context": (
                 "结论级关系记忆："
                 + REL_CONCLUSION_MEMORY
@@ -237,6 +257,9 @@ def _build_default_payloads() -> dict[str, dict[str, Any]]:
         },
         "M3": {
             "condition_id": "M3",
+            "memory_provider": "condition_isolated_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
             "memory_context": (
                 "结论级关系记忆："
                 + REL_CONCLUSION_MEMORY
@@ -256,6 +279,7 @@ def _build_message_payloads(
     message: dict[str, Any],
     events_by_id: dict[str, dict[str, Any]],
     daily_messages: dict[str, Any],
+    tau_binding: dict[str, Any],
 ) -> dict[str, dict[str, Any]]:
     topic = str(message.get("topic", ""))
     day = int(message.get("day", 0) or 0)
@@ -281,11 +305,16 @@ def _build_message_payloads(
             "memory_provider": "ld_agent_memory",
             "requires_runtime_letta": False,
             "requires_runtime_ld_agent_memory": True,
+            "tau": dict(tau_binding),
             "memory_context": _build_m0_context(),
             "source_detail_ids": [],
         },
         "M1": {
             "condition_id": "M1",
+            "memory_provider": "condition_isolated_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "tau": dict(tau_binding),
             "memory_context": m1_context,
             "source_detail_ids": [
                 "m1_response_style_direct",
@@ -294,14 +323,38 @@ def _build_message_payloads(
         },
         "M2": {
             "condition_id": "M2",
+            "memory_provider": "condition_isolated_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "tau": dict(tau_binding),
             "memory_context": m2_context,
             "source_detail_ids": _source_detail_ids(related_events, max_level="M2"),
         },
         "M3": {
             "condition_id": "M3",
+            "memory_provider": "condition_isolated_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "tau": dict(tau_binding),
             "memory_context": m3_context,
             "source_detail_ids": _source_detail_ids(related_events, max_level="M3"),
         },
+    }
+
+
+def _tau_contract_reference(tau_contract: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(tau_contract, dict):
+        return {
+            "available": False,
+            "role": "memory_conditions_generated_without_tau_contract",
+        }
+    return {
+        "available": True,
+        "schema_version": tau_contract.get("schema_version"),
+        "notation": tau_contract.get("notation"),
+        "summary": dict(tau_contract.get("summary", {})),
+        "validation": dict(tau_contract.get("validation", {})),
+        "role": "single_script_construction_source_for_all_conditions",
     }
 
 

@@ -9,7 +9,7 @@ from pathlib import Path
 
 from long_memory_test.agents.bei_annotator import generate_bei_annotations
 from long_memory_test.agents.memory_condition_builder import generate_memory_conditions
-from long_memory_test.memory import LDAgentMemoryRuntime
+from long_memory_test.memory import LDAgentMemoryRuntime, RelationalMemoryRuntime
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -118,12 +118,12 @@ class DocxRoutePipelineTests(unittest.TestCase):
         self.assertFalse(payloads["M0"]["requires_runtime_letta"])
         self.assertTrue(payloads["M0"]["requires_runtime_ld_agent_memory"])
         self.assertNotIn("第 10 天", payloads["M0"]["memory_context"])
-        self.assertIn("M0_generic_event_memory", specs["M1"]["can_read"])
-        self.assertIn("M0_generic_event_memory", specs["M2"]["can_read"])
-        self.assertIn("M0_generic_event_memory", specs["M3"]["can_read"])
-        self.assertIn("M0 LD-Agent memory baseline +", specs["M1"]["definition"])
-        self.assertIn("M0 LD-Agent memory baseline +", specs["M2"]["definition"])
-        self.assertIn("M0 LD-Agent memory baseline +", specs["M3"]["definition"])
+        self.assertNotIn("M0_session_summary_memory", specs["M1"]["can_read"])
+        self.assertNotIn("M0_session_summary_memory", specs["M2"]["can_read"])
+        self.assertNotIn("M0_session_summary_memory", specs["M3"]["can_read"])
+        self.assertIn("独立 runtime namespace", specs["M1"]["definition"])
+        self.assertIn("不读取 M0/M1 的 payload", specs["M2"]["definition"])
+        self.assertIn("不读取其他条件的 payload", specs["M3"]["definition"])
         self.assertIn("结论级关系记忆", payloads["M2"]["memory_context"])
         self.assertIn("摘要级事件记忆", payloads["M2"]["memory_context"])
         self.assertIn("细节级关系锚点", payloads["M3"]["memory_context"])
@@ -131,7 +131,45 @@ class DocxRoutePipelineTests(unittest.TestCase):
         self.assertNotIn("误用风险", payloads["M3"]["memory_context"])
         self.assertNotIn("- 关系锚点：", payloads["M3"]["memory_context"])
 
-    def test_runner_payload_for_relational_conditions_attaches_m0_base_memory(self) -> None:
+    def test_memory_conditions_carry_tau_contract_bindings(self) -> None:
+        tau_contract = {
+            "schema_version": "tau_construction_contract_v1",
+            "notation": "tau=(z,T,L,I,P)",
+            "summary": {"bound_message_count": 1},
+            "validation": {"status": "pass", "issues": []},
+            "message_bindings": {
+                "D10_P001": {
+                    "persona_id": "user_001",
+                    "theme_id": "T_parenting",
+                    "event_line_id": "L_kindergarten",
+                    "event_stage": "recurrence",
+                    "interaction_unit_id": "D10_M001",
+                    "probe_ids": ["D10_P001"],
+                    "primary_event_id": "E021",
+                    "root_event_id": "E001",
+                    "related_event_ids": ["E001"],
+                    "event_refs": ["E021"],
+                }
+            },
+        }
+
+        conditions = generate_memory_conditions(
+            timeline=_timeline_doc(),
+            daily_messages=_daily_messages_doc(),
+            probe_question_plan=_probe_doc(),
+            bei_annotations={},
+            tau_contract=tau_contract,
+        )
+
+        self.assertTrue(conditions["tau_contract"]["available"])
+        payload = conditions["memory_payloads_by_message_id"]["D10_P001"]["M2"]
+        self.assertEqual(payload["tau"]["event_line_id"], "L_kindergarten")
+        self.assertEqual(
+            conditions["summary"]["tau_bound_message_count"],
+            1,
+        )
+
+    def test_runner_payload_for_relational_conditions_isolates_m0_base_memory(self) -> None:
         conditions = generate_memory_conditions(
             timeline=_timeline_doc(),
             daily_messages=_daily_messages_doc(),
@@ -149,51 +187,43 @@ class DocxRoutePipelineTests(unittest.TestCase):
                 "memory_context": "M0 LD-Agent 普通记忆：应拼入 M2",
                 "source_detail_ids": ["m0_source"],
                 "storage_backend": "chroma",
-                "retrieval": {"strategy": "ld_agent_relevance_overlap_time_decay"},
+                "retrieval": {"strategy": "topic_overlap_time_decay"},
             },
         )
 
         self.assertIn("摘要级事件记忆", payload["memory_context"])
-        self.assertIn("M0 LD-Agent 普通记忆", payload["memory_context"])
-        self.assertIn("M0 基石记忆检索结果", payload["memory_context"])
-        self.assertIn("M2 关系型增量记忆层", payload["memory_context"])
-        self.assertEqual(payload["m0_base_memory"]["memory_provider"], "ld_agent_memory")
-        self.assertIn("m0_source", payload.get("source_detail_ids", []))
-        self.assertEqual(payload["memory_composition"]["base_condition"], "M0")
+        self.assertNotIn("M0 LD-Agent 普通记忆", payload["memory_context"])
+        self.assertNotIn("M0 基石记忆检索结果", payload["memory_context"])
+        self.assertNotIn("m0_base_memory", payload)
+        self.assertNotIn("m0_source", payload.get("source_detail_ids", []))
+        self.assertIsNone(payload["memory_composition"]["base_condition"])
         self.assertEqual(
             payload["memory_composition"]["composition_rule"],
-            "M0_search_output_plus_relational_overlay",
+            "condition_isolated_relational_payload",
         )
-        self.assertTrue(payload["search_indexing_policy"]["uses_m0_search_indexing"])
-        self.assertEqual(
-            payload["search_indexing_policy"]["m0_retrieval_strategy"],
-            "ld_agent_relevance_overlap_time_decay",
-        )
-        self.assertEqual(payload["search_indexing_policy"]["m0_storage_backend"], "chroma")
-        self.assertFalse(
+        self.assertFalse(payload["search_indexing_policy"]["uses_m0_search_indexing"])
+        self.assertIsNone(payload["search_indexing_policy"]["m0_retrieval_strategy"])
+        self.assertIsNone(payload["search_indexing_policy"]["m0_storage_backend"])
+        self.assertTrue(
             payload["search_indexing_policy"]["relational_layer_has_independent_generic_search"]
         )
         self.assertEqual(
             payload["retrieval"]["strategy"],
-            "m0_base_search_plus_relational_overlay",
+            "condition_isolated_static_relational_payload",
+        )
+        self.assertFalse(payload["retrieval"]["uses_m0_payload"])
+
+    def test_relational_payload_allows_empty_m0_base_context_when_isolated(self) -> None:
+        payload = runner._isolated_relational_payload(
+            {
+                "condition_id": "M1",
+                "memory_context": "结论级关系记忆：测试",
+                "source_detail_ids": [],
+            }
         )
 
-    def test_relational_payload_requires_m0_base_context(self) -> None:
-        with self.assertRaisesRegex(ValueError, "requires a non-empty M0"):
-            runner._with_m0_base_memory(
-                {
-                    "condition_id": "M1",
-                    "memory_context": "结论级关系记忆：测试",
-                    "source_detail_ids": [],
-                },
-                {
-                    "condition_id": "M0",
-                    "memory_provider": "ld_agent_memory",
-                    "memory_context": "",
-                    "source_detail_ids": [],
-                    "retrieval": {},
-                },
-            )
+        self.assertIn("结论级关系记忆：测试", payload["memory_context"])
+        self.assertFalse(payload["search_indexing_policy"]["uses_m0_search_indexing"])
 
     def test_runner_prompt_blinds_condition_labels(self) -> None:
         prompt = runner._build_condition_system_prompt(
@@ -307,7 +337,71 @@ class DocxRoutePipelineTests(unittest.TestCase):
         self.assertEqual(turn["memory_actions"][0]["status"], "success")
         self.assertEqual(
             turn["variants"]["M0"]["memory_writeback"]["action"],
-            "ld_agent_short_term_append",
+            "append_short_term_session",
+        )
+
+    def test_runner_records_relational_turns_in_independent_runtimes(self) -> None:
+        client = _FakeClient()
+        m0_runtime = LDAgentMemoryRuntime()
+        m2_runtime = RelationalMemoryRuntime(condition_id="M2")
+        turn = runner._run_condition_turn(
+            run_id="run-test",
+            created_at="2026-06-05T00:00:00Z",
+            turn_index=1,
+            daily_messages_path=Path("daily.json"),
+            scene_cards_path=None,
+            memory_conditions_path=Path("memory.json"),
+            message={
+                "message_id": "D01_M001",
+                "day": 1,
+                "topic": "孩子幼儿园可能不稳定",
+                "turn_type": "scripted_opening",
+                "user_message": "我今天又在想幼儿园这件事。",
+            },
+            scene_card=None,
+            llm_client=client,
+            llm_config=types.SimpleNamespace(provider="fake", base_url="fake", model="fake-model"),
+            max_tokens=100,
+            temperature=0.2,
+            top_p=1.0,
+            timeout_seconds=1,
+            condition_workers=1,
+            print_condition_progress=False,
+            memory_conditions={
+                "condition_specs": [
+                    {"condition_id": "M0", "definition": "LD-Agent memory baseline"},
+                    {"condition_id": "M2", "definition": "M2 independent runtime"},
+                ],
+                "default_payloads": {
+                    "M2": {
+                        "condition_id": "M2",
+                        "memory_context": "静态 payload 不应该被 runtime 路径使用",
+                    }
+                },
+            },
+            m0_memory_runtime=m0_runtime,
+            relational_memory_runtimes={"M2": m2_runtime},
+            condition_ids=["M0", "M2"],
+            short_term_histories={"M0": [], "M2": []},
+            previous_message_ids=[],
+        )
+
+        self.assertEqual(m2_runtime.snapshot()["memory_count"], 2)
+        self.assertEqual(
+            turn["variants"]["M2"]["memory_payload"]["memory_provider"],
+            "independent_relational_memory_runtime",
+        )
+        self.assertNotIn(
+            "静态 payload 不应该被 runtime 路径使用",
+            turn["variants"]["M2"]["memory_payload"]["memory_context"],
+        )
+        self.assertEqual(
+            turn["variants"]["M2"]["memory_writeback"]["action"],
+            "upsert_relational_memories",
+        )
+        self.assertIn(
+            "M2",
+            turn["memory_setup"]["relational_runtime_conditions"],
         )
 
 

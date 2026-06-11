@@ -29,12 +29,10 @@ class _FakeCompletions:
     def create(self, **kwargs):
         self.requests.append(kwargs)
         prompt = kwargs["messages"][-1]["content"]
-        if "#Conversation#" in prompt:
+        if "#Completed dialogue session#" in prompt:
             return _FakeCompletion(
                 "User sought practical planning around possible kindergarten instability."
             )
-        if "先拆事实" in prompt:
-            return _FakeCompletion("Agent prefers practical, structured responses.")
         return _FakeCompletion("User prefers concrete planning over generic answers.")
 
 
@@ -67,7 +65,7 @@ class _FakeChromaClient:
 
 
 class LDAgentMemoryRuntimeTests(unittest.TestCase):
-    def test_day_boundary_writes_generic_event_and_persona_memory(self) -> None:
+    def test_day_boundary_writes_session_summary_and_persona_memory(self) -> None:
         runtime = LDAgentMemoryRuntime()
         runtime.record_completed_turn(
             message={
@@ -93,13 +91,31 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
         self.assertEqual(payload["storage_backend"], "json")
         self.assertFalse(payload["uses_chromadb"])
         self.assertFalse(payload["uses_spacy"])
-        self.assertGreaterEqual(payload["retrieval"]["event_memory_count"], 1)
+        self.assertEqual(payload["memory_unit"], "session")
+        self.assertGreaterEqual(payload["retrieval"]["session_summary_memory_count"], 1)
+        self.assertEqual(
+            payload["retrieval"]["event_memory_count"],
+            payload["retrieval"]["session_summary_memory_count"],
+        )
         self.assertGreaterEqual(payload["retrieval"]["persona_memory_count"], 1)
-        self.assertIn("Session summary", payload["memory_context"])
-        self.assertIn("Persona traits", payload["memory_context"])
-        event_hit = payload["retrieval"]["event_hits"][0]["memory"]
-        self.assertEqual(event_hit["ld_agent_metadata"]["datatype"], "text")
-        self.assertIn("topics", event_hit["ld_agent_metadata"])
+        self.assertIn("LD-Agent-style Session-Summary Memory", payload["memory_context"])
+        self.assertIn("Retrieved session summaries", payload["memory_context"])
+        self.assertIn("Persona memories", payload["memory_context"])
+        self.assertNotIn("topics=", payload["memory_context"])
+        session_hit = payload["retrieval"]["session_hits"][0]["memory"]
+        self.assertEqual(session_hit["memory_type"], "session_summary_memory")
+        self.assertEqual(session_hit["source_session_id"], "D01")
+        self.assertEqual(session_hit["available_from_session"], "D02")
+        self.assertIn("Agent: 先拆事实和下一步。", session_hit["raw_dialogue"])
+        self.assertIn("topics", session_hit)
+        self.assertGreater(len(session_hit["topics"]), 0)
+        self.assertEqual(session_hit["ld_agent_metadata"]["datatype"], "text")
+        self.assertEqual(
+            session_hit["ld_agent_metadata"]["implementation_unit"],
+            "session_summary",
+        )
+        self.assertEqual(session_hit["ld_agent_metadata"]["memory_name"], "event_memory")
+        self.assertIn("topics", session_hit["ld_agent_metadata"])
 
     def test_current_turn_is_not_written_before_retrieval(self) -> None:
         runtime = LDAgentMemoryRuntime()
@@ -115,9 +131,31 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
             }
         )
 
-        self.assertEqual(payload["retrieval"]["event_memory_count"], 0)
+        self.assertEqual(payload["retrieval"]["session_summary_memory_count"], 0)
         self.assertNotIn("gold_response_strategy", payload["memory_context"])
         self.assertNotIn("m2_event_continuity", payload["memory_context"])
+
+    def test_probe_turn_is_read_only_for_writeback(self) -> None:
+        runtime = LDAgentMemoryRuntime()
+
+        action = runtime.record_completed_turn(
+            message={
+                "message_id": "D10_P001",
+                "day": 10,
+                "topic": "孩子入园适应",
+                "turn_type": "targeted_probe",
+                "probe_type": "m2_event_continuity",
+                "user_message": "这条线我不想从头解释了。",
+            },
+            assistant_answer="测试回答",
+            run_id="run-test",
+        )
+
+        self.assertEqual(action["action"], "skip_probe_writeback")
+        self.assertEqual(action["status"], "skipped")
+        self.assertEqual(runtime.short_term_session, [])
+        self.assertEqual(runtime.snapshot()["session_summary_memories"], [])
+        self.assertEqual(runtime.snapshot()["persona_memories"], [])
 
     def test_memory_llm_writes_ld_summary_and_persona_traits(self) -> None:
         client = _FakeClient()
@@ -146,6 +184,8 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
         self.assertEqual(snapshot["summary_writer"], "llm")
         self.assertEqual(snapshot["persona_writer"], "llm")
         self.assertEqual(snapshot["memory_llm_failure_count"], 0)
+        self.assertEqual(snapshot["runtime_id"], "M0_ld_agent_style_session_summary")
+        self.assertEqual(snapshot["memory_unit"], "session")
         self.assertIn(
             "User sought practical planning around possible kindergarten instability.",
             payload["memory_context"],
@@ -154,7 +194,8 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
             "User prefers concrete planning over generic answers.",
             payload["memory_context"],
         )
-        self.assertGreaterEqual(len(client.chat.completions.requests), 3)
+        self.assertGreaterEqual(len(client.chat.completions.requests), 2)
+        self.assertEqual(snapshot["agent_traits"], [])
 
     def test_snapshot_resume_preserves_ld_memory_without_replaying_turns(self) -> None:
         runtime = LDAgentMemoryRuntime()
@@ -187,10 +228,13 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
             }
         )
 
-        self.assertEqual(resumed.snapshot()["schema_version"], "ld_agent_memory_runtime_v2")
-        self.assertGreaterEqual(payload["retrieval"]["event_memory_count"], 1)
+        self.assertEqual(
+            resumed.snapshot()["schema_version"],
+            "m0_ld_agent_style_session_summary_runtime_v1",
+        )
+        self.assertGreaterEqual(payload["retrieval"]["session_summary_memory_count"], 1)
         self.assertGreaterEqual(payload["retrieval"]["persona_memory_count"], 1)
-        self.assertEqual(payload["retrieval"]["event_hits"][0]["memory"]["source_session"], "D01")
+        self.assertEqual(payload["retrieval"]["session_hits"][0]["memory"]["source_session"], "D01")
 
     def test_m0_payload_does_not_include_relational_memory_layers(self) -> None:
         runtime = LDAgentMemoryRuntime()
@@ -222,11 +266,13 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
             "bei_annotations",
             "failure_mode",
             "probe_type",
+            "target_detail_ids",
+            "event trajectory",
         ]
         for term in forbidden_terms:
             self.assertNotIn(term, payload["memory_context"])
 
-    def test_chroma_backend_stores_event_memory_and_retrieves_candidates(self) -> None:
+    def test_chroma_backend_stores_session_summary_and_retrieves_candidates(self) -> None:
         fake_chroma_client = _FakeChromaClient()
         fake_chroma_module = types.SimpleNamespace(
             Client=lambda: fake_chroma_client,
@@ -257,7 +303,7 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
         self.assertTrue(snapshot["uses_chromadb"])
         self.assertEqual(snapshot["storage_backend"], "chroma")
         self.assertEqual(len(fake_chroma_client.collection.upserts), 1)
-        self.assertGreaterEqual(payload["retrieval"]["event_memory_count"], 1)
+        self.assertGreaterEqual(payload["retrieval"]["session_summary_memory_count"], 1)
 
     def test_chroma_backend_requires_chromadb_dependency(self) -> None:
         with mock.patch("importlib.import_module", side_effect=ImportError):

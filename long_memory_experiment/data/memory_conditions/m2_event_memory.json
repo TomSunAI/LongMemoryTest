@@ -1,15 +1,30 @@
 {
   "schema_version": "memory_condition_v1",
   "condition_id": "M2",
+  "tau_contract": {
+    "available": true,
+    "schema_version": "tau_construction_contract_v1",
+    "notation": "tau=(z,T,L,I,P)",
+    "summary": {
+      "theme_count": 6,
+      "event_line_count": 6,
+      "interaction_unit_count": 30,
+      "targeted_probe_count": 36,
+      "bound_message_count": 66
+    },
+    "validation": {
+      "status": "pass",
+      "issues": []
+    },
+    "role": "single_script_construction_source_for_all_conditions"
+  },
   "condition_spec": {
     "condition_id": "M2",
     "name": "Summary-level Relational Memory",
-    "definition": "M0 LD-Agent memory baseline + M1 + 摘要级记忆，保存关键事件线、跨天主题进展、状态变化和处理结果摘要。",
+    "definition": "相对 M0/M1 的摘要级关系记忆增强条件；使用独立 runtime namespace，不读取 M0/M1 的 payload，在自身 namespace 内保存结论级关系记忆和关键事件线、跨天主题进展、状态变化和处理结果摘要。",
     "can_read": [
-      "M0_generic_event_memory",
-      "M0_generic_persona_memory",
-      "M1_conclusion_memory",
-      "topic_event_summary",
+      "condition_isolated_conclusion_memory",
+      "condition_isolated_event_line_summary_memory",
       "cross_day_progress",
       "state_change_summary",
       "outcome_summary"
@@ -28,6 +43,9 @@
   },
   "default_payload": {
     "condition_id": "M2",
+    "memory_provider": "condition_isolated_relational_memory",
+    "requires_runtime_letta": false,
+    "requires_runtime_ld_agent_memory": false,
     "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：当前没有与本轮输入绑定的具体事件摘要，只能使用普通主题连续性。",
     "source_detail_ids": [
       "m1_response_style_direct",
@@ -37,6 +55,28 @@
   "payloads_by_message_id": {
     "D01_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "initial",
+        "interaction_unit_id": "D01_M001",
+        "probe_ids": [
+          "D01_P001",
+          "D01_P002",
+          "D01_P003"
+        ],
+        "primary_event_id": "E001",
+        "root_event_id": "E001",
+        "related_event_ids": [],
+        "event_refs": [
+          "E001"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E001:kindergarten_information_vague"
@@ -44,6 +84,30 @@
     },
     "D01_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "initial",
+        "interaction_unit_id": "D01_M001",
+        "probe_ids": [
+          "D01_P001",
+          "D01_P002",
+          "D01_P003"
+        ],
+        "primary_event_id": "E001",
+        "root_event_id": "E001",
+        "related_event_ids": [],
+        "event_refs": [
+          "E001"
+        ],
+        "probe_id": "D01_P001",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E001:kindergarten_information_vague"
@@ -51,6 +115,30 @@
     },
     "D01_P002": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "initial",
+        "interaction_unit_id": "D01_M001",
+        "probe_ids": [
+          "D01_P001",
+          "D01_P002",
+          "D01_P003"
+        ],
+        "primary_event_id": "E001",
+        "root_event_id": "E001",
+        "related_event_ids": [],
+        "event_refs": [
+          "E001"
+        ],
+        "probe_id": "D01_P002",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E001:kindergarten_information_vague"
@@ -58,6 +146,30 @@
     },
     "D01_P003": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "initial",
+        "interaction_unit_id": "D01_M001",
+        "probe_ids": [
+          "D01_P001",
+          "D01_P002",
+          "D01_P003"
+        ],
+        "primary_event_id": "E001",
+        "root_event_id": "E001",
+        "related_event_ids": [],
+        "event_refs": [
+          "E001"
+        ],
+        "probe_id": "D01_P003",
+        "probe_type": "alienation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E001:kindergarten_information_vague"
@@ -65,6 +177,32 @@
     },
     "D02_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "initial",
+        "interaction_unit_id": "D02_M001",
+        "probe_ids": [
+          "D02_P001",
+          "D02_P002"
+        ],
+        "primary_event_id": "E002",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E003",
+          "E004"
+        ],
+        "event_refs": [
+          "E002",
+          "E003",
+          "E004"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E002:collaboration_logic_misaligned",
@@ -74,6 +212,34 @@
     },
     "D02_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "initial",
+        "interaction_unit_id": "D02_M001",
+        "probe_ids": [
+          "D02_P001",
+          "D02_P002"
+        ],
+        "primary_event_id": "E002",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E003",
+          "E004"
+        ],
+        "event_refs": [
+          "E002",
+          "E003",
+          "E004"
+        ],
+        "probe_id": "D02_P001",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E002:collaboration_logic_misaligned",
@@ -83,6 +249,34 @@
     },
     "D02_P002": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "initial",
+        "interaction_unit_id": "D02_M001",
+        "probe_ids": [
+          "D02_P001",
+          "D02_P002"
+        ],
+        "primary_event_id": "E002",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E003",
+          "E004"
+        ],
+        "event_refs": [
+          "E002",
+          "E003",
+          "E004"
+        ],
+        "probe_id": "D02_P002",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E002:collaboration_logic_misaligned",
@@ -92,6 +286,31 @@
     },
     "D03_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "initial",
+        "interaction_unit_id": "D03_M001",
+        "probe_ids": [
+          "D03_P001",
+          "D03_P002",
+          "D03_P003"
+        ],
+        "primary_event_id": "E005",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E006"
+        ],
+        "event_refs": [
+          "E005",
+          "E006"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「论文截稿前的取舍」曾在 D3 出现，是跨天持续主题。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E005:paper_deadline_triage",
@@ -100,6 +319,33 @@
     },
     "D03_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "initial",
+        "interaction_unit_id": "D03_M001",
+        "probe_ids": [
+          "D03_P001",
+          "D03_P002",
+          "D03_P003"
+        ],
+        "primary_event_id": "E005",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E006"
+        ],
+        "event_refs": [
+          "E005",
+          "E006"
+        ],
+        "probe_id": "D03_P001",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「论文截稿前的取舍」曾在 D3 出现，是跨天持续主题。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E005:paper_deadline_triage",
@@ -108,6 +354,33 @@
     },
     "D03_P002": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "initial",
+        "interaction_unit_id": "D03_M001",
+        "probe_ids": [
+          "D03_P001",
+          "D03_P002",
+          "D03_P003"
+        ],
+        "primary_event_id": "E005",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E006"
+        ],
+        "event_refs": [
+          "E005",
+          "E006"
+        ],
+        "probe_id": "D03_P002",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「论文截稿前的取舍」曾在 D3 出现，是跨天持续主题。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E005:paper_deadline_triage",
@@ -116,6 +389,33 @@
     },
     "D03_P003": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "initial",
+        "interaction_unit_id": "D03_M001",
+        "probe_ids": [
+          "D03_P001",
+          "D03_P002",
+          "D03_P003"
+        ],
+        "primary_event_id": "E005",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E006"
+        ],
+        "event_refs": [
+          "E005",
+          "E006"
+        ],
+        "probe_id": "D03_P003",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「论文截稿前的取舍」曾在 D3 出现，是跨天持续主题。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E005:paper_deadline_triage",
@@ -124,6 +424,30 @@
     },
     "D04_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D04_M001",
+        "probe_ids": [
+          "D04_P001"
+        ],
+        "primary_event_id": "E007",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E008"
+        ],
+        "event_refs": [
+          "E007",
+          "E008"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1, D4 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
       "source_detail_ids": [
         "E007:kindergarten_information_vague",
@@ -133,6 +457,32 @@
     },
     "D04_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D04_M001",
+        "probe_ids": [
+          "D04_P001"
+        ],
+        "primary_event_id": "E007",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E008"
+        ],
+        "event_refs": [
+          "E007",
+          "E008"
+        ],
+        "probe_id": "D04_P001",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1, D4 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
       "source_detail_ids": [
         "E007:kindergarten_information_vague",
@@ -142,6 +492,26 @@
     },
     "D05_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D05_M001",
+        "probe_ids": [],
+        "primary_event_id": "E009",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E009"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2, D5 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E009:collaboration_logic_misaligned",
@@ -150,6 +520,34 @@
     },
     "D06_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "initial",
+        "interaction_unit_id": "D06_M001",
+        "probe_ids": [
+          "D06_P001",
+          "D06_P002",
+          "D06_P003",
+          "D06_P004"
+        ],
+        "primary_event_id": "E010",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E011",
+          "E012"
+        ],
+        "event_refs": [
+          "E010",
+          "E011",
+          "E012"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「家里分工和伴侣沟通」曾在 D6 出现，是跨天持续主题。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E010:family_coordination_support_gap",
@@ -159,6 +557,36 @@
     },
     "D06_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "initial",
+        "interaction_unit_id": "D06_M001",
+        "probe_ids": [
+          "D06_P001",
+          "D06_P002",
+          "D06_P003",
+          "D06_P004"
+        ],
+        "primary_event_id": "E010",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E011",
+          "E012"
+        ],
+        "event_refs": [
+          "E010",
+          "E011",
+          "E012"
+        ],
+        "probe_id": "D06_P001",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「家里分工和伴侣沟通」曾在 D6 出现，是跨天持续主题。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E010:family_coordination_support_gap",
@@ -168,6 +596,36 @@
     },
     "D06_P002": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "initial",
+        "interaction_unit_id": "D06_M001",
+        "probe_ids": [
+          "D06_P001",
+          "D06_P002",
+          "D06_P003",
+          "D06_P004"
+        ],
+        "primary_event_id": "E010",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E011",
+          "E012"
+        ],
+        "event_refs": [
+          "E010",
+          "E011",
+          "E012"
+        ],
+        "probe_id": "D06_P002",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「家里分工和伴侣沟通」曾在 D6 出现，是跨天持续主题。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E010:family_coordination_support_gap",
@@ -177,6 +635,36 @@
     },
     "D06_P003": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "initial",
+        "interaction_unit_id": "D06_M001",
+        "probe_ids": [
+          "D06_P001",
+          "D06_P002",
+          "D06_P003",
+          "D06_P004"
+        ],
+        "primary_event_id": "E010",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E011",
+          "E012"
+        ],
+        "event_refs": [
+          "E010",
+          "E011",
+          "E012"
+        ],
+        "probe_id": "D06_P003",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「家里分工和伴侣沟通」曾在 D6 出现，是跨天持续主题。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E010:family_coordination_support_gap",
@@ -186,6 +674,36 @@
     },
     "D06_P004": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "initial",
+        "interaction_unit_id": "D06_M001",
+        "probe_ids": [
+          "D06_P001",
+          "D06_P002",
+          "D06_P003",
+          "D06_P004"
+        ],
+        "primary_event_id": "E010",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E011",
+          "E012"
+        ],
+        "event_refs": [
+          "E010",
+          "E011",
+          "E012"
+        ],
+        "probe_id": "D06_P004",
+        "probe_type": "alienation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「家里分工和伴侣沟通」曾在 D6 出现，是跨天持续主题。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E010:family_coordination_support_gap",
@@ -195,6 +713,28 @@
     },
     "D07_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D07_M001",
+        "probe_ids": [],
+        "primary_event_id": "E013",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E014"
+        ],
+        "event_refs": [
+          "E013",
+          "E014"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「论文截稿前的取舍」曾在 D3, D7 出现，是跨天持续主题。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E013:paper_deadline_triage",
@@ -204,6 +744,24 @@
     },
     "D08_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "initial",
+        "interaction_unit_id": "D08_M001",
+        "probe_ids": [],
+        "primary_event_id": "E015",
+        "root_event_id": "E015",
+        "related_event_ids": [],
+        "event_refs": [
+          "E015"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子入园适应」曾在 D8 出现，是跨天持续主题。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。",
       "source_detail_ids": [
         "E015:dropoff_crying_replayed"
@@ -211,6 +769,28 @@
     },
     "D09_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D09_M001",
+        "probe_ids": [
+          "D09_P001"
+        ],
+        "primary_event_id": "E016",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E016"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2, D5, D9 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E016:collaboration_logic_misaligned",
@@ -219,6 +799,30 @@
     },
     "D09_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D09_M001",
+        "probe_ids": [
+          "D09_P001"
+        ],
+        "primary_event_id": "E016",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E016"
+        ],
+        "probe_id": "D09_P001",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2, D5, D9 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E016:collaboration_logic_misaligned",
@@ -227,6 +831,33 @@
     },
     "D10_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D10_M001",
+        "probe_ids": [
+          "D10_P001",
+          "D10_P002"
+        ],
+        "primary_event_id": "E017",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E018",
+          "E019"
+        ],
+        "event_refs": [
+          "E017",
+          "E018",
+          "E019"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1, D4, D10 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。",
       "source_detail_ids": [
         "E017:kindergarten_information_vague",
@@ -237,6 +868,35 @@
     },
     "D10_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D10_M001",
+        "probe_ids": [
+          "D10_P001",
+          "D10_P002"
+        ],
+        "primary_event_id": "E017",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E018",
+          "E019"
+        ],
+        "event_refs": [
+          "E017",
+          "E018",
+          "E019"
+        ],
+        "probe_id": "D10_P001",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1, D4, D10 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。",
       "source_detail_ids": [
         "E017:kindergarten_information_vague",
@@ -247,6 +907,35 @@
     },
     "D10_P002": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D10_M001",
+        "probe_ids": [
+          "D10_P001",
+          "D10_P002"
+        ],
+        "primary_event_id": "E017",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E018",
+          "E019"
+        ],
+        "event_refs": [
+          "E017",
+          "E018",
+          "E019"
+        ],
+        "probe_id": "D10_P002",
+        "probe_type": "alienation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1, D4, D10 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。",
       "source_detail_ids": [
         "E017:kindergarten_information_vague",
@@ -257,6 +946,32 @@
     },
     "D11_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "initial",
+        "interaction_unit_id": "D11_M001",
+        "probe_ids": [
+          "D11_P001",
+          "D11_P002"
+        ],
+        "primary_event_id": "E020",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E021",
+          "E022"
+        ],
+        "event_refs": [
+          "E020",
+          "E021",
+          "E022"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「睡眠被打碎」曾在 D11 出现，是跨天持续主题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E020:fragmented_sleep_amplifies_reactivity",
@@ -266,6 +981,34 @@
     },
     "D11_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "initial",
+        "interaction_unit_id": "D11_M001",
+        "probe_ids": [
+          "D11_P001",
+          "D11_P002"
+        ],
+        "primary_event_id": "E020",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E021",
+          "E022"
+        ],
+        "event_refs": [
+          "E020",
+          "E021",
+          "E022"
+        ],
+        "probe_id": "D11_P001",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「睡眠被打碎」曾在 D11 出现，是跨天持续主题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E020:fragmented_sleep_amplifies_reactivity",
@@ -275,6 +1018,34 @@
     },
     "D11_P002": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "initial",
+        "interaction_unit_id": "D11_M001",
+        "probe_ids": [
+          "D11_P001",
+          "D11_P002"
+        ],
+        "primary_event_id": "E020",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E021",
+          "E022"
+        ],
+        "event_refs": [
+          "E020",
+          "E021",
+          "E022"
+        ],
+        "probe_id": "D11_P002",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「睡眠被打碎」曾在 D11 出现，是跨天持续主题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E020:fragmented_sleep_amplifies_reactivity",
@@ -284,6 +1055,30 @@
     },
     "D12_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D12_M001",
+        "probe_ids": [],
+        "primary_event_id": "E023",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E024",
+          "E025"
+        ],
+        "event_refs": [
+          "E023",
+          "E024",
+          "E025"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「家里分工和伴侣沟通」曾在 D6, D12 出现，是跨天持续主题。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
       "source_detail_ids": [
         "E023:family_coordination_support_gap",
@@ -294,6 +1089,33 @@
     },
     "D13_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D13_M001",
+        "probe_ids": [
+          "D13_P001",
+          "D13_P002"
+        ],
+        "primary_event_id": "E026",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E027",
+          "E028"
+        ],
+        "event_refs": [
+          "E026",
+          "E027",
+          "E028"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子入园适应」曾在 D8, D13 出现，是跨天持续主题。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
       "source_detail_ids": [
         "E026:dropoff_crying_replayed",
@@ -304,6 +1126,35 @@
     },
     "D13_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D13_M001",
+        "probe_ids": [
+          "D13_P001",
+          "D13_P002"
+        ],
+        "primary_event_id": "E026",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E027",
+          "E028"
+        ],
+        "event_refs": [
+          "E026",
+          "E027",
+          "E028"
+        ],
+        "probe_id": "D13_P001",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子入园适应」曾在 D8, D13 出现，是跨天持续主题。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
       "source_detail_ids": [
         "E026:dropoff_crying_replayed",
@@ -314,6 +1165,35 @@
     },
     "D13_P002": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D13_M001",
+        "probe_ids": [
+          "D13_P001",
+          "D13_P002"
+        ],
+        "primary_event_id": "E026",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E027",
+          "E028"
+        ],
+        "event_refs": [
+          "E026",
+          "E027",
+          "E028"
+        ],
+        "probe_id": "D13_P002",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子入园适应」曾在 D8, D13 出现，是跨天持续主题。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
       "source_detail_ids": [
         "E026:dropoff_crying_replayed",
@@ -324,6 +1204,30 @@
     },
     "D14_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D14_M001",
+        "probe_ids": [],
+        "primary_event_id": "E029",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E030",
+          "E031"
+        ],
+        "event_refs": [
+          "E029",
+          "E030",
+          "E031"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「睡眠被打碎」曾在 D11, D14 出现，是跨天持续主题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E029:fragmented_sleep_amplifies_reactivity",
@@ -334,6 +1238,30 @@
     },
     "D15_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D15_M001",
+        "probe_ids": [
+          "D15_P001"
+        ],
+        "primary_event_id": "E032",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E033"
+        ],
+        "event_refs": [
+          "E032",
+          "E033"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子入园适应」曾在 D8, D13, D15 出现，是跨天持续主题。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E032:dropoff_crying_replayed",
@@ -343,6 +1271,32 @@
     },
     "D15_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D15_M001",
+        "probe_ids": [
+          "D15_P001"
+        ],
+        "primary_event_id": "E032",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E033"
+        ],
+        "event_refs": [
+          "E032",
+          "E033"
+        ],
+        "probe_id": "D15_P001",
+        "probe_type": "state_transformation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子入园适应」曾在 D8, D13, D15 出现，是跨天持续主题。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E032:dropoff_crying_replayed",
@@ -352,6 +1306,32 @@
     },
     "D16_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D16_M001",
+        "probe_ids": [
+          "D16_P001"
+        ],
+        "primary_event_id": "E034",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E035",
+          "E036"
+        ],
+        "event_refs": [
+          "E034",
+          "E035",
+          "E036"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「论文截稿前的取舍」曾在 D3, D7, D16 出现，是跨天持续主题。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E034:paper_deadline_triage",
@@ -362,6 +1342,34 @@
     },
     "D16_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D16_M001",
+        "probe_ids": [
+          "D16_P001"
+        ],
+        "primary_event_id": "E034",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E035",
+          "E036"
+        ],
+        "event_refs": [
+          "E034",
+          "E035",
+          "E036"
+        ],
+        "probe_id": "D16_P001",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「论文截稿前的取舍」曾在 D3, D7, D16 出现，是跨天持续主题。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E034:paper_deadline_triage",
@@ -372,6 +1380,28 @@
     },
     "D17_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D17_M001",
+        "probe_ids": [],
+        "primary_event_id": "E037",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E038"
+        ],
+        "event_refs": [
+          "E037",
+          "E038"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1, D4, D10, D17 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。",
       "source_detail_ids": [
         "E037:kindergarten_information_vague",
@@ -381,6 +1411,31 @@
     },
     "D18_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D18_M001",
+        "probe_ids": [
+          "D18_P001",
+          "D18_P002",
+          "D18_P003",
+          "D18_P004"
+        ],
+        "primary_event_id": "E039",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E039"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2, D5, D9, D18 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E039:collaboration_logic_misaligned",
@@ -389,6 +1444,33 @@
     },
     "D18_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D18_M001",
+        "probe_ids": [
+          "D18_P001",
+          "D18_P002",
+          "D18_P003",
+          "D18_P004"
+        ],
+        "primary_event_id": "E039",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E039"
+        ],
+        "probe_id": "D18_P001",
+        "probe_type": "state_transformation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2, D5, D9, D18 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E039:collaboration_logic_misaligned",
@@ -397,6 +1479,33 @@
     },
     "D18_P002": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D18_M001",
+        "probe_ids": [
+          "D18_P001",
+          "D18_P002",
+          "D18_P003",
+          "D18_P004"
+        ],
+        "primary_event_id": "E039",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E039"
+        ],
+        "probe_id": "D18_P002",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2, D5, D9, D18 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E039:collaboration_logic_misaligned",
@@ -405,6 +1514,33 @@
     },
     "D18_P003": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D18_M001",
+        "probe_ids": [
+          "D18_P001",
+          "D18_P002",
+          "D18_P003",
+          "D18_P004"
+        ],
+        "primary_event_id": "E039",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E039"
+        ],
+        "probe_id": "D18_P003",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2, D5, D9, D18 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E039:collaboration_logic_misaligned",
@@ -413,6 +1549,33 @@
     },
     "D18_P004": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D18_M001",
+        "probe_ids": [
+          "D18_P001",
+          "D18_P002",
+          "D18_P003",
+          "D18_P004"
+        ],
+        "primary_event_id": "E039",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E039"
+        ],
+        "probe_id": "D18_P004",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2, D5, D9, D18 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E039:collaboration_logic_misaligned",
@@ -421,6 +1584,30 @@
     },
     "D19_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D19_M001",
+        "probe_ids": [
+          "D19_P001"
+        ],
+        "primary_event_id": "E040",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E041"
+        ],
+        "event_refs": [
+          "E040",
+          "E041"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「家里分工和伴侣沟通」曾在 D6, D12, D19 出现，是跨天持续主题。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E040:family_coordination_support_gap",
@@ -430,6 +1617,32 @@
     },
     "D19_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D19_M001",
+        "probe_ids": [
+          "D19_P001"
+        ],
+        "primary_event_id": "E040",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E041"
+        ],
+        "event_refs": [
+          "E040",
+          "E041"
+        ],
+        "probe_id": "D19_P001",
+        "probe_type": "state_transformation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「家里分工和伴侣沟通」曾在 D6, D12, D19 出现，是跨天持续主题。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E040:family_coordination_support_gap",
@@ -439,6 +1652,33 @@
     },
     "D20_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D20_M001",
+        "probe_ids": [
+          "D20_P001",
+          "D20_P002"
+        ],
+        "primary_event_id": "E042",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E043",
+          "E044"
+        ],
+        "event_refs": [
+          "E042",
+          "E043",
+          "E044"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「睡眠被打碎」曾在 D11, D14, D20 出现，是跨天持续主题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
       "source_detail_ids": [
         "E042:fragmented_sleep_amplifies_reactivity",
@@ -449,6 +1689,35 @@
     },
     "D20_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D20_M001",
+        "probe_ids": [
+          "D20_P001",
+          "D20_P002"
+        ],
+        "primary_event_id": "E042",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E043",
+          "E044"
+        ],
+        "event_refs": [
+          "E042",
+          "E043",
+          "E044"
+        ],
+        "probe_id": "D20_P001",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「睡眠被打碎」曾在 D11, D14, D20 出现，是跨天持续主题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
       "source_detail_ids": [
         "E042:fragmented_sleep_amplifies_reactivity",
@@ -459,6 +1728,35 @@
     },
     "D20_P002": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D20_M001",
+        "probe_ids": [
+          "D20_P001",
+          "D20_P002"
+        ],
+        "primary_event_id": "E042",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E043",
+          "E044"
+        ],
+        "event_refs": [
+          "E042",
+          "E043",
+          "E044"
+        ],
+        "probe_id": "D20_P002",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「睡眠被打碎」曾在 D11, D14, D20 出现，是跨天持续主题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
       "source_detail_ids": [
         "E042:fragmented_sleep_amplifies_reactivity",
@@ -469,6 +1767,30 @@
     },
     "D21_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D21_M001",
+        "probe_ids": [],
+        "primary_event_id": "E045",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E046",
+          "E047"
+        ],
+        "event_refs": [
+          "E045",
+          "E046",
+          "E047"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「论文截稿前的取舍」曾在 D3, D7, D16, D21 出现，是跨天持续主题。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
       "source_detail_ids": [
         "E045:paper_deadline_triage",
@@ -479,6 +1801,30 @@
     },
     "D22_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D22_M001",
+        "probe_ids": [],
+        "primary_event_id": "E048",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E049",
+          "E050"
+        ],
+        "event_refs": [
+          "E048",
+          "E049",
+          "E050"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「论文截稿前的取舍」曾在 D3, D7, D16, D21, D22 出现，是跨天持续主题。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。",
       "source_detail_ids": [
         "E048:paper_deadline_triage",
@@ -489,6 +1835,30 @@
     },
     "D23_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D23_M001",
+        "probe_ids": [
+          "D23_P001"
+        ],
+        "primary_event_id": "E051",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E052"
+        ],
+        "event_refs": [
+          "E051",
+          "E052"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「家里分工和伴侣沟通」曾在 D6, D12, D19, D23 出现，是跨天持续主题。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E051:family_coordination_support_gap",
@@ -498,6 +1868,32 @@
     },
     "D23_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D23_M001",
+        "probe_ids": [
+          "D23_P001"
+        ],
+        "primary_event_id": "E051",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E052"
+        ],
+        "event_refs": [
+          "E051",
+          "E052"
+        ],
+        "probe_id": "D23_P001",
+        "probe_type": "alienation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「家里分工和伴侣沟通」曾在 D6, D12, D19, D23 出现，是跨天持续主题。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E051:family_coordination_support_gap",
@@ -507,6 +1903,32 @@
     },
     "D24_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D24_M001",
+        "probe_ids": [
+          "D24_P001"
+        ],
+        "primary_event_id": "E053",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002",
+          "E054",
+          "E055"
+        ],
+        "event_refs": [
+          "E053",
+          "E054",
+          "E055"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2, D5, D9, D18, D24 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。\n- 用户想维持朋友关系，但最近社交电量偏低，更需要恢复空间。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E053:collaboration_logic_misaligned",
@@ -517,6 +1939,34 @@
     },
     "D24_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D24_M001",
+        "probe_ids": [
+          "D24_P001"
+        ],
+        "primary_event_id": "E053",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002",
+          "E054",
+          "E055"
+        ],
+        "event_refs": [
+          "E053",
+          "E054",
+          "E055"
+        ],
+        "probe_id": "D24_P001",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「合作项目推进不顺」曾在 D2, D5, D9, D18, D24 出现，是跨天持续主题。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。\n- 用户想维持朋友关系，但最近社交电量偏低，更需要恢复空间。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E053:collaboration_logic_misaligned",
@@ -527,6 +1977,26 @@
     },
     "D25_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D25_M001",
+        "probe_ids": [],
+        "primary_event_id": "E056",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015"
+        ],
+        "event_refs": [
+          "E056"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子入园适应」曾在 D8, D13, D15, D25 出现，是跨天持续主题。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。",
       "source_detail_ids": [
         "E056:dropoff_crying_replayed",
@@ -535,6 +2005,30 @@
     },
     "D26_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D26_M001",
+        "probe_ids": [],
+        "primary_event_id": "E057",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E058",
+          "E059"
+        ],
+        "event_refs": [
+          "E057",
+          "E058",
+          "E059"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「家里分工和伴侣沟通」曾在 D6, D12, D19, D23, D26 出现，是跨天持续主题。\n- 家里分工问题表面是事务分配，底下是支持感和被看见的问题。\n- 论文截稿前用户需要区分必须认真改的部分和可以先放过的部分。",
       "source_detail_ids": [
         "E057:family_coordination_support_gap",
@@ -545,6 +2039,32 @@
     },
     "D27_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D27_M001",
+        "probe_ids": [
+          "D27_P001"
+        ],
+        "primary_event_id": "E060",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E061",
+          "E062"
+        ],
+        "event_refs": [
+          "E060",
+          "E061",
+          "E062"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「睡眠被打碎」曾在 D11, D14, D20, D27 出现，是跨天持续主题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E060:fragmented_sleep_amplifies_reactivity",
@@ -555,6 +2075,34 @@
     },
     "D27_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D27_M001",
+        "probe_ids": [
+          "D27_P001"
+        ],
+        "primary_event_id": "E060",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E061",
+          "E062"
+        ],
+        "event_refs": [
+          "E060",
+          "E061",
+          "E062"
+        ],
+        "probe_id": "D27_P001",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「睡眠被打碎」曾在 D11, D14, D20, D27 出现，是跨天持续主题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E060:fragmented_sleep_amplifies_reactivity",
@@ -565,6 +2113,28 @@
     },
     "D28_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D28_M001",
+        "probe_ids": [
+          "D28_P001"
+        ],
+        "primary_event_id": "E063",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020"
+        ],
+        "event_refs": [
+          "E063"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「睡眠被打碎」曾在 D11, D14, D20, D27, D28 出现，是跨天持续主题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E063:fragmented_sleep_amplifies_reactivity",
@@ -573,6 +2143,30 @@
     },
     "D28_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D28_M001",
+        "probe_ids": [
+          "D28_P001"
+        ],
+        "primary_event_id": "E063",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020"
+        ],
+        "event_refs": [
+          "E063"
+        ],
+        "probe_id": "D28_P001",
+        "probe_type": "state_transformation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「睡眠被打碎」曾在 D11, D14, D20, D27, D28 出现，是跨天持续主题。\n- 睡眠被打碎会放大用户在育儿和工作上的反应，影响耐心和专注。",
       "source_detail_ids": [
         "E063:fragmented_sleep_amplifies_reactivity",
@@ -581,6 +2175,29 @@
     },
     "D29_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D29_M001",
+        "probe_ids": [
+          "D29_P001",
+          "D29_P002"
+        ],
+        "primary_event_id": "E064",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001"
+        ],
+        "event_refs": [
+          "E064"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1, D4, D10, D17, D29 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E064:kindergarten_information_vague",
@@ -589,6 +2206,31 @@
     },
     "D29_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D29_M001",
+        "probe_ids": [
+          "D29_P001",
+          "D29_P002"
+        ],
+        "primary_event_id": "E064",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001"
+        ],
+        "event_refs": [
+          "E064"
+        ],
+        "probe_id": "D29_P001",
+        "probe_type": "alienation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1, D4, D10, D17, D29 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E064:kindergarten_information_vague",
@@ -597,6 +2239,31 @@
     },
     "D29_P002": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D29_M001",
+        "probe_ids": [
+          "D29_P001",
+          "D29_P002"
+        ],
+        "primary_event_id": "E064",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001"
+        ],
+        "event_refs": [
+          "E064"
+        ],
+        "probe_id": "D29_P002",
+        "probe_type": "state_transformation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子幼儿园可能不稳定」曾在 D1, D4, D10, D17, D29 出现，是跨天持续主题。\n- 幼儿园不稳定的消息仍然模糊，用户还没有拿到正式通知或具体原因。",
       "source_detail_ids": [
         "E064:kindergarten_information_vague",
@@ -605,6 +2272,30 @@
     },
     "D30_M001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D30_M001",
+        "probe_ids": [
+          "D30_P001"
+        ],
+        "primary_event_id": "E065",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E066"
+        ],
+        "event_refs": [
+          "E065",
+          "E066"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子入园适应」曾在 D8, D13, D15, D25, D30 出现，是跨天持续主题。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E065:dropoff_crying_replayed",
@@ -614,6 +2305,32 @@
     },
     "D30_P001": {
       "condition_id": "M2",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D30_M001",
+        "probe_ids": [
+          "D30_P001"
+        ],
+        "primary_event_id": "E065",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E066"
+        ],
+        "event_refs": [
+          "E065",
+          "E066"
+        ],
+        "probe_id": "D30_P001",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：\n- 「孩子入园适应」曾在 D8, D13, D15, D25, D30 出现，是跨天持续主题。\n- 孩子早上入园哭闹后，用户会反复回想门口那个画面。\n- 合作消耗点是概念层和实现层反复错位，不是单次沟通不顺。",
       "source_detail_ids": [
         "E065:dropoff_crying_replayed",

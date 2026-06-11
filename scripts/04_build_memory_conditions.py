@@ -20,6 +20,7 @@ from long_memory_test.experiment_cache import (  # noqa: E402
     DAILY_SCENE_CARDS_PATH,
     DAILY_USER_MESSAGE_PATH,
     EVENT_LINE_AUDIT_PATH,
+    TAU_CONTRACT_PATH,
     M0_MEMORY_PATH,
     M1_ALIAS_MEMORY_PATH,
     M1_MEMORY_PATH,
@@ -39,6 +40,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--daily-messages", type=Path, default=DAILY_USER_MESSAGE_PATH)
     parser.add_argument("--probe-questions", type=Path, default=PROBE_QUESTION_PLAN_PATH)
     parser.add_argument("--bei-annotations", type=Path, default=BEI_ANNOTATIONS_PATH)
+    parser.add_argument("--tau-contract", type=Path, default=TAU_CONTRACT_PATH)
     parser.add_argument("--output-cache", type=Path, default=CACHE_MEMORY_CONDITIONS_PATH)
     return parser.parse_args()
 
@@ -50,12 +52,14 @@ def main() -> int:
         daily_messages=load_json(args.daily_messages),
         probe_question_plan=load_json(args.probe_questions),
         bei_annotations=load_json(args.bei_annotations),
+        tau_contract=load_json(args.tau_contract) if args.tau_contract.exists() else None,
     )
     memory_conditions["source_paths"] = {
         "timeline_cache": _display_path(args.timeline_cache),
         "daily_messages": _display_path(args.daily_messages),
         "probe_questions": _display_path(args.probe_questions),
         "bei_annotations": _display_path(args.bei_annotations),
+        "tau_contract": _display_path(args.tau_contract) if args.tau_contract.exists() else None,
     }
     write_json(args.output_cache, memory_conditions)
     write_memory_condition_files(memory_conditions)
@@ -68,6 +72,7 @@ def main() -> int:
             "bei_annotations": args.bei_annotations,
             "probe_question_plan": args.probe_questions,
             "event_line_audit": EVENT_LINE_AUDIT_PATH,
+            "tau_contract": TAU_CONTRACT_PATH,
             "memory_conditions_cache": args.output_cache,
             "m0_generic_agent_config": M0_MEMORY_PATH,
             "m1_conclusion_memory": M1_MEMORY_PATH,

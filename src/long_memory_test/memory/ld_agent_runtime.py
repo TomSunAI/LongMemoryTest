@@ -18,13 +18,29 @@ LD_AGENT_REFERENCE = {
     "usage": "memory_only_no_generator_or_checkpoint",
 }
 
-LD_EVENT_SUMMARY_SYSTEM_PROMPT = (
-    "You are good at extracting events and summarizing them in brief sentences. "
-    "You will be shown a conversation between User and Agent.\n"
+M0_RUNTIME_ID = "M0_ld_agent_style_session_summary"
+M0_MEMORY_UNIT = "session"
+M0_RETRIEVAL_STRATEGY = "topic_overlap_time_decay"
+SESSION_SUMMARY_MEMORY_TYPE = "session_summary_memory"
+PERSONA_MEMORY_TYPE = "persona_memory"
+
+LD_SESSION_SUMMARY_SYSTEM_PROMPT = (
+    "You are a long-term dialogue memory summarizer.\n"
+    "Summarize the completed dialogue session into one ordinary session-level memory.\n"
+    "Rules:\n"
+    "1. Summarize only what happened in this session.\n"
+    "2. Preserve the user's main topic, concern, preference, or task.\n"
+    "3. Do not infer persistent event objects.\n"
+    "4. Do not decide whether this session updates a previous event.\n"
+    "5. Do not create event trajectories.\n"
+    "6. Do not include shared handling strategies, relational anchors, or boundary-sensitive cues.\n"
+    "7. Do not use probe labels, gold response strategies, or evaluation annotations.\n"
+    "8. Output one concise summary."
 )
 LD_PERSONA_SYSTEM_PROMPT = (
-    "You excel at extracting user personal traits from their words, "
-    "a renowned local communication expert."
+    "Extract only ordinary user persona, preference, or fact memories. "
+    "Do not extract relationship expectations, shared strategies, event trajectories, "
+    "or boundary-sensitive cues."
 )
 LD_PERSONA_EXAMPLES = (
     "If no traits can be extracted in the sentence, you should reply 'NO_TRAIT'. "
@@ -40,13 +56,13 @@ LD_PERSONA_EXAMPLES = (
 
 
 class LDAgentMemoryRuntime:
-    """LD-Agent-compatible memory runtime for the M0 baseline.
+    """LD-Agent-style session-summary memory runtime for the M0 baseline.
 
     This keeps the experiment's responder model controlled while reproducing
-    LD-Agent's memory-side behavior: short-term session memory, session-level
-    event summarization, topic-overlap/time-decay retrieval, and Personas-style
-    trait extraction. Chroma/spaCy are not required in this backend; their roles
-    are represented by auditable JSON storage and deterministic topic tokens.
+    the memory-side baseline described as LD-Agent-style event memory while
+    operationalizing the long-term unit as completed-session summaries. M0 does
+    not perform event detection, event identity resolution, persistent event
+    updates, event merging, or event trajectory construction.
     """
 
     def __init__(
@@ -62,7 +78,7 @@ class LDAgentMemoryRuntime:
         decay_temp: float = 1e-7,
         storage_backend: str = "json",
         chroma_path: str | Path | None = None,
-        chroma_collection: str = "ld_agent_m0_event_memory",
+        chroma_collection: str = "ld_agent_m0_session_summary_memory",
     ) -> None:
         self.top_k = top_k
         self.short_term_k = short_term_k
@@ -113,21 +129,37 @@ class LDAgentMemoryRuntime:
             or str((snapshot or {}).get("storage_backend", "json")),
             chroma_path=chroma_path or (snapshot or {}).get("chroma_path"),
             chroma_collection=str(
-                (snapshot or {}).get("chroma_collection", "ld_agent_m0_event_memory")
+                (snapshot or {}).get(
+                    "chroma_collection",
+                    "ld_agent_m0_session_summary_memory",
+                )
             ),
         )
         if not snapshot:
             return runtime
-        runtime.current_session_day = snapshot.get("current_session_day")
-        runtime.short_term_session = list(snapshot.get("short_term_session", []))
-        runtime.memories = OrderedDict(
-            (str(item.get("memory_id")), MemoryRecord.from_dict(item))
-            for item in snapshot.get("memories", [])
-            if isinstance(item, dict) and item.get("memory_id")
+        runtime.current_session_day = snapshot.get("current_session_day") or _session_day(
+            snapshot.get("current_session_id")
         )
+        runtime.short_term_session = list(snapshot.get("short_term_session", []))
+        memory_items = snapshot.get("memories")
+        if not isinstance(memory_items, list):
+            memory_items = [
+                *snapshot.get("session_summary_memories", []),
+                *snapshot.get("persona_memories", []),
+            ]
+        runtime.memories = OrderedDict()
+        for item in memory_items:
+            if not isinstance(item, dict) or not item.get("memory_id"):
+                continue
+            memory = MemoryRecord.from_dict(item)
+            _normalize_loaded_m0_memory(memory)
+            runtime.memories[memory.memory_id] = memory
         runtime.user_traits = [str(item) for item in snapshot.get("user_traits", []) if item]
         runtime.agent_traits = [str(item) for item in snapshot.get("agent_traits", []) if item]
-        runtime.memory_llm_failures = list(snapshot.get("memory_llm_failures", []))
+        runtime.memory_llm_failures = list(
+            snapshot.get("memory_llm_failures")
+            or snapshot.get("memory_writer_failures", [])
+        )
         runtime.actions = list(snapshot.get("actions", []))
         return runtime
 
@@ -143,7 +175,7 @@ class LDAgentMemoryRuntime:
         llm_timeout: float = 60.0,
         storage_backend: str = "json",
         chroma_path: str | Path | None = None,
-        chroma_collection: str = "ld_agent_m0_event_memory",
+        chroma_collection: str = "ld_agent_m0_session_summary_memory",
     ) -> "LDAgentMemoryRuntime":
         runtime = cls(
             top_k=top_k,
@@ -169,10 +201,28 @@ class LDAgentMemoryRuntime:
         return runtime
 
     def snapshot(self) -> dict[str, Any]:
+        session_summary_memories = [
+            memory.to_dict()
+            for memory in self.memories.values()
+            if memory.memory_type == SESSION_SUMMARY_MEMORY_TYPE
+        ]
+        persona_memories = [
+            memory.to_dict()
+            for memory in self.memories.values()
+            if memory.memory_type == PERSONA_MEMORY_TYPE
+        ]
+        current_session_id = (
+            f"D{self.current_session_day:02d}"
+            if self.current_session_day and self.current_session_day > 0
+            else None
+        )
         return {
-            "schema_version": "ld_agent_memory_runtime_v2",
+            "schema_version": "m0_ld_agent_style_session_summary_runtime_v1",
             "provider": "ld_agent_memory",
-            "compatibility_mode": "ld_agent_event_memory_and_personas_reproduction",
+            "runtime_id": M0_RUNTIME_ID,
+            "compatibility_mode": "ld_agent_style_session_summary_memory_baseline",
+            "memory_unit": M0_MEMORY_UNIT,
+            "retrieval_strategy": M0_RETRIEVAL_STRATEGY,
             "ld_agent_reference": dict(LD_AGENT_REFERENCE),
             "storage_backend": self.storage_backend,
             "uses_chromadb": self.storage_backend == "chroma",
@@ -188,69 +238,106 @@ class LDAgentMemoryRuntime:
             "max_user_personas": self.max_user_personas,
             "max_agent_personas": self.max_agent_personas,
             "decay_temp": self.decay_temp,
+            "current_session_id": current_session_id,
             "current_session_day": self.current_session_day,
             "short_term_session": list(self.short_term_session),
+            "session_summary_memories": session_summary_memories,
+            "persona_memories": persona_memories,
             "user_traits": list(self.user_traits),
             "agent_traits": list(self.agent_traits),
             "memory_llm_failure_count": len(self.memory_llm_failures),
             "memory_llm_failures": list(self.memory_llm_failures),
+            "memory_writer_failures": list(self.memory_llm_failures),
             "memories": [memory.to_dict() for memory in self.memories.values()],
             "actions": list(self.actions),
+            "config": {
+                "memory_unit": M0_MEMORY_UNIT,
+                "retrieval_strategy": M0_RETRIEVAL_STRATEGY,
+                "top_k_session_memory": self.top_k,
+                "top_k_persona_memory": self.max_user_personas,
+                "probe_writeback": False,
+                "persona_speaker_policy": "user_only",
+            },
         }
 
     def retrieve_payload(self, message: dict[str, Any]) -> dict[str, Any]:
         self.prepare_for_turn(message)
         query = self._query_text(message)
+        query_topics = _ld_topic_tokens(query)
         current_day = _safe_int(message.get("day"))
-        event_hits = self._retrieve_event_memories(query=query, current_day=current_day)
-        persona_hits = self._current_persona_hits()
+        session_hits = self._retrieve_session_summary_memories(
+            query=query,
+            current_day=current_day,
+        )
+        persona_hits = self._retrieve_persona_memories(query=query)
         short_term_lines = self._short_term_lines()
         lines = [
-            "LD-Agent memory baseline (memory-only).",
-            (
-                "Reference: leolee99/LD-Agent Module/EventMemory.py and Module/Personas.py; "
-                "response generator/checkpoints are not used."
-            ),
-            (
-                "Implementation: LD-compatible JSON backend; reproduces short-term session "
-                "memory, session summary, persona traits, topic-overlap retrieval, and time decay."
-            ),
-            "Short-term memory bank:",
+            "[Available M0 Memory: LD-Agent-style Session-Summary Memory]",
+            "",
+            "Current short-term session:",
         ]
         lines.extend(short_term_lines or ["- 当前 session 内暂无更早用户 turn。"])
-        lines.append("Retrieved long-term event memories:")
+        lines.append("")
+        lines.append("Retrieved session summaries:")
         lines.extend(
             [
-                "- "
+                f"{idx}. "
                 + item["memory"]["summary"]
                 + (
-                    f" (source_session={item['memory']['source_session']}, "
-                    f"topics={item['memory'].get('ld_agent_metadata', {}).get('topics', '')}, "
-                    f"overlap={item['overlap_score']}, time_decay={item['time_decay']})"
+                    f"\n   source_session={item['memory']['source_session_id']}; "
+                    f"score={item['score']}; overlap={item['overlap_score']}; "
+                    f"time_decay={item['time_decay']}"
                 )
-                for item in event_hits
+                for idx, item in enumerate(session_hits, start=1)
             ]
-            or ["- 当前没有检索到相关普通事件记忆。"]
+            or ["- 当前没有检索到相关 session summary memory。"]
         )
-        lines.append("Persona traits:")
+        lines.append("")
+        lines.append("Persona memories:")
         user_trait_lines = [
-            "- User: " + item["memory"]["summary"]
+            "- " + item["memory"]["summary"]
             for item in persona_hits
             if item["memory"].get("ld_agent_metadata", {}).get("speaker") == "user"
         ]
-        agent_trait_lines = [
-            "- Agent: " + item["memory"]["summary"]
-            for item in persona_hits
-            if item["memory"].get("ld_agent_metadata", {}).get("speaker") == "agent"
-        ]
-        lines.extend(user_trait_lines or ["- User: 当前没有可用 user trait。"])
-        lines.extend(agent_trait_lines or ["- Agent: 当前没有可用 agent trait。"])
-        lines.append(
-            "Use memories only when relevant. Do not infer relational labels or use "
-            "probe/gold/judge metadata."
+        lines.extend(user_trait_lines or ["- 当前没有可用普通 persona/fact memory。"])
+        lines.extend(
+            [
+                "",
+                "Rules:",
+                "Use the above memory only when relevant.",
+                "Do not infer persistent event objects.",
+                "Do not merge session summaries into event trajectories.",
+                "Do not use relational anchors, shared handling strategies, or boundary-sensitive cues.",
+            ]
         )
+        avg_overlap = (
+            round(sum(item["overlap_score"] for item in session_hits) / len(session_hits), 4)
+            if session_hits
+            else 0.0
+        )
+        retrieval = {
+            "strategy": M0_RETRIEVAL_STRATEGY,
+            "top_k": self.top_k,
+            "query": {
+                "text": query,
+                "query_topics": query_topics,
+            },
+            "query_text": query,
+            "session_summary_memory_count": len(session_hits),
+            "persona_memory_count": len(persona_hits),
+            "session_hits": session_hits,
+            "persona_hits": persona_hits,
+            "short_term_turn_count": len(self.short_term_session),
+            "zero_hit": len(session_hits) == 0,
+            "avg_overlap_score": avg_overlap,
+            # Compatibility aliases for older analysis scripts during migration.
+            "event_memory_count": len(session_hits),
+            "event_hits": session_hits,
+        }
         return {
+            "condition": "M0",
             "condition_id": "M0",
+            "memory_unit": M0_MEMORY_UNIT,
             "memory_provider": "ld_agent_memory",
             "requires_runtime_letta": False,
             "requires_runtime_ld_agent_memory": True,
@@ -260,18 +347,9 @@ class LDAgentMemoryRuntime:
             "uses_spacy": False,
             "memory_context": "\n".join(lines),
             "source_detail_ids": [
-                item["memory"]["memory_id"] for item in [*event_hits, *persona_hits]
+                item["memory"]["memory_id"] for item in [*session_hits, *persona_hits]
             ],
-            "retrieval": {
-                "strategy": "ld_agent_relevance_overlap_time_decay",
-                "top_k": self.top_k,
-                "query": query,
-                "event_memory_count": len(event_hits),
-                "persona_memory_count": len(persona_hits),
-                "event_hits": event_hits,
-                "persona_hits": persona_hits,
-                "short_term_turn_count": len(self.short_term_session),
-            },
+            "retrieval": retrieval,
         }
 
     def prepare_for_turn(self, message: dict[str, Any]) -> None:
@@ -296,28 +374,52 @@ class LDAgentMemoryRuntime:
         day = _safe_int(message.get("day"))
         if self.current_session_day is None and day > 0:
             self.current_session_day = day
+        message_id = str(message.get("message_id", ""))
+        if _is_probe_turn(message):
+            action = {
+                "action": "skip_probe_writeback",
+                "memory_provider": "ld_agent_memory",
+                "condition_id": "M0",
+                "message_id": message_id,
+                "session_id": _message_session_id(message),
+                "day": day,
+                "reason": "probe_read_only",
+                "status": "skipped",
+            }
+            self.actions.append(action)
+            return action
         turn_idx = len(self.short_term_session)
         user_message = str(message.get("user_message", ""))
+        session_id = _message_session_id(message)
         turn = {
             "run_id": run_id,
             "idx": turn_idx,
             "time": _ld_time(day=day, idx=turn_idx),
-            "dialog": f"User: {user_message}",
-            "message_id": str(message.get("message_id", "")),
+            "turn_id": message_id,
+            "message_id": message_id,
+            "session_id": session_id,
             "day": day,
             "topic": str(message.get("topic", "")),
             "turn_type": str(message.get("turn_type", "scripted_opening")),
             "user_message": user_message,
+            "m0_answer": assistant_answer,
             "assistant_answer": assistant_answer,
             "domains": [str(item) for item in message.get("domains", [])],
             "intent": str(message.get("intent", "")),
             "memory_relevance": str(message.get("memory_relevance", "")),
+            "tau": dict(message.get("tau", {})) if isinstance(message.get("tau"), dict) else {},
+            "timestamp": _ld_time(day=day, idx=turn_idx),
         }
+        turn["dialog"] = _format_short_term_turn(turn)
         self.short_term_session.append(turn)
         action = {
-            "action": "ld_agent_short_term_append",
+            "action": "append_short_term_session",
+            "legacy_action": "ld_agent_short_term_append",
             "memory_provider": "ld_agent_memory",
-            "message_id": turn["message_id"],
+            "condition_id": "M0",
+            "turn_id": turn["turn_id"],
+            "message_id": message_id,
+            "session_id": session_id,
             "day": day,
             "idx": turn_idx,
             "time": turn["time"],
@@ -328,7 +430,6 @@ class LDAgentMemoryRuntime:
         self.actions.extend(
             self._update_personas(
                 inquiry=user_message,
-                response=assistant_answer,
                 source_turn_id=turn["message_id"],
                 day=day,
             )
@@ -344,58 +445,91 @@ class LDAgentMemoryRuntime:
         if not self.short_term_session:
             return []
         day = _safe_int(self.short_term_session[-1].get("day")) or self.current_session_day or 0
-        actions = self._write_session_event_memory(day=day, reason=reason)
+        actions = self._write_session_summary_memory(
+            day=day,
+            reason=reason,
+            next_day=next_day,
+        )
         self.short_term_session = []
         if next_day is not None:
             self.current_session_day = next_day
         self.actions.extend(actions)
         return actions
 
-    def _write_session_event_memory(self, *, day: int, reason: str) -> list[dict[str, Any]]:
-        context_lines = [
-            f"(line {idx + 1}) {turn.get('dialog', '')}."
-            for idx, turn in enumerate(self.short_term_session)
-            if turn.get("dialog")
-        ]
-        merged_context = "\n".join(context_lines)
+    def _write_session_summary_memory(
+        self,
+        *,
+        day: int,
+        reason: str,
+        next_day: int | None,
+    ) -> list[dict[str, Any]]:
+        merged_context = _build_raw_dialogue(self.short_term_session)
+        context_lines = [line for line in merged_context.splitlines() if line.strip()]
         summary = self._context_summarize(merged_context, len(context_lines))
-        topics = ",".join(_ld_topic_tokens(_session_topic_text(self.short_term_session)))
+        topic_list = _ld_topic_tokens(_session_topic_text(self.short_term_session))
+        topics = ",".join(topic_list)
+        domains = _unique(
+            domain
+            for turn in self.short_term_session
+            for domain in turn.get("domains", [])
+        )
         source_turn_ids = [
             str(turn.get("message_id")) for turn in self.short_term_session if turn.get("message_id")
         ]
         session = f"D{day:02d}"
-        memory_id = self._stable_memory_id("event_memory", session + ":" + ",".join(source_turn_ids))
+        available_from_session = (
+            f"D{next_day:02d}" if next_day and next_day > 0 else f"D{day + 1:02d}"
+        )
+        memory_id = self._stable_memory_id(
+            SESSION_SUMMARY_MEMORY_TYPE,
+            session + ":" + ",".join(source_turn_ids),
+        )
         metadata = {
-            "idx": self._event_memory_count(),
+            "memory_name": "event_memory",
+            "implementation_unit": "session_summary",
+            "idx": self._session_summary_memory_count(),
             "dialog": "",
             "time": _ld_time(day=day, idx=len(self.short_term_session)),
             "topics": topics,
             "datatype": "text",
             "summary": summary,
+            "source_session_id": session,
+            "available_from_session": available_from_session,
         }
         self.memories[memory_id] = MemoryRecord(
             memory_id=memory_id,
-            memory_type="event_memory",
+            memory_type=SESSION_SUMMARY_MEMORY_TYPE,
             summary=summary,
-            raw_dialogue=_build_raw_dialogue(self.short_term_session),
+            raw_dialogue=merged_context,
             source_session=session,
             source_turn_ids=source_turn_ids,
             timestamp=session,
             importance=_importance_from_turns(self.short_term_session),
             topic=topics,
+            domains=domains,
+            available_from_session=available_from_session,
             created_day=day,
             updated_day=day,
             ld_agent_metadata=metadata,
         )
-        self._store_event_memory_in_chroma(memory_id=memory_id, summary=summary, metadata=metadata)
+        self._store_session_summary_in_chroma(
+            memory_id=memory_id,
+            summary=summary,
+            metadata=metadata,
+        )
         return [
             {
-                "action": "ld_agent_event_memory_add",
+                "action": "add_session_summary_memory",
+                "legacy_action": "ld_agent_event_memory_add",
                 "memory_provider": "ld_agent_memory",
+                "condition_id": "M0",
                 "memory_id": memory_id,
-                "memory_type": "event_memory",
+                "memory_type": SESSION_SUMMARY_MEMORY_TYPE,
+                "source_session_id": session,
                 "source_session": session,
                 "source_turn_ids": source_turn_ids,
+                "summary": summary,
+                "available_from_session": available_from_session,
                 "reason": reason,
                 "ld_agent_metadata": metadata,
                 "status": "success",
@@ -406,7 +540,6 @@ class LDAgentMemoryRuntime:
         self,
         *,
         inquiry: str,
-        response: str,
         source_turn_id: str,
         day: int,
     ) -> list[dict[str, Any]]:
@@ -422,17 +555,6 @@ class LDAgentMemoryRuntime:
                     day=day,
                 )
             )
-        agent_trait = self._extract_persona_trait(response)
-        if _is_valid_trait(agent_trait) and agent_trait not in self.agent_traits:
-            self.agent_traits.append(agent_trait)
-            actions.append(
-                self._write_persona_memory(
-                    speaker="agent",
-                    trait=agent_trait,
-                    source_turn_id=source_turn_id,
-                    day=day,
-                )
-            )
         return actions
 
     def _write_persona_memory(
@@ -443,24 +565,25 @@ class LDAgentMemoryRuntime:
         source_turn_id: str,
         day: int,
     ) -> dict[str, Any]:
-        memory_id = self._stable_memory_id("persona_memory", speaker + ":" + trait)
+        memory_id = self._stable_memory_id(PERSONA_MEMORY_TYPE, speaker + ":" + trait)
         metadata = {
             "speaker": speaker,
             "datatype": "text",
             "summary": trait,
-            "source": "LD-Agent Personas.traits_update",
+            "source": "M0 ordinary user persona/fact extraction",
+            "write_policy": "user_only_no_relational_anchors",
         }
-        action_name = "ld_agent_persona_memory_add"
+        action_name = "add_persona_memory"
         existing = self.memories.get(memory_id)
         if existing:
             existing.updated_day = day
             existing.timestamp = f"D{day:02d}"
             existing.source_turn_ids = _unique([*existing.source_turn_ids, source_turn_id])
-            action_name = "ld_agent_persona_memory_update"
+            action_name = "update_persona_memory"
         else:
             self.memories[memory_id] = MemoryRecord(
                 memory_id=memory_id,
-                memory_type="persona_memory",
+                memory_type=PERSONA_MEMORY_TYPE,
                 summary=trait,
                 source_session=f"D{day:02d}",
                 source_turn_ids=[source_turn_id],
@@ -474,21 +597,27 @@ class LDAgentMemoryRuntime:
         return {
             "action": action_name,
             "memory_provider": "ld_agent_memory",
+            "condition_id": "M0",
             "memory_id": memory_id,
-            "memory_type": "persona_memory",
+            "memory_type": PERSONA_MEMORY_TYPE,
             "speaker": speaker,
             "source_session": f"D{day:02d}",
             "source_turn_ids": [source_turn_id],
             "status": "success",
         }
 
-    def _retrieve_event_memories(self, *, query: str, current_day: int) -> list[dict[str, Any]]:
+    def _retrieve_session_summary_memories(
+        self,
+        *,
+        query: str,
+        current_day: int,
+    ) -> list[dict[str, Any]]:
         query_topics = _ld_topic_tokens(query)
         current_time = _ld_time(day=current_day, idx=0)
         candidate_ids = self._chroma_candidate_ids(query=query)
         scored = []
         for memory in self.memories.values():
-            if memory.memory_type != "event_memory":
+            if memory.memory_type != SESSION_SUMMARY_MEMORY_TYPE:
                 continue
             if candidate_ids is not None and memory.memory_id not in candidate_ids:
                 continue
@@ -539,7 +668,7 @@ class LDAgentMemoryRuntime:
             embedding_function=_ChromaTopicEmbeddingFunction(),
         )
 
-    def _store_event_memory_in_chroma(
+    def _store_session_summary_in_chroma(
         self,
         *,
         memory_id: str,
@@ -595,30 +724,40 @@ class LDAgentMemoryRuntime:
         ids = results.get("ids") or [[]]
         return {str(item) for item in ids[0] if item}
 
-    def _current_persona_hits(self) -> list[dict[str, Any]]:
-        allowed_traits = set(
-            self.user_traits[-self.max_user_personas :]
-            + self.agent_traits[-self.max_agent_personas :]
-        )
+    def _retrieve_persona_memories(self, *, query: str) -> list[dict[str, Any]]:
+        query_topics = set(_ld_topic_tokens(query))
+        allowed_traits = set(self.user_traits[-self.max_user_personas :])
         hits = []
         for memory in self.memories.values():
-            if memory.memory_type != "persona_memory" or memory.summary not in allowed_traits:
+            if memory.memory_type != PERSONA_MEMORY_TYPE or memory.summary not in allowed_traits:
                 continue
-            hits.append({"score": 1.0, "memory": memory.to_dict()})
+            memory_topics = set(_ld_topic_tokens(memory.summary))
+            overlap_count = len(query_topics & memory_topics)
+            score = 1.0 if overlap_count else 0.5
+            hits.append(
+                {
+                    "score": score,
+                    "overlap_count": overlap_count,
+                    "memory": memory.to_dict(),
+                }
+            )
+        hits.sort(key=lambda item: (item["score"], item["overlap_count"]), reverse=True)
         return hits
 
     def _context_summarize(self, context: str, length: int) -> str:
         if not context.strip():
             return "NO_SUMMARY"
         user_prompt = (
-            f"#Conversation#:\n{context}.\n"
-            "Based on the Conversation, please summarize the main points of the "
-            "conversation with brief sentences in English, within 20 words.\nSUMMARY:"
+            "#Completed dialogue session#:\n"
+            f"{context}\n\n"
+            "Output one concise ordinary session-level memory. Summarize only this session. "
+            "Do not infer persistent events, event updates, trajectories, relational anchors, "
+            "shared handling strategies, or evaluation labels.\nSUMMARY:"
         )
         fallback = _fallback_session_summary(context, length)
         return self._call_memory_llm(
-            task="EventSummary",
-            system_prompt=LD_EVENT_SUMMARY_SYSTEM_PROMPT,
+            task="SessionSummary",
+            system_prompt=LD_SESSION_SUMMARY_SYSTEM_PROMPT,
             user_prompt=user_prompt,
             fallback=fallback,
             max_tokens=160,
@@ -689,7 +828,14 @@ class LDAgentMemoryRuntime:
 
     def _query_text(self, message: dict[str, Any]) -> str:
         recent = " ".join(
-            str(turn.get("user_message", ""))
+            " ".join(
+                item
+                for item in [
+                    str(turn.get("user_message", "")),
+                    str(turn.get("m0_answer") or turn.get("assistant_answer", "")),
+                ]
+                if item
+            )
             for turn in self.short_term_session[-self.short_term_k :]
         )
         return " ".join(
@@ -706,13 +852,17 @@ class LDAgentMemoryRuntime:
     def _short_term_lines(self) -> list[str]:
         lines = []
         for idx, turn in enumerate(self.short_term_session[-self.short_term_k :], start=1):
-            text = _truncate(str(turn.get("dialog") or turn.get("user_message", "")), 140)
+            text = _truncate(str(turn.get("dialog") or _format_short_term_turn(turn)), 220)
             if text:
                 lines.append(f"- (line {idx}) {text}")
         return lines
 
-    def _event_memory_count(self) -> int:
-        return sum(1 for memory in self.memories.values() if memory.memory_type == "event_memory")
+    def _session_summary_memory_count(self) -> int:
+        return sum(
+            1
+            for memory in self.memories.values()
+            if memory.memory_type == SESSION_SUMMARY_MEMORY_TYPE
+        )
 
     def _stable_memory_id(self, memory_type: str, key: str) -> str:
         digest = hashlib.sha1(f"{memory_type}:{key}".encode("utf-8")).hexdigest()[:12]
@@ -726,10 +876,79 @@ def _session_topic_text(turns: list[dict[str, Any]]) -> str:
         for item in [
             str(turn.get("topic", "")),
             str(turn.get("user_message", "")),
+            str(turn.get("m0_answer") or turn.get("assistant_answer", "")),
             " ".join(str(domain) for domain in turn.get("domains", []) if domain),
         ]
         if item
     )
+
+
+def _normalize_loaded_m0_memory(memory: MemoryRecord) -> None:
+    if memory.memory_type == "event_memory":
+        memory.memory_type = SESSION_SUMMARY_MEMORY_TYPE
+        metadata = dict(memory.ld_agent_metadata or {})
+        metadata.setdefault("memory_name", "event_memory")
+        metadata.setdefault("implementation_unit", "session_summary")
+        metadata.setdefault("datatype", "text")
+        metadata.setdefault("summary", memory.summary)
+        metadata.setdefault("topics", memory.topic)
+        memory.ld_agent_metadata = metadata
+    if memory.memory_type == SESSION_SUMMARY_MEMORY_TYPE:
+        if not memory.available_from_session and memory.created_day > 0:
+            memory.available_from_session = f"D{memory.created_day + 1:02d}"
+        metadata = dict(memory.ld_agent_metadata or {})
+        metadata.setdefault("memory_name", "event_memory")
+        metadata.setdefault("implementation_unit", "session_summary")
+        metadata.setdefault("datatype", "text")
+        metadata.setdefault("summary", memory.summary)
+        metadata.setdefault("topics", memory.topic)
+        metadata.setdefault("source_session_id", memory.source_session)
+        if memory.available_from_session:
+            metadata.setdefault("available_from_session", memory.available_from_session)
+        memory.ld_agent_metadata = metadata
+
+
+def _message_session_id(message: dict[str, Any]) -> str:
+    session_id = str(message.get("session_id") or "").strip()
+    if session_id:
+        return session_id
+    message_id = str(message.get("message_id") or "").strip()
+    match = re.match(r"^(D\d+)", message_id)
+    if match:
+        return match.group(1)
+    day = _safe_int(message.get("day"))
+    if day > 0:
+        return f"D{day:02d}"
+    return ""
+
+
+def _session_day(session_id: Any) -> int | None:
+    match = re.match(r"^D(\d+)$", str(session_id or ""))
+    if not match:
+        return None
+    return int(match.group(1))
+
+
+def _is_probe_turn(message: dict[str, Any]) -> bool:
+    turn_type = str(message.get("turn_type", "")).lower()
+    message_id = str(message.get("message_id", ""))
+    return (
+        "probe" in turn_type
+        or "_P" in message_id
+        or bool(message.get("probe_type"))
+        or bool(message.get("target_detail_ids"))
+    )
+
+
+def _format_short_term_turn(turn: dict[str, Any]) -> str:
+    parts = []
+    user_message = str(turn.get("user_message", "")).strip()
+    if user_message:
+        parts.append(f"User: {user_message}")
+    m0_answer = str(turn.get("m0_answer") or turn.get("assistant_answer", "")).strip()
+    if m0_answer:
+        parts.append(f"Agent: {m0_answer}")
+    return " | ".join(parts)
 
 
 class _ChromaTopicEmbeddingFunction:
@@ -757,13 +976,17 @@ class _ChromaTopicEmbeddingFunction:
 
 def _build_raw_dialogue(turns: list[dict[str, Any]]) -> str:
     lines = []
+    line_no = 1
     for turn in turns:
         if turn.get("user_message"):
-            lines.append(f"User({turn.get('message_id')}): {turn.get('user_message')}")
-        if turn.get("assistant_answer"):
+            lines.append(f"(line {line_no}) User: {turn.get('user_message')}")
+            line_no += 1
+        answer = turn.get("m0_answer") or turn.get("assistant_answer")
+        if answer:
             lines.append(
-                f"Assistant(M0): {_truncate(str(turn.get('assistant_answer')), 200)}"
+                f"(line {line_no}) Agent: {_truncate(str(answer), 240)}"
             )
+            line_no += 1
     return "\n".join(lines)
 
 
@@ -825,7 +1048,23 @@ def _ld_time(*, day: int, idx: int) -> float:
 
 def _is_valid_trait(trait: str) -> bool:
     clean = trait.strip()
-    return bool(clean and "NO_TRAIT" not in clean and len(clean) > 3)
+    if not clean or "NO_TRAIT" in clean or len(clean) <= 3:
+        return False
+    forbidden = [
+        "关系期待",
+        "长期陪伴",
+        "熟悉",
+        "亲密",
+        "客服",
+        "边界",
+        "共同策略",
+        "关系锚点",
+        "shared handling",
+        "relational",
+        "anchor",
+        "trajectory",
+    ]
+    return not any(item in clean for item in forbidden)
 
 
 def _normalize_storage_backend(value: str) -> str:

@@ -21,6 +21,7 @@ from long_memory_test.experiment_cache import (  # noqa: E402
     CACHE_TIMELINE_EVENTS_PATH,
     DAILY_SCENE_CARDS_PATH,
     DAILY_USER_MESSAGE_PATH,
+    TAU_CONTRACT_PATH,
     M0_MEMORY_PATH,
     M1_ALIAS_MEMORY_PATH,
     M1_MEMORY_PATH,
@@ -62,6 +63,12 @@ def parse_args() -> argparse.Namespace:
         help="Path to bei_annotations.json.",
     )
     parser.add_argument(
+        "--tau-contract",
+        type=Path,
+        default=TAU_CONTRACT_PATH,
+        help="Path to tau_contract.json.",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=CACHE_MEMORY_CONDITIONS_PATH,
@@ -77,12 +84,14 @@ def main() -> int:
         daily_messages=load_json(args.daily_messages),
         probe_question_plan=load_json(args.probe_questions),
         bei_annotations=load_json(args.bei_annotations),
+        tau_contract=load_json(args.tau_contract) if args.tau_contract.exists() else None,
     )
     memory_conditions["source_paths"] = {
         "timeline": _display_path(args.timeline),
         "daily_messages": _display_path(args.daily_messages),
         "probe_questions": _display_path(args.probe_questions),
         "bei_annotations": _display_path(args.bei_annotations),
+        "tau_contract": _display_path(args.tau_contract) if args.tau_contract.exists() else None,
     }
     write_json(args.output, memory_conditions)
     write_memory_condition_files(memory_conditions)
@@ -94,6 +103,7 @@ def main() -> int:
             "daily_scene_cards": DAILY_SCENE_CARDS_PATH,
             "bei_annotations": args.bei_annotations,
             "probe_question_plan": args.probe_questions,
+            "tau_contract": args.tau_contract,
             "memory_conditions_cache": args.output,
             "m0_generic_agent_config": M0_MEMORY_PATH,
             "m1_conclusion_memory": M1_MEMORY_PATH,

@@ -30,6 +30,7 @@
     {
       "day": 1,
       "main_topic": "孩子幼儿园可能不稳定",
+      "event_line_id": "L_e001_a6634568",
       "event_stage": "initial",
       "related_previous_days": [],
       "probe_ids": [
@@ -42,6 +43,7 @@
     {
       "day": 2,
       "main_topic": "合作项目推进不顺",
+      "event_line_id": "L_e002_71c566e1",
       "event_stage": "initial",
       "related_previous_days": [],
       "probe_ids": [
@@ -53,6 +55,7 @@
     {
       "day": 3,
       "main_topic": "论文截稿前的取舍",
+      "event_line_id": "L_e005_73a2ff40",
       "event_stage": "initial",
       "related_previous_days": [],
       "probe_ids": [
@@ -65,6 +68,7 @@
     {
       "day": 4,
       "main_topic": "孩子幼儿园可能不稳定",
+      "event_line_id": "L_e001_a6634568",
       "event_stage": "recurrence",
       "related_previous_days": [
         1
@@ -77,6 +81,7 @@
     {
       "day": 6,
       "main_topic": "家里分工和伴侣沟通",
+      "event_line_id": "L_e010_1c1abd19",
       "event_stage": "initial",
       "related_previous_days": [],
       "probe_ids": [
@@ -90,6 +95,7 @@
     {
       "day": 9,
       "main_topic": "合作项目推进不顺",
+      "event_line_id": "L_e002_71c566e1",
       "event_stage": "turning_point",
       "related_previous_days": [
         2,
@@ -103,6 +109,7 @@
     {
       "day": 10,
       "main_topic": "孩子幼儿园可能不稳定",
+      "event_line_id": "L_e001_a6634568",
       "event_stage": "turning_point",
       "related_previous_days": [
         1,
@@ -117,6 +124,7 @@
     {
       "day": 11,
       "main_topic": "睡眠被打碎",
+      "event_line_id": "L_e020_81cbf6ea",
       "event_stage": "initial",
       "related_previous_days": [],
       "probe_ids": [
@@ -128,6 +136,7 @@
     {
       "day": 13,
       "main_topic": "孩子入园适应",
+      "event_line_id": "L_e015_19fc98fd",
       "event_stage": "recurrence",
       "related_previous_days": [
         8
@@ -141,6 +150,7 @@
     {
       "day": 15,
       "main_topic": "孩子入园适应",
+      "event_line_id": "L_e015_19fc98fd",
       "event_stage": "turning_point",
       "related_previous_days": [
         8,
@@ -154,6 +164,7 @@
     {
       "day": 16,
       "main_topic": "论文截稿前的取舍",
+      "event_line_id": "L_e005_73a2ff40",
       "event_stage": "turning_point",
       "related_previous_days": [
         3,
@@ -167,6 +178,7 @@
     {
       "day": 18,
       "main_topic": "合作项目推进不顺",
+      "event_line_id": "L_e002_71c566e1",
       "event_stage": "resolution",
       "related_previous_days": [
         2,
@@ -184,6 +196,7 @@
     {
       "day": 19,
       "main_topic": "家里分工和伴侣沟通",
+      "event_line_id": "L_e010_1c1abd19",
       "event_stage": "turning_point",
       "related_previous_days": [
         6,
@@ -197,6 +210,7 @@
     {
       "day": 20,
       "main_topic": "睡眠被打碎",
+      "event_line_id": "L_e020_81cbf6ea",
       "event_stage": "turning_point",
       "related_previous_days": [
         11,
@@ -211,6 +225,7 @@
     {
       "day": 23,
       "main_topic": "家里分工和伴侣沟通",
+      "event_line_id": "L_e010_1c1abd19",
       "event_stage": "resolution",
       "related_previous_days": [
         6,
@@ -225,6 +240,7 @@
     {
       "day": 24,
       "main_topic": "合作项目推进不顺",
+      "event_line_id": "L_e002_71c566e1",
       "event_stage": "reflection",
       "related_previous_days": [
         2,
@@ -240,6 +256,7 @@
     {
       "day": 27,
       "main_topic": "睡眠被打碎",
+      "event_line_id": "L_e020_81cbf6ea",
       "event_stage": "resolution",
       "related_previous_days": [
         11,
@@ -254,6 +271,7 @@
     {
       "day": 28,
       "main_topic": "睡眠被打碎",
+      "event_line_id": "L_e020_81cbf6ea",
       "event_stage": "reflection",
       "related_previous_days": [
         11,
@@ -269,6 +287,7 @@
     {
       "day": 29,
       "main_topic": "孩子幼儿园可能不稳定",
+      "event_line_id": "L_e001_a6634568",
       "event_stage": "reflection",
       "related_previous_days": [
         1,
@@ -285,6 +304,7 @@
     {
       "day": 30,
       "main_topic": "孩子入园适应",
+      "event_line_id": "L_e015_19fc98fd",
       "event_stage": "reflection",
       "related_previous_days": [
         8,
@@ -301,6 +321,10 @@
   "topic_lines": [
     {
       "topic": "合作项目推进不顺",
+      "theme_id": "T_career_9705ae2d",
+      "event_line_ids": [
+        "L_e002_71c566e1"
+      ],
       "days": [
         2,
         5,
@@ -340,6 +364,10 @@
     },
     {
       "topic": "孩子入园适应",
+      "theme_id": "T_parenting_a6745f89",
+      "event_line_ids": [
+        "L_e015_19fc98fd"
+      ],
       "days": [
         8,
         13,
@@ -377,6 +405,10 @@
     },
     {
       "topic": "孩子幼儿园可能不稳定",
+      "theme_id": "T_parenting_5b64c58d",
+      "event_line_ids": [
+        "L_e001_a6634568"
+      ],
       "days": [
         1,
         4,
@@ -416,6 +448,10 @@
     },
     {
       "topic": "家里分工和伴侣沟通",
+      "theme_id": "T_intimate_relationship_69747b31",
+      "event_line_ids": [
+        "L_e010_1c1abd19"
+      ],
       "days": [
         6,
         12,
@@ -455,6 +491,10 @@
     },
     {
       "topic": "睡眠被打碎",
+      "theme_id": "T_self_management_613e57c1",
+      "event_line_ids": [
+        "L_e020_81cbf6ea"
+      ],
       "days": [
         11,
         14,
@@ -494,6 +534,10 @@
     },
     {
       "topic": "论文截稿前的取舍",
+      "theme_id": "T_career_0cd838f9",
+      "event_line_ids": [
+        "L_e005_73a2ff40"
+      ],
       "days": [
         3,
         7,

@@ -22,7 +22,26 @@
       "intent": "problem_solving",
       "tone": "stuck",
       "conversation_goal": "separate_facts_from_assumptions",
-      "memory_relevance": "new_shared_event_candidate"
+      "memory_relevance": "new_shared_event_candidate",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "initial",
+        "interaction_unit_id": "D01_M001",
+        "probe_ids": [
+          "D01_P001",
+          "D01_P002",
+          "D01_P003"
+        ],
+        "primary_event_id": "E001",
+        "root_event_id": "E001",
+        "related_event_ids": [],
+        "event_refs": [
+          "E001"
+        ]
+      }
     },
     {
       "message_id": "D02_M001",
@@ -43,7 +62,30 @@
       "intent": "emotional_support",
       "tone": "tired",
       "conversation_goal": "understand_emotion_before_advice",
-      "memory_relevance": "new_shared_event_candidate"
+      "memory_relevance": "new_shared_event_candidate",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "initial",
+        "interaction_unit_id": "D02_M001",
+        "probe_ids": [
+          "D02_P001",
+          "D02_P002"
+        ],
+        "primary_event_id": "E002",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E003",
+          "E004"
+        ],
+        "event_refs": [
+          "E002",
+          "E003",
+          "E004"
+        ]
+      }
     },
     {
       "message_id": "D03_M001",
@@ -64,7 +106,29 @@
       "intent": "problem_solving",
       "tone": "slightly_tired",
       "conversation_goal": "separate_facts_from_assumptions",
-      "memory_relevance": "new_shared_event_candidate"
+      "memory_relevance": "new_shared_event_candidate",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "initial",
+        "interaction_unit_id": "D03_M001",
+        "probe_ids": [
+          "D03_P001",
+          "D03_P002",
+          "D03_P003"
+        ],
+        "primary_event_id": "E005",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E006"
+        ],
+        "event_refs": [
+          "E005",
+          "E006"
+        ]
+      }
     },
     {
       "message_id": "D04_M001",
@@ -85,7 +149,28 @@
       "intent": "problem_solving",
       "tone": "worried",
       "conversation_goal": "separate_facts_from_assumptions",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D04_M001",
+        "probe_ids": [
+          "D04_P001"
+        ],
+        "primary_event_id": "E007",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E008"
+        ],
+        "event_refs": [
+          "E007",
+          "E008"
+        ]
+      }
     },
     {
       "message_id": "D05_M001",
@@ -104,7 +189,24 @@
       "intent": "implicit_recall",
       "tone": "stuck",
       "conversation_goal": "test_whether_agent_can_recall_shared_context",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D05_M001",
+        "probe_ids": [],
+        "primary_event_id": "E009",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E009"
+        ]
+      }
     },
     {
       "message_id": "D06_M001",
@@ -127,7 +229,32 @@
       "intent": "emotional_support",
       "tone": "stuck",
       "conversation_goal": "understand_emotion_before_advice",
-      "memory_relevance": "new_shared_event_candidate"
+      "memory_relevance": "new_shared_event_candidate",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "initial",
+        "interaction_unit_id": "D06_M001",
+        "probe_ids": [
+          "D06_P001",
+          "D06_P002",
+          "D06_P003",
+          "D06_P004"
+        ],
+        "primary_event_id": "E010",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E011",
+          "E012"
+        ],
+        "event_refs": [
+          "E010",
+          "E011",
+          "E012"
+        ]
+      }
     },
     {
       "message_id": "D07_M001",
@@ -148,7 +275,26 @@
       "intent": "follow_up_update",
       "tone": "tired",
       "conversation_goal": "continue_a_previous_event_thread",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D07_M001",
+        "probe_ids": [],
+        "primary_event_id": "E013",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E014"
+        ],
+        "event_refs": [
+          "E013",
+          "E014"
+        ]
+      }
     },
     {
       "message_id": "D08_M001",
@@ -167,7 +313,22 @@
       "intent": "problem_solving",
       "tone": "tired",
       "conversation_goal": "separate_facts_from_assumptions",
-      "memory_relevance": "new_shared_event_candidate"
+      "memory_relevance": "new_shared_event_candidate",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "initial",
+        "interaction_unit_id": "D08_M001",
+        "probe_ids": [],
+        "primary_event_id": "E015",
+        "root_event_id": "E015",
+        "related_event_ids": [],
+        "event_refs": [
+          "E015"
+        ]
+      }
     },
     {
       "message_id": "D09_M001",
@@ -186,7 +347,26 @@
       "intent": "follow_up_update",
       "tone": "stuck",
       "conversation_goal": "continue_a_previous_event_thread",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D09_M001",
+        "probe_ids": [
+          "D09_P001"
+        ],
+        "primary_event_id": "E016",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E016"
+        ]
+      }
     },
     {
       "message_id": "D10_M001",
@@ -208,7 +388,31 @@
       "intent": "follow_up_update",
       "tone": "overloaded",
       "conversation_goal": "continue_a_previous_event_thread",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D10_M001",
+        "probe_ids": [
+          "D10_P001",
+          "D10_P002"
+        ],
+        "primary_event_id": "E017",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E018",
+          "E019"
+        ],
+        "event_refs": [
+          "E017",
+          "E018",
+          "E019"
+        ]
+      }
     },
     {
       "message_id": "D11_M001",
@@ -231,7 +435,30 @@
       "intent": "problem_solving",
       "tone": "worried",
       "conversation_goal": "separate_facts_from_assumptions",
-      "memory_relevance": "new_shared_event_candidate"
+      "memory_relevance": "new_shared_event_candidate",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "initial",
+        "interaction_unit_id": "D11_M001",
+        "probe_ids": [
+          "D11_P001",
+          "D11_P002"
+        ],
+        "primary_event_id": "E020",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E021",
+          "E022"
+        ],
+        "event_refs": [
+          "E020",
+          "E021",
+          "E022"
+        ]
+      }
     },
     {
       "message_id": "D12_M001",
@@ -253,7 +480,28 @@
       "intent": "follow_up_update",
       "tone": "stuck",
       "conversation_goal": "continue_a_previous_event_thread",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D12_M001",
+        "probe_ids": [],
+        "primary_event_id": "E023",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E024",
+          "E025"
+        ],
+        "event_refs": [
+          "E023",
+          "E024",
+          "E025"
+        ]
+      }
     },
     {
       "message_id": "D13_M001",
@@ -275,7 +523,31 @@
       "intent": "follow_up_update",
       "tone": "anxious",
       "conversation_goal": "continue_a_previous_event_thread",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D13_M001",
+        "probe_ids": [
+          "D13_P001",
+          "D13_P002"
+        ],
+        "primary_event_id": "E026",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E027",
+          "E028"
+        ],
+        "event_refs": [
+          "E026",
+          "E027",
+          "E028"
+        ]
+      }
     },
     {
       "message_id": "D14_M001",
@@ -297,7 +569,28 @@
       "intent": "decision_support",
       "tone": "practical",
       "conversation_goal": "help_user_make_a_concrete_decision",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D14_M001",
+        "probe_ids": [],
+        "primary_event_id": "E029",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E030",
+          "E031"
+        ],
+        "event_refs": [
+          "E029",
+          "E030",
+          "E031"
+        ]
+      }
     },
     {
       "message_id": "D15_M001",
@@ -318,7 +611,28 @@
       "intent": "follow_up_update",
       "tone": "worried",
       "conversation_goal": "continue_a_previous_event_thread",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D15_M001",
+        "probe_ids": [
+          "D15_P001"
+        ],
+        "primary_event_id": "E032",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E033"
+        ],
+        "event_refs": [
+          "E032",
+          "E033"
+        ]
+      }
     },
     {
       "message_id": "D16_M001",
@@ -340,7 +654,30 @@
       "intent": "implicit_recall",
       "tone": "reflective",
       "conversation_goal": "test_whether_agent_can_recall_shared_context",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D16_M001",
+        "probe_ids": [
+          "D16_P001"
+        ],
+        "primary_event_id": "E034",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E035",
+          "E036"
+        ],
+        "event_refs": [
+          "E034",
+          "E035",
+          "E036"
+        ]
+      }
     },
     {
       "message_id": "D17_M001",
@@ -360,7 +697,26 @@
       "intent": "reflection",
       "tone": "urgent",
       "conversation_goal": "identify_underlying_concern",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D17_M001",
+        "probe_ids": [],
+        "primary_event_id": "E037",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E038"
+        ],
+        "event_refs": [
+          "E037",
+          "E038"
+        ]
+      }
     },
     {
       "message_id": "D18_M001",
@@ -379,7 +735,29 @@
       "intent": "implicit_recall",
       "tone": "stuck",
       "conversation_goal": "test_whether_agent_can_recall_shared_context",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D18_M001",
+        "probe_ids": [
+          "D18_P001",
+          "D18_P002",
+          "D18_P003",
+          "D18_P004"
+        ],
+        "primary_event_id": "E039",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E039"
+        ]
+      }
     },
     {
       "message_id": "D19_M001",
@@ -400,7 +778,28 @@
       "intent": "follow_up_update",
       "tone": "stuck",
       "conversation_goal": "continue_a_previous_event_thread",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D19_M001",
+        "probe_ids": [
+          "D19_P001"
+        ],
+        "primary_event_id": "E040",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E041"
+        ],
+        "event_refs": [
+          "E040",
+          "E041"
+        ]
+      }
     },
     {
       "message_id": "D20_M001",
@@ -423,7 +822,31 @@
       "intent": "implicit_recall",
       "tone": "reflective",
       "conversation_goal": "test_whether_agent_can_recall_shared_context",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D20_M001",
+        "probe_ids": [
+          "D20_P001",
+          "D20_P002"
+        ],
+        "primary_event_id": "E042",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E043",
+          "E044"
+        ],
+        "event_refs": [
+          "E042",
+          "E043",
+          "E044"
+        ]
+      }
     },
     {
       "message_id": "D21_M001",
@@ -446,7 +869,28 @@
       "intent": "follow_up_update",
       "tone": "slightly_tired",
       "conversation_goal": "continue_a_previous_event_thread",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D21_M001",
+        "probe_ids": [],
+        "primary_event_id": "E045",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E046",
+          "E047"
+        ],
+        "event_refs": [
+          "E045",
+          "E046",
+          "E047"
+        ]
+      }
     },
     {
       "message_id": "D22_M001",
@@ -468,7 +912,28 @@
       "intent": "implicit_recall",
       "tone": "tired",
       "conversation_goal": "test_whether_agent_can_recall_shared_context",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D22_M001",
+        "probe_ids": [],
+        "primary_event_id": "E048",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E049",
+          "E050"
+        ],
+        "event_refs": [
+          "E048",
+          "E049",
+          "E050"
+        ]
+      }
     },
     {
       "message_id": "D23_M001",
@@ -489,7 +954,28 @@
       "intent": "implicit_recall",
       "tone": "stuck",
       "conversation_goal": "test_whether_agent_can_recall_shared_context",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D23_M001",
+        "probe_ids": [
+          "D23_P001"
+        ],
+        "primary_event_id": "E051",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E052"
+        ],
+        "event_refs": [
+          "E051",
+          "E052"
+        ]
+      }
     },
     {
       "message_id": "D24_M001",
@@ -512,7 +998,30 @@
       "intent": "follow_up_update",
       "tone": "worried",
       "conversation_goal": "continue_a_previous_event_thread",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D24_M001",
+        "probe_ids": [
+          "D24_P001"
+        ],
+        "primary_event_id": "E053",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002",
+          "E054",
+          "E055"
+        ],
+        "event_refs": [
+          "E053",
+          "E054",
+          "E055"
+        ]
+      }
     },
     {
       "message_id": "D25_M001",
@@ -531,7 +1040,24 @@
       "intent": "implicit_recall",
       "tone": "overloaded",
       "conversation_goal": "test_whether_agent_can_recall_shared_context",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D25_M001",
+        "probe_ids": [],
+        "primary_event_id": "E056",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015"
+        ],
+        "event_refs": [
+          "E056"
+        ]
+      }
     },
     {
       "message_id": "D26_M001",
@@ -553,7 +1079,28 @@
       "intent": "reflection",
       "tone": "worried",
       "conversation_goal": "identify_underlying_concern",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D26_M001",
+        "probe_ids": [],
+        "primary_event_id": "E057",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E058",
+          "E059"
+        ],
+        "event_refs": [
+          "E057",
+          "E058",
+          "E059"
+        ]
+      }
     },
     {
       "message_id": "D27_M001",
@@ -575,7 +1122,30 @@
       "intent": "follow_up_update",
       "tone": "stuck",
       "conversation_goal": "continue_a_previous_event_thread",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D27_M001",
+        "probe_ids": [
+          "D27_P001"
+        ],
+        "primary_event_id": "E060",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E061",
+          "E062"
+        ],
+        "event_refs": [
+          "E060",
+          "E061",
+          "E062"
+        ]
+      }
     },
     {
       "message_id": "D28_M001",
@@ -594,7 +1164,26 @@
       "intent": "reflection",
       "tone": "practical",
       "conversation_goal": "identify_underlying_concern",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D28_M001",
+        "probe_ids": [
+          "D28_P001"
+        ],
+        "primary_event_id": "E063",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020"
+        ],
+        "event_refs": [
+          "E063"
+        ]
+      }
     },
     {
       "message_id": "D29_M001",
@@ -613,7 +1202,27 @@
       "intent": "reflection",
       "tone": "overloaded",
       "conversation_goal": "identify_underlying_concern",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D29_M001",
+        "probe_ids": [
+          "D29_P001",
+          "D29_P002"
+        ],
+        "primary_event_id": "E064",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001"
+        ],
+        "event_refs": [
+          "E064"
+        ]
+      }
     },
     {
       "message_id": "D30_M001",
@@ -634,7 +1243,28 @@
       "intent": "implicit_recall",
       "tone": "urgent",
       "conversation_goal": "test_whether_agent_can_recall_shared_context",
-      "memory_relevance": "shared_event_memory"
+      "memory_relevance": "shared_event_memory",
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D30_M001",
+        "probe_ids": [
+          "D30_P001"
+        ],
+        "primary_event_id": "E065",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E066"
+        ],
+        "event_refs": [
+          "E065",
+          "E066"
+        ]
+      }
     }
   ],
   "summary": {
@@ -661,6 +1291,18 @@
     "memory_relevance_counts": {
       "new_shared_event_candidate": 6,
       "shared_event_memory": 24
+    }
+  },
+  "tau_contract": {
+    "schema_version": "tau_construction_contract_v1",
+    "path": "long_memory_experiment/data/script/tau_contract.json",
+    "notation": "tau=(z,T,L,I,P)",
+    "summary": {
+      "theme_count": 6,
+      "event_line_count": 6,
+      "interaction_unit_count": 30,
+      "targeted_probe_count": 36,
+      "bound_message_count": 66
     }
   }
 }

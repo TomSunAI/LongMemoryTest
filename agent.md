@@ -1,5 +1,100 @@
 # LongMemoryTest Agent Notes
 
+## 当前记录：2026-06-11 M0 strict tau 链路状态
+
+本轮主线已经从“topic 松散组织”升级为论文结构 `tau=(z,T,L,I,P)` 的统一剧本构造合同。当前结论：链路已经测通，M0-only 正式实验可以 resume 继续跑；Letta M0 只作为 historical pilot 保留，后续基线使用当前版本 M0。
+
+### strict tau 当前实现
+
+核心实现入口：
+
+- `src/long_memory_test/experiment_cache.py:build_tau_contract(...)`
+- 输出文件：`long_memory_experiment/data/script/tau_contract.json`
+- 当前 validation：`pass`
+
+当前 `tau_contract.json` 结构统计：
+
+- `z`: 1 个 sampled user persona，来自 `data/config/persona.json` 与 `data/config/user_actor.json`
+- `T`: 6 个长期 event themes
+- `L`: 6 条 recurring event lines
+- `I`: 30 个 daily interaction units
+- `P`: 36 个 targeted relational probes
+- `message_bindings`: 66 条消息绑定，覆盖 30 条 scripted openings 与 36 条 probes
+
+当前 `z` 已不再只是 `persona_id`，而是稳定用户画像快照，包括年龄、职业、家庭状态、child_age、life_situation、interaction_style、personality_traits、pressure_sources、long_term_goals、speech_profile、emotional_model、stable_memory_details 与 guardrails。PDF 示例中的 gender 当前配置未提供，系统明确记录为 unprovided，不编造。
+
+当前 `I` 已严格扩展为每日交互单元，不再只是 message id。每个 `I` 包含：
+
+- `scripted_opening`: 当天用户自然开场、intent、tone、conversation_goal、script_stage、memory_relevance
+- `constrained_followup`: followup_budget、permitted_conversational_moves、reveal_steps、stop_conditions、must_not_introduce
+- `scene_boundary`: allowed_facts、latent_concerns、memory_level_rules、audit_dimensions、stable_detail_ids、event_detail_ids、latent_concern_detail_ids
+
+`message_bindings` 是 tau 进入运行链路的关键接口。每条消息都绑定回同一个 `persona_id/theme_id/event_line_id/event_stage/interaction_unit_id`。runner 会把 tau 写入 `source.tau`、`memory_setup.script_construction.tau` 和 memory payload 元数据；但 `event_stage`、`probe_type`、`target_detail_ids` 等实验标签不得直接作为 prompt 答案泄露给模型。
+
+### 当前 M0 partial run checkpoint
+
+当前实验目录：
+
+- `long_memory_experiment/outputs/run_20260610_m0_strict_tau_formal`
+
+当前进度：
+
+- 已完成：`45/96`
+- 剩余：`51`
+- 最后一条完成：`D13_P001`
+- 条件：`M0` only
+- scene followups：`1`
+- 串行运行：`condition_workers=1`
+- 当前 automatic score 仍是阶段性结果，只能作为 partial run 参考，完整结论要等 96 条全部跑完后重新评分。
+
+继续实验命令：
+
+```bash
+PYTHONPATH=src .venv/bin/python scripts/05_run_dialogue_conditions.py \
+  --all-message-ids \
+  --conditions M0 \
+  --scene-followups 1 \
+  --condition-workers 1 \
+  --llm-timeout 600 \
+  --max-tokens 900 \
+  --temperature 0.2 \
+  --run-dir long_memory_experiment/outputs/run_20260610_m0_strict_tau_formal \
+  --resume \
+  --print-progress \
+  --print-mode summary
+```
+
+跑完后重新生成评分和报告：
+
+```bash
+PYTHONPATH=src .venv/bin/python scripts/06_evaluate_tom.py \
+  --run-dir long_memory_experiment/outputs/run_20260610_m0_strict_tau_formal
+
+PYTHONPATH=src .venv/bin/python scripts/08_report_results.py \
+  --run-dir long_memory_experiment/outputs/run_20260610_m0_strict_tau_formal \
+  --review-limit 24
+
+PYTHONPATH=src .venv/bin/python scripts/generate_m0_strict_tau_partial_html.py
+```
+
+### 当前报告产物
+
+- HTML: `docs/m0_strict_tau_partial_experiment_report.html`
+- PDF: `docs/m0_strict_tau_partial_experiment_report.pdf`
+- run 目录 HTML: `long_memory_experiment/outputs/run_20260610_m0_strict_tau_formal/m0_strict_tau_partial_experiment_report.html`
+- run 目录 PDF: `long_memory_experiment/outputs/run_20260610_m0_strict_tau_formal/m0_strict_tau_partial_experiment_report.pdf`
+
+HTML 第二节已经详细解释 `tau=(z,T,L,I,P)` 在当前系统中的应用，包括实现入口、输入源、字段级落地、`message_bindings`、生成/运行/评估三阶段共享 tau、M0-M3 边界，以及“为什么 tau 不是 prompt 文案”。
+
+### 本轮已验证
+
+- `python3 -m py_compile ...` 通过
+- `PYTHONPATH=src .venv/bin/python -m unittest tests.test_experiment_cache tests.test_docx_route_pipeline tests.test_relational_memory_runtime tests.test_ld_agent_memory_runtime` 通过，27 tests OK
+- `tau_contract.validation.status == pass`
+- 30 个 `I` 都有 scripted opening、follow-up budget、permitted moves、reveal steps、must-not-introduce 和 allowed facts
+- memory conditions 中 66 条 message payload 均带 tau binding
+- M0 runner 已完成 45 条 turn，probe 写回跳过，非 probe turn 正常写入 M0 runtime
+
 ## 项目定位
 
 本项目当前主线以《Relational Memory 实验条件与 M0 实现方案》为准。后续实现不再走 `S0/S1/S2/S3` 非累积 overlay 路线，也不再把旧 `M0=no long-term memory` 或 Letta pilot 当正式 baseline。

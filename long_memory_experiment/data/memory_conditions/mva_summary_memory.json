@@ -1,13 +1,29 @@
 {
   "schema_version": "memory_condition_v1",
   "condition_id": "M1",
+  "tau_contract": {
+    "available": true,
+    "schema_version": "tau_construction_contract_v1",
+    "notation": "tau=(z,T,L,I,P)",
+    "summary": {
+      "theme_count": 6,
+      "event_line_count": 6,
+      "interaction_unit_count": 30,
+      "targeted_probe_count": 36,
+      "bound_message_count": 66
+    },
+    "validation": {
+      "status": "pass",
+      "issues": []
+    },
+    "role": "single_script_construction_source_for_all_conditions"
+  },
   "condition_spec": {
     "condition_id": "M1",
     "name": "Conclusion-level Relational Memory",
-    "definition": "M0 LD-Agent memory baseline + 结论级关系记忆；保存重要结论、稳定偏好、回应风格、关系期待、关键判断和不要做什么。",
+    "definition": "相对 M0 的结论级关系记忆增强条件；使用独立 runtime namespace，不读取 M0 或其他条件的 payload，只保存重要结论、稳定偏好、回应风格、关系期待、关键判断和不要做什么。",
     "can_read": [
-      "M0_generic_event_memory",
-      "M0_generic_persona_memory",
+      "condition_isolated_conclusion_memory",
       "stable_preferences",
       "response_style",
       "relationship_expectation",
@@ -29,6 +45,9 @@
   },
   "default_payload": {
     "condition_id": "M1",
+    "memory_provider": "condition_isolated_relational_memory",
+    "requires_runtime_letta": false,
+    "requires_runtime_ld_agent_memory": false,
     "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
     "source_detail_ids": [
       "m1_response_style_direct",
@@ -38,6 +57,28 @@
   "payloads_by_message_id": {
     "D01_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "initial",
+        "interaction_unit_id": "D01_M001",
+        "probe_ids": [
+          "D01_P001",
+          "D01_P002",
+          "D01_P003"
+        ],
+        "primary_event_id": "E001",
+        "root_event_id": "E001",
+        "related_event_ids": [],
+        "event_refs": [
+          "E001"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -46,6 +87,30 @@
     },
     "D01_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "initial",
+        "interaction_unit_id": "D01_M001",
+        "probe_ids": [
+          "D01_P001",
+          "D01_P002",
+          "D01_P003"
+        ],
+        "primary_event_id": "E001",
+        "root_event_id": "E001",
+        "related_event_ids": [],
+        "event_refs": [
+          "E001"
+        ],
+        "probe_id": "D01_P001",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -54,6 +119,30 @@
     },
     "D01_P002": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "initial",
+        "interaction_unit_id": "D01_M001",
+        "probe_ids": [
+          "D01_P001",
+          "D01_P002",
+          "D01_P003"
+        ],
+        "primary_event_id": "E001",
+        "root_event_id": "E001",
+        "related_event_ids": [],
+        "event_refs": [
+          "E001"
+        ],
+        "probe_id": "D01_P002",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -62,6 +151,30 @@
     },
     "D01_P003": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "initial",
+        "interaction_unit_id": "D01_M001",
+        "probe_ids": [
+          "D01_P001",
+          "D01_P002",
+          "D01_P003"
+        ],
+        "primary_event_id": "E001",
+        "root_event_id": "E001",
+        "related_event_ids": [],
+        "event_refs": [
+          "E001"
+        ],
+        "probe_id": "D01_P003",
+        "probe_type": "alienation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -70,6 +183,32 @@
     },
     "D02_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "initial",
+        "interaction_unit_id": "D02_M001",
+        "probe_ids": [
+          "D02_P001",
+          "D02_P002"
+        ],
+        "primary_event_id": "E002",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E003",
+          "E004"
+        ],
+        "event_refs": [
+          "E002",
+          "E003",
+          "E004"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -78,6 +217,34 @@
     },
     "D02_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "initial",
+        "interaction_unit_id": "D02_M001",
+        "probe_ids": [
+          "D02_P001",
+          "D02_P002"
+        ],
+        "primary_event_id": "E002",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E003",
+          "E004"
+        ],
+        "event_refs": [
+          "E002",
+          "E003",
+          "E004"
+        ],
+        "probe_id": "D02_P001",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -86,6 +253,34 @@
     },
     "D02_P002": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "initial",
+        "interaction_unit_id": "D02_M001",
+        "probe_ids": [
+          "D02_P001",
+          "D02_P002"
+        ],
+        "primary_event_id": "E002",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E003",
+          "E004"
+        ],
+        "event_refs": [
+          "E002",
+          "E003",
+          "E004"
+        ],
+        "probe_id": "D02_P002",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -94,6 +289,31 @@
     },
     "D03_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "initial",
+        "interaction_unit_id": "D03_M001",
+        "probe_ids": [
+          "D03_P001",
+          "D03_P002",
+          "D03_P003"
+        ],
+        "primary_event_id": "E005",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E006"
+        ],
+        "event_refs": [
+          "E005",
+          "E006"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -102,6 +322,33 @@
     },
     "D03_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "initial",
+        "interaction_unit_id": "D03_M001",
+        "probe_ids": [
+          "D03_P001",
+          "D03_P002",
+          "D03_P003"
+        ],
+        "primary_event_id": "E005",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E006"
+        ],
+        "event_refs": [
+          "E005",
+          "E006"
+        ],
+        "probe_id": "D03_P001",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -110,6 +357,33 @@
     },
     "D03_P002": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "initial",
+        "interaction_unit_id": "D03_M001",
+        "probe_ids": [
+          "D03_P001",
+          "D03_P002",
+          "D03_P003"
+        ],
+        "primary_event_id": "E005",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E006"
+        ],
+        "event_refs": [
+          "E005",
+          "E006"
+        ],
+        "probe_id": "D03_P002",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -118,6 +392,33 @@
     },
     "D03_P003": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "initial",
+        "interaction_unit_id": "D03_M001",
+        "probe_ids": [
+          "D03_P001",
+          "D03_P002",
+          "D03_P003"
+        ],
+        "primary_event_id": "E005",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E006"
+        ],
+        "event_refs": [
+          "E005",
+          "E006"
+        ],
+        "probe_id": "D03_P003",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -126,6 +427,30 @@
     },
     "D04_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D04_M001",
+        "probe_ids": [
+          "D04_P001"
+        ],
+        "primary_event_id": "E007",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E008"
+        ],
+        "event_refs": [
+          "E007",
+          "E008"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -134,6 +459,32 @@
     },
     "D04_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D04_M001",
+        "probe_ids": [
+          "D04_P001"
+        ],
+        "primary_event_id": "E007",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E008"
+        ],
+        "event_refs": [
+          "E007",
+          "E008"
+        ],
+        "probe_id": "D04_P001",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -142,6 +493,26 @@
     },
     "D05_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D05_M001",
+        "probe_ids": [],
+        "primary_event_id": "E009",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E009"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -150,6 +521,34 @@
     },
     "D06_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "initial",
+        "interaction_unit_id": "D06_M001",
+        "probe_ids": [
+          "D06_P001",
+          "D06_P002",
+          "D06_P003",
+          "D06_P004"
+        ],
+        "primary_event_id": "E010",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E011",
+          "E012"
+        ],
+        "event_refs": [
+          "E010",
+          "E011",
+          "E012"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -158,6 +557,36 @@
     },
     "D06_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "initial",
+        "interaction_unit_id": "D06_M001",
+        "probe_ids": [
+          "D06_P001",
+          "D06_P002",
+          "D06_P003",
+          "D06_P004"
+        ],
+        "primary_event_id": "E010",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E011",
+          "E012"
+        ],
+        "event_refs": [
+          "E010",
+          "E011",
+          "E012"
+        ],
+        "probe_id": "D06_P001",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -166,6 +595,36 @@
     },
     "D06_P002": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "initial",
+        "interaction_unit_id": "D06_M001",
+        "probe_ids": [
+          "D06_P001",
+          "D06_P002",
+          "D06_P003",
+          "D06_P004"
+        ],
+        "primary_event_id": "E010",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E011",
+          "E012"
+        ],
+        "event_refs": [
+          "E010",
+          "E011",
+          "E012"
+        ],
+        "probe_id": "D06_P002",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -174,6 +633,36 @@
     },
     "D06_P003": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "initial",
+        "interaction_unit_id": "D06_M001",
+        "probe_ids": [
+          "D06_P001",
+          "D06_P002",
+          "D06_P003",
+          "D06_P004"
+        ],
+        "primary_event_id": "E010",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E011",
+          "E012"
+        ],
+        "event_refs": [
+          "E010",
+          "E011",
+          "E012"
+        ],
+        "probe_id": "D06_P003",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -182,6 +671,36 @@
     },
     "D06_P004": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "initial",
+        "interaction_unit_id": "D06_M001",
+        "probe_ids": [
+          "D06_P001",
+          "D06_P002",
+          "D06_P003",
+          "D06_P004"
+        ],
+        "primary_event_id": "E010",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E011",
+          "E012"
+        ],
+        "event_refs": [
+          "E010",
+          "E011",
+          "E012"
+        ],
+        "probe_id": "D06_P004",
+        "probe_type": "alienation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -190,6 +709,28 @@
     },
     "D07_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D07_M001",
+        "probe_ids": [],
+        "primary_event_id": "E013",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E014"
+        ],
+        "event_refs": [
+          "E013",
+          "E014"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -198,6 +739,24 @@
     },
     "D08_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "initial",
+        "interaction_unit_id": "D08_M001",
+        "probe_ids": [],
+        "primary_event_id": "E015",
+        "root_event_id": "E015",
+        "related_event_ids": [],
+        "event_refs": [
+          "E015"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -206,6 +765,28 @@
     },
     "D09_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D09_M001",
+        "probe_ids": [
+          "D09_P001"
+        ],
+        "primary_event_id": "E016",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E016"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -214,6 +795,30 @@
     },
     "D09_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D09_M001",
+        "probe_ids": [
+          "D09_P001"
+        ],
+        "primary_event_id": "E016",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E016"
+        ],
+        "probe_id": "D09_P001",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -222,6 +827,33 @@
     },
     "D10_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D10_M001",
+        "probe_ids": [
+          "D10_P001",
+          "D10_P002"
+        ],
+        "primary_event_id": "E017",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E018",
+          "E019"
+        ],
+        "event_refs": [
+          "E017",
+          "E018",
+          "E019"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -230,6 +862,35 @@
     },
     "D10_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D10_M001",
+        "probe_ids": [
+          "D10_P001",
+          "D10_P002"
+        ],
+        "primary_event_id": "E017",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E018",
+          "E019"
+        ],
+        "event_refs": [
+          "E017",
+          "E018",
+          "E019"
+        ],
+        "probe_id": "D10_P001",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -238,6 +899,35 @@
     },
     "D10_P002": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D10_M001",
+        "probe_ids": [
+          "D10_P001",
+          "D10_P002"
+        ],
+        "primary_event_id": "E017",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E018",
+          "E019"
+        ],
+        "event_refs": [
+          "E017",
+          "E018",
+          "E019"
+        ],
+        "probe_id": "D10_P002",
+        "probe_type": "alienation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -246,6 +936,32 @@
     },
     "D11_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "initial",
+        "interaction_unit_id": "D11_M001",
+        "probe_ids": [
+          "D11_P001",
+          "D11_P002"
+        ],
+        "primary_event_id": "E020",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E021",
+          "E022"
+        ],
+        "event_refs": [
+          "E020",
+          "E021",
+          "E022"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -254,6 +970,34 @@
     },
     "D11_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "initial",
+        "interaction_unit_id": "D11_M001",
+        "probe_ids": [
+          "D11_P001",
+          "D11_P002"
+        ],
+        "primary_event_id": "E020",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E021",
+          "E022"
+        ],
+        "event_refs": [
+          "E020",
+          "E021",
+          "E022"
+        ],
+        "probe_id": "D11_P001",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -262,6 +1006,34 @@
     },
     "D11_P002": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "initial",
+        "interaction_unit_id": "D11_M001",
+        "probe_ids": [
+          "D11_P001",
+          "D11_P002"
+        ],
+        "primary_event_id": "E020",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E021",
+          "E022"
+        ],
+        "event_refs": [
+          "E020",
+          "E021",
+          "E022"
+        ],
+        "probe_id": "D11_P002",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -270,6 +1042,30 @@
     },
     "D12_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D12_M001",
+        "probe_ids": [],
+        "primary_event_id": "E023",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E024",
+          "E025"
+        ],
+        "event_refs": [
+          "E023",
+          "E024",
+          "E025"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -278,6 +1074,33 @@
     },
     "D13_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D13_M001",
+        "probe_ids": [
+          "D13_P001",
+          "D13_P002"
+        ],
+        "primary_event_id": "E026",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E027",
+          "E028"
+        ],
+        "event_refs": [
+          "E026",
+          "E027",
+          "E028"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -286,6 +1109,35 @@
     },
     "D13_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D13_M001",
+        "probe_ids": [
+          "D13_P001",
+          "D13_P002"
+        ],
+        "primary_event_id": "E026",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E027",
+          "E028"
+        ],
+        "event_refs": [
+          "E026",
+          "E027",
+          "E028"
+        ],
+        "probe_id": "D13_P001",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -294,6 +1146,35 @@
     },
     "D13_P002": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D13_M001",
+        "probe_ids": [
+          "D13_P001",
+          "D13_P002"
+        ],
+        "primary_event_id": "E026",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E027",
+          "E028"
+        ],
+        "event_refs": [
+          "E026",
+          "E027",
+          "E028"
+        ],
+        "probe_id": "D13_P002",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -302,6 +1183,30 @@
     },
     "D14_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "recurrence",
+        "interaction_unit_id": "D14_M001",
+        "probe_ids": [],
+        "primary_event_id": "E029",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E030",
+          "E031"
+        ],
+        "event_refs": [
+          "E029",
+          "E030",
+          "E031"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -310,6 +1215,30 @@
     },
     "D15_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D15_M001",
+        "probe_ids": [
+          "D15_P001"
+        ],
+        "primary_event_id": "E032",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E033"
+        ],
+        "event_refs": [
+          "E032",
+          "E033"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -318,6 +1247,32 @@
     },
     "D15_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D15_M001",
+        "probe_ids": [
+          "D15_P001"
+        ],
+        "primary_event_id": "E032",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E033"
+        ],
+        "event_refs": [
+          "E032",
+          "E033"
+        ],
+        "probe_id": "D15_P001",
+        "probe_type": "state_transformation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -326,6 +1281,32 @@
     },
     "D16_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D16_M001",
+        "probe_ids": [
+          "D16_P001"
+        ],
+        "primary_event_id": "E034",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E035",
+          "E036"
+        ],
+        "event_refs": [
+          "E034",
+          "E035",
+          "E036"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -334,6 +1315,34 @@
     },
     "D16_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D16_M001",
+        "probe_ids": [
+          "D16_P001"
+        ],
+        "primary_event_id": "E034",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E035",
+          "E036"
+        ],
+        "event_refs": [
+          "E034",
+          "E035",
+          "E036"
+        ],
+        "probe_id": "D16_P001",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -342,6 +1351,28 @@
     },
     "D17_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D17_M001",
+        "probe_ids": [],
+        "primary_event_id": "E037",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001",
+          "E038"
+        ],
+        "event_refs": [
+          "E037",
+          "E038"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -350,6 +1381,31 @@
     },
     "D18_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D18_M001",
+        "probe_ids": [
+          "D18_P001",
+          "D18_P002",
+          "D18_P003",
+          "D18_P004"
+        ],
+        "primary_event_id": "E039",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E039"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -358,6 +1414,33 @@
     },
     "D18_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D18_M001",
+        "probe_ids": [
+          "D18_P001",
+          "D18_P002",
+          "D18_P003",
+          "D18_P004"
+        ],
+        "primary_event_id": "E039",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E039"
+        ],
+        "probe_id": "D18_P001",
+        "probe_type": "state_transformation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -366,6 +1449,33 @@
     },
     "D18_P002": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D18_M001",
+        "probe_ids": [
+          "D18_P001",
+          "D18_P002",
+          "D18_P003",
+          "D18_P004"
+        ],
+        "primary_event_id": "E039",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E039"
+        ],
+        "probe_id": "D18_P002",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -374,6 +1484,33 @@
     },
     "D18_P003": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D18_M001",
+        "probe_ids": [
+          "D18_P001",
+          "D18_P002",
+          "D18_P003",
+          "D18_P004"
+        ],
+        "primary_event_id": "E039",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E039"
+        ],
+        "probe_id": "D18_P003",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -382,6 +1519,33 @@
     },
     "D18_P004": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D18_M001",
+        "probe_ids": [
+          "D18_P001",
+          "D18_P002",
+          "D18_P003",
+          "D18_P004"
+        ],
+        "primary_event_id": "E039",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002"
+        ],
+        "event_refs": [
+          "E039"
+        ],
+        "probe_id": "D18_P004",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -390,6 +1554,30 @@
     },
     "D19_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D19_M001",
+        "probe_ids": [
+          "D19_P001"
+        ],
+        "primary_event_id": "E040",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E041"
+        ],
+        "event_refs": [
+          "E040",
+          "E041"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -398,6 +1586,32 @@
     },
     "D19_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D19_M001",
+        "probe_ids": [
+          "D19_P001"
+        ],
+        "primary_event_id": "E040",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E041"
+        ],
+        "event_refs": [
+          "E040",
+          "E041"
+        ],
+        "probe_id": "D19_P001",
+        "probe_type": "state_transformation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -406,6 +1620,33 @@
     },
     "D20_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D20_M001",
+        "probe_ids": [
+          "D20_P001",
+          "D20_P002"
+        ],
+        "primary_event_id": "E042",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E043",
+          "E044"
+        ],
+        "event_refs": [
+          "E042",
+          "E043",
+          "E044"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -414,6 +1655,35 @@
     },
     "D20_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D20_M001",
+        "probe_ids": [
+          "D20_P001",
+          "D20_P002"
+        ],
+        "primary_event_id": "E042",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E043",
+          "E044"
+        ],
+        "event_refs": [
+          "E042",
+          "E043",
+          "E044"
+        ],
+        "probe_id": "D20_P001",
+        "probe_type": "relational_boundary"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -422,6 +1692,35 @@
     },
     "D20_P002": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "turning_point",
+        "interaction_unit_id": "D20_M001",
+        "probe_ids": [
+          "D20_P001",
+          "D20_P002"
+        ],
+        "primary_event_id": "E042",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E043",
+          "E044"
+        ],
+        "event_refs": [
+          "E042",
+          "E043",
+          "E044"
+        ],
+        "probe_id": "D20_P002",
+        "probe_type": "current_understanding"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -430,6 +1729,30 @@
     },
     "D21_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D21_M001",
+        "probe_ids": [],
+        "primary_event_id": "E045",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E046",
+          "E047"
+        ],
+        "event_refs": [
+          "E045",
+          "E046",
+          "E047"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -438,6 +1761,30 @@
     },
     "D22_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_0cd838f9",
+        "event_line_id": "L_e005_73a2ff40",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D22_M001",
+        "probe_ids": [],
+        "primary_event_id": "E048",
+        "root_event_id": "E005",
+        "related_event_ids": [
+          "E005",
+          "E049",
+          "E050"
+        ],
+        "event_refs": [
+          "E048",
+          "E049",
+          "E050"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -446,6 +1793,30 @@
     },
     "D23_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D23_M001",
+        "probe_ids": [
+          "D23_P001"
+        ],
+        "primary_event_id": "E051",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E052"
+        ],
+        "event_refs": [
+          "E051",
+          "E052"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -454,6 +1825,32 @@
     },
     "D23_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D23_M001",
+        "probe_ids": [
+          "D23_P001"
+        ],
+        "primary_event_id": "E051",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E052"
+        ],
+        "event_refs": [
+          "E051",
+          "E052"
+        ],
+        "probe_id": "D23_P001",
+        "probe_type": "alienation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -462,6 +1859,32 @@
     },
     "D24_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D24_M001",
+        "probe_ids": [
+          "D24_P001"
+        ],
+        "primary_event_id": "E053",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002",
+          "E054",
+          "E055"
+        ],
+        "event_refs": [
+          "E053",
+          "E054",
+          "E055"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -470,6 +1893,34 @@
     },
     "D24_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_career_9705ae2d",
+        "event_line_id": "L_e002_71c566e1",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D24_M001",
+        "probe_ids": [
+          "D24_P001"
+        ],
+        "primary_event_id": "E053",
+        "root_event_id": "E002",
+        "related_event_ids": [
+          "E002",
+          "E054",
+          "E055"
+        ],
+        "event_refs": [
+          "E053",
+          "E054",
+          "E055"
+        ],
+        "probe_id": "D24_P001",
+        "probe_type": "natural_detail"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -478,6 +1929,26 @@
     },
     "D25_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D25_M001",
+        "probe_ids": [],
+        "primary_event_id": "E056",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015"
+        ],
+        "event_refs": [
+          "E056"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -486,6 +1957,30 @@
     },
     "D26_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_intimate_relationship_69747b31",
+        "event_line_id": "L_e010_1c1abd19",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D26_M001",
+        "probe_ids": [],
+        "primary_event_id": "E057",
+        "root_event_id": "E010",
+        "related_event_ids": [
+          "E010",
+          "E058",
+          "E059"
+        ],
+        "event_refs": [
+          "E057",
+          "E058",
+          "E059"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -494,6 +1989,32 @@
     },
     "D27_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D27_M001",
+        "probe_ids": [
+          "D27_P001"
+        ],
+        "primary_event_id": "E060",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E061",
+          "E062"
+        ],
+        "event_refs": [
+          "E060",
+          "E061",
+          "E062"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -502,6 +2023,34 @@
     },
     "D27_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "resolution",
+        "interaction_unit_id": "D27_M001",
+        "probe_ids": [
+          "D27_P001"
+        ],
+        "primary_event_id": "E060",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020",
+          "E061",
+          "E062"
+        ],
+        "event_refs": [
+          "E060",
+          "E061",
+          "E062"
+        ],
+        "probe_id": "D27_P001",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -510,6 +2059,28 @@
     },
     "D28_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D28_M001",
+        "probe_ids": [
+          "D28_P001"
+        ],
+        "primary_event_id": "E063",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020"
+        ],
+        "event_refs": [
+          "E063"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -518,6 +2089,30 @@
     },
     "D28_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_self_management_613e57c1",
+        "event_line_id": "L_e020_81cbf6ea",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D28_M001",
+        "probe_ids": [
+          "D28_P001"
+        ],
+        "primary_event_id": "E063",
+        "root_event_id": "E020",
+        "related_event_ids": [
+          "E020"
+        ],
+        "event_refs": [
+          "E063"
+        ],
+        "probe_id": "D28_P001",
+        "probe_type": "state_transformation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -526,6 +2121,29 @@
     },
     "D29_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D29_M001",
+        "probe_ids": [
+          "D29_P001",
+          "D29_P002"
+        ],
+        "primary_event_id": "E064",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001"
+        ],
+        "event_refs": [
+          "E064"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -534,6 +2152,31 @@
     },
     "D29_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D29_M001",
+        "probe_ids": [
+          "D29_P001",
+          "D29_P002"
+        ],
+        "primary_event_id": "E064",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001"
+        ],
+        "event_refs": [
+          "E064"
+        ],
+        "probe_id": "D29_P001",
+        "probe_type": "alienation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -542,6 +2185,31 @@
     },
     "D29_P002": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_5b64c58d",
+        "event_line_id": "L_e001_a6634568",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D29_M001",
+        "probe_ids": [
+          "D29_P001",
+          "D29_P002"
+        ],
+        "primary_event_id": "E064",
+        "root_event_id": "E001",
+        "related_event_ids": [
+          "E001"
+        ],
+        "event_refs": [
+          "E064"
+        ],
+        "probe_id": "D29_P002",
+        "probe_type": "state_transformation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -550,6 +2218,30 @@
     },
     "D30_M001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D30_M001",
+        "probe_ids": [
+          "D30_P001"
+        ],
+        "primary_event_id": "E065",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E066"
+        ],
+        "event_refs": [
+          "E065",
+          "E066"
+        ]
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -558,6 +2250,32 @@
     },
     "D30_P001": {
       "condition_id": "M1",
+      "memory_provider": "condition_isolated_relational_memory",
+      "requires_runtime_letta": false,
+      "requires_runtime_ld_agent_memory": false,
+      "tau": {
+        "schema_version": "tau_binding_v1",
+        "persona_id": "user_001",
+        "theme_id": "T_parenting_a6745f89",
+        "event_line_id": "L_e015_19fc98fd",
+        "event_stage": "reflection",
+        "interaction_unit_id": "D30_M001",
+        "probe_ids": [
+          "D30_P001"
+        ],
+        "primary_event_id": "E065",
+        "root_event_id": "E015",
+        "related_event_ids": [
+          "E015",
+          "E066"
+        ],
+        "event_refs": [
+          "E065",
+          "E066"
+        ],
+        "probe_id": "D30_P001",
+        "probe_type": "memory_invocation"
+      },
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",

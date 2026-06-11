@@ -1,6 +1,6 @@
 {
   "schema_version": "experiment_cache_manifest_v1",
-  "updated_at": "2026-06-06T09:23:48.232169Z",
+  "updated_at": "2026-06-10T03:31:05.087001Z",
   "note": "stage D memory condition stores refreshed",
   "files": {
     "bei_annotations": {
@@ -10,22 +10,22 @@
     },
     "canonical_timeline": {
       "path": "long_memory_experiment/data/script/timeline.json",
-      "sha256": "b80d5c68e243b2e5f399efcf650183973b40ac66bac7f96279d077c6766873ae",
+      "sha256": "732473fe9ab5dd9e9d80e1ebe19947f4fc94471b13d8bacfc3a11c3a0f6d9fe3",
       "exists": true
     },
     "daily_scene_cards": {
       "path": "long_memory_experiment/data/script/daily_scene_cards.json",
-      "sha256": "c12d8f48be52be21e0827073a16960fee5410537218683d6a5e0ffe9a55ddb27",
+      "sha256": "d97621e0bd4c8aadef4c442eff87c37f17f902e4f897b09400dfcf189f0f85fe",
       "exists": true
     },
     "daily_user_message": {
       "path": "long_memory_experiment/data/script/daily_user_message.json",
-      "sha256": "a2b20b8225e4b5cb26a88db46124a84b1f4f6242ca85d262788e1ec98f672d41",
+      "sha256": "cdb253fdf69e62aa0008511555ffdcfaad82195db25d5adb36996cfffb54db75",
       "exists": true
     },
     "event_line_audit": {
       "path": "long_memory_experiment/data/script/event_line_audit.json",
-      "sha256": "fd81f33ebcd45e80621db8b7b3cc3ae24c1b6e9cc4df97dd19a2fb6d02b26d42",
+      "sha256": "77d97aee195549b0552941567648e035fdb92ebac6aa5298143b2e71009abbff",
       "exists": true
     },
     "event_timeline_cache": {
@@ -35,37 +35,42 @@
     },
     "m0_generic_agent_config": {
       "path": "long_memory_experiment/data/memory_conditions/m0_generic_agent_config.json",
-      "sha256": "e482eff37af132ab98c804b3886ed39009263358cd0a16eece4598291a5aa569",
+      "sha256": "b28786f0de193680b3c572d0295830697eb1674968f58ca33010dada94d5937f",
       "exists": true
     },
     "m1_conclusion_memory": {
       "path": "long_memory_experiment/data/memory_conditions/m1_conclusion_memory.json",
-      "sha256": "8b5d86ccca88025a07000d0a8f5638b4fb3caf5433774da25a54adc18d605d16",
+      "sha256": "277a2ec3f3244a4f417ddd6f2d952d4de9742d6969b3b82010ff662098f1639b",
       "exists": true
     },
     "m2_event_memory": {
       "path": "long_memory_experiment/data/memory_conditions/m2_event_memory.json",
-      "sha256": "d22cf7b90c3e4f1c421534aff05104c86c26dceb10b394d675d13481244fc115",
+      "sha256": "9ee7660e669cc9f4357818490fb7674980d499a80f52f2c5268864e25225cc32",
       "exists": true
     },
     "m3_relational_anchor_memory": {
       "path": "long_memory_experiment/data/memory_conditions/m3_relational_anchor_memory.json",
-      "sha256": "318717e0e35fc8c1d6d317faef6627eb3f29ab1317e1f673ad219d1078aa74de",
+      "sha256": "6d766a96471cbb3a5453991f139b8d843dbd3954ae527f4c9fad24613edf1f7a",
       "exists": true
     },
     "memory_conditions_cache": {
       "path": "long_memory_experiment/cache/memory_conditions_combined.json",
-      "sha256": "87e7036cf94bc6aa022668b58d75aaab169f6bd3705582feb1c9344f9fce0eb7",
+      "sha256": "bc9e12e77503dd9f9a4c4ee103975f68fc1947e45de249c6d210eedd9545134c",
       "exists": true
     },
     "mva_summary_memory_alias": {
       "path": "long_memory_experiment/data/memory_conditions/mva_summary_memory.json",
-      "sha256": "8b5d86ccca88025a07000d0a8f5638b4fb3caf5433774da25a54adc18d605d16",
+      "sha256": "277a2ec3f3244a4f417ddd6f2d952d4de9742d6969b3b82010ff662098f1639b",
       "exists": true
     },
     "probe_question_plan": {
       "path": "long_memory_experiment/data/script/probe_question_plan.json",
-      "sha256": "dca0a61d0aa60bab90dced3e3b2a76521d2e990782263049d61b20da91fc86bc",
+      "sha256": "7c0a95a0fd6a80c3071873043d88aa63e3bae02d49fa46e4a2f7a0588a35ce83",
+      "exists": true
+    },
+    "tau_contract": {
+      "path": "long_memory_experiment/data/script/tau_contract.json",
+      "sha256": "11a80794d3c7f2be1e51f1f40db0263921a2c1ef506c6b86b8ec85fdf53df870",
       "exists": true
     }
   }
