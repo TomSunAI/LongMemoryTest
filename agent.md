@@ -1,5 +1,259 @@
 # LongMemoryTest Agent Notes
 
+## 当前记录：2026-06-12 AAAI 2027 关键论文依据
+
+用户指定 `/Users/tom/Desktop/aaai2027.pdf` 为本项目后续执行的重大依据。当前 PDF 标题为：
+
+> How Agents Remember the Relationship: Evaluating Relational Memory
+
+该稿定义了本项目当前主线应遵循的 ReMem-RE 框架，即 **Relational Memory Evaluation for Relational Expectation**。后续如果论文 PDF 更新，应重新阅读并同步本记录。
+
+### 核心理论定位
+
+论文关注的不是普通 factual recall，而是长期人机互动里的 **relational expectation**：用户期待 agent 的回应能够体现共享历史、熟悉的回应规范、用户状态变化和关系边界。
+
+论文明确不声称 agent 具有真正 Theory of Mind，而是用 Mutual Theory of Mind 作为分析视角，评估 agent 是否能识别并回应长期互动中形成的关系性期待。
+
+### 轨迹构造合同
+
+论文使用受控长期互动轨迹：
+
+```text
+tau = (z, T, L, I, P)
+```
+
+含义：
+
+- `z`：sampled user persona。
+- `T`：sampled event themes。
+- `L`：recurring event lines。
+- `I`：daily interaction units。
+- `P`：inserted targeted relational probes。
+
+这说明我们当前 5 人 demo 不能停在 persona/event/timeline/probe plan；后续必须继续生成 `daily_interaction_units.json` 和 `tau_contract.json`。
+
+### Probe 正式口径
+
+论文定义的是 **six types of targeted relational probes P1-P6**：
+
+- `P1 Current Understanding`
+- `P2 Memory Invocation`
+- `P3 State Transformation`
+- `P4 Relational Boundary`
+- `P5 Alienation Avoidance`
+- `P6 Natural Detail Use`
+
+当前工程里已有：
+
+- `current_understanding`
+- `memory_invocation`
+- `state_transformation`
+- `relational_boundary`
+- `alienation_avoidance`
+- `natural_detail`
+
+当前执行状态：
+
+- 已补齐 `alienation_avoidance`，对应论文的 `P5 Alienation Avoidance`。
+- 当前 `probe_plan.json` 每条 probe 已写入 `paper_probe_id`、`paper_probe_type`、`paper_probe_zh`。
+- 当前 `probe_plan.json` 每条 probe 已写入 `evaluation_dimension_ids` 和 `evaluation_dimensions`，用于 D1-D4 正式口径。
+- 旧工程细粒度标签保留在 `diagnostic_dimensions` 和兼容字段 `tom_dimensions`，避免破坏已有评估器。
+- 当前 5 人 demo 中 `reflection` 阶段映射为 `P5 Alienation Avoidance`，生成 3 条 P5 probe。
+- 当前 HTML 报告已标注 P1-P6 对齐关系和 D1-D4 覆盖。
+
+### 评估维度正式口径
+
+论文把 relational expectation 操作化为四个高层评估维度：
+
+- `D1 Situated Intent Understanding`
+- `D2 Emotional-State Attunement`
+- `D3 Contextual Specificity`
+- `D4 Continuity-Sensitive Response`
+
+当前工程里的 ToM 维度命名，例如 `hidden_intent_recognition`、`emotional_state_recognition`、`shared_context_invocation`、`memory_misuse` 等，后续要与 D1-D4 做统一映射。正式报告里应优先使用论文 D1-D4 作为主评估口径，工程内部细粒度标签作为二级诊断。
+
+### Daily Interaction Units 要求
+
+论文里的 `I` 不是简单 active day，也不是仅一条 user message。每个 daily interaction unit 应包含：
+
+- scripted opening。
+- constrained follow-up。
+- scene boundary。
+- allowed facts。
+- latent concerns。
+- reveal steps。
+- permitted conversational moves。
+- stop conditions / must-not-introduce。
+
+constrained follow-up 不能引入当前 scene card 之外的新事件、人口学事实、医学诊断、日期或其它外部细节，也不能把 assistant 的猜测转成新的 user facts。
+
+因此当前 5 人 timeline 只是进入 `I` 的前置结构；下一阶段必须构造可运行的 daily interaction units。
+
+### 记忆条件正式口径
+
+论文比较以下记忆条件：
+
+- `M0 Generic agent memory`：普通 memory-enabled agent，不读取 constructed relational memories、event trajectories、relational anchors、probe annotations 或 gold response strategies。
+- `M1 Conclusion-level relational memory`：关系被记成抽象结论，如稳定回应偏好、熟悉回应规范、关系期待和边界约束。
+- `M2 Event-summary relational memory`：在 M1 上增加 recurring event lines、cross-day progress、user state changes 和 prior handling strategies。
+- `M3 Detail-anchor relational memory`：在 M2 上增加 concrete relational anchors，如 shared phrases、specific scenes、familiar cues 和 boundary-sensitive details。
+
+论文还提到 current-only lower bound 和 full-context/oracle-history upper bound 作为辅助 reference conditions。
+
+### 对当前工程的直接影响
+
+当前 5 人 sampling/timeline/probe 工作方向与论文一致，但需要继续修正：
+
+- `P5 Alienation Avoidance` 已补。
+- probe 类型到 P1-P6 的映射已补。
+- 评估维度到 D1-D4 的映射已补。
+- 推进 `daily_interaction_units.json`，不能只停留在 timeline。
+- 推进 `tau_contract.json`，把 `z,T,L,I,P` 固化成可审计合同。
+- 保留 `M0` 的污染隔离：M0 不能看 relational memory、event trajectory、probe annotation、gold strategy。
+
+### 阅读状态
+
+当前已从 PDF 压缩流中抽取并阅读可见正文。环境没有 `pdfinfo`、`pdftotext`、`pypdf`、`pdfplumber` 或 Quartz Python binding，因此本次阅读使用本地临时解压文本 `/private/tmp/aaai2027_extracted.txt`。后续如果 PDF 更新或工具链补齐，应重新抽取全文并复核。
+
+## 当前记录：2026-06-12 Archetype-Guided 5 人 timeline / probe 阶段状态
+
+本轮从用户给定的 docx、`persona_archetype_pool_v0.1.json` 和 `event_category_pool_v0.1_60events.json` 出发，已把“先做 5 人实例，而不是直接扩展到 100 人”的路线固定下来。100 人只作为后续规模压力测试，不作为当前第一阶段正式样本。
+
+### 当前 canonical demo 范围
+
+- persona 数量：5。
+- 时间池：每人 30 天。
+- active sessions：每人 15-20 个。
+- event line：每人来自 P0 accepted event set，当前 5 人合计 26 条 event lines。
+- probe：每人 12-18 条，当前 5 人合计 67 条。
+- 当前状态：P0/P1/P2 已经跑通，timeline validation 和 probe validation 均为 `pass`。
+
+当前核心产物：
+
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/sampled_personas.json`
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/accepted_persona_event_sets.json`
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/event_lines_batch.json`
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/timeline.json`
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/probe_plan.json`
+- `docs/p1_timeline_demo5_report.html`
+
+### 来源链路
+
+当前生成链路必须保持为：
+
+```text
+persona_archetype_pool_v0.1.json
+event_category_pool_v0.1_60events.json
+sampling_config.json
+↓
+P0 persona-event sampling
+↓
+P1 event line construction
+↓
+P1 timeline construction
+↓
+P2 probe insertion
+↓
+HTML report / later tau contract
+```
+
+注意：人物和事件必须从今天整理的 JSON 池取出。不能再沿用旧单人剧本作为人物来源。
+
+### Probe 重要边界
+
+这里的 `probe` 不是 probability，也不是原始 JSON 字段，而是“定向测试问题 / evaluation probe”。
+
+当前 probe 模板不是 docx 原文，也不是 JSON 原文。docx/配置只规定第一阶段需要每人 12-18 个 probes，事件池只说明事件应适合 delayed relational probes。当前具体中文 probe 文案来自 P2 工程实现：
+
+- 实现文件：`src/long_memory_test/sampling/probe_constructor.py`
+- 类型判定：`_probe_type(day)`
+- 文案模板：`_probe_question(day, probe_type)`
+- ToM 维度：`PROBE_TYPE_DIMENSIONS`
+- required memory：`PROBE_TYPE_REQUIRED_MEMORY`
+
+当前 probe 是确定性规则模板生成，不调用 LLM。它从 timeline active day 中读取：
+
+- `event_title`
+- `event_stage`
+- `occurrence_index`
+- `event_line_id`
+- `related_previous_days`
+- `interaction_unit_id`
+
+再根据阶段选择模板并插回 timeline。probe 默认：
+
+- `turn_type = targeted_probe`
+- `read_only = true`
+- `writeback_policy = probe_turn_must_not_write_to_memory`
+
+当前 5 人 probe 类型分布：
+
+- `memory_invocation` / 共享记忆调用：26
+- `state_transformation` / 状态变化识别：28
+- `relational_boundary` / 关系边界：11
+
+这些模板适合作为可审计 baseline；如果后续要让 probe 更自然，应新增一个 LLM 受控改写层，但必须保留原模板、输入字段、随机种子和验证报告，避免不可追溯。
+
+### Timeline 生成逻辑
+
+当前 timeline 不是 LLM 生成，是规则构造：
+
+- 每个 persona 建立 30 天时间池。
+- 每条 event line 至少出现 3 次，最多 6 次。
+- 每人 active sessions 目标在 15-20。
+- 每条 event line 的阶段顺序单调推进：`initial -> recurrence -> turning_point -> partial_resolution -> reflection`，具体来自该 event line 的 `stage_sequence`。
+- 不同事件线按 occurrence round 交错，再均匀铺到 30 天。
+- active day 写入 `interaction_unit_id`、`event_line_id`、`event_stage`、`surface_event`、`related_previous_days`、`probe_candidate` 等字段。
+- `initial` 阶段不插 probe；同一事件线至少第 2 次出现后才成为 probe candidate。
+
+实现文件：
+
+- `src/long_memory_test/sampling/event_line_constructor.py`
+- `src/long_memory_test/sampling/timeline_constructor.py`
+- `src/long_memory_test/sampling/probe_constructor.py`
+
+脚本入口：
+
+- `scripts/run_p0_persona_event_sampling.py`
+- `scripts/run_p1_event_line_batch_construction.py`
+- `scripts/run_p1_timeline_construction.py`
+- `scripts/run_p2_probe_insertion.py`
+- `scripts/generate_p1_timeline_report_html.py`
+
+### 当前报告内容
+
+`docs/p1_timeline_demo5_report.html` 已包含：
+
+- 5 人 timeline 明细。
+- active day / event line 绑定。
+- probe 插入结果。
+- probe 来源确认。
+- probe 生成伪代码。
+- probe 输入字段。
+- probe type 判定逻辑。
+- 具体 probe 模板。
+- “模板出处与责任边界”：明确当前中文模板来自 P2 工程实现，不是 docx/JSON 原文。
+- timeline 配置和排布逻辑。
+
+### 已验证
+
+当前已执行并通过：
+
+```bash
+python3 -m py_compile src/long_memory_test/sampling/probe_constructor.py scripts/run_p2_probe_insertion.py scripts/generate_p1_timeline_report_html.py tests/test_sampling_probe_constructor.py
+PYTHONPATH=src python3 -m unittest tests.test_sampling_probe_constructor tests.test_sampling_timeline_constructor tests.test_sampling_realism_validator
+```
+
+当前 sampling 相关单元测试通过。
+
+### 下一步建议
+
+下一阶段应推进：
+
+- `daily_interaction_units.json`：把 timeline active day 转成可运行的每日用户输入单元。
+- `tau_contract.json`：把 5 人 demo 的 `z,T,L,I,P` 合同固化。
+- probe 语言升级：如需要，可新增 LLM-controlled rewrite，但原始 rule-template probe 必须保留为可审计 source。
+
 ## 当前记录：2026-06-11 M0 strict tau 链路状态
 
 本轮主线已经从“topic 松散组织”升级为论文结构 `tau=(z,T,L,I,P)` 的统一剧本构造合同。当前结论：链路已经测通，M0-only 正式实验可以 resume 继续跑；Letta M0 只作为 historical pilot 保留，后续基线使用当前版本 M0。
@@ -633,6 +887,129 @@ Letta 相关代码只作为历史 pilot 保留：
 - 情绪强度、决策影响、时间敏感度和当前状态。
 
 `related_event_id` 是形成共同事件记忆的关键字段。有关联的新事件应更新同一条事件链，而不是创建一堆互不相关的孤立记忆。
+
+## Timeline 并行事件约定
+
+当前 P1 timeline 不再采用“一天只能发生一个事件”的旧假设。新的结构是：
+
+- `active_session_count` 表示事件 occurrence / interaction session 总数，仍受 15-20 范围约束。
+- `active_day_count` 表示 30 天中实际有事件发生的日历天数。
+- 每个 active day 写入 `event_occurrences[]`，同一天可包含多条事件 occurrence。
+- 当前配置 `max_events_per_active_day=2`，`parallel_event_days_min=2`，即每个 persona 至少有 2 个同日多事件日。
+- active day 顶层仍保留第一条 occurrence 的字段作为兼容主事件；真实分析应优先读取 `event_occurrences[]`。
+- 每条 occurrence 有自己的 `event_occurrence_id` 和 occurrence 级 `interaction_unit_id`，例如同一天可以有 `M001`、`M002`。
+- P2 probe 绑定到具体 occurrence 的 `interaction_unit_id`，不是只绑定到 day；同时保持每个 active day 最多 1 条 probe，避免 probe 在同一天过密。
+- 为保证并行压缩后每人仍满足 12-18 probes，P1 配置保留 `probe_candidate_min_per_persona=14` 的非初始候选 occurrence 下限。
+
+当前 5 人样例已重新生成并通过校验：`active_session_total=98`，`active_day_total=88`，`parallel_event_day_total=10`，单日最多 2 条事件；P2 probe 共 67 条，每人 13-15 条。
+
+## P3a Daily Interaction Units 约定
+
+当前已从 P1/P2 timeline 推进到 `I` 维度，生成可审计的 daily interaction units。
+
+核心产物：
+
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/daily_interaction_units.json`
+- `docs/p3_daily_interaction_demo5_report.html`
+- `src/long_memory_test/sampling/daily_interaction_constructor.py`
+- `scripts/run_p3_daily_interaction_construction.py`
+- `scripts/generate_p3_daily_interaction_report_html.py`
+- `tests/test_sampling_daily_interaction_constructor.py`
+
+当前 P3a 不是 LLM 生成，而是确定性构造：
+
+- `llm_generation_used=false`
+- 一个 `event_occurrence_id` 对应一个 `interaction_unit_id`
+- 同一 active day 若有 2 条 occurrence，则生成 2 个 I unit，共享 `day_group_id`
+- `scripted_opening.user_message` 直接来自 timeline 的 `surface_event`
+- `constrained_followup` 来自规则模板：阶段映射、允许动作、reveal steps、stop conditions、must-not-introduce
+- `scene_boundary` 来自 `persona_ref`、event title、event summary、stage goal、allowed_new_facts 和 related_previous_days
+- `probe_links` 从 occurrence 的 `probe_insertions[]` 复制并绑定，`read_only=true`
+- 默认 `cross_occurrence_reference_allowed=false`，同日并行事件不会自动共享事实
+
+当前 5 人样例已生成并通过校验：
+
+- `persona_count=5`
+- `calendar_day_count=150`
+- `active_day_total=88`
+- `interaction_unit_count=98`
+- `parallel_day_total=10`
+- `probe_link_count=67`
+
+已执行验证：
+
+```bash
+python3 -m py_compile src/long_memory_test/sampling/daily_interaction_constructor.py scripts/run_p3_daily_interaction_construction.py scripts/generate_p3_daily_interaction_report_html.py tests/test_sampling_daily_interaction_constructor.py
+PYTHONPATH=src python3 -m unittest tests.test_sampling_timeline_constructor tests.test_sampling_probe_constructor tests.test_sampling_realism_validator tests.test_sampling_daily_interaction_constructor
+python3 scripts/run_p3_daily_interaction_construction.py
+python3 scripts/generate_p3_daily_interaction_report_html.py
+```
+
+下一步应生成 `tau_contract.json`，把 `z,T,L,I,P` 固化成一份可运行、可评测、可审计的统一合同。
+
+## 当前记录：2026-06-17 Demo5 tau / Timeline / I / Probe 整合报告
+
+当前已把 5 人 demo 的核心生成链路整合到单一 HTML 报告：
+
+- `docs/demo5_tau_i_probe_integrated_report.html`
+- `scripts/generate_demo5_tau_i_probe_integrated_report_html.py`
+
+报告整合输入：
+
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/timeline.json`
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/probe_plan.json`
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/daily_interaction_units.json`
+
+当前整体校验：
+
+- Timeline validation：`pass`
+- Probe validation：`pass`
+- I validation：`pass`
+
+当前 demo 统计：
+
+- `persona_count=5`
+- `calendar_day_count=150`
+- `active_day_total=88`
+- `interaction_unit_count=98`
+- `probe_count=67`
+- `parallel_event_day_total=10`
+- 有 probe 的 I：`67`
+- 无 probe 的 I：`31`
+
+### 整合报告已展开的关键解释
+
+第 3 节 `Timeline：T/L 的结构` 已从结果展示改为设计说明：
+
+- 说明最高论文来源是 `/Users/tom/Desktop/aaai2027.pdf`，即 ReMem-RE 的 `tau=(z,T,L,I,P)` 受控长期互动轨迹框架。
+- 明确论文提供的是 `T=sampled event themes`、`L=recurring event lines`、长期关系期待形成/延迟/评测的研究口径。
+- 明确 docx/config 提供的是第一阶段规模和验收约束：5 人、30 天、15-20 active sessions、每条 event line 3-6 次、probe 数量范围。
+- 明确当前工程实现来自 `src/long_memory_test/sampling/timeline_constructor.py`：occurrence round、active day 打包、同日最多 2 条事件、并行事件日、固定随机种子等不是论文原生概念。
+
+第 4 节 `I：Daily Interaction Units` 已严肃展开：
+
+- `I` 被定义为“用户当天一次可执行互动的场景合同”，不是 agent 回复，也不是 probe。
+- 每个 active `event_occurrence` 必须生成一个 I。
+- `scripted_opening.user_message` 直接来自 timeline 的 `surface_event`。
+- `constrained_followup` 定义 follow-up 预算、允许话术动作、reveal steps、stop conditions、must-not-introduce。
+- `scene_boundary` 定义 allowed facts、latent concerns、memory level rules 和 audit dimensions。
+- 当前 I 生成是确定性 constructor，`llm_generation_used=false`。
+
+第 5 节 `Probe：生成逻辑与模板` 已严肃展开：
+
+- Probe 明确不是 probability，而是 `targeted relational probe`。
+- Probe 是插在某个 I 后面的只读评测 turn，用来测长期关系语境、状态变化、边界和自然细节。
+- 当前中文 probe 模板来自 `src/long_memory_test/sampling/probe_constructor.py` 的确定性规则，不是 LLM prompt，也不是 docx/JSON/论文原文。
+- 报告已列出 P1-P6、D1-D4、候选选择、类型判定、字段合同、required memory、校验与防污染。
+- 当前 demo 覆盖 P2/P3/P4/P5；P1/P6 当前为 0 是本批样本和阶段映射导致的覆盖结果，不代表系统不支持。
+
+### 当前边界判断
+
+- `I` 不依赖 probe 生成；当前 98 个 I 中 31 个没有 probe。
+- Probe 必须绑定到具体 `interaction_unit_id`，不是只绑定到日期。
+- Probe 是 `read_only=true`，后续运行中不能写回记忆，避免评测题污染 memory。
+- `cross_occurrence_reference_allowed=false`，同日并行事件默认不自动共享事实。
+- 当前整合报告是解释和审计用 HTML；下一步仍应推进 `tau_contract.json`，把 `z,T,L,I,P` 固化成正式可运行合同。
 
 ## 下游评测方向
 
