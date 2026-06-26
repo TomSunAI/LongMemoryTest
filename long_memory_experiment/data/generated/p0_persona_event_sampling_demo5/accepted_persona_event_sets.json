@@ -1,0 +1,470 @@
+{
+  "schema_version": "accepted_persona_event_sets_v0.1",
+  "sampling_stage": "P0_compatibility_validated_event_sets",
+  "sampling_config": {
+    "random_seed": 20260701,
+    "num_personas": 5,
+    "events_per_persona_min": 8,
+    "events_per_persona_max": 10,
+    "candidate_events_min": 14,
+    "candidate_events_max": 18,
+    "min_event_domains_per_persona": 3,
+    "max_events_per_domain_per_persona": 2,
+    "min_primary_life_domains_per_persona": 3,
+    "min_long_term_goals_per_persona": 2,
+    "min_communication_styles_per_persona": 2,
+    "min_stress_responses_per_persona": 2,
+    "max_candidate_resample_attempts": 20
+  },
+  "accepted_persona_event_sets": [
+    {
+      "persona_id": "P0001",
+      "source_archetype": "A01_early_career_renter",
+      "accepted_event_count": 8,
+      "accepted_event_ids": [
+        "E_CLEAN_001",
+        "E_JOB_001",
+        "E_LEARN_001",
+        "E_HEALTH_003",
+        "E_EDU_001",
+        "E_MOVE_001",
+        "E_BOUNDARY_001",
+        "E_CONSUMER_001"
+      ],
+      "domain_counts": {
+        "consumer_issue": 1,
+        "daily_life": 1,
+        "education": 1,
+        "health_routine": 1,
+        "job_search": 1,
+        "learning": 1,
+        "personal_boundary": 1,
+        "relocation": 1
+      },
+      "accepted_events": [
+        {
+          "event_category_id": "E_CLEAN_001",
+          "event_domain": "daily_life",
+          "event_type": "home_cleaning_overwhelm",
+          "title": "家务堆积或居住空间混乱压力",
+          "core_issue": "用户被累积的家务或杂物压得不知从何开始。"
+        },
+        {
+          "event_category_id": "E_JOB_001",
+          "event_domain": "job_search",
+          "event_type": "resume_or_application_block",
+          "title": "简历或申请卡住",
+          "core_issue": "用户卡在更新申请材料上，并担心自己竞争力不足。"
+        },
+        {
+          "event_category_id": "E_LEARN_001",
+          "event_domain": "learning",
+          "event_type": "certificate_or_skill_learning_pressure",
+          "title": "在生活很忙时学习新技能",
+          "core_issue": "用户想提升技能，但时间、信心和持续性都受现实生活挤压。"
+        },
+        {
+          "event_category_id": "E_HEALTH_003",
+          "event_domain": "health_routine",
+          "event_type": "routine_restart_after_break",
+          "title": "中断后重新建立日常",
+          "core_issue": "用户想在几次失败后重新启动一项日常习惯。"
+        },
+        {
+          "event_category_id": "E_EDU_001",
+          "event_domain": "education",
+          "event_type": "study_deadline_or_assignment_pressure",
+          "title": "学习任务、作业或考试截止压力",
+          "core_issue": "用户必须在时间压力下处理作业、考试或项目。"
+        },
+        {
+          "event_category_id": "E_MOVE_001",
+          "event_domain": "relocation",
+          "event_type": "new_city_adaptation",
+          "title": "适应新城市但本地支持较弱",
+          "core_issue": "用户正在适应新环境，但缺少稳定的本地关系支持。"
+        },
+        {
+          "event_category_id": "E_BOUNDARY_001",
+          "event_domain": "personal_boundary",
+          "event_type": "difficulty_saying_no",
+          "title": "难以拒绝他人请求",
+          "core_issue": "用户很难拒绝来自工作、家人或朋友的请求。"
+        },
+        {
+          "event_category_id": "E_CONSUMER_001",
+          "event_domain": "consumer_issue",
+          "event_type": "refund_or_return_dispute",
+          "title": "退款、退货或消费纠纷",
+          "core_issue": "用户不确定如何处理退款或退货冲突。"
+        }
+      ]
+    },
+    {
+      "persona_id": "P0002",
+      "source_archetype": "A02_service_emotional_labor",
+      "accepted_event_count": 9,
+      "accepted_event_ids": [
+        "E_SOCIAL_001",
+        "E_FIN_001",
+        "E_HEALTH_003",
+        "E_BOUNDARY_001",
+        "E_DIGITAL_001",
+        "E_HOME_002",
+        "E_INTER_001",
+        "E_SELF_003",
+        "E_BUS_002"
+      ],
+      "domain_counts": {
+        "business": 1,
+        "digital_life": 1,
+        "finance": 1,
+        "health_routine": 1,
+        "housing": 1,
+        "personal_boundary": 1,
+        "self_worth": 1,
+        "social_connection": 1,
+        "work_family_intersection": 1
+      },
+      "accepted_events": [
+        {
+          "event_category_id": "E_SOCIAL_001",
+          "event_domain": "social_connection",
+          "event_type": "friendship_drift",
+          "title": "友谊疏远或尴尬",
+          "core_issue": "用户感觉一段友谊变远，不确定该主动联系还是顺其自然。"
+        },
+        {
+          "event_category_id": "E_FIN_001",
+          "event_domain": "finance",
+          "event_type": "rent_or_bill_pressure",
+          "title": "房租、水电或账单压力",
+          "core_issue": "用户需要在有限或不稳定收入下管理必要支出。"
+        },
+        {
+          "event_category_id": "E_HEALTH_003",
+          "event_domain": "health_routine",
+          "event_type": "routine_restart_after_break",
+          "title": "中断后重新建立日常",
+          "core_issue": "用户想在几次失败后重新启动一项日常习惯。"
+        },
+        {
+          "event_category_id": "E_BOUNDARY_001",
+          "event_domain": "personal_boundary",
+          "event_type": "difficulty_saying_no",
+          "title": "难以拒绝他人请求",
+          "core_issue": "用户很难拒绝来自工作、家人或朋友的请求。"
+        },
+        {
+          "event_category_id": "E_DIGITAL_001",
+          "event_domain": "digital_life",
+          "event_type": "phone_or_account_problem",
+          "title": "手机、账户或应用问题扰乱日常",
+          "core_issue": "手机、应用或账户问题阻碍了工作、付款、交通或沟通。"
+        },
+        {
+          "event_category_id": "E_HOME_002",
+          "event_domain": "housing",
+          "event_type": "rent_increase_or_lease_uncertainty",
+          "title": "租金上涨或续租不确定",
+          "core_issue": "用户面对续租、租金上涨或居住不稳定的不确定性。"
+        },
+        {
+          "event_category_id": "E_INTER_001",
+          "event_domain": "work_family_intersection",
+          "event_type": "work_call_interrupts_family_time",
+          "title": "工作消息打断休息或私人时间",
+          "core_issue": "用户难以处理工作消息侵入家庭或休息时间的问题。"
+        },
+        {
+          "event_category_id": "E_SELF_003",
+          "event_domain": "self_worth",
+          "event_type": "fear_of_being_too_sensitive",
+          "title": "担心自己太敏感",
+          "core_issue": "用户担心自己对某件事的反应过于敏感或不合理。"
+        },
+        {
+          "event_category_id": "E_BUS_002",
+          "event_domain": "business",
+          "event_type": "bad_customer_review",
+          "title": "差评或客户投诉打击信心",
+          "core_issue": "用户收到负面反馈，担心它影响生意。"
+        }
+      ]
+    },
+    {
+      "persona_id": "P0003",
+      "source_archetype": "A03_gig_worker_parent",
+      "accepted_event_count": 8,
+      "accepted_event_ids": [
+        "E_ADMIN_002",
+        "E_DIGITAL_001",
+        "E_HEALTH_004",
+        "E_INTER_003",
+        "E_CHILD_002",
+        "E_CONSUMER_001",
+        "E_PLAN_003",
+        "E_CLEAN_001"
+      ],
+      "domain_counts": {
+        "administration": 1,
+        "childcare": 1,
+        "consumer_issue": 1,
+        "daily_life": 1,
+        "digital_life": 1,
+        "health_routine": 1,
+        "personal_planning": 1,
+        "work_family_intersection": 1
+      },
+      "accepted_events": [
+        {
+          "event_category_id": "E_ADMIN_002",
+          "event_domain": "administration",
+          "event_type": "benefit_or_application_form",
+          "title": "福利、报销或申请表格填写困惑",
+          "core_issue": "用户需要完成表格，但担心填错或漏材料。"
+        },
+        {
+          "event_category_id": "E_DIGITAL_001",
+          "event_domain": "digital_life",
+          "event_type": "phone_or_account_problem",
+          "title": "手机、账户或应用问题扰乱日常",
+          "core_issue": "手机、应用或账户问题阻碍了工作、付款、交通或沟通。"
+        },
+        {
+          "event_category_id": "E_HEALTH_004",
+          "event_domain": "health_routine",
+          "event_type": "ordinary_symptom_uncertainty",
+          "title": "普通身体不适带来的不确定",
+          "core_issue": "用户有轻微反复不适，不确定该投入多少注意力。"
+        },
+        {
+          "event_category_id": "E_INTER_003",
+          "event_domain": "work_family_intersection",
+          "event_type": "overtime_money_vs_health",
+          "title": "加班收入和健康/家庭时间冲突",
+          "core_issue": "用户需要额外收入，但加班伤害休息、安全或家庭生活。"
+        },
+        {
+          "event_category_id": "E_CHILD_002",
+          "event_domain": "childcare",
+          "event_type": "child_behavior_or_school_feedback",
+          "title": "孩子行为或学校反馈带来的担心",
+          "core_issue": "用户收到关于孩子的反馈，不确定应该多严肃对待。"
+        },
+        {
+          "event_category_id": "E_CONSUMER_001",
+          "event_domain": "consumer_issue",
+          "event_type": "refund_or_return_dispute",
+          "title": "退款、退货或消费纠纷",
+          "core_issue": "用户不确定如何处理退款或退货冲突。"
+        },
+        {
+          "event_category_id": "E_PLAN_003",
+          "event_domain": "personal_planning",
+          "event_type": "unfinished_home_task",
+          "title": "家里未完成的小任务反复拖延",
+          "core_issue": "一个小的家务或维修任务持续拖延，并反复制造压力。"
+        },
+        {
+          "event_category_id": "E_CLEAN_001",
+          "event_domain": "daily_life",
+          "event_type": "home_cleaning_overwhelm",
+          "title": "家务堆积或居住空间混乱压力",
+          "core_issue": "用户被累积的家务或杂物压得不知从何开始。"
+        }
+      ]
+    },
+    {
+      "persona_id": "P0004",
+      "source_archetype": "A04_small_business_owner",
+      "accepted_event_count": 10,
+      "accepted_event_ids": [
+        "E_CONSUMER_001",
+        "E_LEGALADMIN_001",
+        "E_BUS_003",
+        "E_FIN_001",
+        "E_HEALTH_004",
+        "E_INTER_003",
+        "E_INTER_001",
+        "E_FAM_003",
+        "E_FAM_002",
+        "E_PLAN_003"
+      ],
+      "domain_counts": {
+        "administration": 1,
+        "business": 1,
+        "consumer_issue": 1,
+        "family": 2,
+        "finance": 1,
+        "health_routine": 1,
+        "personal_planning": 1,
+        "work_family_intersection": 2
+      },
+      "accepted_events": [
+        {
+          "event_category_id": "E_CONSUMER_001",
+          "event_domain": "consumer_issue",
+          "event_type": "refund_or_return_dispute",
+          "title": "退款、退货或消费纠纷",
+          "core_issue": "用户不确定如何处理退款或退货冲突。"
+        },
+        {
+          "event_category_id": "E_LEGALADMIN_001",
+          "event_domain": "administration",
+          "event_type": "minor_dispute_documentation",
+          "title": "小纠纷需要谨慎留证",
+          "core_issue": "与房东、职场、客户或服务方的小纠纷需要仔细记录事实。"
+        },
+        {
+          "event_category_id": "E_BUS_003",
+          "event_domain": "business",
+          "event_type": "family_questions_business_choice",
+          "title": "家人质疑生意决定",
+          "core_issue": "家人质疑用户的生意选择是否可持续。"
+        },
+        {
+          "event_category_id": "E_FIN_001",
+          "event_domain": "finance",
+          "event_type": "rent_or_bill_pressure",
+          "title": "房租、水电或账单压力",
+          "core_issue": "用户需要在有限或不稳定收入下管理必要支出。"
+        },
+        {
+          "event_category_id": "E_HEALTH_004",
+          "event_domain": "health_routine",
+          "event_type": "ordinary_symptom_uncertainty",
+          "title": "普通身体不适带来的不确定",
+          "core_issue": "用户有轻微反复不适，不确定该投入多少注意力。"
+        },
+        {
+          "event_category_id": "E_INTER_003",
+          "event_domain": "work_family_intersection",
+          "event_type": "overtime_money_vs_health",
+          "title": "加班收入和健康/家庭时间冲突",
+          "core_issue": "用户需要额外收入，但加班伤害休息、安全或家庭生活。"
+        },
+        {
+          "event_category_id": "E_INTER_001",
+          "event_domain": "work_family_intersection",
+          "event_type": "work_call_interrupts_family_time",
+          "title": "工作消息打断休息或私人时间",
+          "core_issue": "用户难以处理工作消息侵入家庭或休息时间的问题。"
+        },
+        {
+          "event_category_id": "E_FAM_003",
+          "event_domain": "family",
+          "event_type": "relative_boundary_pressure",
+          "title": "亲属对个人决定施压",
+          "core_issue": "亲属在工作、金钱、育儿或关系选择上给用户压力。"
+        },
+        {
+          "event_category_id": "E_FAM_002",
+          "event_domain": "family",
+          "event_type": "partner_schedule_conflict",
+          "title": "伴侣或配偶日程冲突",
+          "core_issue": "用户和伴侣的日程冲突影响照护、休息或金钱安排。"
+        },
+        {
+          "event_category_id": "E_PLAN_003",
+          "event_domain": "personal_planning",
+          "event_type": "unfinished_home_task",
+          "title": "家里未完成的小任务反复拖延",
+          "core_issue": "一个小的家务或维修任务持续拖延，并反复制造压力。"
+        }
+      ]
+    },
+    {
+      "persona_id": "P0005",
+      "source_archetype": "A05_single_parent_service_worker",
+      "accepted_event_count": 9,
+      "accepted_event_ids": [
+        "E_NEIGHBOR_001",
+        "E_INTER_001",
+        "E_WORK_002",
+        "E_CLEAN_001",
+        "E_HEALTH_001",
+        "E_CHILD_002",
+        "E_HOME_002",
+        "E_FIN_001",
+        "E_FAM_003"
+      ],
+      "domain_counts": {
+        "childcare": 1,
+        "daily_life": 1,
+        "family": 1,
+        "finance": 1,
+        "health_routine": 1,
+        "housing": 1,
+        "neighborhood": 1,
+        "work": 1,
+        "work_family_intersection": 1
+      },
+      "accepted_events": [
+        {
+          "event_category_id": "E_NEIGHBOR_001",
+          "event_domain": "neighborhood",
+          "event_type": "neighbor_noise_or_boundary",
+          "title": "邻居噪音或边界问题",
+          "core_issue": "邻居问题打扰休息或舒适感，用户不确定如何处理。"
+        },
+        {
+          "event_category_id": "E_INTER_001",
+          "event_domain": "work_family_intersection",
+          "event_type": "work_call_interrupts_family_time",
+          "title": "工作消息打断休息或私人时间",
+          "core_issue": "用户难以处理工作消息侵入家庭或休息时间的问题。"
+        },
+        {
+          "event_category_id": "E_WORK_002",
+          "event_domain": "work",
+          "event_type": "difficult_customer_conflict",
+          "title": "与难缠客户或委托人的反复冲突",
+          "core_issue": "用户反复承受来自客户或委托人互动的情绪压力。"
+        },
+        {
+          "event_category_id": "E_CLEAN_001",
+          "event_domain": "daily_life",
+          "event_type": "home_cleaning_overwhelm",
+          "title": "家务堆积或居住空间混乱压力",
+          "core_issue": "用户被累积的家务或杂物压得不知从何开始。"
+        },
+        {
+          "event_category_id": "E_HEALTH_001",
+          "event_domain": "health_routine",
+          "event_type": "sleep_and_energy_management",
+          "title": "睡眠打乱和低精力管理",
+          "core_issue": "用户反复受睡眠、疲惫或低精力影响，进而影响判断。"
+        },
+        {
+          "event_category_id": "E_CHILD_002",
+          "event_domain": "childcare",
+          "event_type": "child_behavior_or_school_feedback",
+          "title": "孩子行为或学校反馈带来的担心",
+          "core_issue": "用户收到关于孩子的反馈，不确定应该多严肃对待。"
+        },
+        {
+          "event_category_id": "E_HOME_002",
+          "event_domain": "housing",
+          "event_type": "rent_increase_or_lease_uncertainty",
+          "title": "租金上涨或续租不确定",
+          "core_issue": "用户面对续租、租金上涨或居住不稳定的不确定性。"
+        },
+        {
+          "event_category_id": "E_FIN_001",
+          "event_domain": "finance",
+          "event_type": "rent_or_bill_pressure",
+          "title": "房租、水电或账单压力",
+          "core_issue": "用户需要在有限或不稳定收入下管理必要支出。"
+        },
+        {
+          "event_category_id": "E_FAM_003",
+          "event_domain": "family",
+          "event_type": "relative_boundary_pressure",
+          "title": "亲属对个人决定施压",
+          "core_issue": "亲属在工作、金钱、育儿或关系选择上给用户压力。"
+        }
+      ]
+    }
+  ]
+}

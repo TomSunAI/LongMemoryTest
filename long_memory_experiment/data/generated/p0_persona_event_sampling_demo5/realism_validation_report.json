@@ -1,0 +1,1661 @@
+{
+  "schema_version": "realism_validation_report_v0.1",
+  "validation_scope": {
+    "pool_feasibility": true,
+    "batch_samples": true,
+    "language_naturalness": "not_applicable_until_text_generation"
+  },
+  "status": "pass",
+  "issues": [],
+  "warnings": [
+    "Child-related ratio 0.40 exceeds 0.35. Treated as a small-demo warning because batch size 5 is below 20."
+  ],
+  "pool_report": {
+    "schema_version": "pool_feasibility_report_v0.1",
+    "status": "pass",
+    "issues": [],
+    "warnings": [],
+    "summary": {
+      "archetype_count": 12,
+      "event_category_count": 73,
+      "event_domain_count": 31,
+      "archetypes_ready": 12
+    },
+    "event_domain_distribution": {
+      "administration": 3,
+      "adult_child_boundary": 2,
+      "business": 3,
+      "childcare": 3,
+      "community": 2,
+      "commuting": 1,
+      "consumer_issue": 1,
+      "daily_life": 2,
+      "digital_life": 1,
+      "education": 1,
+      "eldercare": 2,
+      "family": 3,
+      "finance": 3,
+      "gig_work": 2,
+      "health_routine": 5,
+      "housing": 2,
+      "infant_care": 2,
+      "job_search": 2,
+      "learning": 1,
+      "neighborhood": 1,
+      "personal_boundary": 1,
+      "personal_planning": 6,
+      "pet_care": 1,
+      "relationship": 2,
+      "relocation": 1,
+      "retirement": 2,
+      "self_worth": 3,
+      "social_connection": 3,
+      "visa_administration": 1,
+      "work": 8,
+      "work_family_intersection": 3
+    },
+    "archetype_feasibility": [
+      {
+        "archetype_id": "A01_early_career_renter",
+        "compatible_event_count": 43,
+        "candidate_min_required": 14,
+        "domain_count": 22,
+        "domains": [
+          "administration",
+          "community",
+          "commuting",
+          "consumer_issue",
+          "daily_life",
+          "digital_life",
+          "education",
+          "family",
+          "finance",
+          "health_routine",
+          "housing",
+          "job_search",
+          "learning",
+          "neighborhood",
+          "personal_boundary",
+          "personal_planning",
+          "pet_care",
+          "relocation",
+          "self_worth",
+          "social_connection",
+          "work",
+          "work_family_intersection"
+        ],
+        "domain_counts": {
+          "administration": 3,
+          "community": 1,
+          "commuting": 1,
+          "consumer_issue": 1,
+          "daily_life": 2,
+          "digital_life": 1,
+          "education": 1,
+          "family": 1,
+          "finance": 2,
+          "health_routine": 3,
+          "housing": 2,
+          "job_search": 2,
+          "learning": 1,
+          "neighborhood": 1,
+          "personal_boundary": 1,
+          "personal_planning": 6,
+          "pet_care": 1,
+          "relocation": 1,
+          "self_worth": 2,
+          "social_connection": 3,
+          "work": 6,
+          "work_family_intersection": 1
+        },
+        "capped_event_capacity_under_domain_limit": 32,
+        "non_work_family_event_count": 35,
+        "can_satisfy_p0_sampling_constraints": true
+      },
+      {
+        "archetype_id": "A02_service_emotional_labor",
+        "compatible_event_count": 37,
+        "candidate_min_required": 14,
+        "domain_count": 18,
+        "domains": [
+          "administration",
+          "business",
+          "community",
+          "commuting",
+          "consumer_issue",
+          "daily_life",
+          "digital_life",
+          "finance",
+          "health_routine",
+          "housing",
+          "learning",
+          "personal_boundary",
+          "personal_planning",
+          "pet_care",
+          "self_worth",
+          "social_connection",
+          "work",
+          "work_family_intersection"
+        ],
+        "domain_counts": {
+          "administration": 2,
+          "business": 1,
+          "community": 1,
+          "commuting": 1,
+          "consumer_issue": 1,
+          "daily_life": 2,
+          "digital_life": 1,
+          "finance": 1,
+          "health_routine": 4,
+          "housing": 2,
+          "learning": 1,
+          "personal_boundary": 1,
+          "personal_planning": 3,
+          "pet_care": 1,
+          "self_worth": 3,
+          "social_connection": 3,
+          "work": 8,
+          "work_family_intersection": 1
+        },
+        "capped_event_capacity_under_domain_limit": 26,
+        "non_work_family_event_count": 28,
+        "can_satisfy_p0_sampling_constraints": true
+      },
+      {
+        "archetype_id": "A03_gig_worker_parent",
+        "compatible_event_count": 30,
+        "candidate_min_required": 14,
+        "domain_count": 15,
+        "domains": [
+          "administration",
+          "childcare",
+          "commuting",
+          "consumer_issue",
+          "daily_life",
+          "digital_life",
+          "family",
+          "finance",
+          "gig_work",
+          "health_routine",
+          "personal_planning",
+          "relationship",
+          "self_worth",
+          "work",
+          "work_family_intersection"
+        ],
+        "domain_counts": {
+          "administration": 1,
+          "childcare": 3,
+          "commuting": 1,
+          "consumer_issue": 1,
+          "daily_life": 2,
+          "digital_life": 1,
+          "family": 3,
+          "finance": 2,
+          "gig_work": 2,
+          "health_routine": 3,
+          "personal_planning": 5,
+          "relationship": 1,
+          "self_worth": 1,
+          "work": 1,
+          "work_family_intersection": 3
+        },
+        "capped_event_capacity_under_domain_limit": 23,
+        "non_work_family_event_count": 20,
+        "can_satisfy_p0_sampling_constraints": true
+      },
+      {
+        "archetype_id": "A04_small_business_owner",
+        "compatible_event_count": 21,
+        "candidate_min_required": 14,
+        "domain_count": 11,
+        "domains": [
+          "administration",
+          "business",
+          "consumer_issue",
+          "digital_life",
+          "family",
+          "finance",
+          "health_routine",
+          "personal_planning",
+          "relationship",
+          "work",
+          "work_family_intersection"
+        ],
+        "domain_counts": {
+          "administration": 1,
+          "business": 3,
+          "consumer_issue": 1,
+          "digital_life": 1,
+          "family": 2,
+          "finance": 3,
+          "health_routine": 1,
+          "personal_planning": 3,
+          "relationship": 1,
+          "work": 3,
+          "work_family_intersection": 2
+        },
+        "capped_event_capacity_under_domain_limit": 17,
+        "non_work_family_event_count": 14,
+        "can_satisfy_p0_sampling_constraints": true
+      },
+      {
+        "archetype_id": "A05_single_parent_service_worker",
+        "compatible_event_count": 42,
+        "candidate_min_required": 14,
+        "domain_count": 19,
+        "domains": [
+          "administration",
+          "childcare",
+          "community",
+          "commuting",
+          "consumer_issue",
+          "daily_life",
+          "digital_life",
+          "family",
+          "finance",
+          "health_routine",
+          "housing",
+          "learning",
+          "neighborhood",
+          "personal_boundary",
+          "personal_planning",
+          "relationship",
+          "self_worth",
+          "work",
+          "work_family_intersection"
+        ],
+        "domain_counts": {
+          "administration": 3,
+          "childcare": 3,
+          "community": 1,
+          "commuting": 1,
+          "consumer_issue": 1,
+          "daily_life": 2,
+          "digital_life": 1,
+          "family": 2,
+          "finance": 2,
+          "health_routine": 4,
+          "housing": 1,
+          "learning": 1,
+          "neighborhood": 1,
+          "personal_boundary": 1,
+          "personal_planning": 5,
+          "relationship": 1,
+          "self_worth": 2,
+          "work": 8,
+          "work_family_intersection": 2
+        },
+        "capped_event_capacity_under_domain_limit": 29,
+        "non_work_family_event_count": 27,
+        "can_satisfy_p0_sampling_constraints": true
+      },
+      {
+        "archetype_id": "A06_midlife_caregiver",
+        "compatible_event_count": 19,
+        "candidate_min_required": 14,
+        "domain_count": 11,
+        "domains": [
+          "administration",
+          "eldercare",
+          "family",
+          "finance",
+          "health_routine",
+          "personal_boundary",
+          "personal_planning",
+          "relationship",
+          "self_worth",
+          "work",
+          "work_family_intersection"
+        ],
+        "domain_counts": {
+          "administration": 1,
+          "eldercare": 2,
+          "family": 2,
+          "finance": 2,
+          "health_routine": 2,
+          "personal_boundary": 1,
+          "personal_planning": 4,
+          "relationship": 1,
+          "self_worth": 1,
+          "work": 1,
+          "work_family_intersection": 2
+        },
+        "capped_event_capacity_under_domain_limit": 17,
+        "non_work_family_event_count": 12,
+        "can_satisfy_p0_sampling_constraints": true
+      },
+      {
+        "archetype_id": "A07_unemployed_job_seeker",
+        "compatible_event_count": 29,
+        "candidate_min_required": 14,
+        "domain_count": 15,
+        "domains": [
+          "administration",
+          "consumer_issue",
+          "daily_life",
+          "digital_life",
+          "family",
+          "finance",
+          "health_routine",
+          "housing",
+          "job_search",
+          "learning",
+          "personal_boundary",
+          "personal_planning",
+          "pet_care",
+          "self_worth",
+          "social_connection"
+        ],
+        "domain_counts": {
+          "administration": 3,
+          "consumer_issue": 1,
+          "daily_life": 2,
+          "digital_life": 1,
+          "family": 1,
+          "finance": 3,
+          "health_routine": 3,
+          "housing": 1,
+          "job_search": 2,
+          "learning": 1,
+          "personal_boundary": 1,
+          "personal_planning": 5,
+          "pet_care": 1,
+          "self_worth": 2,
+          "social_connection": 2
+        },
+        "capped_event_capacity_under_domain_limit": 23,
+        "non_work_family_event_count": 28,
+        "can_satisfy_p0_sampling_constraints": true
+      },
+      {
+        "archetype_id": "A08_shift_worker_family_pressure",
+        "compatible_event_count": 27,
+        "candidate_min_required": 14,
+        "domain_count": 10,
+        "domains": [
+          "commuting",
+          "daily_life",
+          "family",
+          "finance",
+          "health_routine",
+          "learning",
+          "personal_planning",
+          "self_worth",
+          "work",
+          "work_family_intersection"
+        ],
+        "domain_counts": {
+          "commuting": 1,
+          "daily_life": 2,
+          "family": 2,
+          "finance": 1,
+          "health_routine": 4,
+          "learning": 1,
+          "personal_planning": 4,
+          "self_worth": 1,
+          "work": 8,
+          "work_family_intersection": 3
+        },
+        "capped_event_capacity_under_domain_limit": 16,
+        "non_work_family_event_count": 14,
+        "can_satisfy_p0_sampling_constraints": true
+      },
+      {
+        "archetype_id": "A09_retirement_adjustment",
+        "compatible_event_count": 20,
+        "candidate_min_required": 14,
+        "domain_count": 11,
+        "domains": [
+          "administration",
+          "community",
+          "consumer_issue",
+          "daily_life",
+          "health_routine",
+          "learning",
+          "neighborhood",
+          "personal_planning",
+          "pet_care",
+          "retirement",
+          "social_connection"
+        ],
+        "domain_counts": {
+          "administration": 1,
+          "community": 2,
+          "consumer_issue": 1,
+          "daily_life": 1,
+          "health_routine": 4,
+          "learning": 1,
+          "neighborhood": 1,
+          "personal_planning": 3,
+          "pet_care": 1,
+          "retirement": 2,
+          "social_connection": 3
+        },
+        "capped_event_capacity_under_domain_limit": 16,
+        "non_work_family_event_count": 20,
+        "can_satisfy_p0_sampling_constraints": true
+      },
+      {
+        "archetype_id": "A10_international_student_admin_pressure",
+        "compatible_event_count": 34,
+        "candidate_min_required": 14,
+        "domain_count": 19,
+        "domains": [
+          "administration",
+          "commuting",
+          "consumer_issue",
+          "daily_life",
+          "digital_life",
+          "education",
+          "family",
+          "finance",
+          "health_routine",
+          "housing",
+          "job_search",
+          "learning",
+          "personal_boundary",
+          "personal_planning",
+          "relationship",
+          "relocation",
+          "self_worth",
+          "social_connection",
+          "visa_administration"
+        ],
+        "domain_counts": {
+          "administration": 3,
+          "commuting": 1,
+          "consumer_issue": 1,
+          "daily_life": 2,
+          "digital_life": 1,
+          "education": 1,
+          "family": 1,
+          "finance": 2,
+          "health_routine": 3,
+          "housing": 2,
+          "job_search": 2,
+          "learning": 1,
+          "personal_boundary": 1,
+          "personal_planning": 4,
+          "relationship": 2,
+          "relocation": 1,
+          "self_worth": 2,
+          "social_connection": 3,
+          "visa_administration": 1
+        },
+        "capped_event_capacity_under_domain_limit": 29,
+        "non_work_family_event_count": 33,
+        "can_satisfy_p0_sampling_constraints": true
+      },
+      {
+        "archetype_id": "A11_adult_child_boundary_family",
+        "compatible_event_count": 19,
+        "candidate_min_required": 14,
+        "domain_count": 12,
+        "domains": [
+          "adult_child_boundary",
+          "community",
+          "daily_life",
+          "family",
+          "finance",
+          "health_routine",
+          "neighborhood",
+          "personal_boundary",
+          "personal_planning",
+          "relationship",
+          "retirement",
+          "self_worth"
+        ],
+        "domain_counts": {
+          "adult_child_boundary": 2,
+          "community": 1,
+          "daily_life": 1,
+          "family": 2,
+          "finance": 2,
+          "health_routine": 3,
+          "neighborhood": 1,
+          "personal_boundary": 1,
+          "personal_planning": 3,
+          "relationship": 1,
+          "retirement": 1,
+          "self_worth": 1
+        },
+        "capped_event_capacity_under_domain_limit": 17,
+        "non_work_family_event_count": 15,
+        "can_satisfy_p0_sampling_constraints": true
+      },
+      {
+        "archetype_id": "A12_early_parenthood_return_to_work",
+        "compatible_event_count": 32,
+        "candidate_min_required": 14,
+        "domain_count": 18,
+        "domains": [
+          "administration",
+          "childcare",
+          "community",
+          "commuting",
+          "consumer_issue",
+          "daily_life",
+          "digital_life",
+          "family",
+          "finance",
+          "health_routine",
+          "infant_care",
+          "neighborhood",
+          "personal_boundary",
+          "personal_planning",
+          "relationship",
+          "self_worth",
+          "work",
+          "work_family_intersection"
+        ],
+        "domain_counts": {
+          "administration": 2,
+          "childcare": 1,
+          "community": 1,
+          "commuting": 1,
+          "consumer_issue": 1,
+          "daily_life": 2,
+          "digital_life": 1,
+          "family": 3,
+          "finance": 2,
+          "health_routine": 3,
+          "infant_care": 2,
+          "neighborhood": 1,
+          "personal_boundary": 1,
+          "personal_planning": 5,
+          "relationship": 1,
+          "self_worth": 2,
+          "work": 1,
+          "work_family_intersection": 2
+        },
+        "capped_event_capacity_under_domain_limit": 27,
+        "non_work_family_event_count": 23,
+        "can_satisfy_p0_sampling_constraints": true
+      }
+    ],
+    "known_event_ids": [
+      "E_ADMIN_001",
+      "E_ADMIN_002",
+      "E_ADMIN_STUDY_001",
+      "E_ADULT_CHILD_001",
+      "E_ADULT_CHILD_002",
+      "E_BOUNDARY_001",
+      "E_BUS_001",
+      "E_BUS_002",
+      "E_BUS_003",
+      "E_CHILD_001",
+      "E_CHILD_002",
+      "E_CHILD_003",
+      "E_CLEAN_001",
+      "E_COMMUNITY_001",
+      "E_CONSUMER_001",
+      "E_DIGITAL_001",
+      "E_EDU_001",
+      "E_ELDER_001",
+      "E_ELDER_002",
+      "E_FAM_001",
+      "E_FAM_002",
+      "E_FAM_003",
+      "E_FIN_001",
+      "E_FIN_002",
+      "E_FIN_003",
+      "E_FOOD_001",
+      "E_GIG_001",
+      "E_GIG_002",
+      "E_HEALTH_001",
+      "E_HEALTH_002",
+      "E_HEALTH_003",
+      "E_HEALTH_004",
+      "E_HOME_001",
+      "E_HOME_002",
+      "E_INFANT_001",
+      "E_INFANT_002",
+      "E_INTER_001",
+      "E_INTER_002",
+      "E_INTER_003",
+      "E_JOB_001",
+      "E_JOB_002",
+      "E_LEARN_001",
+      "E_LEGALADMIN_001",
+      "E_MOVE_001",
+      "E_NEIGHBOR_001",
+      "E_PET_001",
+      "E_PLAN_001",
+      "E_PLAN_002",
+      "E_PLAN_003",
+      "E_PLAN_004",
+      "E_PLAN_005",
+      "E_REL_001",
+      "E_REL_002",
+      "E_RETIRE_001",
+      "E_RETIRE_002",
+      "E_RETIRE_003",
+      "E_RETIRE_004",
+      "E_SELF_001",
+      "E_SELF_002",
+      "E_SELF_003",
+      "E_SOCIAL_001",
+      "E_SOCIAL_002",
+      "E_SOCIAL_003",
+      "E_TIME_001",
+      "E_TRANSPORT_001",
+      "E_WORK_001",
+      "E_WORK_002",
+      "E_WORK_003",
+      "E_WORK_004",
+      "E_WORK_005",
+      "E_WORK_006",
+      "E_WORK_007",
+      "E_WORK_008"
+    ]
+  },
+  "batch_report": {
+    "schema_version": "batch_realism_validation_report_v0.1",
+    "status": "pass",
+    "issues": [],
+    "warnings": [
+      "Child-related ratio 0.40 exceeds 0.35. Treated as a small-demo warning because batch size 5 is below 20."
+    ],
+    "summary": {
+      "persona_count": 5,
+      "persona_event_sets_checked": 5,
+      "pass_count": 5,
+      "high_autobiography_risk_count": 0
+    },
+    "batch_diversity": {
+      "status": "pass",
+      "issues": [],
+      "warnings": [
+        "Child-related ratio 0.40 exceeds 0.35. Treated as a small-demo warning because batch size 5 is below 20."
+      ],
+      "counts": {
+        "personas": 5,
+        "source_archetypes": {
+          "A01_early_career_renter": 1,
+          "A02_service_emotional_labor": 1,
+          "A03_gig_worker_parent": 1,
+          "A04_small_business_owner": 1,
+          "A05_single_parent_service_worker": 1
+        },
+        "age_range_count": 3,
+        "occupation_count": 5,
+        "family_structure_count": 5,
+        "researcher_or_student_count": 0,
+        "child_related_count": 2
+      },
+      "ratios": {
+        "max_same_archetype_ratio": 0.2,
+        "researcher_or_student_ratio": 0.0,
+        "child_related_ratio": 0.4
+      }
+    },
+    "persona_reports": [
+      {
+        "schema_version": "persona_event_realism_report_v0.1",
+        "persona_id": "P0001",
+        "source_archetype": "A01_early_career_renter",
+        "status": "pass",
+        "issues": [],
+        "warnings": [],
+        "life_plausibility": {
+          "status": "pass",
+          "issues": [],
+          "warnings": []
+        },
+        "event_compatibility": {
+          "status": "pass",
+          "event_checks": [
+            {
+              "event_category_id": "E_CLEAN_001",
+              "domain": "daily_life",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_JOB_001",
+              "domain": "job_search",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_LEARN_001",
+              "domain": "learning",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_HEALTH_003",
+              "domain": "health_routine",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_EDU_001",
+              "domain": "education",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_MOVE_001",
+              "domain": "relocation",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_BOUNDARY_001",
+              "domain": "personal_boundary",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_CONSUMER_001",
+              "domain": "consumer_issue",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            }
+          ]
+        },
+        "domain_diversity": {
+          "status": "pass",
+          "issues": [],
+          "warnings": [],
+          "event_count": 8,
+          "domain_counts": {
+            "consumer_issue": 1,
+            "daily_life": 1,
+            "education": 1,
+            "health_routine": 1,
+            "job_search": 1,
+            "learning": 1,
+            "personal_boundary": 1,
+            "relocation": 1
+          },
+          "non_work_family_domains": [
+            "consumer_issue",
+            "daily_life",
+            "education",
+            "health_routine",
+            "job_search",
+            "learning",
+            "personal_boundary",
+            "relocation"
+          ]
+        },
+        "causal_coherence": {
+          "status": "pass",
+          "interpretation": "This validates event-category causal ingredients. Full BEI/relational trajectory coherence is checked after event_lines are constructed.",
+          "issues": [],
+          "warnings": [],
+          "event_checks": [
+            {
+              "event_category_id": "E_CLEAN_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_JOB_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_LEARN_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_HEALTH_003",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_EDU_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_MOVE_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_BOUNDARY_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_CONSUMER_001",
+              "status": "pass",
+              "issues": []
+            }
+          ]
+        },
+        "autobiography_risk": {
+          "level": "low",
+          "matched_signal_count": 0,
+          "matched_signals": []
+        },
+        "language_naturalness_review": {
+          "status": "pending",
+          "reason": "Naturalness requires generated dialogue text or human review sample."
+        }
+      },
+      {
+        "schema_version": "persona_event_realism_report_v0.1",
+        "persona_id": "P0002",
+        "source_archetype": "A02_service_emotional_labor",
+        "status": "pass",
+        "issues": [],
+        "warnings": [],
+        "life_plausibility": {
+          "status": "pass",
+          "issues": [],
+          "warnings": []
+        },
+        "event_compatibility": {
+          "status": "pass",
+          "event_checks": [
+            {
+              "event_category_id": "E_SOCIAL_001",
+              "domain": "social_connection",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_FIN_001",
+              "domain": "finance",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_HEALTH_003",
+              "domain": "health_routine",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_BOUNDARY_001",
+              "domain": "personal_boundary",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_DIGITAL_001",
+              "domain": "digital_life",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_HOME_002",
+              "domain": "housing",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_INTER_001",
+              "domain": "work_family_intersection",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_SELF_003",
+              "domain": "self_worth",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_BUS_002",
+              "domain": "business",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            }
+          ]
+        },
+        "domain_diversity": {
+          "status": "pass",
+          "issues": [],
+          "warnings": [],
+          "event_count": 9,
+          "domain_counts": {
+            "business": 1,
+            "digital_life": 1,
+            "finance": 1,
+            "health_routine": 1,
+            "housing": 1,
+            "personal_boundary": 1,
+            "self_worth": 1,
+            "social_connection": 1,
+            "work_family_intersection": 1
+          },
+          "non_work_family_domains": [
+            "business",
+            "digital_life",
+            "finance",
+            "health_routine",
+            "housing",
+            "personal_boundary",
+            "self_worth",
+            "social_connection"
+          ]
+        },
+        "causal_coherence": {
+          "status": "pass",
+          "interpretation": "This validates event-category causal ingredients. Full BEI/relational trajectory coherence is checked after event_lines are constructed.",
+          "issues": [],
+          "warnings": [],
+          "event_checks": [
+            {
+              "event_category_id": "E_SOCIAL_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_FIN_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_HEALTH_003",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_BOUNDARY_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_DIGITAL_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_HOME_002",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_INTER_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_SELF_003",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_BUS_002",
+              "status": "pass",
+              "issues": []
+            }
+          ]
+        },
+        "autobiography_risk": {
+          "level": "low",
+          "matched_signal_count": 0,
+          "matched_signals": []
+        },
+        "language_naturalness_review": {
+          "status": "pending",
+          "reason": "Naturalness requires generated dialogue text or human review sample."
+        }
+      },
+      {
+        "schema_version": "persona_event_realism_report_v0.1",
+        "persona_id": "P0003",
+        "source_archetype": "A03_gig_worker_parent",
+        "status": "pass",
+        "issues": [],
+        "warnings": [],
+        "life_plausibility": {
+          "status": "pass",
+          "issues": [],
+          "warnings": []
+        },
+        "event_compatibility": {
+          "status": "pass",
+          "event_checks": [
+            {
+              "event_category_id": "E_ADMIN_002",
+              "domain": "administration",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_DIGITAL_001",
+              "domain": "digital_life",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_HEALTH_004",
+              "domain": "health_routine",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_INTER_003",
+              "domain": "work_family_intersection",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_CHILD_002",
+              "domain": "childcare",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_CONSUMER_001",
+              "domain": "consumer_issue",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_PLAN_003",
+              "domain": "personal_planning",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_CLEAN_001",
+              "domain": "daily_life",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            }
+          ]
+        },
+        "domain_diversity": {
+          "status": "pass",
+          "issues": [],
+          "warnings": [],
+          "event_count": 8,
+          "domain_counts": {
+            "administration": 1,
+            "childcare": 1,
+            "consumer_issue": 1,
+            "daily_life": 1,
+            "digital_life": 1,
+            "health_routine": 1,
+            "personal_planning": 1,
+            "work_family_intersection": 1
+          },
+          "non_work_family_domains": [
+            "administration",
+            "consumer_issue",
+            "daily_life",
+            "digital_life",
+            "health_routine",
+            "personal_planning"
+          ]
+        },
+        "causal_coherence": {
+          "status": "pass",
+          "interpretation": "This validates event-category causal ingredients. Full BEI/relational trajectory coherence is checked after event_lines are constructed.",
+          "issues": [],
+          "warnings": [],
+          "event_checks": [
+            {
+              "event_category_id": "E_ADMIN_002",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_DIGITAL_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_HEALTH_004",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_INTER_003",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_CHILD_002",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_CONSUMER_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_PLAN_003",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_CLEAN_001",
+              "status": "pass",
+              "issues": []
+            }
+          ]
+        },
+        "autobiography_risk": {
+          "level": "low",
+          "matched_signal_count": 1,
+          "matched_signals": [
+            "child_or_school_pressure"
+          ]
+        },
+        "language_naturalness_review": {
+          "status": "pending",
+          "reason": "Naturalness requires generated dialogue text or human review sample."
+        }
+      },
+      {
+        "schema_version": "persona_event_realism_report_v0.1",
+        "persona_id": "P0004",
+        "source_archetype": "A04_small_business_owner",
+        "status": "pass",
+        "issues": [],
+        "warnings": [],
+        "life_plausibility": {
+          "status": "pass",
+          "issues": [],
+          "warnings": []
+        },
+        "event_compatibility": {
+          "status": "pass",
+          "event_checks": [
+            {
+              "event_category_id": "E_CONSUMER_001",
+              "domain": "consumer_issue",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_LEGALADMIN_001",
+              "domain": "administration",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_BUS_003",
+              "domain": "business",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_FIN_001",
+              "domain": "finance",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_HEALTH_004",
+              "domain": "health_routine",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_INTER_003",
+              "domain": "work_family_intersection",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_INTER_001",
+              "domain": "work_family_intersection",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_FAM_003",
+              "domain": "family",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_FAM_002",
+              "domain": "family",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_PLAN_003",
+              "domain": "personal_planning",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            }
+          ]
+        },
+        "domain_diversity": {
+          "status": "pass",
+          "issues": [],
+          "warnings": [],
+          "event_count": 10,
+          "domain_counts": {
+            "administration": 1,
+            "business": 1,
+            "consumer_issue": 1,
+            "family": 2,
+            "finance": 1,
+            "health_routine": 1,
+            "personal_planning": 1,
+            "work_family_intersection": 2
+          },
+          "non_work_family_domains": [
+            "administration",
+            "business",
+            "consumer_issue",
+            "finance",
+            "health_routine",
+            "personal_planning"
+          ]
+        },
+        "causal_coherence": {
+          "status": "pass",
+          "interpretation": "This validates event-category causal ingredients. Full BEI/relational trajectory coherence is checked after event_lines are constructed.",
+          "issues": [],
+          "warnings": [],
+          "event_checks": [
+            {
+              "event_category_id": "E_CONSUMER_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_LEGALADMIN_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_BUS_003",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_FIN_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_HEALTH_004",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_INTER_003",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_INTER_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_FAM_003",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_FAM_002",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_PLAN_003",
+              "status": "pass",
+              "issues": []
+            }
+          ]
+        },
+        "autobiography_risk": {
+          "level": "low",
+          "matched_signal_count": 0,
+          "matched_signals": []
+        },
+        "language_naturalness_review": {
+          "status": "pending",
+          "reason": "Naturalness requires generated dialogue text or human review sample."
+        }
+      },
+      {
+        "schema_version": "persona_event_realism_report_v0.1",
+        "persona_id": "P0005",
+        "source_archetype": "A05_single_parent_service_worker",
+        "status": "pass",
+        "issues": [],
+        "warnings": [],
+        "life_plausibility": {
+          "status": "pass",
+          "issues": [],
+          "warnings": []
+        },
+        "event_compatibility": {
+          "status": "pass",
+          "event_checks": [
+            {
+              "event_category_id": "E_NEIGHBOR_001",
+              "domain": "neighborhood",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_INTER_001",
+              "domain": "work_family_intersection",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_WORK_002",
+              "domain": "work",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_CLEAN_001",
+              "domain": "daily_life",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_HEALTH_001",
+              "domain": "health_routine",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_CHILD_002",
+              "domain": "childcare",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_HOME_002",
+              "domain": "housing",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_FIN_001",
+              "domain": "finance",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            },
+            {
+              "event_category_id": "E_FAM_003",
+              "domain": "family",
+              "decision": "accept",
+              "hard_rule_pass": true,
+              "compatible_archetype_pass": true,
+              "reasons": [
+                "compatible with source_archetype and hard rules"
+              ]
+            }
+          ]
+        },
+        "domain_diversity": {
+          "status": "pass",
+          "issues": [],
+          "warnings": [],
+          "event_count": 9,
+          "domain_counts": {
+            "childcare": 1,
+            "daily_life": 1,
+            "family": 1,
+            "finance": 1,
+            "health_routine": 1,
+            "housing": 1,
+            "neighborhood": 1,
+            "work": 1,
+            "work_family_intersection": 1
+          },
+          "non_work_family_domains": [
+            "daily_life",
+            "finance",
+            "health_routine",
+            "housing",
+            "neighborhood"
+          ]
+        },
+        "causal_coherence": {
+          "status": "pass",
+          "interpretation": "This validates event-category causal ingredients. Full BEI/relational trajectory coherence is checked after event_lines are constructed.",
+          "issues": [],
+          "warnings": [],
+          "event_checks": [
+            {
+              "event_category_id": "E_NEIGHBOR_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_INTER_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_WORK_002",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_CLEAN_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_HEALTH_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_CHILD_002",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_HOME_002",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_FIN_001",
+              "status": "pass",
+              "issues": []
+            },
+            {
+              "event_category_id": "E_FAM_003",
+              "status": "pass",
+              "issues": []
+            }
+          ]
+        },
+        "autobiography_risk": {
+          "level": "low",
+          "matched_signal_count": 2,
+          "matched_signals": [
+            "child_or_school_pressure",
+            "sleep_disruption"
+          ]
+        },
+        "language_naturalness_review": {
+          "status": "pending",
+          "reason": "Naturalness requires generated dialogue text or human review sample."
+        }
+      }
+    ]
+  }
+}

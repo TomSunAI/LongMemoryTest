@@ -1,0 +1,225 @@
+{
+  "schema_version": "interaction_naturalization_batch_v0.1",
+  "source_daily_interactions": "long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/daily_interaction_units.json",
+  "llm_provider": "deepseek",
+  "llm_model": "deepseek-v4-pro",
+  "construction_scope": {
+    "from_daily_interaction_units": true,
+    "canonical_i_units_preserved": true,
+    "naturalized_text_is_candidate_only": true
+  },
+  "naturalized_dialogues": [
+    {
+      "schema_version": "interaction_naturalization_v0.1",
+      "naturalized_dialogue_id": "P0001_D01_M001_NAT001",
+      "source_interaction_unit_id": "P0001_D01_M001",
+      "source_message_id": "P0001_D01_M001",
+      "llm_generated": true,
+      "canonical_opening_user_message": "我最近卡在「适应新城市但本地支持较弱」这件事上。我现在做物业服务助理，时间和预算都不是很宽，所以有点拿不准该把社交精力投在哪里。你先帮我拆一下。",
+      "opening_user_message": "最近一直被一件事困着：刚来这个城市，感觉很陌生，适应起来有点吃力。我在物业公司做助理，时间上不自由，手头也不宽裕，所以不知道该把社交的精力往哪投。你能先帮我理理吗？",
+      "followup_user_messages": [
+        "其实来这边后，我一直没交到什么能互相照应的朋友，有时候觉得挺孤单的。",
+        "嗯，听你这么说，我这次其实就是想先把我的担心和不确定的地方说出来，再让你帮我拆开事实和风险，然后给我一个低成本的小下一步试试。"
+      ],
+      "fact_ids_used": [
+        "P0001_D01_M001:event_title",
+        "P0001_D01_M001:persona_occupation",
+        "P0001_D01_M001:event_summary",
+        "P0001_D01_M001:stage_goal",
+        "P0001_D01_M001:assistant_memory_expectation"
+      ],
+      "notes": "自然化改写，保留所有原始事实，添加两个跟进消息逐步深化：先揭示事件概况，再明确阶段目标与期望的拆解路径。",
+      "raw_output": "{\n  \"source_interaction_unit_id\": \"P0001_D01_M001\",\n  \"opening_user_message\": \"最近一直被一件事困着：刚来这个城市，感觉很陌生，适应起来有点吃力。我在物业公司做助理，时间上不自由，手头也不宽裕，所以不知道该把社交的精力往哪投。你能先帮我理理吗？\",\n  \"followup_user_messages\": [\n    \"其实来这边后，我一直没交到什么能互相照应的朋友，有时候觉得挺孤单的。\",\n    \"嗯，听你这么说，我这次其实就是想先把我的担心和不确定的地方说出来，再让你帮我拆开事实和风险，然后给我一个低成本的小下一步试试。\"\n  ],\n  \"fact_ids_used\": [\n    \"P0001_D01_M001:event_title\",\n    \"P0001_D01_M001:persona_occupation\",\n    \"P0001_D01_M001:event_summary\",\n    \"P0001_D01_M001:stage_goal\",\n    \"P0001_D01_M001:assistant_memory_expectation\"\n  ],\n  \"notes\": \"自然化改写，保留所有原始事实，添加两个跟进消息逐步深化：先揭示事件概况，再明确阶段目标与期望的拆解路径。\"\n}",
+      "construction_config": {
+        "max_followups": 2,
+        "max_allowed_facts": 12,
+        "temperature": 0.2,
+        "top_p": 1.0,
+        "max_tokens": 4000,
+        "timeout_seconds": 240.0,
+        "json_response_format": true,
+        "retry_on_invalid_json": true
+      },
+      "non_destructive_policy": {
+        "canonical_i_unit_preserved": true,
+        "naturalized_text_is_candidate_only": true,
+        "must_not_overwrite_scripted_opening": true
+      },
+      "validation": {
+        "status": "pass",
+        "issues": [],
+        "allowed_fact_id_count": 38
+      }
+    },
+    {
+      "schema_version": "interaction_naturalization_v0.1",
+      "naturalized_dialogue_id": "P0002_D01_M001_NAT001",
+      "source_interaction_unit_id": "P0002_D01_M001",
+      "source_message_id": "P0002_D01_M001",
+      "llm_generated": true,
+      "canonical_opening_user_message": "我最近卡在「难以拒绝他人请求」这件事上。我现在做呼叫中心客服，时间和预算都不是很宽，所以有点拿不准拒绝是否自私。你先帮我拆一下。",
+      "opening_user_message": "最近发现自己特别难拒绝别人，这真的挺困扰的。我在呼叫中心做客服，平时时间紧、预算也不多，所以一直拿不准：拒绝别人的请求是不是太自私了？你能先帮我理一理吗？",
+      "followup_user_messages": [
+        "坦白说，也不是所有请求都难拒绝。主要是工作上领导或同事临时加活，还有朋友偶尔借点小钱周转。我特别怕因为拒绝而把关系搞僵，所以每次都硬着头皮答应。你说的那种‘事实’和‘未知’，能再具体点吗？",
+        "嗯，你说的这些我大概明白了。但我现在最需要的是一个能马上试试的小方法。比如，下次同事再让我帮忙加班，我该怎么说才能既拒绝又不伤和气？你能给我一个低风险的起步动作吗？"
+      ],
+      "fact_ids_used": [
+        "P0002_D01_M001:persona_occupation",
+        "P0002_D01_M001:event_title",
+        "P0002_D01_M001:event_summary",
+        "P0002_D01_M001:assistant_memory_expectation"
+      ],
+      "notes": "自然化改写，保留所有核心事实，未引入新事实。跟进消息逐步澄清约束并请求低成本下一步，符合 allowed moves。",
+      "raw_output": "{\n  \"source_interaction_unit_id\": \"P0002_D01_M001\",\n  \"opening_user_message\": \"最近发现自己特别难拒绝别人，这真的挺困扰的。我在呼叫中心做客服，平时时间紧、预算也不多，所以一直拿不准：拒绝别人的请求是不是太自私了？你能先帮我理一理吗？\",\n  \"followup_user_messages\": [\n    \"坦白说，也不是所有请求都难拒绝。主要是工作上领导或同事临时加活，还有朋友偶尔借点小钱周转。我特别怕因为拒绝而把关系搞僵，所以每次都硬着头皮答应。你说的那种‘事实’和‘未知’，能再具体点吗？\",\n    \"嗯，你说的这些我大概明白了。但我现在最需要的是一个能马上试试的小方法。比如，下次同事再让我帮忙加班，我该怎么说才能既拒绝又不伤和气？你能给我一个低风险的起步动作吗？\"\n  ],\n  \"fact_ids_used\": [\n    \"P0002_D01_M001:persona_occupation\",\n    \"P0002_D01_M001:event_title\",\n    \"P0002_D01_M001:event_summary\",\n    \"P0002_D01_M001:assistant_memory_expectation\"\n  ],\n  \"notes\": \"自然化改写，保留所有核心事实，未引入新事实。跟进消息逐步澄清约束并请求低成本下一步，符合 allowed moves。\"\n}",
+      "construction_config": {
+        "max_followups": 2,
+        "max_allowed_facts": 12,
+        "temperature": 0.2,
+        "top_p": 1.0,
+        "max_tokens": 4000,
+        "timeout_seconds": 240.0,
+        "json_response_format": true,
+        "retry_on_invalid_json": true
+      },
+      "non_destructive_policy": {
+        "canonical_i_unit_preserved": true,
+        "naturalized_text_is_candidate_only": true,
+        "must_not_overwrite_scripted_opening": true
+      },
+      "validation": {
+        "status": "pass",
+        "issues": [],
+        "allowed_fact_id_count": 38
+      }
+    },
+    {
+      "schema_version": "interaction_naturalization_v0.1",
+      "naturalized_dialogue_id": "P0003_D01_M001_NAT001",
+      "source_interaction_unit_id": "P0003_D01_M001",
+      "source_message_id": "P0003_D01_M001",
+      "llm_generated": true,
+      "canonical_opening_user_message": "我最近卡在「家庭责任和工作安排相互挤压」这件事上。我现在做平台服务劳动者，时间和预算都不是很宽，所以有点拿不准多少加班值得承担。你先帮我拆一下。",
+      "opening_user_message": "唉，最近老觉得家里和工作两头都顾不过来。我在平台接单干活，收入不稳定，还得带着学龄前的娃，时间和钱都紧巴巴的。现在最头疼的是要不要加班多挣点儿，但一加班就容易顾不上孩子，自己还累得够呛。你帮我理理，到底该怎么想这个事儿？",
+      "followup_user_messages": [
+        "其实我最怕的是，万一为了多挣点儿把身体搞垮了，或者路上出点什么事，家里更转不动了。",
+        "嗯，你说的这些我都理解。但能不能先给我一个具体的小动作，比如这周我试着控制一下加班上限，看看效果？"
+      ],
+      "fact_ids_used": [
+        "P0003_D01_M001:persona_occupation",
+        "P0003_D01_M001:persona_family_structure",
+        "P0003_D01_M001:event_title",
+        "P0003_D01_M001:event_summary",
+        "P0003_D01_M001:allowed_base_fact_1"
+      ],
+      "notes": "Opening 自然地整合了职业、家庭结构和事件标题，保持口语化；followup 1 基于事件摘要澄清了对安全与健康的担心，不引入新事实；followup 2 要求收束到一个低成本下一步，符合 stage goal 和 assistant memory expectation。",
+      "raw_output": "{\n  \"source_interaction_unit_id\": \"P0003_D01_M001\",\n  \"opening_user_message\": \"唉，最近老觉得家里和工作两头都顾不过来。我在平台接单干活，收入不稳定，还得带着学龄前的娃，时间和钱都紧巴巴的。现在最头疼的是要不要加班多挣点儿，但一加班就容易顾不上孩子，自己还累得够呛。你帮我理理，到底该怎么想这个事儿？\",\n  \"followup_user_messages\": [\n    \"其实我最怕的是，万一为了多挣点儿把身体搞垮了，或者路上出点什么事，家里更转不动了。\",\n    \"嗯，你说的这些我都理解。但能不能先给我一个具体的小动作，比如这周我试着控制一下加班上限，看看效果？\"\n  ],\n  \"fact_ids_used\": [\n    \"P0003_D01_M001:persona_occupation\",\n    \"P0003_D01_M001:persona_family_structure\",\n    \"P0003_D01_M001:event_title\",\n    \"P0003_D01_M001:event_summary\",\n    \"P0003_D01_M001:allowed_base_fact_1\"\n  ],\n  \"notes\": \"Opening 自然地整合了职业、家庭结构和事件标题，保持口语化；followup 1 基于事件摘要澄清了对安全与健康的担心，不引入新事实；followup 2 要求收束到一个低成本下一步，符合 stage goal 和 assistant memory expectation。\"\n}",
+      "construction_config": {
+        "max_followups": 2,
+        "max_allowed_facts": 12,
+        "temperature": 0.2,
+        "top_p": 1.0,
+        "max_tokens": 4000,
+        "timeout_seconds": 240.0,
+        "json_response_format": true,
+        "retry_on_invalid_json": true
+      },
+      "non_destructive_policy": {
+        "canonical_i_unit_preserved": true,
+        "naturalized_text_is_candidate_only": true,
+        "must_not_overwrite_scripted_opening": true
+      },
+      "validation": {
+        "status": "pass",
+        "issues": [],
+        "allowed_fact_id_count": 38
+      }
+    },
+    {
+      "schema_version": "interaction_naturalization_v0.1",
+      "naturalized_dialogue_id": "P0004_D01_M001_NAT001",
+      "source_interaction_unit_id": "P0004_D01_M001",
+      "source_message_id": "P0004_D01_M001",
+      "llm_generated": true,
+      "canonical_opening_user_message": "我最近卡在「月度预算吃紧或意外支出」这件事上。我现在做便利店店主，时间和预算都不是很宽，所以有点拿不准应该先支付什么。你先帮我拆一下。",
+      "opening_user_message": "我最近老被「月度预算吃紧或意外支出」这件事困住。我是开便利店的，手里时间和钱都不宽裕，所以现在特别拿不准该优先付哪笔。你先帮我拆一下。",
+      "followup_user_messages": [
+        "最让我卡住的是：收入一不稳，是先撑着店里的账单，还是先顾家里的开销。两边都拖不得，但就是排不出个先后。",
+        "其实我头一回聊这个，就是希望你能把中间轻重缓急理一遍，别让我一上来就做太大的决定。能不能先给我一个特别小、不用冒风险的下一步？"
+      ],
+      "fact_ids_used": [
+        "P0004_D01_M001:persona_occupation",
+        "P0004_D01_M001:event_title",
+        "P0004_D01_M001:event_summary",
+        "P0004_D01_M001:stage_goal"
+      ],
+      "notes": "开场改写得更像日常吐槽，保留全部事实。followup1用具体两难场景引出收入不稳的约束（event_summary），followup2点明初次求助意图（stage_goal）并索要低风险下一步，未引入新事实；两轮均在reveal_steps框架内收束。",
+      "raw_output": "{\n  \"source_interaction_unit_id\": \"P0004_D01_M001\",\n  \"opening_user_message\": \"我最近老被「月度预算吃紧或意外支出」这件事困住。我是开便利店的，手里时间和钱都不宽裕，所以现在特别拿不准该优先付哪笔。你先帮我拆一下。\",\n  \"followup_user_messages\": [\n    \"最让我卡住的是：收入一不稳，是先撑着店里的账单，还是先顾家里的开销。两边都拖不得，但就是排不出个先后。\",\n    \"其实我头一回聊这个，就是希望你能把中间轻重缓急理一遍，别让我一上来就做太大的决定。能不能先给我一个特别小、不用冒风险的下一步？\"\n  ],\n  \"fact_ids_used\": [\n    \"P0004_D01_M001:persona_occupation\",\n    \"P0004_D01_M001:event_title\",\n    \"P0004_D01_M001:event_summary\",\n    \"P0004_D01_M001:stage_goal\"\n  ],\n  \"notes\": \"开场改写得更像日常吐槽，保留全部事实。followup1用具体两难场景引出收入不稳的约束（event_summary），followup2点明初次求助意图（stage_goal）并索要低风险下一步，未引入新事实；两轮均在reveal_steps框架内收束。\"\n}",
+      "construction_config": {
+        "max_followups": 2,
+        "max_allowed_facts": 12,
+        "temperature": 0.2,
+        "top_p": 1.0,
+        "max_tokens": 4000,
+        "timeout_seconds": 240.0,
+        "json_response_format": true,
+        "retry_on_invalid_json": true
+      },
+      "non_destructive_policy": {
+        "canonical_i_unit_preserved": true,
+        "naturalized_text_is_candidate_only": true,
+        "must_not_overwrite_scripted_opening": true
+      },
+      "validation": {
+        "status": "pass",
+        "issues": [],
+        "allowed_fact_id_count": 38
+      }
+    },
+    {
+      "schema_version": "interaction_naturalization_v0.1",
+      "naturalized_dialogue_id": "P0005_D01_M001_NAT001",
+      "source_interaction_unit_id": "P0005_D01_M001",
+      "source_message_id": "P0005_D01_M001",
+      "llm_generated": true,
+      "canonical_opening_user_message": "我最近卡在「睡眠打乱和低精力管理」这件事上。我现在做酒店前台，时间和预算都不是很宽，所以有点拿不准什么改变是现实的。你先帮我拆一下。",
+      "opening_user_message": "最近我真的被睡觉不规律和没精神的事折腾得够呛。我在酒店前台工作，时间和钱都很紧，所以完全拿不准哪些改变是现实可行的。你帮我先拆解一下？",
+      "followup_user_messages": [
+        "我白天经常困得不行，做事都糊涂，晚上又翻来覆去睡不着。这事儿我最近才开始认真想。",
+        "我就是想先弄明白，像我这种情况，有没有那种不用花太多钱和时间就能试的小改变？我总担心一动就乱套。"
+      ],
+      "fact_ids_used": [
+        "P0005_D01_M001:persona_occupation",
+        "P0005_D01_M001:event_title",
+        "P0005_D01_M001:event_summary",
+        "P0005_D01_M001:event_stage",
+        "P0005_D01_M001:stage_goal"
+      ],
+      "notes": "自然化开头并添加两个跟进，第一个跟进揭示症状细节与事件阶段，第二个跟进表达初次尝试的担忧并要求低成本下一步，严格遵循reveal_steps，未引入新事实。",
+      "raw_output": "{\n  \"source_interaction_unit_id\": \"P0005_D01_M001\",\n  \"opening_user_message\": \"最近我真的被睡觉不规律和没精神的事折腾得够呛。我在酒店前台工作，时间和钱都很紧，所以完全拿不准哪些改变是现实可行的。你帮我先拆解一下？\",\n  \"followup_user_messages\": [\n    \"我白天经常困得不行，做事都糊涂，晚上又翻来覆去睡不着。这事儿我最近才开始认真想。\",\n    \"我就是想先弄明白，像我这种情况，有没有那种不用花太多钱和时间就能试的小改变？我总担心一动就乱套。\"\n  ],\n  \"fact_ids_used\": [\n    \"P0005_D01_M001:persona_occupation\",\n    \"P0005_D01_M001:event_title\",\n    \"P0005_D01_M001:event_summary\",\n    \"P0005_D01_M001:event_stage\",\n    \"P0005_D01_M001:stage_goal\"\n  ],\n  \"notes\": \"自然化开头并添加两个跟进，第一个跟进揭示症状细节与事件阶段，第二个跟进表达初次尝试的担忧并要求低成本下一步，严格遵循reveal_steps，未引入新事实。\"\n}",
+      "construction_config": {
+        "max_followups": 2,
+        "max_allowed_facts": 12,
+        "temperature": 0.2,
+        "top_p": 1.0,
+        "max_tokens": 4000,
+        "timeout_seconds": 240.0,
+        "json_response_format": true,
+        "retry_on_invalid_json": true
+      },
+      "non_destructive_policy": {
+        "canonical_i_unit_preserved": true,
+        "naturalized_text_is_candidate_only": true,
+        "must_not_overwrite_scripted_opening": true
+      },
+      "validation": {
+        "status": "pass",
+        "issues": [],
+        "allowed_fact_id_count": 38
+      }
+    }
+  ],
+  "summary": {
+    "candidate_count": 5,
+    "pass_count": 5
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schema_version": "interaction_naturalization_batch_v0.1",
+  "source_daily_interactions": "long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/daily_interaction_units.json",
+  "llm_provider": "deepseek",
+  "llm_model": "deepseek-v4-pro",
+  "construction_scope": {
+    "from_daily_interaction_units": true,
+    "canonical_i_units_preserved": true,
+    "naturalized_text_is_candidate_only": true
+  },
+  "naturalized_dialogues": [
+    {
+      "schema_version": "interaction_naturalization_v0.1",
+      "naturalized_dialogue_id": "P0001_D01_M001_NAT001",
+      "source_interaction_unit_id": "P0001_D01_M001",
+      "source_message_id": "P0001_D01_M001",
+      "llm_generated": true,
+      "canonical_opening_user_message": "我最近卡在「适应新城市但本地支持较弱」这件事上。我现在做物业服务助理，时间和预算都不是很宽，所以有点拿不准该把社交精力投在哪里。你先帮我拆一下。",
+      "opening_user_message": "最近我一直在为适应新城市发愁，这边能支持我的人脉确实不多。我现在做物业服务助理，手头时间和预算都不宽裕，所以挺纠结该把社交精力往哪儿使。帮我先拆解一下吧。",
+      "followup_user_messages": [
+        "嗯，你分析得对，我主要觉得新环境里缺了点稳定的关系，除了同事就没什么可靠的人，所以确实不知道该从哪儿下手。",
+        "对，我最担心的就是白费力气，毕竟预算也有限。要不你给我个低成本的下一步，先让我试水，怎么样？"
+      ],
+      "fact_ids_used": [
+        "P0001_D01_M001:persona_occupation",
+        "P0001_D01_M001:event_title",
+        "P0001_D01_M001:event_summary",
+        "P0001_D01_M001:stage_goal"
+      ],
+      "notes": "开场口语化改写，保持原意；后续1补充event_summary，后续2透露stage_goal并收束到低成本下一步。未引入新事实。",
+      "raw_output": "{\n  \"source_interaction_unit_id\": \"P0001_D01_M001\",\n  \"opening_user_message\": \"最近我一直在为适应新城市发愁，这边能支持我的人脉确实不多。我现在做物业服务助理，手头时间和预算都不宽裕，所以挺纠结该把社交精力往哪儿使。帮我先拆解一下吧。\",\n  \"followup_user_messages\": [\n    \"嗯，你分析得对，我主要觉得新环境里缺了点稳定的关系，除了同事就没什么可靠的人，所以确实不知道该从哪儿下手。\",\n    \"对，我最担心的就是白费力气，毕竟预算也有限。要不你给我个低成本的下一步，先让我试水，怎么样？\"\n  ],\n  \"fact_ids_used\": [\n    \"P0001_D01_M001:persona_occupation\",\n    \"P0001_D01_M001:event_title\",\n    \"P0001_D01_M001:event_summary\",\n    \"P0001_D01_M001:stage_goal\"\n  ],\n  \"notes\": \"开场口语化改写，保持原意；后续1补充event_summary，后续2透露stage_goal并收束到低成本下一步。未引入新事实。\"\n}",
+      "construction_config": {
+        "max_followups": 2,
+        "max_allowed_facts": 12,
+        "temperature": 0.2,
+        "top_p": 1.0,
+        "max_tokens": 4000,
+        "timeout_seconds": 180.0,
+        "json_response_format": true,
+        "retry_on_invalid_json": true
+      },
+      "non_destructive_policy": {
+        "canonical_i_unit_preserved": true,
+        "naturalized_text_is_candidate_only": true,
+        "must_not_overwrite_scripted_opening": true
+      },
+      "validation": {
+        "status": "pass",
+        "issues": [],
+        "allowed_fact_id_count": 38
+      }
+    }
+  ],
+  "summary": {
+    "candidate_count": 1,
+    "pass_count": 1
+  }
+}

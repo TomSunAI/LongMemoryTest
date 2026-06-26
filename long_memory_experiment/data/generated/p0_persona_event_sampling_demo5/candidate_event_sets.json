@@ -1,0 +1,1056 @@
+{
+  "schema_version": "candidate_event_sets_v0.1",
+  "sampling_stage": "P0_event_candidate_sampling",
+  "sampling_config": {
+    "random_seed": 20260701,
+    "num_personas": 5,
+    "events_per_persona_min": 8,
+    "events_per_persona_max": 10,
+    "candidate_events_min": 14,
+    "candidate_events_max": 18,
+    "min_event_domains_per_persona": 3,
+    "max_events_per_domain_per_persona": 2,
+    "min_primary_life_domains_per_persona": 3,
+    "min_long_term_goals_per_persona": 2,
+    "min_communication_styles_per_persona": 2,
+    "min_stress_responses_per_persona": 2,
+    "max_candidate_resample_attempts": 20
+  },
+  "candidate_event_sets": [
+    {
+      "persona_id": "P0001",
+      "source_archetype": "A01_early_career_renter",
+      "candidate_event_count": 14,
+      "candidates": [
+        {
+          "event_category_id": "E_SELF_003",
+          "event_domain": "self_worth",
+          "event_type": "fear_of_being_too_sensitive",
+          "title": "担心自己太敏感",
+          "core_issue": "用户担心自己对某件事的反应过于敏感或不合理。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_PLAN_003",
+          "event_domain": "personal_planning",
+          "event_type": "unfinished_home_task",
+          "title": "家里未完成的小任务反复拖延",
+          "core_issue": "一个小的家务或维修任务持续拖延，并反复制造压力。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_BOUNDARY_001",
+          "event_domain": "personal_boundary",
+          "event_type": "difficulty_saying_no",
+          "title": "难以拒绝他人请求",
+          "core_issue": "用户很难拒绝来自工作、家人或朋友的请求。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_MOVE_001",
+          "event_domain": "relocation",
+          "event_type": "new_city_adaptation",
+          "title": "适应新城市但本地支持较弱",
+          "core_issue": "用户正在适应新环境，但缺少稳定的本地关系支持。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_CONSUMER_001",
+          "event_domain": "consumer_issue",
+          "event_type": "refund_or_return_dispute",
+          "title": "退款、退货或消费纠纷",
+          "core_issue": "用户不确定如何处理退款或退货冲突。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_JOB_001",
+          "event_domain": "job_search",
+          "event_type": "resume_or_application_block",
+          "title": "简历或申请卡住",
+          "core_issue": "用户卡在更新申请材料上，并担心自己竞争力不足。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_HEALTH_003",
+          "event_domain": "health_routine",
+          "event_type": "routine_restart_after_break",
+          "title": "中断后重新建立日常",
+          "core_issue": "用户想在几次失败后重新启动一项日常习惯。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_EDU_001",
+          "event_domain": "education",
+          "event_type": "study_deadline_or_assignment_pressure",
+          "title": "学习任务、作业或考试截止压力",
+          "core_issue": "用户必须在时间压力下处理作业、考试或项目。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_LEARN_001",
+          "event_domain": "learning",
+          "event_type": "certificate_or_skill_learning_pressure",
+          "title": "在生活很忙时学习新技能",
+          "core_issue": "用户想提升技能，但时间、信心和持续性都受现实生活挤压。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_NEIGHBOR_001",
+          "event_domain": "neighborhood",
+          "event_type": "neighbor_noise_or_boundary",
+          "title": "邻居噪音或边界问题",
+          "core_issue": "邻居问题打扰休息或舒适感，用户不确定如何处理。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_CLEAN_001",
+          "event_domain": "daily_life",
+          "event_type": "home_cleaning_overwhelm",
+          "title": "家务堆积或居住空间混乱压力",
+          "core_issue": "用户被累积的家务或杂物压得不知从何开始。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_TRANSPORT_001",
+          "event_domain": "commuting",
+          "event_type": "commute_disruption",
+          "title": "通勤中断影响工作或照护安排",
+          "core_issue": "交通中断威胁到准时、接送照护、休息或收入。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_HOME_002",
+          "event_domain": "housing",
+          "event_type": "rent_increase_or_lease_uncertainty",
+          "title": "租金上涨或续租不确定",
+          "core_issue": "用户面对续租、租金上涨或居住不稳定的不确定性。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_ADMIN_001",
+          "event_domain": "administration",
+          "event_type": "document_deadline_uncertainty",
+          "title": "行政材料或截止日期不确定",
+          "core_issue": "用户担心在正式流程中漏掉规则、材料或截止日期。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        }
+      ]
+    },
+    {
+      "persona_id": "P0002",
+      "source_archetype": "A02_service_emotional_labor",
+      "candidate_event_count": 18,
+      "candidates": [
+        {
+          "event_category_id": "E_TRANSPORT_001",
+          "event_domain": "commuting",
+          "event_type": "commute_disruption",
+          "title": "通勤中断影响工作或照护安排",
+          "core_issue": "交通中断威胁到准时、接送照护、休息或收入。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_WORK_008",
+          "event_domain": "work",
+          "event_type": "workplace_gossip_or_misunderstanding",
+          "title": "职场误会或流言",
+          "core_issue": "用户听到或怀疑有职场流言，不确定是否回应。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_INTER_001",
+          "event_domain": "work_family_intersection",
+          "event_type": "work_call_interrupts_family_time",
+          "title": "工作消息打断休息或私人时间",
+          "core_issue": "用户难以处理工作消息侵入家庭或休息时间的问题。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_HOME_002",
+          "event_domain": "housing",
+          "event_type": "rent_increase_or_lease_uncertainty",
+          "title": "租金上涨或续租不确定",
+          "core_issue": "用户面对续租、租金上涨或居住不稳定的不确定性。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_HEALTH_003",
+          "event_domain": "health_routine",
+          "event_type": "routine_restart_after_break",
+          "title": "中断后重新建立日常",
+          "core_issue": "用户想在几次失败后重新启动一项日常习惯。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_SOCIAL_001",
+          "event_domain": "social_connection",
+          "event_type": "friendship_drift",
+          "title": "友谊疏远或尴尬",
+          "core_issue": "用户感觉一段友谊变远，不确定该主动联系还是顺其自然。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_FIN_001",
+          "event_domain": "finance",
+          "event_type": "rent_or_bill_pressure",
+          "title": "房租、水电或账单压力",
+          "core_issue": "用户需要在有限或不稳定收入下管理必要支出。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_PLAN_001",
+          "event_domain": "personal_planning",
+          "event_type": "too_many_tasks_overload",
+          "title": "待办事项太多导致优先级混乱",
+          "core_issue": "几件普通任务同时变得紧急，让用户感到被压垮。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_CONSUMER_001",
+          "event_domain": "consumer_issue",
+          "event_type": "refund_or_return_dispute",
+          "title": "退款、退货或消费纠纷",
+          "core_issue": "用户不确定如何处理退款或退货冲突。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_DIGITAL_001",
+          "event_domain": "digital_life",
+          "event_type": "phone_or_account_problem",
+          "title": "手机、账户或应用问题扰乱日常",
+          "core_issue": "手机、应用或账户问题阻碍了工作、付款、交通或沟通。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_BOUNDARY_001",
+          "event_domain": "personal_boundary",
+          "event_type": "difficulty_saying_no",
+          "title": "难以拒绝他人请求",
+          "core_issue": "用户很难拒绝来自工作、家人或朋友的请求。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_SELF_003",
+          "event_domain": "self_worth",
+          "event_type": "fear_of_being_too_sensitive",
+          "title": "担心自己太敏感",
+          "core_issue": "用户担心自己对某件事的反应过于敏感或不合理。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_FOOD_001",
+          "event_domain": "daily_life",
+          "event_type": "meal_planning_under_fatigue",
+          "title": "疲惫或预算限制下的吃饭安排",
+          "core_issue": "用户因为疲惫、日程或金钱限制而难以安排饮食。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_BUS_002",
+          "event_domain": "business",
+          "event_type": "bad_customer_review",
+          "title": "差评或客户投诉打击信心",
+          "core_issue": "用户收到负面反馈，担心它影响生意。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_LEGALADMIN_001",
+          "event_domain": "administration",
+          "event_type": "minor_dispute_documentation",
+          "title": "小纠纷需要谨慎留证",
+          "core_issue": "与房东、职场、客户或服务方的小纠纷需要仔细记录事实。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_COMMUNITY_001",
+          "event_domain": "community",
+          "event_type": "community_or_school_group_obligation",
+          "title": "社区或群体义务压力",
+          "core_issue": "用户被要求参与群体任务，并感到接受压力。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_PET_001",
+          "event_domain": "pet_care",
+          "event_type": "pet_care_schedule_or_cost",
+          "title": "宠物照护的时间或费用压力",
+          "core_issue": "用户的宠物相关责任和工作、金钱或住房限制发生冲突。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_LEARN_001",
+          "event_domain": "learning",
+          "event_type": "certificate_or_skill_learning_pressure",
+          "title": "在生活很忙时学习新技能",
+          "core_issue": "用户想提升技能，但时间、信心和持续性都受现实生活挤压。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        }
+      ]
+    },
+    {
+      "persona_id": "P0003",
+      "source_archetype": "A03_gig_worker_parent",
+      "candidate_event_count": 14,
+      "candidates": [
+        {
+          "event_category_id": "E_TRANSPORT_001",
+          "event_domain": "commuting",
+          "event_type": "commute_disruption",
+          "title": "通勤中断影响工作或照护安排",
+          "core_issue": "交通中断威胁到准时、接送照护、休息或收入。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_DIGITAL_001",
+          "event_domain": "digital_life",
+          "event_type": "phone_or_account_problem",
+          "title": "手机、账户或应用问题扰乱日常",
+          "core_issue": "手机、应用或账户问题阻碍了工作、付款、交通或沟通。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_REL_001",
+          "event_domain": "relationship",
+          "event_type": "relationship_communication_uncertainty",
+          "title": "亲密关系沟通方式不确定",
+          "core_issue": "用户不确定如何提出一个反复出现的问题，同时不恶化关系。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_HEALTH_004",
+          "event_domain": "health_routine",
+          "event_type": "ordinary_symptom_uncertainty",
+          "title": "普通身体不适带来的不确定",
+          "core_issue": "用户有轻微反复不适，不确定该投入多少注意力。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_CLEAN_001",
+          "event_domain": "daily_life",
+          "event_type": "home_cleaning_overwhelm",
+          "title": "家务堆积或居住空间混乱压力",
+          "core_issue": "用户被累积的家务或杂物压得不知从何开始。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_INTER_003",
+          "event_domain": "work_family_intersection",
+          "event_type": "overtime_money_vs_health",
+          "title": "加班收入和健康/家庭时间冲突",
+          "core_issue": "用户需要额外收入，但加班伤害休息、安全或家庭生活。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_WORK_004",
+          "event_domain": "work",
+          "event_type": "schedule_change_disruption",
+          "title": "突然排班变化打乱个人安排",
+          "core_issue": "工作排班变化打乱了用户的家庭、休息或财务安排。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_ADMIN_002",
+          "event_domain": "administration",
+          "event_type": "benefit_or_application_form",
+          "title": "福利、报销或申请表格填写困惑",
+          "core_issue": "用户需要完成表格，但担心填错或漏材料。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_GIG_001",
+          "event_domain": "gig_work",
+          "event_type": "platform_rule_change",
+          "title": "平台规则或评分变化影响收入",
+          "core_issue": "平台规则、评分或算法变化影响了用户的订单和收入。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_CHILD_002",
+          "event_domain": "childcare",
+          "event_type": "child_behavior_or_school_feedback",
+          "title": "孩子行为或学校反馈带来的担心",
+          "core_issue": "用户收到关于孩子的反馈，不确定应该多严肃对待。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_CONSUMER_001",
+          "event_domain": "consumer_issue",
+          "event_type": "refund_or_return_dispute",
+          "title": "退款、退货或消费纠纷",
+          "core_issue": "用户不确定如何处理退款或退货冲突。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_FAM_001",
+          "event_domain": "family",
+          "event_type": "family_responsibility_unevenness",
+          "title": "家庭责任分担不均",
+          "core_issue": "用户感觉自己承担了过多家庭中的实际或情绪责任。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_PLAN_003",
+          "event_domain": "personal_planning",
+          "event_type": "unfinished_home_task",
+          "title": "家里未完成的小任务反复拖延",
+          "core_issue": "一个小的家务或维修任务持续拖延，并反复制造压力。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_FIN_001",
+          "event_domain": "finance",
+          "event_type": "rent_or_bill_pressure",
+          "title": "房租、水电或账单压力",
+          "core_issue": "用户需要在有限或不稳定收入下管理必要支出。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        }
+      ]
+    },
+    {
+      "persona_id": "P0004",
+      "source_archetype": "A04_small_business_owner",
+      "candidate_event_count": 15,
+      "candidates": [
+        {
+          "event_category_id": "E_FAM_002",
+          "event_domain": "family",
+          "event_type": "partner_schedule_conflict",
+          "title": "伴侣或配偶日程冲突",
+          "core_issue": "用户和伴侣的日程冲突影响照护、休息或金钱安排。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_INTER_003",
+          "event_domain": "work_family_intersection",
+          "event_type": "overtime_money_vs_health",
+          "title": "加班收入和健康/家庭时间冲突",
+          "core_issue": "用户需要额外收入，但加班伤害休息、安全或家庭生活。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_BUS_003",
+          "event_domain": "business",
+          "event_type": "family_questions_business_choice",
+          "title": "家人质疑生意决定",
+          "core_issue": "家人质疑用户的生意选择是否可持续。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_PLAN_003",
+          "event_domain": "personal_planning",
+          "event_type": "unfinished_home_task",
+          "title": "家里未完成的小任务反复拖延",
+          "core_issue": "一个小的家务或维修任务持续拖延，并反复制造压力。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_FIN_002",
+          "event_domain": "finance",
+          "event_type": "unexpected_expense",
+          "title": "意外支出打乱月度计划",
+          "core_issue": "突发维修、健康相关费用、学费或家庭支出打乱了预算。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_REL_001",
+          "event_domain": "relationship",
+          "event_type": "relationship_communication_uncertainty",
+          "title": "亲密关系沟通方式不确定",
+          "core_issue": "用户不确定如何提出一个反复出现的问题，同时不恶化关系。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_FIN_001",
+          "event_domain": "finance",
+          "event_type": "rent_or_bill_pressure",
+          "title": "房租、水电或账单压力",
+          "core_issue": "用户需要在有限或不稳定收入下管理必要支出。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_INTER_001",
+          "event_domain": "work_family_intersection",
+          "event_type": "work_call_interrupts_family_time",
+          "title": "工作消息打断休息或私人时间",
+          "core_issue": "用户难以处理工作消息侵入家庭或休息时间的问题。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_FAM_003",
+          "event_domain": "family",
+          "event_type": "relative_boundary_pressure",
+          "title": "亲属对个人决定施压",
+          "core_issue": "亲属在工作、金钱、育儿或关系选择上给用户压力。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_DIGITAL_001",
+          "event_domain": "digital_life",
+          "event_type": "phone_or_account_problem",
+          "title": "手机、账户或应用问题扰乱日常",
+          "core_issue": "手机、应用或账户问题阻碍了工作、付款、交通或沟通。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_BUS_002",
+          "event_domain": "business",
+          "event_type": "bad_customer_review",
+          "title": "差评或客户投诉打击信心",
+          "core_issue": "用户收到负面反馈，担心它影响生意。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_WORK_002",
+          "event_domain": "work",
+          "event_type": "difficult_customer_conflict",
+          "title": "与难缠客户或委托人的反复冲突",
+          "core_issue": "用户反复承受来自客户或委托人互动的情绪压力。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_LEGALADMIN_001",
+          "event_domain": "administration",
+          "event_type": "minor_dispute_documentation",
+          "title": "小纠纷需要谨慎留证",
+          "core_issue": "与房东、职场、客户或服务方的小纠纷需要仔细记录事实。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_HEALTH_004",
+          "event_domain": "health_routine",
+          "event_type": "ordinary_symptom_uncertainty",
+          "title": "普通身体不适带来的不确定",
+          "core_issue": "用户有轻微反复不适，不确定该投入多少注意力。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_CONSUMER_001",
+          "event_domain": "consumer_issue",
+          "event_type": "refund_or_return_dispute",
+          "title": "退款、退货或消费纠纷",
+          "core_issue": "用户不确定如何处理退款或退货冲突。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        }
+      ]
+    },
+    {
+      "persona_id": "P0005",
+      "source_archetype": "A05_single_parent_service_worker",
+      "candidate_event_count": 15,
+      "candidates": [
+        {
+          "event_category_id": "E_REL_001",
+          "event_domain": "relationship",
+          "event_type": "relationship_communication_uncertainty",
+          "title": "亲密关系沟通方式不确定",
+          "core_issue": "用户不确定如何提出一个反复出现的问题，同时不恶化关系。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_TRANSPORT_001",
+          "event_domain": "commuting",
+          "event_type": "commute_disruption",
+          "title": "通勤中断影响工作或照护安排",
+          "core_issue": "交通中断威胁到准时、接送照护、休息或收入。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_PLAN_004",
+          "event_domain": "personal_planning",
+          "event_type": "holiday_or_family_visit_planning",
+          "title": "节假日或家庭探访计划压力",
+          "core_issue": "家庭探访或节假日计划带来日程、金钱或关系压力。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_FAM_003",
+          "event_domain": "family",
+          "event_type": "relative_boundary_pressure",
+          "title": "亲属对个人决定施压",
+          "core_issue": "亲属在工作、金钱、育儿或关系选择上给用户压力。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_HEALTH_001",
+          "event_domain": "health_routine",
+          "event_type": "sleep_and_energy_management",
+          "title": "睡眠打乱和低精力管理",
+          "core_issue": "用户反复受睡眠、疲惫或低精力影响，进而影响判断。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_NEIGHBOR_001",
+          "event_domain": "neighborhood",
+          "event_type": "neighbor_noise_or_boundary",
+          "title": "邻居噪音或边界问题",
+          "core_issue": "邻居问题打扰休息或舒适感，用户不确定如何处理。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_CHILD_002",
+          "event_domain": "childcare",
+          "event_type": "child_behavior_or_school_feedback",
+          "title": "孩子行为或学校反馈带来的担心",
+          "core_issue": "用户收到关于孩子的反馈，不确定应该多严肃对待。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_INTER_001",
+          "event_domain": "work_family_intersection",
+          "event_type": "work_call_interrupts_family_time",
+          "title": "工作消息打断休息或私人时间",
+          "core_issue": "用户难以处理工作消息侵入家庭或休息时间的问题。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_SELF_003",
+          "event_domain": "self_worth",
+          "event_type": "fear_of_being_too_sensitive",
+          "title": "担心自己太敏感",
+          "core_issue": "用户担心自己对某件事的反应过于敏感或不合理。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_HOME_002",
+          "event_domain": "housing",
+          "event_type": "rent_increase_or_lease_uncertainty",
+          "title": "租金上涨或续租不确定",
+          "core_issue": "用户面对续租、租金上涨或居住不稳定的不确定性。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_BOUNDARY_001",
+          "event_domain": "personal_boundary",
+          "event_type": "difficulty_saying_no",
+          "title": "难以拒绝他人请求",
+          "core_issue": "用户很难拒绝来自工作、家人或朋友的请求。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        },
+        {
+          "event_category_id": "E_FIN_001",
+          "event_domain": "finance",
+          "event_type": "rent_or_bill_pressure",
+          "title": "房租、水电或账单压力",
+          "core_issue": "用户需要在有限或不稳定收入下管理必要支出。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_WORK_002",
+          "event_domain": "work",
+          "event_type": "difficult_customer_conflict",
+          "title": "与难缠客户或委托人的反复冲突",
+          "core_issue": "用户反复承受来自客户或委托人互动的情绪压力。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_CLEAN_001",
+          "event_domain": "daily_life",
+          "event_type": "home_cleaning_overwhelm",
+          "title": "家务堆积或居住空间混乱压力",
+          "core_issue": "用户被累积的家务或杂物压得不知从何开始。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "accept",
+          "decision_reasons": [
+            "source_archetype 在 compatible_archetypes 中",
+            "通过 hard rule 检查",
+            "被选入 8-10 条接受事件集合以满足领域覆盖"
+          ]
+        },
+        {
+          "event_category_id": "E_LEARN_001",
+          "event_domain": "learning",
+          "event_type": "certificate_or_skill_learning_pressure",
+          "title": "在生活很忙时学习新技能",
+          "core_issue": "用户想提升技能，但时间、信心和持续性都受现实生活挤压。",
+          "candidate_status": "compatible_candidate",
+          "decision_after_validation": "reject",
+          "decision_reasons": [
+            "本轮保留 8-10 条事件预算，优先选择更能补足领域覆盖的候选事件"
+          ]
+        }
+      ]
+    }
+  ]
+}

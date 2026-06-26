@@ -1,0 +1,29 @@
+{
+  "schema_version": "sampling_run_manifest_v0.1",
+  "stage": "P0_persona_event_sampling",
+  "sampling_config_path": "long_memory_experiment/data/sampling/sampling_config.json",
+  "persona_archetype_pool": "long_memory_experiment/data/sampling/persona_archetype_pool_v0.1.json",
+  "event_category_pool": "long_memory_experiment/data/sampling/event_category_pool_v0.1_60events.json",
+  "profile": "demo_first_phase",
+  "source_document": {
+    "title": "Archetype-Guided Persona-Event Sampling 工程实现设计文档",
+    "path": "/Users/tom/Desktop/Archetype_Guided_Persona_Event_Sampling_Implementation.docx",
+    "version": "v0.1"
+  },
+  "p0_sampling_config": {
+    "random_seed": 20260701,
+    "num_personas": 5,
+    "events_per_persona_min": 8,
+    "events_per_persona_max": 10,
+    "candidate_events_min": 14,
+    "candidate_events_max": 18,
+    "min_event_domains_per_persona": 3,
+    "max_events_per_domain_per_persona": 2,
+    "min_primary_life_domains_per_persona": 3,
+    "min_long_term_goals_per_persona": 2,
+    "min_communication_styles_per_persona": 2,
+    "min_stress_responses_per_persona": 2,
+    "max_candidate_resample_attempts": 20
+  },
+  "scale_status": "canonical_docx_first_phase"
+}

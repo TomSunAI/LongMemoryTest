@@ -1,0 +1,473 @@
+{
+  "schema_version": "sampled_personas_v0.1",
+  "sampling_stage": "P0_persona_sampling",
+  "sampling_config": {
+    "random_seed": 20260701,
+    "num_personas": 5,
+    "events_per_persona_min": 8,
+    "events_per_persona_max": 10,
+    "candidate_events_min": 14,
+    "candidate_events_max": 18,
+    "min_event_domains_per_persona": 3,
+    "max_events_per_domain_per_persona": 2,
+    "min_primary_life_domains_per_persona": 3,
+    "min_long_term_goals_per_persona": 2,
+    "min_communication_styles_per_persona": 2,
+    "min_stress_responses_per_persona": 2,
+    "max_candidate_resample_attempts": 20
+  },
+  "personas": [
+    {
+      "persona_id": "P0001",
+      "source_archetype": "A01_early_career_renter",
+      "source_archetype_label": "Early-career renter with unstable city life",
+      "age_range": "30s",
+      "occupation": "property service assistant",
+      "occupation_status": "employed",
+      "education_background": "vocational college graduate",
+      "family_structure": "single, rents a room",
+      "life_stage": "first years after moving to a new city",
+      "economic_condition": "stable but tight monthly budget",
+      "social_support": "family in another city",
+      "primary_life_domains": [
+        "social_connection",
+        "commuting",
+        "housing"
+      ],
+      "long_term_goals": [
+        "avoid workplace mistakes",
+        "save enough to move to a better apartment"
+      ],
+      "communication_style": [
+        "cautious",
+        "detail-seeking",
+        "self-questioning"
+      ],
+      "stress_response": [
+        "overthinks whether they are bothering others",
+        "checks messages repeatedly"
+      ],
+      "decision_style": [
+        "budget-aware",
+        "risk-averse"
+      ],
+      "memory_relevant_traits": [
+        "responds well to practical planning with limited resources",
+        "needs help separating real risk from imagined risk"
+      ],
+      "sensitive_fields": {
+        "gender": "unprovided",
+        "health_status": "ordinary fatigue, stress, or routine pressure only",
+        "family_details": "general family structure only",
+        "income": "broad economic condition only"
+      }
+    },
+    {
+      "persona_id": "P0002",
+      "source_archetype": "A02_service_emotional_labor",
+      "source_archetype_label": "Service worker with emotional labor pressure",
+      "age_range": "20s",
+      "occupation": "call center customer service agent",
+      "occupation_status": "employed_shift_work",
+      "education_background": "high school graduate",
+      "family_structure": "single, lives with roommates",
+      "life_stage": "early-career emotional labor",
+      "economic_condition": "monthly budget is tight",
+      "social_support": "roommates are friendly but busy",
+      "primary_life_domains": [
+        "work",
+        "customer_conflict",
+        "social_connection"
+      ],
+      "long_term_goals": [
+        "move to a less draining role",
+        "save for a certificate or skill program",
+        "handle customer conflict without carrying it home"
+      ],
+      "communication_style": [
+        "polite",
+        "self-questioning"
+      ],
+      "stress_response": [
+        "feels tense when messages from work arrive",
+        "seeks confirmation before acting",
+        "replays difficult conversations after work"
+      ],
+      "decision_style": [
+        "rule-conscious"
+      ],
+      "memory_relevant_traits": [
+        "prefers wording help for difficult conversations"
+      ],
+      "sensitive_fields": {
+        "gender": "unprovided",
+        "health_status": "ordinary fatigue, stress, or routine pressure only",
+        "family_details": "general family structure only",
+        "income": "broad economic condition only"
+      }
+    },
+    {
+      "persona_id": "P0003",
+      "source_archetype": "A03_gig_worker_parent",
+      "source_archetype_label": "Gig worker parent under income and childcare pressure",
+      "age_range": "30s",
+      "occupation": "platform-based service worker",
+      "occupation_status": "gig_worker",
+      "education_background": "vocational training",
+      "family_structure": "married with one preschool child",
+      "life_stage": "income-pressure parenting",
+      "economic_condition": "savings are limited and costs are rising",
+      "social_support": "spouse helps but schedules often conflict",
+      "primary_life_domains": [
+        "gig_work",
+        "family_coordination",
+        "childcare",
+        "finance"
+      ],
+      "long_term_goals": [
+        "reduce health and accident risks from overwork",
+        "spend more predictable time with child"
+      ],
+      "communication_style": [
+        "direct",
+        "practical"
+      ],
+      "stress_response": [
+        "delays rest until physically depleted",
+        "keeps working even when tired"
+      ],
+      "decision_style": [
+        "cashflow-driven"
+      ],
+      "memory_relevant_traits": [
+        "does not respond well to long abstract advice",
+        "needs low-cost realistic plans"
+      ],
+      "sensitive_fields": {
+        "gender": "unprovided",
+        "health_status": "ordinary fatigue, stress, or routine pressure only",
+        "family_details": "general family structure only",
+        "income": "broad economic condition only"
+      }
+    },
+    {
+      "persona_id": "P0004",
+      "source_archetype": "A04_small_business_owner",
+      "source_archetype_label": "Small business owner balancing customers, cashflow, and family time",
+      "age_range": "30s",
+      "occupation": "convenience store owner",
+      "occupation_status": "self_employed",
+      "education_background": "vocational training",
+      "family_structure": "living with extended family",
+      "life_stage": "small business stabilization",
+      "economic_condition": "business rent is a major fixed cost",
+      "social_support": "spouse is supportive but worries about money",
+      "primary_life_domains": [
+        "housing_rent",
+        "business",
+        "family",
+        "customer_relationship"
+      ],
+      "long_term_goals": [
+        "manage rent and supply costs",
+        "set clearer work hours"
+      ],
+      "communication_style": [
+        "plainspoken",
+        "low tolerance for jargon",
+        "fast"
+      ],
+      "stress_response": [
+        "reacts quickly to cashflow problems",
+        "works longer hours when anxious"
+      ],
+      "decision_style": [
+        "cashflow-sensitive"
+      ],
+      "memory_relevant_traits": [
+        "needs help separating business risk from personal worth",
+        "prefers advice tied to immediate constraints"
+      ],
+      "sensitive_fields": {
+        "gender": "unprovided",
+        "health_status": "ordinary fatigue, stress, or routine pressure only",
+        "family_details": "general family structure only",
+        "income": "broad economic condition only"
+      }
+    },
+    {
+      "persona_id": "P0005",
+      "source_archetype": "A05_single_parent_service_worker",
+      "source_archetype_label": "Single parent in service work managing school, work, and money",
+      "age_range": "40s",
+      "occupation": "hotel front desk worker",
+      "occupation_status": "employed_shift_work",
+      "education_background": "associate degree",
+      "family_structure": "single parent with one preschool child",
+      "life_stage": "single parenting with service work",
+      "economic_condition": "limited savings and little schedule flexibility",
+      "social_support": "friends help emotionally but not practically",
+      "primary_life_domains": [
+        "school",
+        "finance",
+        "housing",
+        "work"
+      ],
+      "long_term_goals": [
+        "make care arrangements less fragile",
+        "avoid work mistakes with customers or tenants",
+        "keep child's school routine stable"
+      ],
+      "communication_style": [
+        "protective",
+        "practical"
+      ],
+      "stress_response": [
+        "worries about inconveniencing others",
+        "tries to solve everything alone",
+        "becomes anxious when plans change suddenly"
+      ],
+      "decision_style": [
+        "protective"
+      ],
+      "memory_relevant_traits": [
+        "needs help prioritizing when work and child needs conflict"
+      ],
+      "sensitive_fields": {
+        "gender": "unprovided",
+        "health_status": "ordinary fatigue, stress, or routine pressure only",
+        "family_details": "general family structure only",
+        "income": "broad economic condition only"
+      }
+    }
+  ],
+  "locale_views": {
+    "zh": {
+      "personas": [
+        {
+          "persona_id": "P0001",
+          "source_archetype": "A01_early_career_renter",
+          "source_archetype_label": "早期职业阶段的城市租房者",
+          "age_range": "30 多岁",
+          "occupation": "物业服务助理",
+          "occupation_status": "在职",
+          "education_background": "高职/专科毕业",
+          "family_structure": "单身，租住单间",
+          "life_stage": "搬到新城市后的最初几年",
+          "economic_condition": "收入基本稳定但月度预算偏紧",
+          "social_support": "家人在另一个城市",
+          "primary_life_domains": [
+            "社会连接",
+            "通勤",
+            "住房"
+          ],
+          "long_term_goals": [
+            "避免工作失误",
+            "攒够钱搬到更好的住处"
+          ],
+          "communication_style": [
+            "谨慎",
+            "重视细节",
+            "容易自我怀疑"
+          ],
+          "stress_response": [
+            "会反复担心自己是否打扰别人",
+            "会反复查看消息"
+          ],
+          "decision_style": [
+            "预算敏感",
+            "风险规避"
+          ],
+          "memory_relevant_traits": [
+            "适合资源有限情况下的实际规划",
+            "需要帮助区分真实风险和想象风险"
+          ],
+          "sensitive_fields": {
+            "gender": "未提供",
+            "health_status": "仅限普通疲惫、压力或日常节奏压力",
+            "family_details": "仅保留概括性的家庭结构",
+            "income": "仅保留宽泛经济状况"
+          }
+        },
+        {
+          "persona_id": "P0002",
+          "source_archetype": "A02_service_emotional_labor",
+          "source_archetype_label": "承受情绪劳动的一线服务人员",
+          "age_range": "20 多岁",
+          "occupation": "呼叫中心客服",
+          "occupation_status": "轮班在职",
+          "education_background": "高中毕业",
+          "family_structure": "单身，与室友合住",
+          "life_stage": "职业早期且情绪劳动压力大",
+          "economic_condition": "月度预算偏紧",
+          "social_support": "室友友好但都很忙",
+          "primary_life_domains": [
+            "工作",
+            "客户冲突",
+            "社会连接"
+          ],
+          "long_term_goals": [
+            "转到消耗更低的岗位",
+            "为证书或技能课程攒钱",
+            "处理客户冲突但不把压力带回家"
+          ],
+          "communication_style": [
+            "礼貌",
+            "容易自我怀疑"
+          ],
+          "stress_response": [
+            "收到工作消息时会紧张",
+            "行动前需要确认感",
+            "下班后会反复回想困难对话"
+          ],
+          "decision_style": [
+            "重视规则"
+          ],
+          "memory_relevant_traits": [
+            "偏好困难沟通的话术帮助"
+          ],
+          "sensitive_fields": {
+            "gender": "未提供",
+            "health_status": "仅限普通疲惫、压力或日常节奏压力",
+            "family_details": "仅保留概括性的家庭结构",
+            "income": "仅保留宽泛经济状况"
+          }
+        },
+        {
+          "persona_id": "P0003",
+          "source_archetype": "A03_gig_worker_parent",
+          "source_archetype_label": "收入波动且承担育儿压力的平台劳动者家长",
+          "age_range": "30 多岁",
+          "occupation": "平台服务劳动者",
+          "occupation_status": "平台零工",
+          "education_background": "职业培训背景",
+          "family_structure": "已婚，有一个学龄前孩子",
+          "life_stage": "收入压力下的育儿阶段",
+          "economic_condition": "积蓄有限且支出上升",
+          "social_support": "配偶会帮忙但日程经常冲突",
+          "primary_life_domains": [
+            "平台/零工",
+            "家庭协调",
+            "儿童照护",
+            "财务"
+          ],
+          "long_term_goals": [
+            "降低过劳带来的健康和事故风险",
+            "给孩子更稳定可预期的陪伴时间"
+          ],
+          "communication_style": [
+            "直接",
+            "务实"
+          ],
+          "stress_response": [
+            "会把休息拖到身体透支后",
+            "即使疲惫也会继续工作"
+          ],
+          "decision_style": [
+            "受现金流驱动"
+          ],
+          "memory_relevant_traits": [
+            "不适合很长的抽象建议",
+            "需要低成本且现实的计划"
+          ],
+          "sensitive_fields": {
+            "gender": "未提供",
+            "health_status": "仅限普通疲惫、压力或日常节奏压力",
+            "family_details": "仅保留概括性的家庭结构",
+            "income": "仅保留宽泛经济状况"
+          }
+        },
+        {
+          "persona_id": "P0004",
+          "source_archetype": "A04_small_business_owner",
+          "source_archetype_label": "在客流、现金流和家庭时间之间平衡的小生意经营者",
+          "age_range": "30 多岁",
+          "occupation": "便利店店主",
+          "occupation_status": "自雇",
+          "education_background": "职业培训背景",
+          "family_structure": "与大家庭同住",
+          "life_stage": "小生意稳定阶段",
+          "economic_condition": "店铺租金是主要固定成本",
+          "social_support": "配偶支持但担心钱",
+          "primary_life_domains": [
+            "住房/租金",
+            "小生意经营",
+            "家庭",
+            "客户关系"
+          ],
+          "long_term_goals": [
+            "管理租金和进货成本",
+            "设定更清晰的工作时间"
+          ],
+          "communication_style": [
+            "说话直白",
+            "不喜欢术语堆砌",
+            "反应快"
+          ],
+          "stress_response": [
+            "遇到现金流问题会快速反应",
+            "焦虑时会工作更久"
+          ],
+          "decision_style": [
+            "对现金流敏感"
+          ],
+          "memory_relevant_traits": [
+            "需要区分经营风险和个人价值",
+            "偏好贴近当前限制的建议"
+          ],
+          "sensitive_fields": {
+            "gender": "未提供",
+            "health_status": "仅限普通疲惫、压力或日常节奏压力",
+            "family_details": "仅保留概括性的家庭结构",
+            "income": "仅保留宽泛经济状况"
+          }
+        },
+        {
+          "persona_id": "P0005",
+          "source_archetype": "A05_single_parent_service_worker",
+          "source_archetype_label": "独自育儿且从事服务工作的单亲家长",
+          "age_range": "40 多岁",
+          "occupation": "酒店前台",
+          "occupation_status": "轮班在职",
+          "education_background": "副学士/专科背景",
+          "family_structure": "单亲，有一个学龄前孩子",
+          "life_stage": "服务业工作中的单亲育儿阶段",
+          "economic_condition": "积蓄有限且时间安排弹性很小",
+          "social_support": "朋友能提供情绪支持但难以实际帮忙",
+          "primary_life_domains": [
+            "学校",
+            "财务",
+            "住房",
+            "工作"
+          ],
+          "long_term_goals": [
+            "让照护安排不那么脆弱",
+            "避免客户或住户相关工作失误",
+            "保持孩子学校日常稳定"
+          ],
+          "communication_style": [
+            "保护性强",
+            "务实"
+          ],
+          "stress_response": [
+            "担心给别人添麻烦",
+            "会试图独自解决所有问题",
+            "计划突然变化时会焦虑"
+          ],
+          "decision_style": [
+            "保护性强"
+          ],
+          "memory_relevant_traits": [
+            "工作和孩子需求冲突时需要排序帮助"
+          ],
+          "sensitive_fields": {
+            "gender": "未提供",
+            "health_status": "仅限普通疲惫、压力或日常节奏压力",
+            "family_details": "仅保留概括性的家庭结构",
+            "income": "仅保留宽泛经济状况"
+          }
+        }
+      ]
+    }
+  }
+}
