@@ -1571,3 +1571,52 @@ python3 scripts/generate_demo5_persona_daily_timeline_html.py
 - `tau.P`：127
 - `tau.P.ground_truth`：127
 - P3B DeepSeek 全量结果：440 pass / 0 fail；其中 313 条无 Probe 的结果复用，127 条带 Probe 的结果重跑。
+
+## 当前记录：2026-06-27 ground truth 增加参考答案
+
+本轮确认 `ground_truth` 不应只是评分标准，还应包含一个符合标准的可参考准确回答。
+
+处理原则：
+
+- `ground_truth` 保留原有评分契约字段：`must_recognize`、`must_use_or_respect`、`expected_references`、`acceptable_response`、`failure_modes`、`must_not_claim`、`scoring_rubric`。
+- 新增 `reference_answer_zh`，作为人工评审或后续 LLM judge 的高分答案参考。
+- 新增 `reference_answer_usage`，明确参考答案不要求逐字匹配；被评测回答只需要覆盖核心事件线、阶段变化、前序承接和禁止编造边界。
+- 参考答案仍是确定性生成，不由 LLM 生成；来源包括 event title、event_stage、stage_delta_facts、allowed_base_facts、persona_conditioned_facts、assistant_memory_expectation 和 related_previous_days。
+
+已修改：
+
+- `src/long_memory_test/sampling/probe_constructor.py`
+  - `ground_truth` 增加 `reference_answer_zh` 与 `reference_answer_usage`。
+  - 新增 `_reference_answer_zh`、`_stage_reference_sentence`、`_reference_fact_basis`、`_clean_sentence`。
+- `scripts/generate_demo5_persona_daily_timeline_html.py`
+  - 在 Ground truth 表格中展示 `reference_answer_zh` 与 `reference_answer_usage`。
+- `tests/test_sampling_probe_constructor.py`
+  - 校验 Probe ground truth 必须包含参考答案字段。
+- `tests/test_sampling_tau_contract_constructor.py`
+  - 校验 tau contract 的 `P.ground_truth` 透传参考答案字段。
+
+已重新生成：
+
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/probe_plan.json`
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/timeline.json`
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/daily_interaction_units.json`
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/tau_contract.json`
+- `docs/demo5_persona_daily_timeline_detail.html`
+
+已验证：
+
+```bash
+PYTHONPATH=src .venv/bin/python -m unittest tests.test_sampling_probe_constructor tests.test_sampling_tau_contract_constructor tests.test_tau_memory_interface tests.test_sampling_daily_interaction_constructor
+python3 -m py_compile src/long_memory_test/sampling/probe_constructor.py scripts/generate_demo5_persona_daily_timeline_html.py
+PYTHONPATH=src .venv/bin/python scripts/run_p2_probe_insertion.py
+PYTHONPATH=src .venv/bin/python scripts/run_p3_daily_interaction_construction.py
+PYTHONPATH=src .venv/bin/python scripts/run_p4_tau_contract_construction.py
+python3 scripts/generate_demo5_persona_daily_timeline_html.py
+```
+
+当前计数：
+
+- `probe_questions`：127
+- `probe_reference_answers`：127
+- `tau.P`：127
+- `tau_reference_answers`：127

@@ -634,6 +634,8 @@ def _probe_html(*, occurrence: dict[str, Any], probes: list[dict[str, Any]]) -> 
                         ("previous_days", _nested_get(ground_truth, ["must_recognize", "previous_days"])),
                         ("expected_references", ground_truth.get("expected_references")),
                         ("acceptable_response", ground_truth.get("acceptable_response")),
+                        ("reference_answer_zh", ground_truth.get("reference_answer_zh")),
+                        ("reference_answer_usage", ground_truth.get("reference_answer_usage")),
                         ("failure_modes", ground_truth.get("failure_modes")),
                         ("must_not_claim", ground_truth.get("must_not_claim")),
                     ])}

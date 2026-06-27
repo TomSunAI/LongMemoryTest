@@ -681,6 +681,21 @@ def _probe_ground_truth(
             primary_dimension_id=primary_dimension_id,
             previous_days=previous_days,
         ),
+        "reference_answer_zh": _reference_answer_zh(
+            title=title,
+            stage=stage,
+            primary_dimension_id=primary_dimension_id,
+            previous_days=previous_days,
+            stage_delta_facts=stage_delta_facts,
+            allowed_base_facts_zh=allowed_base_facts_zh,
+            persona_conditioned_facts=persona_conditioned_facts,
+            assistant_memory_expectation=day.get("assistant_memory_expectation_zh")
+            or day.get("assistant_memory_expectation"),
+        ),
+        "reference_answer_usage": (
+            "供人工评审或 LLM judge 作为高分答案参照；不要求被评测回答逐字匹配，"
+            "但应覆盖核心事件线、阶段变化、前序承接和禁止编造边界。"
+        ),
         "failure_modes": _ground_truth_failure_modes(
             probe_type=probe_type,
             primary_dimension_id=primary_dimension_id,
@@ -750,6 +765,81 @@ def _acceptable_response(
     }.get(primary_dimension_id, "重点回答 probe 指定的评估维度。")
     stage_goal = STAGE_EXPECTATIONS.get(stage, stage)
     return f"围绕「{title}」回答；{continuity}{stage_goal}{dimension_goal}"
+
+
+def _reference_answer_zh(
+    *,
+    title: str,
+    stage: str,
+    primary_dimension_id: str,
+    previous_days: list[int],
+    stage_delta_facts: list[str],
+    allowed_base_facts_zh: list[str],
+    persona_conditioned_facts: list[str],
+    assistant_memory_expectation: Any,
+) -> str:
+    continuity = (
+        f"我记得这不是第一次聊「{title}」这件事。前面第 "
+        f"{'、'.join(str(day) for day in previous_days)} 天已经出现过相关背景，"
+        "所以这里不用从头重讲。"
+        if previous_days
+        else f"我先按「{title}」这个当前节点来理解，不假装知道没有给出的过去细节。"
+    )
+    stage_goal = _stage_reference_sentence(stage)
+    change = (
+        "这次最关键的变化是：" + "；".join(_clean_sentence(item) for item in stage_delta_facts[:2]) + "。"
+        if stage_delta_facts
+        else f"这次重点是识别它现在处在「{stage}」阶段，而不是泛泛给建议。"
+    )
+    fact_basis = _reference_fact_basis(
+        allowed_base_facts_zh=allowed_base_facts_zh,
+        persona_conditioned_facts=persona_conditioned_facts,
+        assistant_memory_expectation=assistant_memory_expectation,
+    )
+    dimension_focus = {
+        "D1": "所以我会先抓住你真正想确认的点，再给下一步建议。",
+        "D2": "所以我会先校准你这次的状态变化，再判断下一步怎么处理。",
+        "D3": "所以我会引用这些具体细节来回应，避免只说通用安慰。",
+        "D4": "所以我会直接接上前面的共同语境，不让你重新解释背景。",
+    }.get(primary_dimension_id, "所以我会按当前 Probe 的评估目标来回答。")
+    boundary = "我不会补充未给出的身份、地址、诊断、法律结论或新的重大事件。"
+    return " ".join(
+        part
+        for part in [continuity, change, stage_goal, fact_basis, dimension_focus, boundary]
+        if part
+    )
+
+
+def _stage_reference_sentence(stage: str) -> str:
+    if stage == "recurrence":
+        return "这次更像同一问题的再次出现，重点是接住前面的脉络，而不是重新开一个新话题。"
+    if stage == "turning_point":
+        return "现在已经有了新的转折，重点是重新排序优先级，而不是机械重复第一次的建议。"
+    if stage == "partial_resolution":
+        return "你已经推进过一部分处理，接下来要核对哪些动作已经完成、哪些风险还留着。"
+    if stage == "reflection":
+        return "回看这条线时，重点是提炼以后还能复用的处理模式，而不是只复述发生过什么。"
+    if stage == "initial":
+        return "这是第一次提出这个担心，重点是先确认触发点和不确定处。"
+    return "先确认当前阶段，再回答用户当下的问题。"
+
+
+def _reference_fact_basis(
+    *,
+    allowed_base_facts_zh: list[str],
+    persona_conditioned_facts: list[str],
+    assistant_memory_expectation: Any,
+) -> str:
+    facts = [*allowed_base_facts_zh[:2], *persona_conditioned_facts[:2]]
+    if assistant_memory_expectation:
+        facts.append(str(assistant_memory_expectation))
+    if not facts:
+        return ""
+    return "可依据的事实包括：" + "；".join(_clean_sentence(item) for item in facts[:4]) + "。"
+
+
+def _clean_sentence(value: str) -> str:
+    return str(value).strip().rstrip("。；;,.， ")
 
 
 def _ground_truth_failure_modes(

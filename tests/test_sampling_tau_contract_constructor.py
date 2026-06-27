@@ -42,6 +42,7 @@ class SamplingTauContractConstructorTests(unittest.TestCase):
         self.assertTrue(probe["read_only"])
         self.assertEqual(probe["writeback_policy"], "probe_turn_must_not_write_to_memory")
         self.assertEqual(probe["ground_truth"]["event_line_id"], "L_p0001_e_work_001")
+        self.assertEqual(probe["ground_truth"]["reference_answer_zh"], "接上前序上下文回答。")
 
         unit_binding = contract["message_bindings"]["P0001_D03_M001"]
         probe_binding = contract["message_bindings"]["PRB_001"]
@@ -223,6 +224,7 @@ def _probe_plan(*, insert_after_message_id: str = "P0001_D03_M001") -> dict:
                     "schema_version": "probe_ground_truth_v0.1",
                     "event_line_id": "L_p0001_e_work_001",
                     "expected_references": ["前序上下文"],
+                    "reference_answer_zh": "接上前序上下文回答。",
                     "scoring_rubric": {"2": "承接正确"},
                 },
                 "read_only": True,

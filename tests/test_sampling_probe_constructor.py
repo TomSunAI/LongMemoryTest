@@ -52,6 +52,8 @@ class SamplingProbeConstructorTests(unittest.TestCase):
         self.assertEqual(probes[0]["ground_truth"]["schema_version"], "probe_ground_truth_v0.1")
         self.assertEqual(probes[0]["ground_truth"]["event_line_id"], "L_001")
         self.assertIn("expected_references", probes[0]["ground_truth"])
+        self.assertIn("reference_answer_zh", probes[0]["ground_truth"])
+        self.assertIn("reference_answer_usage", probes[0]["ground_truth"])
         self.assertIn("scoring_rubric", probes[0]["ground_truth"])
         self.assertEqual(
             probe_plan["summary"]["primary_dimension_counts"],
