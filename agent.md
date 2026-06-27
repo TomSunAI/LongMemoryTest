@@ -1620,3 +1620,29 @@ python3 scripts/generate_demo5_persona_daily_timeline_html.py
 - `probe_reference_answers`：127
 - `tau.P`：127
 - `tau_reference_answers`：127
+
+## 当前记录：2026-06-27 输出阶段完成标记
+
+当前可以认为 5 人 demo 的输出准备阶段基本完成，后续准备进入下一轮实验执行与 M0/M1/M2/M3 对比评测。
+
+当前已固化的前期产物：
+
+- 人物与事件线：5 个 persona，44 条 L/event line。
+- Timeline：30 天窗口，5 个 persona 共 150 个日历日；active days 140；interaction units 440。
+- Probe/P：127 个 targeted probes；每个 Probe 均绑定具体 `interaction_unit_id`、`event_occurrence_id`、`event_line_id`。
+- Ground truth：127 个 Probe 均包含评分契约字段和 `reference_answer_zh`。
+- P3B：440 条自然化用户发问全部 pass；其中 127 条与 Probe 绑定，follow-up 可结合 Probe guidance，opening 不结合 Probe。
+- Tau contract：`tau=(z,T,L,I,P)` 已打通，`P.ground_truth` 与 Probe plan 对齐。
+- HTML：`docs/demo5_persona_daily_timeline_detail.html` 可作为当前审阅主入口，按 persona/day 展示 timeline、I、P3B、Probe、ground truth 和参考答案。
+
+当前阶段结论：
+
+- 数据生成链路 P0/P1/P2/P3/P3B/P4 在 5 人 demo 范围内已经可运行、可审阅、可复现。
+- M0/M1/M2/M3 的前期输入准备基本完成。
+- 下一轮重点应从“生成数据是否成立”转向“运行不同 memory condition 下的 agent 回答，并基于 Probe ground truth/reference answer 进行评测”。
+
+下一轮建议优先级：
+
+1. 定义 M0/M1/M2/M3 的实验输入 payload：每个 condition 接收相同 I/P/T/L/z 绑定，但 memory 可见范围不同。
+2. 构建 Probe evaluator：读取 agent 回答、对应 `ground_truth`、`reference_answer_zh`、`failure_modes`，输出 0/1/2 分和扣分理由。
+3. 跑 5 人 demo 的小规模端到端对比：先抽 10-20 个 Probe 验证评分稳定性，再扩到 127 个 Probe。
