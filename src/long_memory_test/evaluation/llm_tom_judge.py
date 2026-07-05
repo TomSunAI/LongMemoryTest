@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
 from pathlib import Path
@@ -11,6 +12,7 @@ from long_memory_test.llm import LLMConfig
 
 
 MAX_DIMENSION_SCORE = 2
+ERROR_TEXT_LIMIT = 2000
 
 
 FAILURE_TYPES = [
@@ -91,6 +93,22 @@ FLAG_NAMES = [
 ]
 
 
+class LLMJudgeError(RuntimeError):
+    """Raised when the judge request path cannot produce reliable scores."""
+
+    def __init__(self, message: str, diagnostic: dict[str, Any] | None = None) -> None:
+        super().__init__(message)
+        self.diagnostic = diagnostic or {}
+
+
+class LLMJudgeRequestError(LLMJudgeError):
+    """Raised when the judge API request fails after retries."""
+
+
+class LLMJudgeOutputError(LLMJudgeError):
+    """Raised when the judge response cannot be parsed after retries."""
+
+
 STRICT_SCORING_CONTRACT = {
     "scoring_posture": [
         "从 0 分开始加证据，不要从满分开始找缺点。",
@@ -141,6 +159,69 @@ def write_json(path: Path, data: dict[str, Any]) -> None:
     )
 
 
+def preflight_llm_judge(
+    *,
+    client: Any,
+    llm_config: LLMConfig,
+    timeout_seconds: float = 30.0,
+) -> dict[str, Any]:
+    """Run a tiny JSON-mode request so API/network failures fail before scoring."""
+    try:
+        output = request_llm_judgement(
+            client=client,
+            llm_config=llm_config,
+            judge_case={
+                "case_id": "preflight",
+                "instruction": "只返回一个 JSON object，字段 ok 必须为 true。",
+            },
+            max_output_tokens=64,
+            timeout_seconds=timeout_seconds,
+        )
+    except LLMJudgeError:
+        raise
+    except Exception as exc:
+        diagnostic = describe_llm_exception(exc)
+        raise LLMJudgeRequestError(
+            "LLM judge preflight failed: " + summarize_llm_diagnostic(diagnostic),
+            diagnostic,
+        ) from exc
+
+    try:
+        parsed = parse_judge_output(output)
+    except (json.JSONDecodeError, ValueError) as exc:
+        diagnostic = {
+            "error_type": type(exc).__name__,
+            "message": str(exc),
+            "raw_output_excerpt": _truncate(output, ERROR_TEXT_LIMIT),
+            "classification": "invalid_response",
+        }
+        raise LLMJudgeOutputError(
+            "LLM judge preflight returned invalid output: "
+            + summarize_llm_diagnostic(diagnostic),
+            diagnostic,
+        ) from exc
+
+    if not isinstance(parsed, dict):
+        diagnostic = {
+            "error_type": "InvalidPreflightOutput",
+            "message": "preflight output is not a JSON object",
+            "raw_output_excerpt": _truncate(output, ERROR_TEXT_LIMIT),
+            "classification": "invalid_response",
+        }
+        raise LLMJudgeOutputError(
+            "LLM judge preflight returned invalid output: "
+            + summarize_llm_diagnostic(diagnostic),
+            diagnostic,
+        )
+    return {
+        "status": "ok",
+        "provider": llm_config.provider,
+        "base_url": llm_config.base_url,
+        "model": llm_config.model,
+        "output_excerpt": _truncate(output, 300),
+    }
+
+
 def evaluate_files_with_llm_judge(
     *,
     conversation_log_path: Path,
@@ -158,6 +239,7 @@ def evaluate_files_with_llm_judge(
     timeout_seconds: float = 120.0,
     print_progress: bool = False,
     judge_workers: int = 1,
+    allow_partial_failures: bool = False,
 ) -> dict[str, Any]:
     evaluation = evaluate_tom_quality_with_llm_judge(
         conversation_log=load_json(conversation_log_path),
@@ -173,6 +255,7 @@ def evaluate_files_with_llm_judge(
         timeout_seconds=timeout_seconds,
         print_progress=print_progress,
         judge_workers=judge_workers,
+        allow_partial_failures=allow_partial_failures,
     )
     write_json(output_json_path, evaluation)
     if output_markdown_path:
@@ -199,6 +282,7 @@ def evaluate_tom_quality_with_llm_judge(
     timeout_seconds: float = 120.0,
     print_progress: bool = False,
     judge_workers: int = 1,
+    allow_partial_failures: bool = False,
 ) -> dict[str, Any]:
     turns = conversation_log.get("turns", [])
     if not isinstance(turns, list):
@@ -252,6 +336,7 @@ def evaluate_tom_quality_with_llm_judge(
         timeout_seconds=timeout_seconds,
         print_progress=print_progress,
         judge_workers=judge_workers,
+        allow_partial_failures=allow_partial_failures,
     )
 
     aggregate: dict[str, Any] = {}
@@ -297,6 +382,7 @@ def evaluate_tom_quality_with_llm_judge(
             "blind_review": "The judge prompt does not reveal whether the answer came from M0, M1, M2, or M3.",
             "gold_label_policy": "Judge cases exclude BEI, gold strategies, high-score behavior, and low-score behavior.",
             "judge_workers": judge_workers,
+            "allow_partial_failures": allow_partial_failures,
         },
         "summary": summary,
         "turns": evaluated_turns,
@@ -328,6 +414,7 @@ def _run_judge_tasks(
     timeout_seconds: float,
     print_progress: bool,
     judge_workers: int,
+    allow_partial_failures: bool,
 ) -> list[dict[str, Any]]:
     if judge_workers <= 1:
         return [
@@ -339,6 +426,7 @@ def _run_judge_tasks(
                 timeout_seconds=timeout_seconds,
                 print_progress=print_progress,
                 total_cases=len(judge_tasks),
+                allow_partial_failures=allow_partial_failures,
             )
             for task in judge_tasks
         ]
@@ -355,6 +443,7 @@ def _run_judge_tasks(
                 timeout_seconds=timeout_seconds,
                 print_progress=print_progress,
                 total_cases=len(judge_tasks),
+                allow_partial_failures=allow_partial_failures,
             )
             for task in judge_tasks
         ]
@@ -372,6 +461,7 @@ def _run_one_judge_task(
     timeout_seconds: float,
     print_progress: bool,
     total_cases: int,
+    allow_partial_failures: bool,
 ) -> dict[str, Any]:
     if print_progress:
         print(
@@ -388,6 +478,7 @@ def _run_one_judge_task(
         dimensions=task["dimensions"],
         max_output_tokens=max_output_tokens,
         timeout_seconds=timeout_seconds,
+        allow_partial_failures=allow_partial_failures,
     )
     normalized = normalize_judgement(
         judgement=judgement,
@@ -569,21 +660,52 @@ def request_parseable_llm_judgement(
     dimensions: list[str],
     max_output_tokens: int,
     timeout_seconds: float,
+    allow_partial_failures: bool = False,
 ) -> tuple[str, dict[str, Any]]:
     last_output = ""
-    for _attempt in range(2):
-        last_output = request_llm_judgement(
-            client=client,
-            llm_config=llm_config,
-            judge_case=judge_case,
-            max_output_tokens=max_output_tokens,
-            timeout_seconds=timeout_seconds,
-        )
+    last_diagnostic: dict[str, Any] = {}
+    for attempt in range(4):
+        try:
+            last_output = request_llm_judgement(
+                client=client,
+                llm_config=llm_config,
+                judge_case=judge_case,
+                max_output_tokens=max_output_tokens,
+                timeout_seconds=timeout_seconds,
+            )
+        except Exception as exc:
+            last_diagnostic = describe_llm_exception(exc)
+            if attempt < 3:
+                time.sleep(2.0 * (attempt + 1))
+                continue
+            message = "judge 请求失败：" + summarize_llm_diagnostic(last_diagnostic)
+            if not allow_partial_failures:
+                raise LLMJudgeRequestError(message, last_diagnostic) from exc
+            return message, _fallback_parse_error_judgement(
+                dimensions=dimensions,
+                reason=message,
+                judge_status="request_error",
+                judge_error=last_diagnostic,
+            )
         try:
             return last_output, parse_judge_output(last_output)
-        except (json.JSONDecodeError, ValueError):
+        except (json.JSONDecodeError, ValueError) as exc:
+            last_diagnostic = {
+                "error_type": type(exc).__name__,
+                "message": str(exc),
+                "raw_output_excerpt": _truncate(last_output, ERROR_TEXT_LIMIT),
+                "classification": "invalid_response",
+            }
             continue
-    return last_output, _fallback_parse_error_judgement(dimensions=dimensions)
+    message = "judge 输出不是可解析 JSON：" + summarize_llm_diagnostic(last_diagnostic)
+    if not allow_partial_failures:
+        raise LLMJudgeOutputError(message, last_diagnostic)
+    return last_output, _fallback_parse_error_judgement(
+        dimensions=dimensions,
+        reason=message,
+        judge_status="parse_error",
+        judge_error=last_diagnostic,
+    )
 
 
 def parse_judge_output(raw_output: str) -> dict[str, Any]:
@@ -607,13 +729,134 @@ def parse_judge_output(raw_output: str) -> dict[str, Any]:
     return parsed
 
 
-def _fallback_parse_error_judgement(*, dimensions: list[str]) -> dict[str, Any]:
+def describe_llm_exception(exc: BaseException) -> dict[str, Any]:
+    diagnostic: dict[str, Any] = {
+        "error_type": type(exc).__name__,
+        "message": str(exc),
+    }
+    for attr in ("status_code", "code", "type", "param", "request_id"):
+        if hasattr(exc, attr):
+            value = getattr(exc, attr)
+            if value is not None:
+                diagnostic[attr if attr != "type" else "api_error_type"] = value
+
+    response = getattr(exc, "response", None)
+    if response is not None:
+        response_info: dict[str, Any] = {}
+        status_code = getattr(response, "status_code", None)
+        if status_code is not None:
+            response_info["status_code"] = status_code
+            diagnostic.setdefault("status_code", status_code)
+        headers = dict(getattr(response, "headers", {}) or {})
+        safe_headers = {
+            key: value
+            for key, value in headers.items()
+            if key.lower() in {"content-type", "x-request-id", "cf-ray", "server"}
+        }
+        if safe_headers:
+            response_info["headers"] = safe_headers
+        try:
+            response_info["text_excerpt"] = _truncate(response.text, ERROR_TEXT_LIMIT)
+        except Exception as inner:  # pragma: no cover - defensive for SDK variants.
+            response_info["text_error"] = repr(inner)
+        diagnostic["response"] = response_info
+
+    body = getattr(exc, "body", None)
+    if body is not None:
+        diagnostic["body_excerpt"] = _truncate(repr(body), ERROR_TEXT_LIMIT)
+
+    causes = []
+    seen: set[int] = set()
+    cause = getattr(exc, "__cause__", None) or getattr(exc, "__context__", None)
+    while cause is not None and id(cause) not in seen and len(causes) < 6:
+        seen.add(id(cause))
+        causes.append(
+            {
+                "error_type": type(cause).__name__,
+                "message": str(cause),
+            }
+        )
+        cause = getattr(cause, "__cause__", None) or getattr(cause, "__context__", None)
+    if causes:
+        diagnostic["causes"] = causes
+
+    diagnostic["classification"] = classify_llm_diagnostic(diagnostic)
+    return diagnostic
+
+
+def classify_llm_diagnostic(diagnostic: dict[str, Any]) -> str:
+    status = diagnostic.get("status_code")
+    response = diagnostic.get("response", {})
+    if status is None and isinstance(response, dict):
+        status = response.get("status_code")
+    text_parts = [
+        str(diagnostic.get("message", "")),
+        str(diagnostic.get("body_excerpt", "")),
+    ]
+    if isinstance(response, dict):
+        text_parts.append(str(response.get("text_excerpt", "")))
+    for cause in diagnostic.get("causes", []):
+        if isinstance(cause, dict):
+            text_parts.append(str(cause.get("error_type", "")))
+            text_parts.append(str(cause.get("message", "")))
+    text = " ".join(text_parts).lower()
+
+    if status in (401, 403):
+        return "authentication_or_permission"
+    if status == 402 or any(word in text for word in ("insufficient", "balance", "quota")):
+        return "quota_or_balance"
+    if status == 429:
+        return "rate_limit_or_quota"
+    if "gaierror" in text or "nodename nor servname" in text or "name resolution" in text:
+        return "dns_resolution"
+    if "timeout" in text or "timed out" in text:
+        return "timeout"
+    if "connection" in text or "connecterror" in text or "connect error" in text:
+        return "connection_error"
+    if status is not None:
+        return "http_error"
+    return "unknown"
+
+
+def summarize_llm_diagnostic(diagnostic: dict[str, Any]) -> str:
+    parts = [
+        f"classification={diagnostic.get('classification', 'unknown')}",
+        f"type={diagnostic.get('error_type', 'unknown')}",
+    ]
+    if diagnostic.get("status_code") is not None:
+        parts.append(f"status={diagnostic['status_code']}")
+    if diagnostic.get("message"):
+        parts.append("message=" + _truncate(str(diagnostic["message"]), 220))
+    causes = diagnostic.get("causes", [])
+    if causes and isinstance(causes[0], dict):
+        parts.append(
+            "root_cause="
+            + _truncate(
+                f"{causes[-1].get('error_type')}: {causes[-1].get('message')}",
+                220,
+            )
+        )
+    response = diagnostic.get("response", {})
+    if isinstance(response, dict) and response.get("text_excerpt"):
+        parts.append("response=" + _truncate(str(response["text_excerpt"]), 300))
+    return "; ".join(parts)
+
+
+def _fallback_parse_error_judgement(
+    *,
+    dimensions: list[str],
+    reason: str = "judge 输出不是可解析 JSON",
+    judge_status: str = "parse_error",
+    judge_error: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     return {
+        "judge_status": judge_status,
+        "judge_error": judge_error or {},
         "dimension_scores": {
             dimension: {
                 "score": 0,
                 "evidence_quote": "",
-                "reason": "judge 输出不是可解析 JSON，本 case 进入人工复核。",
+                "reason": f"{reason}，本 case 进入人工复核。",
             }
             for dimension in dimensions
         },
@@ -621,7 +864,7 @@ def _fallback_parse_error_judgement(*, dimensions: list[str]) -> dict[str, Any]:
             name: False for name in FLAG_NAMES
         },
         "failure_types": [],
-        "overall_reason": "judge 输出不是可解析 JSON，本 case 不作为可靠自动评分，应人工复核。",
+        "overall_reason": f"{reason}，本 case 不作为可靠自动评分，应人工复核。",
         "confidence": 0.0,
         "needs_human_review": True,
         "answer_excerpt": "",
@@ -674,14 +917,20 @@ def normalize_judgement(
     )
     computed_tom_score = round((average_score / MAX_DIMENSION_SCORE) * 100.0, 2)
     confidence = _coerce_confidence(judgement.get("confidence"))
+    judge_status = str(judgement.get("judge_status") or "ok")
+    is_valid_judge_result = judge_status == "ok"
     needs_human_review = bool(
         judgement.get("needs_human_review", False)
         or confidence < 0.55
         or any(flags.values())
         or bool(failure_types)
+        or not is_valid_judge_result
     )
     return {
         "tom_score": computed_tom_score,
+        "judge_status": judge_status,
+        "is_valid_judge_result": is_valid_judge_result,
+        "judge_error": judgement.get("judge_error", {}),
         "dimension_scores": dimension_scores,
         "flags": flags,
         "failure_types": failure_types,
@@ -702,14 +951,16 @@ def render_markdown_report(evaluation: dict[str, Any]) -> str:
         "",
         "## Summary",
         "",
-        "| Variant | Probe answers | Avg ToM score | Avg confidence | Human review | Flags |",
-        "|---|---:|---:|---:|---:|---:|",
+        "| Variant | Probe answers | Valid judge | Invalid judge | Avg ToM score | Avg confidence | Human review | Flags |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for variant_name, item in sorted(summary.get("variants", {}).items()):
         lines.append(
-            "| {variant} | {turns} | {score:.1f} | {confidence:.2f} | {review} | {flags} |".format(
+            "| {variant} | {turns} | {valid} | {invalid} | {score:.1f} | {confidence:.2f} | {review} | {flags} |".format(
                 variant=variant_name,
                 turns=item["turn_count"],
+                valid=item.get("valid_judge_count", item["turn_count"]),
+                invalid=item.get("invalid_judge_count", 0),
                 score=item["average_tom_score"],
                 confidence=item["average_confidence"],
                 review=item["needs_human_review_count"],
@@ -862,6 +1113,9 @@ def _update_aggregate(
         variant_name,
         {
             "turn_count": 0,
+            "valid_judge_count": 0,
+            "invalid_judge_count": 0,
+            "judge_status_counts": defaultdict(int),
             "tom_score_sum": 0.0,
             "confidence_sum": 0.0,
             "needs_human_review_count": 0,
@@ -873,8 +1127,15 @@ def _update_aggregate(
         },
     )
     item["turn_count"] += 1
-    item["tom_score_sum"] += judged_result["tom_score"]
-    item["confidence_sum"] += judged_result["confidence"]
+    judge_status = str(judged_result.get("judge_status") or "ok")
+    item["judge_status_counts"][judge_status] += 1
+    is_valid = bool(judged_result.get("is_valid_judge_result", True))
+    if is_valid:
+        item["valid_judge_count"] += 1
+        item["tom_score_sum"] += judged_result["tom_score"]
+        item["confidence_sum"] += judged_result["confidence"]
+    else:
+        item["invalid_judge_count"] += 1
     item["needs_human_review_count"] += int(bool(judged_result["needs_human_review"]))
     for flag_name, enabled in judged_result["flags"].items():
         if enabled:
@@ -883,6 +1144,8 @@ def _update_aggregate(
     for failure_type in judged_result.get("failure_types", []):
         item["failure_type_counts"][failure_type] += 1
     for dimension, result in judged_result["dimension_scores"].items():
+        if not is_valid:
+            continue
         item["dimension_score_sums"][dimension] += result["score"]
         item["dimension_counts"][dimension] += 1
 
@@ -892,14 +1155,18 @@ def _build_summary(aggregate: dict[str, Any]) -> dict[str, Any]:
     dimension_averages = {}
     for variant_name, item in aggregate.items():
         turn_count = item["turn_count"]
+        valid_judge_count = item["valid_judge_count"]
         variants[variant_name] = {
             "turn_count": turn_count,
+            "valid_judge_count": valid_judge_count,
+            "invalid_judge_count": item["invalid_judge_count"],
+            "judge_status_counts": dict(sorted(item["judge_status_counts"].items())),
             "average_tom_score": round(
-                item["tom_score_sum"] / turn_count if turn_count else 0.0,
+                item["tom_score_sum"] / valid_judge_count if valid_judge_count else 0.0,
                 2,
             ),
             "average_confidence": round(
-                item["confidence_sum"] / turn_count if turn_count else 0.0,
+                item["confidence_sum"] / valid_judge_count if valid_judge_count else 0.0,
                 3,
             ),
             "needs_human_review_count": item["needs_human_review_count"],

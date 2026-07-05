@@ -11,6 +11,7 @@ DEFAULT_POIXE_BASE_URL = "https://api.poixe.com/v1"
 DEFAULT_POIXE_MODEL = "gpt-5.2"
 DEFAULT_DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 DEFAULT_DEEPSEEK_MODEL = "deepseek-v4-pro"
+DEFAULT_LLM_PROVIDER = "deepseek"
 
 
 class LLMConfigError(RuntimeError):
@@ -43,7 +44,7 @@ def load_dotenv_local(path: Path | str = ".env.local") -> None:
 def get_llm_config(provider: str | None = None) -> LLMConfig:
     load_dotenv_local()
 
-    selected_provider = (provider or os.getenv("LLM_PROVIDER") or "poixe").lower()
+    selected_provider = (provider or os.getenv("LLM_PROVIDER") or DEFAULT_LLM_PROVIDER).lower()
     if selected_provider == "poixe":
         return _get_poixe_config()
     if selected_provider == "deepseek":

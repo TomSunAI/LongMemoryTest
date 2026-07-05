@@ -12,7 +12,8 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_BASE_DIR = REPO_ROOT / "long_memory_experiment/data/generated/p0_persona_event_sampling_demo5"
 DEFAULT_OUTPUT = REPO_ROOT / "docs/demo5_tau_i_probe_integrated_report.html"
-AAAI_PAPER_PATH = "/Users/tom/Desktop/aaai2027.pdf"
+DEFAULT_TAU_CONTRACT = DEFAULT_BASE_DIR / "tau_contract.json"
+AAAI_PAPER_PATH = str(REPO_ROOT / "docs/references/aaai2027_remem_re.pdf")
 DOCX_PATH = "/Users/tom/Desktop/Archetype_Guided_Persona_Event_Sampling_Implementation.docx"
 
 
@@ -26,11 +27,11 @@ STAGE_CN = {
 
 PAPER_PROBE_LABELS = {
     "P1": "Current Understanding / 当前理解",
-    "P2": "Memory Invocation / 共享记忆调用",
-    "P3": "State Transformation / 状态变化识别",
-    "P4": "Relational Boundary / 关系边界",
-    "P5": "Alienation Avoidance / 陌生化避免",
-    "P6": "Natural Detail Use / 自然细节使用",
+    "P2": "State Transformation / 状态变化识别",
+    "P3": "Memory Invocation / 共享记忆调用",
+    "P4": "Natural Detail Use / 自然细节使用",
+    "P5": "Relational Boundary / 关系边界",
+    "P6": "Alienation Avoidance / 陌生化避免",
 }
 
 DIMENSION_LABELS = {
@@ -47,6 +48,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--timeline", type=Path, default=None)
     parser.add_argument("--probe-plan", type=Path, default=None)
     parser.add_argument("--daily-interactions", type=Path, default=None)
+    parser.add_argument("--tau-contract", type=Path, default=None)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     return parser.parse_args()
 
@@ -56,13 +58,17 @@ def main() -> int:
     timeline_path = args.timeline or (args.base_dir / "timeline.json")
     probe_plan_path = args.probe_plan or (args.base_dir / "probe_plan.json")
     daily_path = args.daily_interactions or (args.base_dir / "daily_interaction_units.json")
+    tau_path = args.tau_contract or DEFAULT_TAU_CONTRACT
     timeline = _load_json(timeline_path)
     probe_plan = _load_json(probe_plan_path)
     daily = _load_json(daily_path)
+    tau_contract = _load_json(tau_path)
     html_text = render_report(
+        tau_contract=tau_contract,
         timeline=timeline,
         probe_plan=probe_plan,
         daily=daily,
+        tau_path=tau_path,
         timeline_path=timeline_path,
         probe_plan_path=probe_plan_path,
         daily_path=daily_path,
@@ -75,13 +81,16 @@ def main() -> int:
 
 def render_report(
     *,
+    tau_contract: dict[str, Any],
     timeline: dict[str, Any],
     probe_plan: dict[str, Any],
     daily: dict[str, Any],
+    tau_path: Path,
     timeline_path: Path,
     probe_plan_path: Path,
     daily_path: Path,
 ) -> str:
+    tau_summary = tau_contract.get("summary", {})
     timeline_summary = timeline.get("summary", {})
     probe_summary = probe_plan.get("summary", {})
     daily_summary = daily.get("summary", {})
@@ -98,7 +107,7 @@ def render_report(
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Demo5 tau / I / Probe 一体化报告</title>
+  <title>Demo5 tau 总览报告</title>
   <style>
     :root {{
       --ink: #172026;
@@ -252,28 +261,39 @@ def render_report(
 </head>
 <body>
 <main>
-  <h1>5 人 Demo：tau / Timeline / I / Probe 一体化生成报告</h1>
-  <p class="meta">整合输入：<code>{_esc(_rel(timeline_path))}</code>、<code>{_esc(_rel(probe_plan_path))}</code>、<code>{_esc(_rel(daily_path))}</code></p>
+  <h1>5 人 Demo：tau 总览报告</h1>
+  <p class="meta">整合输入：<code>{_esc(_rel(tau_path))}</code>、<code>{_esc(_rel(timeline_path))}</code>、<code>{_esc(_rel(probe_plan_path))}</code>、<code>{_esc(_rel(daily_path))}</code></p>
   <p class="meta">依据：<code>{_esc(AAAI_PAPER_PATH)}</code> 的 <code>tau=(z,T,L,I,P)</code>；工程约束来自 <code>{_esc(DOCX_PATH)}</code> 与当前 JSON 池。</p>
 
-  {_status_block(timeline.get("validation", {}), probe_plan.get("validation", {}), daily.get("validation", {}))}
+  {_status_block(tau_contract.get("validation", {}), timeline.get("validation", {}), probe_plan.get("validation", {}), daily.get("validation", {}))}
 
   <section class="grid">
-    {_metric("Persona", daily_summary.get("persona_count"), "人物数量")}
-    {_metric("Calendar days", daily_summary.get("calendar_day_count"), "日历天")}
-    {_metric("Active days", daily_summary.get("active_day_total"), "有事件天")}
-    {_metric("I units", daily_summary.get("interaction_unit_count"), "互动单元")}
-    {_metric("Probes", probe_summary.get("probe_count"), "评测问题")}
-    {_metric("Parallel days", daily_summary.get("parallel_day_total"), "同日多事件")}
+    {_metric("z persona", tau_summary.get("persona_count"), "人物合同")}
+    {_metric("T themes", tau_summary.get("theme_count"), "长期主题")}
+    {_metric("L lines", tau_summary.get("event_line_count"), "事件线")}
+    {_metric("I units", tau_summary.get("interaction_unit_count"), "互动单元")}
+    {_metric("P probes", tau_summary.get("targeted_probe_count"), "评测问题")}
+    {_metric("Bindings", tau_summary.get("message_binding_count"), "消息绑定")}
+    {_metric("Active days", tau_summary.get("active_day_count"), "有事件天")}
+    {_metric("Parallel days", tau_summary.get("parallel_day_count"), "同日多事件")}
+    {_metric("Median events/day", timeline_summary.get("daily_event_count_median_calendar"), "日历中位数")}
+    {_metric("M0-M3", "ready", "接口已打通")}
+    {_metric("P3b LLM", "candidate", "候选层保留 I")}
+    {_metric("Generation", "not run", "本报告不生成")}
   </section>
+
+  <h2>0. Tau 总览</h2>
+  {_tau_overview_section(tau_contract, timeline, probe_plan, daily)}
 
   <h2>1. 总体结论</h2>
   <div class="callout">
-    当前 5 人 demo 已经形成同一条链路：<code>timeline.json</code> 给出日历和事件 occurrence；
+    当前 5 人 demo 已经形成同一条链路：<code>tau_contract.json</code> 作为总合同；
+    <code>timeline.json</code> 给出日历和事件 occurrence；
     <code>daily_interaction_units.json</code> 把每个 occurrence 变成可执行的 <code>I</code>；
     <code>probe_plan.json</code> 生成 targeted relational probes，并通过 <code>insert_after_message_id</code> 绑定到具体 <code>I unit</code> 后面。
+    最新修改已把 tau 和 M0/M1/M2/M3 payload 接口打通，并增加 P3b LLM 自然化候选层；但本报告没有执行生成脚本。
   </div>
-  {_source_table(timeline_path, probe_plan_path, daily_path)}
+  {_source_table(tau_path, timeline_path, probe_plan_path, daily_path, tau_contract, timeline, probe_plan, daily)}
 
   <h2>2. 理论框架：tau=(z,T,L,I,P)</h2>
   {_tau_section(timeline_summary, daily_summary, probe_summary)}
@@ -297,7 +317,10 @@ def render_report(
   <h2>8. 非 LLM 生成边界</h2>
   {_non_llm_section()}
 
-  <h2>9. 5 人明细</h2>
+  <h2>9. Tau 到 M0-M3 与 P3b 接口</h2>
+  {_tau_interface_section(tau_contract)}
+
+  <h2>10. 5 人明细</h2>
   {persona_sections}
 </main>
 </body>
@@ -305,15 +328,132 @@ def render_report(
 """
 
 
-def _source_table(timeline_path: Path, probe_plan_path: Path, daily_path: Path) -> str:
+def _source_table(
+    tau_path: Path,
+    timeline_path: Path,
+    probe_plan_path: Path,
+    daily_path: Path,
+    tau_contract: dict[str, Any],
+    timeline: dict[str, Any],
+    probe_plan: dict[str, Any],
+    daily: dict[str, Any],
+) -> str:
+    tau_summary = tau_contract.get("summary", {})
+    timeline_summary = timeline.get("summary", {})
+    timeline_config = timeline.get("construction_config", {})
+    probe_summary = probe_plan.get("summary", {})
+    daily_summary = daily.get("summary", {})
     rows = [
         ("论文依据", AAAI_PAPER_PATH, "ReMem-RE、tau=(z,T,L,I,P)、P1-P6 probes、D1-D4。"),
-        ("工程规范", DOCX_PATH, "5 人、30 天、15-20 active sessions、12-18 probes、产物落盘。"),
-        ("Timeline", _rel(timeline_path), "30 天日历、event_occurrences[]、并行事件、probe_insertions 回写。"),
-        ("Probe plan", _rel(probe_plan_path), "67 条 targeted relational probes。"),
-        ("I units", _rel(daily_path), "98 个 daily interaction units，含问题、约束、边界、probe links。"),
+        (
+            "工程规范",
+            DOCX_PATH,
+            (
+                "5 人、30 天、产物落盘；当前按本轮修正使用高密度 timeline："
+                f"每天 0-{timeline_config.get('max_events_per_active_day')} 个事件，"
+                f"中位数 {timeline_summary.get('daily_event_count_median_calendar')}。"
+            ),
+        ),
+        ("Tau contract", _rel(tau_path), f"总合同：z={tau_summary.get('persona_count')}、T={tau_summary.get('theme_count')}、L={tau_summary.get('event_line_count')}、I={tau_summary.get('interaction_unit_count')}、P={tau_summary.get('targeted_probe_count')}、bindings={tau_summary.get('message_binding_count')}。"),
+        ("Timeline", _rel(timeline_path), f"{timeline_summary.get('event_occurrence_total')} 个 event occurrences；event_occurrences[]、并行事件、probe_insertions 回写。"),
+        ("Probe plan", _rel(probe_plan_path), f"{probe_summary.get('probe_count')} 条 targeted relational probes。"),
+        ("I units", _rel(daily_path), f"{daily_summary.get('interaction_unit_count')} 个 daily interaction units，含问题、约束、边界、probe links。"),
     ]
     return _table(["层级", "文件", "作用"], rows)
+
+
+def _tau_overview_section(
+    tau_contract: dict[str, Any],
+    timeline: dict[str, Any],
+    probe_plan: dict[str, Any],
+    daily: dict[str, Any],
+) -> str:
+    tau_summary = tau_contract.get("summary", {})
+    timeline_summary = timeline.get("summary", {})
+    daily_summary = daily.get("summary", {})
+    probe_summary = probe_plan.get("summary", {})
+    scope = tau_contract.get("construction_scope", {})
+    scope_rows = [
+        ("from_sampled_personas", scope.get("from_sampled_personas"), "z 的来源。"),
+        ("from_accepted_event_sets", scope.get("from_accepted_event_sets"), "T 的来源。"),
+        ("from_event_lines_batch", scope.get("from_event_lines_batch"), "L 的来源。"),
+        ("from_timeline", scope.get("from_timeline"), "occurrence / day / parallel events 的来源。"),
+        ("from_daily_interaction_units", scope.get("from_daily_interaction_units"), "I 的来源。"),
+        ("from_probe_plan", scope.get("from_probe_plan"), "P 的来源。"),
+        ("llm_generation_used", scope.get("llm_generation_used"), "当前 tau 合同本身未使用 LLM 生成。"),
+    ]
+    component_rows = [
+        ("z", tau_summary.get("persona_count"), "人物合同", "每个 persona 的稳定画像、长期目标、沟通风格、敏感边界。"),
+        ("T", tau_summary.get("theme_count"), "长期主题", "由 persona-event compatibility 采样出的 accepted event categories。"),
+        ("L", tau_summary.get("event_line_count"), "事件线", "同一主题跨天推进的 recurring event lines，包含 stage sequence 和关系记忆目标。"),
+        ("I", tau_summary.get("interaction_unit_count"), "互动单元", "每个 active occurrence 对应一个用户可执行问题；不是只有 probe 才有 I。"),
+        ("P", tau_summary.get("targeted_probe_count"), "评测 probe", "只读评测问题，插在部分 I 后面。"),
+        ("message_bindings", tau_summary.get("message_binding_count"), "运行绑定", "把 I/P message_id 映射到 persona/day/event_line/stage/interaction_unit。"),
+    ]
+    pipeline_rows = [
+        (
+            "P0 Persona/Event",
+            "sampled_personas.json + accepted_persona_event_sets.json",
+            "生成 z 和 T 的候选基础。",
+            "已完成，非本报告新生成。",
+        ),
+        (
+            "P1 Event Lines / Timeline",
+            "event_lines_batch.json + timeline.json",
+            f"形成 L 和 {timeline_summary.get('event_occurrence_total')} 个 occurrence；每日 0-5 个事件，中位数 {timeline_summary.get('daily_event_count_median_calendar')}。",
+            "已完成，validation=pass。",
+        ),
+        (
+            "P2 Probe",
+            "probe_plan.json",
+            f"生成 {probe_summary.get('probe_count')} 条 P；D1-D4 primary coverage={_format_dimension_counts(probe_summary.get('primary_dimension_counts', {}))}。",
+            "已完成，read-only。",
+        ),
+        (
+            "P3a I Units",
+            "daily_interaction_units.json",
+            f"生成 {daily_summary.get('interaction_unit_count')} 个 I；其中 {tau_summary.get('probed_interaction_unit_count')} 个有 probe，{tau_summary.get('unprobed_interaction_unit_count')} 个无 probe。",
+            "已完成，规则模板。",
+        ),
+        (
+            "P4 Tau Contract",
+            "tau_contract.json",
+            f"总合同聚合 z/T/L/I/P 和 {tau_summary.get('message_binding_count')} 条 message binding。",
+            "已完成，作为后续运行入口。",
+        ),
+        (
+            "M0-M3 Adapter",
+            "generate_memory_conditions_from_tau_contract(...)",
+            "把 tau 适配为 M0/M1/M2/M3 payload 接口。",
+            "代码已打通；本报告未运行生成脚本。",
+        ),
+        (
+            "P3b Naturalization",
+            "interaction_naturalizer.py",
+            "LLM 只能基于 I unit 做自然话术候选，不覆盖 I。",
+            "代码已打通；本报告未调用 LLM。",
+        ),
+    ]
+    conclusion_rows = [
+        ("当前能证明什么", "5 人、30 天、440 个 I、127 个 P、567 个 message binding 已经可形成完整 tau 合同。"),
+        ("当前还不是最终实验什么", "尚未把 tau-route memory_conditions 正式生成出来，也尚未执行 M0/M1/M2/M3 runner。"),
+        ("最重要的结构原则", "I 是结构化真值；P3b 自然化只是候选文本层；M0-M3 是同一个 tau 坐标下的记忆条件接口。"),
+    ]
+    return f"""
+  <div class="callout">
+    <strong>一句话：</strong>当前报告展示的是一个可审计的 tau 合同，而不是一次自然对话运行结果。
+    它把人物、长期主题、事件线、互动单元和 probe 统一到 <code>tau=(z,T,L,I,P)</code>，
+    并说明下一步如何接入 M0/M1/M2/M3 与 P3b LLM 自然化。
+  </div>
+  <h3>0.1 tau 合同组件</h3>
+  {_table(["组件", "数量", "当前名称", "作用"], component_rows)}
+  <h3>0.2 生成链路总览</h3>
+  {_table(["阶段", "产物", "作用", "当前状态"], pipeline_rows)}
+  <h3>0.3 construction_scope</h3>
+  {_table(["字段", "值", "解释"], scope_rows)}
+  <h3>0.4 当前判断</h3>
+  {_table(["问题", "结论"], conclusion_rows)}
+"""
 
 
 def _tau_section(
@@ -323,7 +463,7 @@ def _tau_section(
 ) -> str:
     rows = [
         ("z", "sampled user persona", "5 个 persona，来自 persona archetype JSON，经 P0 采样。"),
-        ("T", "sampled event themes / timeline", f"30 天时间轴；active days={daily_summary.get('active_day_total')}。"),
+        ("T", "accepted event categories", f"长期事件主题来自 persona-event compatibility 后的 accepted event categories；active days={daily_summary.get('active_day_total')}。"),
         ("L", "recurring event lines", f"事件线总数={timeline_summary.get('event_line_count')}；每条线阶段单调推进。"),
         ("I", "daily interaction units", f"{daily_summary.get('interaction_unit_count')} 个 I；用户具体问题在 scripted_opening.user_message。"),
         ("P", "inserted targeted relational probes", f"{probe_summary.get('probe_count')} 条 probe；通过 insert_after_message_id 绑定到 I。"),
@@ -340,12 +480,13 @@ def _tau_section(
 
 def _timeline_section(timeline: dict[str, Any]) -> str:
     summary = timeline.get("summary", {})
+    config = timeline.get("construction_config", {})
     source_rows = [
         (
             "最高研究来源",
-            "/Users/tom/Desktop/aaai2027.pdf",
+            AAAI_PAPER_PATH,
             "How Agents Remember the Relationship: Evaluating Relational Memory；提出 ReMem-RE，把长期互动轨迹表示为 tau=(z,T,L,I,P)。",
-            "给出 T=sampled event themes、L=recurring event lines、I=daily interaction units、P=targeted relational probes 的研究口径。",
+            "给出 T=accepted event categories、L=recurring event lines、I=daily interaction units、P=targeted relational probes 的正式研究口径。",
         ),
         (
             "理论动机",
@@ -356,8 +497,12 @@ def _timeline_section(timeline: dict[str, Any]) -> str:
         (
             "工程规范来源",
             DOCX_PATH,
-            "规定第一阶段 5 人、30 天、15-20 active sessions、每条 event line 3-6 次、不同事件线交错出现。",
-            "给出规模和验收约束，不给出具体排布算法。",
+            (
+                "原始工程要求规定第一阶段 5 人、30 天和中间产物；当前已按本轮讨论改为"
+                f"每日 0-{config.get('max_events_per_active_day')} 个事件、中位数 "
+                f"{summary.get('daily_event_count_median_calendar')} 的高密度排布。"
+            ),
+            "给出规模和验收方向；具体排布算法由当前工程实现负责。",
         ),
         (
             "当前实现来源",
@@ -370,7 +515,7 @@ def _timeline_section(timeline: dict[str, Any]) -> str:
         (
             "T / event theme",
             "长期事件主题集合",
-            "由 accepted_persona_event_sets.json 提供，每个 persona 接受 4-6 个事件主题。",
+            f"由 accepted_persona_event_sets.json 提供；当前 5 人合计 {summary.get('event_line_count')} 条 accepted event categories / event lines。",
             "T 不是最终聊天内容，而是长期生活/工作领域中的可持续 concern。",
         ),
         (
@@ -388,7 +533,7 @@ def _timeline_section(timeline: dict[str, Any]) -> str:
         (
             "active day",
             "日历容器",
-            "30 天里真正承载 occurrence 的日期；同一天可含 1-2 条 occurrence。",
+            f"30 天里真正承载 occurrence 的日期；同一天可含 1-{config.get('max_events_per_active_day')} 条 occurrence，0 条为 inactive day。",
             "day 不是事件本身；真实分析优先读 event_occurrences[]。",
         ),
         (
@@ -407,8 +552,8 @@ def _timeline_section(timeline: dict[str, Any]) -> str:
         ),
         (
             "2. 给每条 L 分配出现次数",
-            "每条 event line 至少 3 次、最多 6 次；总 active sessions 必须落在 15-20。",
-            "下界还要满足 probe_candidate_min_per_persona，避免后续 probe 候选不足；上界受 stage capacity 和 30 天容量限制。",
+            f"每条 event line 至少 {config.get('event_line_occurrences_min')} 次、最多 {config.get('event_line_occurrences_max')} 次；总 active sessions 必须落在 {config.get('active_sessions_min')}-{config.get('active_sessions_max')}。",
+            "下界还要满足 probe_candidate_min_per_persona，避免后续 probe 候选不足；上界受事件线容量和 30 天日历容量限制。",
             "timeline_constructor.py:239-290",
         ),
         (
@@ -420,26 +565,26 @@ def _timeline_section(timeline: dict[str, Any]) -> str:
         (
             "4. 计算 active day 数",
             "active session 是 occurrence 数，不再等同于日历天。",
-            "为了允许多线并行，active_day_count 可小于 token_count；当前至少压出 2 个并行事件日。",
-            "timeline_constructor.py:347-367",
+            f"当前使用固定每日分布 {_format_histogram(config.get('daily_event_count_distribution', {}))}，每人 occurrence 总数固定为 {summary.get('active_sessions_per_persona_min')}。",
+            "timeline_constructor.py:347-385",
         ),
         (
-            "5. 把 active day 铺到 30 天",
-            "先在 30 天里近似均匀选 active days，再用随机扰动避免完全机械。",
-            "inactive day 保留为空，不生成 occurrence，也不生成 I。",
-            "timeline_constructor.py:319-344",
+            "5. 把每日事件数铺到 30 天",
+            "先把 30 天的事件数分布洗牌，得到每天应承载 0/1/2/3/4/5 条事件的日历骨架。",
+            "inactive day 保留为空，不生成 occurrence，也不生成 I；active day 后续按目标数量填入 occurrence。",
+            "timeline_constructor.py:353-385",
         ),
         (
             "6. 把 tokens 打包进日期",
-            "每个 active day 最多 2 条事件；同一天不能重复同一条 event line；同一条线的日期必须递增。",
-            "尽量避免同一天塞入多个 probe candidate，降低评测过密。",
-            "timeline_constructor.py:370-428",
+            f"每个 active day 最多 {config.get('max_events_per_active_day')} 条事件；同一天不能重复同一条 event line；同一条线的日期必须递增。",
+            "按固定日历容量精确打包，保证每日事件数直方图和 median 均匹配配置。",
+            "timeline_constructor.py:528-588",
         ),
         (
             "7. 构造 event occurrence",
-            "根据 occurrence_index 取 stage_sequence 中对应阶段，写入 event_stage、surface_event、allowed_new_facts、related_previous_days。",
+            "根据 occurrence_index 取 stage_sequence 中对应阶段；若超过原始阶段数且 allow_stage_reuse_after_sequence=true，则生成扩展阶段。",
             "同时生成 event_occurrence_id 和 interaction_unit_id，例如 P0001_D06_E002 / P0001_D06_M002。",
-            "timeline_constructor.py:431-478",
+            "timeline_constructor.py:590-670",
         ),
         (
             "8. 构造 active day 节点",
@@ -449,7 +594,7 @@ def _timeline_section(timeline: dict[str, Any]) -> str:
         ),
         (
             "9. 运行校验",
-            "校验 30 天、15-20 active sessions、3-6 次出现、单日上限、同日不重复、阶段单调、必须从 stage 1 开始。",
+            f"校验 {config.get('timeline_days')} 天、{config.get('active_sessions_min')}-{config.get('active_sessions_max')} active sessions、{config.get('event_line_occurrences_min')}-{config.get('event_line_occurrences_max')} 次出现、每日分布、中位数、单日上限、同日不重复、阶段单调、必须从 stage 1 开始。",
             "这保证 timeline 是可运行合同，不是人工故事表。",
             "timeline_constructor.py:59-165",
         ),
@@ -457,15 +602,15 @@ def _timeline_section(timeline: dict[str, Any]) -> str:
     boundary_rows = [
         (
             "论文直接提供",
-            "tau=(z,T,L,I,P)、T 是 sampled event themes、L 是 recurring event lines、L 应该是跨多天演化而不是单次 topic。",
+            "tau=(z,T,L,I,P)、T 是 accepted event categories、L 是 recurring event lines、L 应该是跨多天演化而不是单次 topic。",
         ),
         (
             "docx / config 提供",
-            "5 人、30 天、15-20 active sessions、每条 event line 3-6 次、probe 数量范围、必须落盘中间产物。",
+            f"5 人、30 天、当前配置为每人 {config.get('active_sessions_min')}-{config.get('active_sessions_max')} active sessions、每条 event line {config.get('event_line_occurrences_min')}-{config.get('event_line_occurrences_max')} 次、每日分布 {_format_histogram(config.get('daily_event_count_distribution', {}))}、probe 数量范围、必须落盘中间产物。",
         ),
         (
             "当前工程新增",
-            "occurrence round、active day 打包、同日最多 2 条事件、parallel_event_days_min=2、probe_candidate_min_per_persona=14。",
+            f"occurrence round、固定每日事件数打包、同日最多 {config.get('max_events_per_active_day')} 条事件、parallel_event_days_min={config.get('parallel_event_days_min')}、probe_candidate_min_per_persona={config.get('probe_candidate_min_per_persona')}。",
         ),
         (
             "明确不是论文原生",
@@ -477,7 +622,9 @@ def _timeline_section(timeline: dict[str, Any]) -> str:
         ("active_day_total", summary.get("active_day_total"), "30 天中真正发生事件的日历天；可少于 active sessions。"),
         ("event_occurrence_total", summary.get("event_occurrence_total"), "Timeline 最小事件节点总数。"),
         ("parallel_event_day_total", summary.get("parallel_event_day_total"), "同一天有多个 occurrence 的天数。"),
-        ("max_events_on_single_day", summary.get("max_events_on_single_day"), "当前上限为 2。"),
+        ("daily_event_count_histogram", _format_histogram(summary.get("daily_event_count_histogram", {})), "全体日历天上的事件数分布。"),
+        ("daily_event_count_median_calendar", summary.get("daily_event_count_median_calendar"), "按所有日历天计算的事件数中位数。"),
+        ("max_events_on_single_day", summary.get("max_events_on_single_day"), f"当前上限为 {config.get('max_events_per_active_day')}。"),
     ]
     return f"""
   <div class="callout">
@@ -514,7 +661,7 @@ def _i_generation_section(daily_summary: dict[str, Any]) -> str:
     source_rows = [
         (
             "AAAI 论文",
-            "/Users/tom/Desktop/aaai2027.pdf",
+            AAAI_PAPER_PATH,
             "I 是 daily interaction units，用来把 recurring event lines 落成用户 turn。",
             "论文强调每个 I 包含 scripted opening、constrained follow-up 和 strict scene boundary；它服务于长期关系期待的形成和评测。",
         ),
@@ -735,6 +882,7 @@ def _unit_example(unit: dict[str, Any] | None, label: str) -> str:
 def _probe_section(probe_plan: dict[str, Any]) -> str:
     summary = probe_plan.get("summary", {})
     validation = probe_plan.get("validation", {})
+    config = probe_plan.get("construction_config", {})
     type_rows = [
         (
             paper_id,
@@ -748,23 +896,32 @@ def _probe_section(probe_plan: dict[str, Any]) -> str:
         (
             dim_id,
             DIMENSION_LABELS.get(dim_id, dim_id),
-            summary.get("evaluation_dimension_counts", {}).get(dim_id, 0),
+            summary.get("primary_dimension_counts", {}).get(dim_id, 0),
             _dimension_primary_meaning(dim_id),
+        )
+        for dim_id in ["D1", "D2", "D3", "D4"]
+    ]
+    secondary_dim_rows = [
+        (
+            dim_id,
+            DIMENSION_LABELS.get(dim_id, dim_id),
+            summary.get("evaluation_dimension_counts", {}).get(dim_id, 0),
+            "包含 primary + secondary 维度，因此不要求均匀。",
         )
         for dim_id in ["D1", "D2", "D3", "D4"]
     ]
     source_rows = [
         (
             "AAAI 论文",
-            "/Users/tom/Desktop/aaai2027.pdf",
-            "定义 targeted relational probes P1-P6，并把它们插入长期事件轨迹中。",
-            "probe 不是独立测验题，而是嵌入 long-term trajectory 的评测 turn。",
+            AAAI_PAPER_PATH,
+            "定义 targeted relational probes，并把它们插入长期事件轨迹中。",
+            "P 是 tau 里的 probe 集合；具体生成时以 D1-D4 评估维度作为主轴。",
         ),
         (
             "AAAI 评估维度",
             "D1-D4",
             "D1 情境化意图、D2 情绪状态调谐、D3 上下文具体性、D4 连续性敏感回应。",
-            "每条 probe 都映射到 1-2 个主评估维度。",
+            "每条 probe 都有一个 primary D 维度，另有 0-1 个 secondary D 维度。",
         ),
         (
             "工程 docx",
@@ -775,50 +932,58 @@ def _probe_section(probe_plan: dict[str, Any]) -> str:
         (
             "当前实现",
             "src/long_memory_test/sampling/probe_constructor.py",
-            "确定性规则模板：从 timeline 选候选，按 stage/occurrence_index 决定 probe 类型，写入 timeline。",
+            "确定性规则模板：从 timeline 选候选，先均衡分配 primary D，再派生 P 类型并写入 timeline。",
             "当前中文问题模板来自工程代码，不是 docx/JSON/论文原文。",
         ),
     ]
     lifecycle_rows = [
         ("1. 复制 timeline", "对 timeline_batch 做 deepcopy，后续把 probe_insertions 写回复制后的 timeline。", "避免破坏原始 timeline，同时生成 timeline_with_probes。", "probe_constructor.py:133-140"),
-        ("2. 为每个 persona 选 probe slots", "遍历 persona_timeline，调用 _select_probe_days。", "每人要满足 12-18 probes；当前 5 人为 13-15。", "probe_constructor.py:145-164, 318-363"),
+        (
+            "2. 为每个 persona 选 probe slots",
+            "遍历 persona_timeline，调用 _select_probe_days。",
+            (
+                f"每人要满足 {config.get('probes_per_persona_min', '-')}-"
+                f"{config.get('probes_per_persona_max', '-')} probes；当前 5 人为 "
+                f"{summary.get('probes_per_persona_min', '-')}-{summary.get('probes_per_persona_max', '-')}。"
+            ),
+            "probe_constructor.py:145-164, 318-363",
+        ),
         ("3. 候选过滤", "只选择 active occurrence，且 probe_candidate=true，且 event_stage != initial。", "初始阶段通常还没有形成共享历史，不适合作为记忆调用类 probe。", "probe_constructor.py:324-330"),
         ("4. 每条事件线至少覆盖一次", "_required_probe_days 会按 event_line_id 保留每条线第一个候选。", "保证 probe 不只集中在少数事件线。", "probe_constructor.py:335-371"),
-        ("5. 控制同日密度", "同一个 active day 最多 1 条 probe。", "避免同一天评测过密，也避免多条并行事件被 probe 混淆。", "probe_constructor.py:165-203, 270-276"),
-        ("6. 构造 probe", "_build_probe 写 probe_id、insert_after_message_id、event_line_id、event_stage、P 类型、D 维度、required_memory_type、target_detail_ids。", "这一层把 probe 固定到具体 I，而不是只固定到某一天。", "probe_constructor.py:395-433"),
-        ("7. 写回 timeline", "day 和 occurrence 同时写入 probe_ids/probe_insertions。", "后续 I constructor 会从 occurrence.probe_insertions[] 复制到 probe_links。", "probe_constructor.py:169-203"),
-        ("8. 校验", "检查重复 ID、插入位置、不能插到 initial、event_line 匹配、已写入 timeline、每人数量范围。", "保证 probe 是可审计评测 turn，不是散落的问句。", "probe_constructor.py:243-315"),
+        ("5. 分配 primary D", "对 selected_slots 按 persona 内部 D1/D2/D3/D4 轮转分配 primary_dimension_id。", "这是当前 probe 生成主轴；每人的 primary D 覆盖差值不得超过 1。", "probe_constructor.py:_assign_primary_dimensions"),
+        ("6. 控制同日密度", "同一个 active day 最多 1 条 probe。", "避免同一天评测过密，也避免多条并行事件被 probe 混淆。", "probe_constructor.py:165-203, 270-276"),
+        ("7. 构造 probe", "_build_probe 写 primary_dimension_id、P 类型、probe_id、insert_after_message_id、event_line_id、event_stage、required_memory_type、target_detail_ids。", "P 类型由 primary D 和 occurrence 阶段派生，不再作为生成主轴。", "probe_constructor.py:_build_probe"),
+        ("8. 写回 timeline", "day 和 occurrence 同时写入 probe_ids/probe_insertions。", "后续 I constructor 会从 occurrence.probe_insertions[] 复制到 probe_links。", "probe_constructor.py:169-203"),
+        ("9. 校验", "检查重复 ID、插入位置、不能插到 initial、event_line 匹配、已写入 timeline、每人数量范围和 D 覆盖均衡。", "保证 probe 是可审计评测 turn，不是散落的问句。", "probe_constructor.py:243-315"),
     ]
     selection_rows = [
         ("候选来源", "timeline.days[].event_occurrences[]", "只从 active occurrence 中选。"),
         ("非初始阶段", "event_stage != initial", "必须先有前序语境，probe 才能测连续性、记忆调用和状态变化。"),
         ("probe_candidate", "timeline 中 occurrence_index >= 2 时标记为 true", "初始提出一般不测；后续出现才测 agent 是否承接。"),
-        ("每人数量", f"{probe_plan.get('construction_config', {}).get('probes_per_persona_min', 12)}-{probe_plan.get('construction_config', {}).get('probes_per_persona_max', 18)}", "来自工程配置/docx 第一阶段要求。"),
+        ("每人数量", f"{config.get('probes_per_persona_min', '-')}-{config.get('probes_per_persona_max', '-')}", "来自工程配置；当前高密度 timeline 提供更多候选。"),
         ("同日上限", f"{probe_plan.get('construction_config', {}).get('max_probes_per_active_day', 1)}", "避免一天内多个 probe 造成评测污染。"),
+        ("主维度均衡", _format_dimension_counts(summary.get("primary_dimension_counts", {})), "当前以 D1-D4 primary dimension 为生成主轴。"),
         ("当前样本", f"{summary.get('probe_count')} 条，总体 validation={validation.get('status')}", "当前 5 人 demo 的实际结果。"),
     ]
     type_decision_rows = [
-        ("initial", "fallback current_understanding / P1", "当前候选过滤排除了 initial，所以 demo 中没有 initial probe。"),
-        ("recurrence", "occurrence_index 偶数 -> memory_invocation / P2；奇数 -> relational_boundary / P4", "当前 recurrence 主要是第 2 次出现，所以生成 P2。"),
-        ("turning_point", "occurrence_index 奇数 -> state_transformation / P3；偶数 -> current_understanding / P1", "当前 turning_point 主要是第 3 次出现，所以生成 P3。"),
-        ("partial_resolution", "occurrence_index 偶数 -> relational_boundary / P4；奇数 -> natural_detail / P6", "当前 partial_resolution 主要是第 4 次出现，所以生成 P4。"),
-        ("reflection", "alienation_avoidance / P5", "当前 reflection 生成少量 P5。"),
+        ("D1", "current_understanding / P1；partial_resolution 时可派生 relational_boundary / P5", "核心测 situated intent：用户真正想解决什么。"),
+        ("D2", "state_transformation / P2；reflection 时可派生 alienation_avoidance / P6", "核心测情绪/状态变化。"),
+        ("D3", "natural_detail / P4", "核心测是否自然使用具体上下文细节。"),
+        ("D4", "memory_invocation / P3；reflection 时可派生 P6，partial_resolution 时可派生 P5", "核心测连续性和共享历史承接。"),
     ]
     template_rows = [
-        ("P1", "current_understanding", "你先别急着给建议，帮我说清楚「{title}」里我现在真正卡住的点是什么。", "probe_constructor.py:477-480"),
-        ("P2", "memory_invocation", "{title}这条线我不想从头解释了。你按前面已经聊过的，帮我判断现在最该抓住什么。", "probe_constructor.py:452-456"),
-        ("P3", "state_transformation", "我感觉「{title}」已经不是一开始那个状态了。你帮我校准一下，这个变化到底意味着什么。", "probe_constructor.py:457-461"),
-        ("P4", "relational_boundary", "你按我们平时那种熟一点但不夸张的方式说就行。围绕「{title}」继续讲，但不要替我编没说过的细节。", "probe_constructor.py:462-466"),
-        ("P5", "alienation_avoidance", "你别用像第一次认识我的那种口吻，也别把前面都机械复述。就按我们已经聊过的「{title}」，自然接上现在这一段。", "probe_constructor.py:467-471"),
-        ("P6", "natural_detail", "你结合「{title}」前面已经出现过的具体变化说，不要只给泛泛安慰，帮我判断下一步。", "probe_constructor.py:472-476"),
+        ("D1", "Situated Intent Understanding", "围绕「{title}」，你先帮我抓住我现在真正想解决的点，不要只按表面问题给建议。", "probe_constructor.py:_probe_question"),
+        ("D2", "Emotional-State Attunement", "这次「{title}」里我的状态和前面相比有什么变化？你先帮我校准这个变化，再说下一步。", "probe_constructor.py:_probe_question"),
+        ("D3", "Contextual Specificity", "你结合「{title}」前面已经出现过的具体细节说，不要只给泛泛建议，帮我判断下一步。", "probe_constructor.py:_probe_question"),
+        ("D4", "Continuity-Sensitive Response", "{title}这条线我不想从头解释了。你按前面已经聊过的，帮我判断现在最该抓住什么。", "probe_constructor.py:_probe_question"),
     ]
     required_memory_rows = [
         ("P1", "current_understanding", "relational_anchor, summary_memory", "当前理解用户表层问题背后的真实卡点。"),
-        ("P2", "memory_invocation", "event_memory, relational_anchor", "要求 agent 调用前序共享事件线。"),
-        ("P3", "state_transformation", "summary_memory, event_memory, relational_anchor", "识别用户状态或事件阶段已经变化。"),
-        ("P4", "relational_boundary", "relational_anchor, response_boundary", "熟悉但不越界，不替用户编事实。"),
-        ("P5", "alienation_avoidance", "relational_anchor, response_boundary, event_memory", "避免像第一次见面一样陌生化回应。"),
-        ("P6", "natural_detail", "event_memory, relational_anchor", "自然使用具体细节，但不滥用记忆。"),
+        ("P2", "state_transformation", "summary_memory, event_memory, relational_anchor", "识别用户状态或事件阶段已经变化。"),
+        ("P3", "memory_invocation", "event_memory, relational_anchor", "要求 agent 调用前序共享事件线。"),
+        ("P4", "natural_detail", "event_memory, relational_anchor", "自然使用具体细节，但不滥用记忆。"),
+        ("P5", "relational_boundary", "relational_anchor, response_boundary", "熟悉但不越界，不替用户编事实。"),
+        ("P6", "alienation_avoidance", "relational_anchor, response_boundary, event_memory", "避免像第一次见面一样陌生化回应。"),
     ]
     field_rows = [
         ("probe_id / message_id", "probe turn 的唯一 ID，例如 P0001_D10_P001。"),
@@ -826,8 +991,10 @@ def _probe_section(probe_plan: dict[str, Any]) -> str:
         ("insert_after_message_id", "必须指向具体 I unit，例如 P0001_D10_M001。"),
         ("event_occurrence_id", "对应 timeline 的 occurrence，保证 probe 不只挂在 day 上。"),
         ("event_line_id / event_stage", "评估时知道 probe 属于哪条长期事件线和哪个阶段。"),
-        ("paper_probe_id / paper_probe_type / paper_probe_zh", "P1-P6 正式论文口径。"),
-        ("evaluation_dimension_ids", "D1-D4 正式评估维度。"),
+        ("primary_dimension_id", "D1-D4 主生成维度；当前覆盖应近似均匀。"),
+        ("secondary_dimension_ids", "辅助评估维度；不作为均衡目标。"),
+        ("paper_probe_id / paper_probe_type / paper_probe_zh", "P1-P6 题型标签，由 primary D 和 occurrence 阶段派生。"),
+        ("evaluation_dimension_ids", "primary D 放在第一位，后接 secondary D。"),
         ("diagnostic_dimensions / tom_dimensions", "兼容旧评估器的细粒度诊断标签。"),
         ("required_memory_type", "期望用到哪类记忆，例如 event_memory、relational_anchor、response_boundary。"),
         ("target_detail_ids", "绑定具体 stage、occurrence、previous_days 等目标细节。"),
@@ -840,7 +1007,7 @@ def _probe_section(probe_plan: dict[str, Any]) -> str:
         ("不插 initial", "如果 slot.event_stage == initial，校验报错。"),
         ("事件线一致", "probe.event_line_id 必须等于被插入 occurrence 的 event_line_id。"),
         ("写回 timeline", "probe_id 必须出现在 day/occurrence 的 probe_ids 中。"),
-        ("每人数量", "每个 persona 必须在 12-18 probes。"),
+        ("每人数量", f"每个 persona 必须在 {config.get('probes_per_persona_min', '-')}-{config.get('probes_per_persona_max', '-')} probes。"),
         ("同日密度", "每个 active day 最多 1 条 probe。"),
         ("当前结果", f"status={validation.get('status')}；issues={len(validation.get('issues', []))}。"),
     ]
@@ -857,21 +1024,23 @@ def _probe_section(probe_plan: dict[str, Any]) -> str:
   {_table(["步骤", "做什么", "为什么这样做", "代码位置"], lifecycle_rows)}
   <h3>5.3 候选选择规则</h3>
   {_table(["规则", "当前定义", "作用"], selection_rows)}
-  <h3>5.4 P1-P6 与当前覆盖</h3>
-  {_table(["论文类型", "含义", "当前数量", "当前覆盖说明"], type_rows)}
-  <h3>5.5 D1-D4 评估维度覆盖</h3>
+  <h3>5.4 D1-D4 主生成维度覆盖</h3>
   {_table(["维度", "含义", "覆盖次数", "主要看什么"], dim_rows)}
-  <h3>5.6 类型判定逻辑</h3>
-  {_table(["event_stage", "当前工程映射", "说明"], type_decision_rows)}
-  <h3>5.7 具体中文模板与出处</h3>
-  {_table(["论文类型", "工程类型", "中文模板", "代码位置"], template_rows)}
-  <h3>5.8 Required memory 与评测意图</h3>
+  <h3>5.5 P1-P6 派生题型分布</h3>
+  {_table(["论文类型", "含义", "当前数量", "当前覆盖说明"], type_rows)}
+  <h3>5.6 D1-D4 全量评估维度计数</h3>
+  {_table(["维度", "含义", "出现次数", "说明"], secondary_dim_rows)}
+  <h3>5.7 D -> P 派生逻辑</h3>
+  {_table(["primary D", "派生 P 题型", "说明"], type_decision_rows)}
+  <h3>5.8 D-first 中文模板与出处</h3>
+  {_table(["主维度", "含义", "中文模板", "代码位置"], template_rows)}
+  <h3>5.9 Required memory 与评测意图</h3>
   {_table(["P 类型", "工程类型", "required_memory_type", "测试意图"], required_memory_rows)}
-  <h3>5.9 Probe 字段合同</h3>
+  <h3>5.10 Probe 字段合同</h3>
   {_table(["字段", "含义"], field_rows)}
-  <h3>5.10 校验与防污染</h3>
+  <h3>5.11 校验与防污染</h3>
   {_table(["校验点", "规则"], validation_rows)}
-  <h3>5.11 Probe 示例</h3>
+  <h3>5.12 Probe 示例</h3>
   {examples}
 """
 
@@ -879,12 +1048,8 @@ def _probe_section(probe_plan: dict[str, Any]) -> str:
 def _probe_current_coverage_note(paper_id: str, summary: dict[str, Any]) -> str:
     count = int(summary.get("paper_probe_type_counts", {}).get(paper_id, 0))
     if count > 0:
-        return "当前 demo 已覆盖。"
-    if paper_id == "P1":
-        return "当前 demo 未出现；因为 initial 被排除，turning_point 又主要落在 P3。"
-    if paper_id == "P6":
-        return "当前 demo 未出现；因为 partial_resolution 主要落在 P4。"
-    return "当前 demo 未覆盖，但代码保留该类型。"
+        return "当前 demo 已覆盖；这是 D-first 生成后的派生题型数量。"
+    return "当前 demo 未覆盖；P 类型不是均衡目标。"
 
 
 def _dimension_primary_meaning(dim_id: str) -> str:
@@ -901,12 +1066,14 @@ def _probe_examples(probe_plan: dict[str, Any]) -> str:
     examples: dict[str, dict[str, Any]] = {}
     for probe in probe_plan.get("probe_questions", []):
         if isinstance(probe, dict):
-            examples.setdefault(str(probe.get("paper_probe_id")), probe)
+            examples.setdefault(str(probe.get("primary_dimension_id")), probe)
     rows = []
-    for paper_id, probe in sorted(examples.items()):
+    for dimension_id, probe in sorted(examples.items()):
         rows.append(
             (
-                paper_id,
+                dimension_id,
+                DIMENSION_LABELS.get(dimension_id, dimension_id),
+                probe.get("paper_probe_id"),
                 probe.get("probe_type"),
                 probe.get("probe_id"),
                 f"D{int(probe.get('day', 0)):02d}",
@@ -915,7 +1082,10 @@ def _probe_examples(probe_plan: dict[str, Any]) -> str:
                 ", ".join(str(item) for item in probe.get("evaluation_dimension_ids", [])),
             )
         )
-    return _table(["P 类型", "工程类型", "Probe ID", "Day", "插入到 I", "问题", "D 维度"], rows)
+    return _table(
+        ["主 D", "含义", "派生 P", "工程类型", "Probe ID", "Day", "插入到 I", "问题", "D 维度"],
+        rows,
+    )
 
 
 def _binding_section(
@@ -959,8 +1129,8 @@ def _binding_section(
         ),
         (
             "当前工程 docx / 规模约束",
-            "5 人、30 天、15-20 active sessions、12-18 probes。",
-            "active sessions 对应 occurrence/I；probe 数量是另一个评测覆盖范围。",
+            "5 人、30 天、高密度 timeline；probe 数量由 probe construction config 控制。",
+            "active sessions 对应 occurrence/I；probe 数量是另一个评测覆盖范围，I 不依赖 probe 才存在。",
         ),
         (
             "当前代码校验",
@@ -1019,7 +1189,7 @@ def _non_llm_section() -> str:
     rows = [
         ("Timeline", "规则构造", "按 30 天、active sessions、event line occurrence、parallel day 约束排布。"),
         ("I", "规则构造", "surface_event 直接进入 scripted_opening；follow-up 和 scene boundary 由规则模板生成。"),
-        ("Probe", "规则构造", "按 event_stage/occurrence_index 选择 P2/P3/P4/P5 模板。"),
+        ("Probe", "规则构造", "先均衡分配 D1-D4 primary dimension，再按 D 和 occurrence 阶段派生 P 类型与模板。"),
         ("后续 LLM 位置", "P3b 可选", "只能做自然化改写或多轮展开，不能新增事实或突破 must-not-introduce。"),
     ]
     pseudo = """timeline.event_occurrences[]
@@ -1030,6 +1200,137 @@ def _non_llm_section() -> str:
     return f"""
   {_table(["对象", "当前生成方式", "边界"], rows)}
   <div class="code-block">{_esc(pseudo)}</div>
+"""
+
+
+def _tau_interface_section(tau_contract: dict[str, Any]) -> str:
+    summary = tau_contract.get("summary", {})
+    adapter_rows = [
+        (
+            "tau -> dialogue documents",
+            "src/long_memory_test/agents/tau_dialogue_adapter.py",
+            "build_tau_dialogue_documents(...)",
+            "把 tau_contract.I 转为 runner messages，把 tau_contract.P 转为 probe_questions，并按 insert_after_message_id 分组。",
+            "保留 canonical_user_message；如果后续接入 P3b 候选，也不覆盖原 I。",
+        ),
+        (
+            "tau -> M0/M1/M2/M3 payloads",
+            "src/long_memory_test/agents/memory_condition_builder.py",
+            "generate_memory_conditions_from_tau_contract(...)",
+            "从 L/I/P/message_bindings 直接构造 memory_conditions_v0.2_tau_route。",
+            "只做适配，不生成新任务；runner 最终仍按 M0 base + relational overlay 组合。",
+        ),
+        (
+            "runner schema support",
+            "scripts/run_dialogue_conditions.py",
+            "_load_memory_conditions(...)",
+            "接受 memory_conditions_v0.2_tau_route。",
+            "接口已接通；实际 runner 运行需先显式生成 tau-route memory_conditions。",
+        ),
+        (
+            "P3b LLM naturalization",
+            "src/long_memory_test/sampling/interaction_naturalizer.py",
+            "naturalize_interaction_unit(...)",
+            "LLM 基于 canonical I unit 输出自然化候选 JSON。",
+            "只允许改写表达，不允许新增事实、改变阶段或突破 scene_boundary。",
+        ),
+    ]
+    condition_rows = [
+        (
+            "M0",
+            "LD-Agent 普通长期记忆基线",
+            "读取同轮 M0 retrieved base。",
+            "tau binding 只提供 message 坐标；不直接注入 P 标签。",
+        ),
+        (
+            "M1",
+            "M0 base + conclusion-level relational overlay",
+            "主要来自 L.relational_memory_targets。",
+            "结论级关系偏好、回应风格、边界。",
+        ),
+        (
+            "M2",
+            "M0 base + M1 + event summary overlay",
+            "主要来自 L.persistent_event_summary、observed_stage_sequence、I 当前 stage。",
+            "事件线摘要、阶段进展、前序处理策略。",
+        ),
+        (
+            "M3",
+            "M0 base + M1 + M2 + detail anchor overlay",
+            "主要来自 I.scene_boundary.allowed_facts / latent_concerns，P.target_detail_ids。",
+            "必要细节、隐含担心、禁止事实、probe 目标细节。",
+        ),
+    ]
+    p3b_rows = [
+        (
+            "输入",
+            "daily_interaction_units.json 中的 I unit。",
+            "包含 scripted_opening、constrained_followup、scene_boundary、source_timeline_fields。",
+        ),
+        (
+            "提示词核心",
+            "canonical opening + event title/stage + conversation goal + allowed_facts + reveal_steps + stop_conditions。",
+            "明确要求输出严格 JSON，只自然化表达。",
+        ),
+        (
+            "输出",
+            "naturalized_dialogue_candidate。",
+            "包含 opening_user_message、followup_user_messages、fact_ids_used、non_destructive_policy。",
+        ),
+        (
+            "校验",
+            "source_interaction_unit_id、allowed_fact_ids、followup_budget、opening 是否真正改写。",
+            "越界 fact id 会 fail；不允许把候选写回 scripted_opening。",
+        ),
+        (
+            "当前状态",
+            "脚本和测试已存在，但未调用 LLM。",
+            "没有生成 daily_interaction_naturalized_candidates.json。",
+        ),
+    ]
+    run_rows = [
+        (
+            "构建 tau-route memory conditions",
+            "scripts/build_tau_memory_conditions.py --tau-contract long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/tau_contract.json --output long_memory_experiment/cache/tau_memory_conditions_combined.json",
+            "会写出 memory_conditions_v0.2_tau_route；本报告未执行。",
+        ),
+        (
+            "P3b dry run",
+            "scripts/run_p3b_interaction_naturalization.py --daily-interactions long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/daily_interaction_units.json --dry-run",
+            "只检查会处理多少 I，不调用 LLM。",
+        ),
+        (
+            "P3b 正式候选生成",
+            "scripts/run_p3b_interaction_naturalization.py --limit N --provider poixe",
+            "会调用 LLM 并写候选文件；必须先人工确认边界。",
+        ),
+    ]
+    audit_rows = [
+        ("tau message binding count", summary.get("message_binding_count"), "I + P 的消息坐标总数。"),
+        ("interaction_unit_count", summary.get("interaction_unit_count"), "M0-M3 可运行用户 turn 的主体数量。"),
+        ("targeted_probe_count", summary.get("targeted_probe_count"), "评测 turn 数量；probe 只读。"),
+        ("probed_interaction_unit_count", summary.get("probed_interaction_unit_count"), "后接 P 的 I 数量。"),
+        ("unprobed_interaction_unit_count", summary.get("unprobed_interaction_unit_count"), "无 P 但仍然有效的 I 数量。"),
+    ]
+    return f"""
+  <div class="callout">
+    这一节回答“tau 怎么接到后续实验”。当前不是把 I 直接一步变成自然对话，
+    而是先把 <code>I unit</code> 保留下来，再通过 adapter 接 runner；
+    如果需要更自然的用户表达，只走 P3b 候选层。
+  </div>
+  <h3>9.1 接口清单</h3>
+  {_table(["接口", "文件", "函数/入口", "作用", "边界"], adapter_rows)}
+  <h3>9.2 tau-route M0/M1/M2/M3 payload 逻辑</h3>
+  {_table(["条件", "最终输入", "tau 来源", "记忆含义"], condition_rows)}
+  <h3>9.3 P3b LLM 自然化候选层</h3>
+  {_table(["环节", "内容", "边界"], p3b_rows)}
+  <h3>9.4 后续可执行入口</h3>
+  {_table(["动作", "命令", "说明"], run_rows)}
+  <h3>9.5 当前接口审计数</h3>
+  {_table(["字段", "值", "解释"], audit_rows)}
+  <div class="warning">
+    当前报告只生成 HTML，不执行上述命令；因此不会新增 memory condition 产物，也不会调用 LLM。
+  </div>
 """
 
 
@@ -1134,11 +1435,13 @@ def _first_parallel_day(daily: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def _status_block(
+    tau_validation: dict[str, Any],
     timeline_validation: dict[str, Any],
     probe_validation: dict[str, Any],
     daily_validation: dict[str, Any],
 ) -> str:
     rows = [
+        ("Tau contract validation", tau_validation.get("status", "unknown"), "; ".join(str(item) for item in tau_validation.get("issues", [])) or "无"),
         ("Timeline validation", timeline_validation.get("status", "unknown"), "; ".join(str(item) for item in timeline_validation.get("issues", [])) or "无"),
         ("Probe validation", probe_validation.get("status", "unknown"), "; ".join(str(item) for item in probe_validation.get("issues", [])) or "无"),
         ("I validation", daily_validation.get("status", "unknown"), "; ".join(str(item) for item in daily_validation.get("issues", [])) or "无"),
@@ -1146,7 +1449,7 @@ def _status_block(
     status = "pass" if all(str(row[1]) == "pass" for row in rows) else "check"
     cls = "ok" if status == "pass" else "warning"
     return f"""
-  <div class="{cls}"><strong>整体校验：{_esc(status)}。</strong> Timeline、Probe、I 三层都应为 pass。</div>
+  <div class="{cls}"><strong>整体校验：{_esc(status)}。</strong> Tau、Timeline、Probe、I 四层都应为 pass。</div>
   {_table(["校验层", "状态", "问题"], rows, class_name="narrow")}
 """
 
@@ -1191,6 +1494,24 @@ def _load_json(path: Path) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError(f"Expected JSON object in {path}")
     return data
+
+
+def _format_histogram(value: Any) -> str:
+    if not isinstance(value, dict) or not value:
+        return "-"
+    items = []
+    for key, count in sorted(value.items(), key=lambda item: int(item[0])):
+        items.append(f"{key}:{count}")
+    return ", ".join(items)
+
+
+def _format_dimension_counts(value: Any) -> str:
+    if not isinstance(value, dict) or not value:
+        return "-"
+    return ", ".join(
+        f"{dimension_id}:{value.get(dimension_id, 0)}"
+        for dimension_id in ["D1", "D2", "D3", "D4"]
+    )
 
 
 def _rel(path: Path) -> str:

@@ -1,0 +1,3457 @@
+{
+  "schema_version": "remem_event_category_pool_v0.1",
+  "name": "Archetype-Guided Event Category Pool",
+  "description": "This file defines event categories for ReMem-RE. Each category is a template for a persistent semantic event object, not a concrete event instance and not a daily/session summary. The sampler should first sample persona archetypes, then sample compatible event categories, validate them, and then instantiate concrete event lines.",
+  "design_goals": [
+    "Provide a sufficiently large ordinary-life event pool.",
+    "Support event-centered relational memory rather than topic-only or session-summary memory.",
+    "Cover work, money, housing, family, care, health routine, relationship, administration, retirement, and daily planning.",
+    "Allow compatibility validation through compatible_archetypes and incompatible_archetypes.",
+    "Avoid over-concentration on academic/research events or a single autobiographical pattern."
+  ],
+  "global_generation_rules": {
+    "event_is_not": [
+      "a day",
+      "a session summary",
+      "a one-time topic mention",
+      "a diagnosis",
+      "a legal/financial conclusion"
+    ],
+    "event_should_be": [
+      "persistent or recurring across multiple sessions",
+      "personally meaningful for the sampled persona",
+      "capable of stage progression",
+      "suitable for delayed relational probes"
+    ]
+  },
+  "recommended_sampling_rules": {
+    "events_per_persona": {
+      "min": 4,
+      "max": 6
+    },
+    "candidate_events_before_validation": {
+      "min": 8,
+      "max": 12
+    },
+    "min_event_domains_per_persona": 3,
+    "max_events_per_domain_per_persona": 2,
+    "required_checks": [
+      "compatible_archetype_check",
+      "incompatible_archetype_check",
+      "domain_diversity_check",
+      "autobiography_risk_check",
+      "LLM_sanity_check_optional"
+    ]
+  },
+  "event_categories": [
+    {
+      "event_category_id": "E_WORK_001",
+      "event_domain": "work",
+      "event_type": "possible_workplace_mistake",
+      "title": "Possible workplace mistake or record error",
+      "core_issue": "The user worries that a small work mistake may have larger consequences.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A08_shift_worker_family_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether the mistake is real",
+        "whether to report it",
+        "whether it will affect evaluation"
+      ],
+      "possible_emotional_load": [
+        "fear of blame",
+        "shame",
+        "rumination"
+      ],
+      "possible_actions": [
+        "document facts",
+        "send concise clarification",
+        "prepare one repair action"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_WORK_002",
+      "event_domain": "work",
+      "event_type": "difficult_customer_conflict",
+      "title": "Repeated conflict with a difficult customer or client",
+      "core_issue": "The user faces recurring emotional pressure from customer or client interactions.",
+      "compatible_archetypes": [
+        "A02_service_emotional_labor",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A08_shift_worker_family_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what tone to use",
+        "whether to refuse a request",
+        "whether a complaint will escalate"
+      ],
+      "possible_emotional_load": [
+        "anger",
+        "humiliation",
+        "fear of complaint"
+      ],
+      "possible_actions": [
+        "use scripted boundary language",
+        "record facts",
+        "ask supervisor about policy"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_WORK_003",
+      "event_domain": "work",
+      "event_type": "manager_message_anxiety",
+      "title": "An unclear message from a manager creates anxiety",
+      "core_issue": "The user receives an ambiguous work message and worries about hidden criticism.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A05_single_parent_service_worker",
+        "A08_shift_worker_family_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what the manager meant",
+        "whether to reply immediately",
+        "whether to explain too much"
+      ],
+      "possible_emotional_load": [
+        "anxiety",
+        "self-doubt",
+        "anticipatory stress"
+      ],
+      "possible_actions": [
+        "identify what is known",
+        "draft a neutral reply",
+        "wait for concrete feedback"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_WORK_004",
+      "event_domain": "work",
+      "event_type": "schedule_change_disruption",
+      "title": "Sudden schedule change disrupts personal plans",
+      "core_issue": "A work schedule change disrupts the user's family, rest, or financial planning.",
+      "compatible_archetypes": [
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A08_shift_worker_family_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to push back",
+        "whether refusing is risky",
+        "how to rearrange care or rest"
+      ],
+      "possible_emotional_load": [
+        "frustration",
+        "fatigue",
+        "helplessness"
+      ],
+      "possible_actions": [
+        "ask about policy",
+        "prioritize non-negotiables",
+        "make one contingency plan"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_WORK_005",
+      "event_domain": "work",
+      "event_type": "coworker_boundary_problem",
+      "title": "Coworker repeatedly shifts tasks onto the user",
+      "core_issue": "The user feels a coworker is shifting responsibility onto them.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A08_shift_worker_family_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to confront",
+        "whether the issue is intentional",
+        "how to set a boundary"
+      ],
+      "possible_emotional_load": [
+        "resentment",
+        "confusion",
+        "fear of conflict"
+      ],
+      "possible_actions": [
+        "write down task ownership",
+        "make a concrete request",
+        "escalate only if repeated"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_WORK_006",
+      "event_domain": "work",
+      "event_type": "performance_review_pressure",
+      "title": "Performance review or evaluation pressure",
+      "core_issue": "The user worries about a work review, score, or evaluation outcome.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A05_single_parent_service_worker",
+        "A08_shift_worker_family_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what evidence matters",
+        "whether to self-advocate",
+        "how to explain setbacks"
+      ],
+      "possible_emotional_load": [
+        "nervousness",
+        "self-doubt",
+        "defensiveness"
+      ],
+      "possible_actions": [
+        "prepare evidence list",
+        "write concise self-review",
+        "identify one improvement plan"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_WORK_007",
+      "event_domain": "work",
+      "event_type": "new_role_adaptation",
+      "title": "Adapting to a new role or responsibility",
+      "core_issue": "The user is adjusting to unfamiliar responsibilities and fears not being competent enough.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A08_shift_worker_family_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what is expected",
+        "how fast to learn",
+        "when to ask questions"
+      ],
+      "possible_emotional_load": [
+        "impostor feeling",
+        "pressure",
+        "hope"
+      ],
+      "possible_actions": [
+        "clarify expectations",
+        "make learning checklist",
+        "ask one specific question"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_WORK_008",
+      "event_domain": "work",
+      "event_type": "workplace_gossip_or_misunderstanding",
+      "title": "Workplace misunderstanding or gossip",
+      "core_issue": "The user hears or suspects workplace gossip and is unsure whether to respond.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A05_single_parent_service_worker",
+        "A08_shift_worker_family_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether the information is reliable",
+        "whether to clarify",
+        "whether silence looks guilty"
+      ],
+      "possible_emotional_load": [
+        "embarrassment",
+        "anger",
+        "fear"
+      ],
+      "possible_actions": [
+        "avoid reacting to hearsay",
+        "clarify with direct source",
+        "keep factual record"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_GIG_001",
+      "event_domain": "gig_work",
+      "event_type": "platform_rule_change",
+      "title": "Platform rule or rating change affects income",
+      "core_issue": "A platform rule, rating, or algorithm change affects the user's orders and income.",
+      "compatible_archetypes": [
+        "A03_gig_worker_parent"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether income drop is temporary",
+        "how to adapt schedule",
+        "whether to switch platforms"
+      ],
+      "possible_emotional_load": [
+        "uncertainty",
+        "cashflow stress",
+        "frustration"
+      ],
+      "possible_actions": [
+        "track order pattern",
+        "compare platform options",
+        "set income threshold"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_GIG_002",
+      "event_domain": "gig_work",
+      "event_type": "traffic_or_safety_worry",
+      "title": "Traffic, weather, or safety worry during gig work",
+      "core_issue": "The user worries about safety risks while trying to maintain income.",
+      "compatible_archetypes": [
+        "A03_gig_worker_parent"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to stop early",
+        "how much risk is acceptable",
+        "whether income target is worth it"
+      ],
+      "possible_emotional_load": [
+        "fear",
+        "pressure",
+        "fatigue"
+      ],
+      "possible_actions": [
+        "set safety cutoff",
+        "separate income target from safety threshold",
+        "plan backup shift"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_BUS_001",
+      "event_domain": "business",
+      "event_type": "cashflow_pressure",
+      "title": "Small business cashflow pressure",
+      "core_issue": "The user is under pressure from unstable customer flow, rent, or supply costs.",
+      "compatible_archetypes": [
+        "A04_small_business_owner"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to cut costs",
+        "whether to extend hours",
+        "how to explain pressure to family"
+      ],
+      "possible_emotional_load": [
+        "guilt",
+        "defensiveness",
+        "scarcity anxiety"
+      ],
+      "possible_actions": [
+        "separate fixed and variable costs",
+        "review repeat customer strategy",
+        "set work-hour limit"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_BUS_002",
+      "event_domain": "business",
+      "event_type": "bad_customer_review",
+      "title": "A bad review or customer complaint threatens confidence",
+      "core_issue": "The user receives negative feedback and worries it will affect the business.",
+      "compatible_archetypes": [
+        "A04_small_business_owner",
+        "A02_service_emotional_labor"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to respond publicly",
+        "whether to compensate",
+        "how serious the review is"
+      ],
+      "possible_emotional_load": [
+        "humiliation",
+        "anger",
+        "fear of losing customers"
+      ],
+      "possible_actions": [
+        "draft neutral response",
+        "identify fixable issue",
+        "avoid emotional reply"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_BUS_003",
+      "event_domain": "business",
+      "event_type": "family_questions_business_choice",
+      "title": "Family questions the business decision",
+      "core_issue": "Family members question whether the user's business choices are sustainable.",
+      "compatible_archetypes": [
+        "A04_small_business_owner"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether family is right",
+        "how much to disclose",
+        "whether to change strategy"
+      ],
+      "possible_emotional_load": [
+        "defensiveness",
+        "worry",
+        "feeling unsupported"
+      ],
+      "possible_actions": [
+        "prepare simple numbers",
+        "separate concern from criticism",
+        "set one decision review date"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_FIN_001",
+      "event_domain": "finance",
+      "event_type": "rent_or_bill_pressure",
+      "title": "Rent, utility, or bill pressure",
+      "core_issue": "The user needs to manage necessary expenses under limited or unstable income.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A10_international_student_admin_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what to pay first",
+        "whether to ask for help",
+        "what expense can be delayed"
+      ],
+      "possible_emotional_load": [
+        "scarcity anxiety",
+        "shame",
+        "urgency"
+      ],
+      "possible_actions": [
+        "rank fixed expenses",
+        "identify official options",
+        "make one temporary cut"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_FIN_002",
+      "event_domain": "finance",
+      "event_type": "unexpected_expense",
+      "title": "Unexpected expense breaks the monthly plan",
+      "core_issue": "A sudden repair, medical-adjacent cost, school fee, or household expense disrupts the user's budget.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to use savings",
+        "what to postpone",
+        "whether to borrow"
+      ],
+      "possible_emotional_load": [
+        "panic",
+        "frustration",
+        "self-blame"
+      ],
+      "possible_actions": [
+        "separate urgent from deferrable",
+        "check formal payment options",
+        "revise month plan"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_FIN_003",
+      "event_domain": "finance",
+      "event_type": "family_money_request",
+      "title": "A family member asks for financial help",
+      "core_issue": "The user wants to help family but worries about their own financial limits.",
+      "compatible_archetypes": [
+        "A04_small_business_owner",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A11_adult_child_boundary_family"
+      ],
+      "incompatible_archetypes": [
+        "A01_early_career_renter",
+        "A10_international_student_admin_pressure"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "how much help is reasonable",
+        "whether refusal is selfish",
+        "whether help will repeat"
+      ],
+      "possible_emotional_load": [
+        "guilt",
+        "pressure",
+        "resentment"
+      ],
+      "possible_actions": [
+        "define maximum support",
+        "separate one-time help from ongoing obligation",
+        "state boundary kindly"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_HOME_001",
+      "event_domain": "housing",
+      "event_type": "shared_living_friction",
+      "title": "Friction with roommates or shared living",
+      "core_issue": "The user is frustrated by shared-space rules, noise, cleanliness, or money issues.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to confront",
+        "what wording is too harsh",
+        "whether to move"
+      ],
+      "possible_emotional_load": [
+        "irritation",
+        "feeling trapped",
+        "awkwardness"
+      ],
+      "possible_actions": [
+        "make one concrete request",
+        "set shared rule",
+        "compare moving cost"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_HOME_002",
+      "event_domain": "housing",
+      "event_type": "rent_increase_or_lease_uncertainty",
+      "title": "Rent increase or lease uncertainty",
+      "core_issue": "The user faces uncertainty around renewing a lease, rising rent, or unstable housing.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to renew",
+        "whether to negotiate",
+        "whether moving is realistic"
+      ],
+      "possible_emotional_load": [
+        "insecurity",
+        "financial anxiety",
+        "decision fatigue"
+      ],
+      "possible_actions": [
+        "compare total moving cost",
+        "ask landlord concrete terms",
+        "set decision deadline"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_MOVE_001",
+      "event_domain": "relocation",
+      "event_type": "new_city_adaptation",
+      "title": "Adapting to a new city with weak local support",
+      "core_issue": "The user is adjusting to a new environment while lacking stable local relationships.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "where to invest social energy",
+        "whether loneliness means wrong decision",
+        "how to build routine"
+      ],
+      "possible_emotional_load": [
+        "loneliness",
+        "disorientation",
+        "self-doubt"
+      ],
+      "possible_actions": [
+        "choose one recurring social anchor",
+        "make low-stakes routine",
+        "separate adjustment pain from regret"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_ADMIN_001",
+      "event_domain": "administration",
+      "event_type": "document_deadline_uncertainty",
+      "title": "Administrative document or deadline uncertainty",
+      "core_issue": "The user worries about missing a rule, document, or deadline in an official process.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A10_international_student_admin_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "which rule applies",
+        "what document is missing",
+        "whether to contact office"
+      ],
+      "possible_emotional_load": [
+        "fear of irreversible mistake",
+        "bureaucratic frustration",
+        "anxiety"
+      ],
+      "possible_actions": [
+        "list known requirements",
+        "identify official source",
+        "send clarification message"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_ADMIN_002",
+      "event_domain": "administration",
+      "event_type": "benefit_or_application_form",
+      "title": "Benefit, reimbursement, or application form confusion",
+      "core_issue": "The user needs to complete a form but worries about mistakes or missing materials.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what counts as proof",
+        "whether the form is complete",
+        "where to ask"
+      ],
+      "possible_emotional_load": [
+        "confusion",
+        "fear of delay",
+        "impatience"
+      ],
+      "possible_actions": [
+        "make document checklist",
+        "ask official channel",
+        "avoid guessing uncertain fields"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_FAM_001",
+      "event_domain": "family",
+      "event_type": "family_responsibility_unevenness",
+      "title": "Uneven family responsibilities",
+      "core_issue": "The user feels they are carrying too much practical or emotional responsibility at home.",
+      "compatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A08_shift_worker_family_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what is fair",
+        "how direct to be",
+        "whether the issue is practical or emotional"
+      ],
+      "possible_emotional_load": [
+        "resentment",
+        "guilt",
+        "fatigue"
+      ],
+      "possible_actions": [
+        "name invisible labor",
+        "make one concrete request",
+        "set review time"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_FAM_002",
+      "event_domain": "family",
+      "event_type": "partner_schedule_conflict",
+      "title": "Partner or spouse schedule conflict",
+      "core_issue": "The user's schedule conflicts with a partner's schedule, affecting care, rest, or money.",
+      "compatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A06_midlife_caregiver",
+        "A08_shift_worker_family_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whose schedule should change",
+        "how to avoid blame",
+        "what is a fair tradeoff"
+      ],
+      "possible_emotional_load": [
+        "frustration",
+        "unfairness",
+        "exhaustion"
+      ],
+      "possible_actions": [
+        "separate calendar facts from blame",
+        "define one non-negotiable block",
+        "review weekly"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_FAM_003",
+      "event_domain": "family",
+      "event_type": "relative_boundary_pressure",
+      "title": "Pressure from relatives about personal decisions",
+      "core_issue": "Relatives pressure the user about work, money, parenting, or relationship choices.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to explain",
+        "whether silence is rude",
+        "how much boundary is acceptable"
+      ],
+      "possible_emotional_load": [
+        "guilt",
+        "irritation",
+        "obligation"
+      ],
+      "possible_actions": [
+        "prepare one boundary sentence",
+        "choose what not to explain",
+        "avoid debate loop"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_CHILD_001",
+      "event_domain": "childcare",
+      "event_type": "child_school_or_care_uncertainty",
+      "title": "Child's school or care arrangement uncertainty",
+      "core_issue": "The user is unsure whether a child's current school or care arrangement is stable or suitable.",
+      "compatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker"
+      ],
+      "incompatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A04_small_business_owner",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to prepare alternatives",
+        "how much to tell the child",
+        "what source to trust"
+      ],
+      "possible_emotional_load": [
+        "protective anxiety",
+        "decision pressure",
+        "fear of disrupting routine"
+      ],
+      "possible_actions": [
+        "confirm official information",
+        "identify backup options",
+        "set decision threshold"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_CHILD_002",
+      "event_domain": "childcare",
+      "event_type": "child_behavior_or_school_feedback",
+      "title": "Child behavior or school feedback worry",
+      "core_issue": "The user receives feedback about a child and worries how seriously to take it.",
+      "compatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker"
+      ],
+      "incompatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A04_small_business_owner",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether it is a pattern",
+        "whether to intervene",
+        "whether feedback is fair"
+      ],
+      "possible_emotional_load": [
+        "worry",
+        "defensiveness",
+        "protective guilt"
+      ],
+      "possible_actions": [
+        "separate observation from label",
+        "ask for concrete examples",
+        "choose one small home response"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_CHILD_003",
+      "event_domain": "childcare",
+      "event_type": "childcare_backup_failure",
+      "title": "Childcare backup plan breaks down",
+      "core_issue": "The user's backup childcare support becomes unreliable.",
+      "compatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A04_small_business_owner",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "who can help",
+        "whether to miss work",
+        "how to avoid repeated crisis"
+      ],
+      "possible_emotional_load": [
+        "panic",
+        "guilt",
+        "anger"
+      ],
+      "possible_actions": [
+        "list backup tiers",
+        "communicate work constraint",
+        "set emergency rule"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_INFANT_001",
+      "event_domain": "infant_care",
+      "event_type": "night_care_exhaustion",
+      "title": "Night care and exhaustion in early parenthood",
+      "core_issue": "The user is exhausted by unstable infant care routines and uneven night responsibilities.",
+      "compatible_archetypes": [
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what is realistic",
+        "how to ask for help",
+        "which routine matters most"
+      ],
+      "possible_emotional_load": [
+        "exhaustion",
+        "guilt",
+        "overwhelm"
+      ],
+      "possible_actions": [
+        "reduce plan complexity",
+        "define one night-care rule",
+        "protect recovery window"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_INFANT_002",
+      "event_domain": "infant_care",
+      "event_type": "return_to_work_childcare_arrangement",
+      "title": "Returning to work while childcare remains unstable",
+      "core_issue": "The user is preparing to return to work but childcare arrangements remain fragile.",
+      "compatible_archetypes": [
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether arrangement is reliable",
+        "how to talk to employer",
+        "what backup is needed"
+      ],
+      "possible_emotional_load": [
+        "anxiety",
+        "guilt",
+        "time pressure"
+      ],
+      "possible_actions": [
+        "map care hours",
+        "prepare employer message",
+        "define backup contact"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_ELDER_001",
+      "event_domain": "eldercare",
+      "event_type": "eldercare_coordination_burden",
+      "title": "Coordinating care for an elderly family member",
+      "core_issue": "The user coordinates eldercare while balancing work, money, and family expectations.",
+      "compatible_archetypes": [
+        "A06_midlife_caregiver"
+      ],
+      "incompatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "who should do what",
+        "what care is affordable",
+        "how much work flexibility exists"
+      ],
+      "possible_emotional_load": [
+        "guilt",
+        "fatigue",
+        "anger"
+      ],
+      "possible_actions": [
+        "separate care facts from family negotiation",
+        "assign one task",
+        "set care review date"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_ELDER_002",
+      "event_domain": "eldercare",
+      "event_type": "sibling_disagreement_about_care",
+      "title": "Disagreement with siblings about eldercare",
+      "core_issue": "The user disagrees with siblings or relatives about eldercare responsibility.",
+      "compatible_archetypes": [
+        "A06_midlife_caregiver"
+      ],
+      "incompatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what is fair",
+        "how to avoid escalation",
+        "how to document responsibilities"
+      ],
+      "possible_emotional_load": [
+        "resentment",
+        "guilt",
+        "helplessness"
+      ],
+      "possible_actions": [
+        "write task list",
+        "define decision owner",
+        "request specific contribution"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_ADULT_CHILD_001",
+      "event_domain": "adult_child_boundary",
+      "event_type": "adult_child_financial_dependence",
+      "title": "Adult child financial dependence",
+      "core_issue": "The user wants to help an adult child but worries help is becoming enabling.",
+      "compatible_archetypes": [
+        "A11_adult_child_boundary_family"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "how much help is reasonable",
+        "what boundary is fair",
+        "how to avoid cutting off care"
+      ],
+      "possible_emotional_load": [
+        "worry",
+        "anger",
+        "guilt"
+      ],
+      "possible_actions": [
+        "separate emergency help from ongoing support",
+        "set amount and duration",
+        "state boundary with care"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_ADULT_CHILD_002",
+      "event_domain": "adult_child_boundary",
+      "event_type": "adult_child_living_at_home_conflict",
+      "title": "Adult child living at home creates household conflict",
+      "core_issue": "The adult child's return home disrupts household routines and responsibilities.",
+      "compatible_archetypes": [
+        "A11_adult_child_boundary_family"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what rules are fair",
+        "how direct to be",
+        "whether conflict will damage relationship"
+      ],
+      "possible_emotional_load": [
+        "frustration",
+        "protective worry",
+        "fatigue"
+      ],
+      "possible_actions": [
+        "define household rule",
+        "set review date",
+        "keep care and limits together"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_HEALTH_001",
+      "event_domain": "health_routine",
+      "event_type": "sleep_and_energy_management",
+      "title": "Managing sleep disruption and low energy",
+      "core_issue": "The user repeatedly struggles with sleep, fatigue, or low energy affecting decisions.",
+      "compatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A12_early_parenthood_return_to_work",
+        "A06_midlife_caregiver",
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A07_unemployed_job_seeker",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what change is realistic",
+        "whether to prioritize rest",
+        "how to reduce evening overload"
+      ],
+      "possible_emotional_load": [
+        "fatigue",
+        "irritability",
+        "self-blame"
+      ],
+      "possible_actions": [
+        "simplify evening routine",
+        "protect recovery block",
+        "reduce nonessential commitments"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_HEALTH_002",
+      "event_domain": "health_routine",
+      "event_type": "shift_work_recovery_failure",
+      "title": "Recovery failure after shift work",
+      "core_issue": "The user cannot recover properly after shifts and family or work expectations keep piling up.",
+      "compatible_archetypes": [
+        "A08_shift_worker_family_pressure",
+        "A02_service_emotional_labor",
+        "A05_single_parent_service_worker"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "how much rest is acceptable",
+        "what to tell family",
+        "which tasks to drop"
+      ],
+      "possible_emotional_load": [
+        "exhaustion",
+        "resentment",
+        "low capacity"
+      ],
+      "possible_actions": [
+        "define post-shift minimum recovery",
+        "delay nonurgent tasks",
+        "explain limit briefly"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_HEALTH_003",
+      "event_domain": "health_routine",
+      "event_type": "routine_restart_after_break",
+      "title": "Restarting a routine after falling off track",
+      "core_issue": "The user wants to restart a routine after several failed attempts.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to restart small",
+        "how to avoid another failure",
+        "what counts as progress"
+      ],
+      "possible_emotional_load": [
+        "shame",
+        "hope",
+        "frustration"
+      ],
+      "possible_actions": [
+        "define minimum version",
+        "track restart not perfection",
+        "connect routine to real need"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_HEALTH_004",
+      "event_domain": "health_routine",
+      "event_type": "ordinary_symptom_uncertainty",
+      "title": "Ordinary symptom or discomfort creates uncertainty",
+      "core_issue": "The user has a minor recurring discomfort and is unsure how much attention it deserves.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to observe or seek help",
+        "what signs matter",
+        "whether anxiety is amplifying it"
+      ],
+      "possible_emotional_load": [
+        "worry",
+        "annoyance",
+        "uncertainty"
+      ],
+      "possible_actions": [
+        "avoid diagnosis",
+        "track concrete pattern",
+        "seek professional help if concerning signs appear"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "medical advice beyond scope",
+        "either dismissing or catastrophizing symptoms"
+      ]
+    },
+    {
+      "event_category_id": "E_REL_001",
+      "event_domain": "relationship",
+      "event_type": "relationship_communication_uncertainty",
+      "title": "Uncertainty about how to communicate in a close relationship",
+      "core_issue": "The user is unsure how to raise a recurring issue without worsening the relationship.",
+      "compatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A06_midlife_caregiver",
+        "A10_international_student_admin_pressure",
+        "A12_early_parenthood_return_to_work",
+        "A05_single_parent_service_worker",
+        "A11_adult_child_boundary_family"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "how direct to be",
+        "what outcome is realistic",
+        "whether the other person will misunderstand"
+      ],
+      "possible_emotional_load": [
+        "fear of conflict",
+        "hurt",
+        "resentment"
+      ],
+      "possible_actions": [
+        "separate request from accusation",
+        "choose one opening sentence",
+        "avoid arguing at peak emotion"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_REL_002",
+      "event_domain": "relationship",
+      "event_type": "long_distance_relationship_coordination",
+      "title": "Long-distance relationship coordination",
+      "core_issue": "The user tries to maintain relationship stability despite distance, schedules, or future uncertainty.",
+      "compatible_archetypes": [
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "who should compromise",
+        "how often to communicate",
+        "whether future plans are realistic"
+      ],
+      "possible_emotional_load": [
+        "missing partner",
+        "fear of drifting",
+        "resentment"
+      ],
+      "possible_actions": [
+        "set communication rhythm",
+        "separate reassurance from logistics",
+        "define next concrete decision"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_SOCIAL_001",
+      "event_domain": "social_connection",
+      "event_type": "friendship_drift",
+      "title": "Friendship drift or awkwardness",
+      "core_issue": "The user senses distance in a friendship and is unsure whether to reach out or let it fade.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A07_unemployed_job_seeker",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether friend is upset",
+        "how much to invest",
+        "whether reaching out is needy"
+      ],
+      "possible_emotional_load": [
+        "sadness",
+        "confusion",
+        "rejection sensitivity"
+      ],
+      "possible_actions": [
+        "separate facts from interpretation",
+        "send low-pressure message",
+        "accept partial ambiguity"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_SOCIAL_002",
+      "event_domain": "social_connection",
+      "event_type": "lack_of_local_support",
+      "title": "Lack of local support becomes noticeable",
+      "core_issue": "The user realizes they have few people nearby to rely on.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "where to start",
+        "whether loneliness means wrong choice",
+        "how much effort to invest"
+      ],
+      "possible_emotional_load": [
+        "loneliness",
+        "embarrassment",
+        "self-doubt"
+      ],
+      "possible_actions": [
+        "choose recurring low-stakes activity",
+        "contact one weak tie",
+        "make social goal small"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_SOCIAL_003",
+      "event_domain": "social_connection",
+      "event_type": "group_invitation_pressure",
+      "title": "Pressure around a social invitation or group event",
+      "core_issue": "The user is unsure whether to attend a social event, fearing awkwardness or cost.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A07_unemployed_job_seeker",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to go",
+        "how to decline",
+        "whether not going will hurt relationship"
+      ],
+      "possible_emotional_load": [
+        "social anxiety",
+        "cost worry",
+        "fear of exclusion"
+      ],
+      "possible_actions": [
+        "separate desire from obligation",
+        "choose limited attendance",
+        "decline with simple reason"
+      ],
+      "relational_memory_potential": "low",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_JOB_001",
+      "event_domain": "job_search",
+      "event_type": "resume_or_application_block",
+      "title": "Resume or application block",
+      "core_issue": "The user is stuck updating applications and worries they are not competitive.",
+      "compatible_archetypes": [
+        "A07_unemployed_job_seeker",
+        "A01_early_career_renter",
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what experience to emphasize",
+        "whether to apply anyway",
+        "how to handle gaps"
+      ],
+      "possible_emotional_load": [
+        "shame",
+        "comparison anxiety",
+        "avoidance"
+      ],
+      "possible_actions": [
+        "make one resume version",
+        "apply to one realistic role",
+        "separate rejection from self-worth"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_JOB_002",
+      "event_domain": "job_search",
+      "event_type": "interview_rejection_recovery",
+      "title": "Recovering after interview rejection",
+      "core_issue": "The user receives rejection or silence after interviews and loses confidence.",
+      "compatible_archetypes": [
+        "A07_unemployed_job_seeker",
+        "A01_early_career_renter",
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what went wrong",
+        "whether to follow up",
+        "whether to change direction"
+      ],
+      "possible_emotional_load": [
+        "discouragement",
+        "self-doubt",
+        "financial pressure"
+      ],
+      "possible_actions": [
+        "extract one learning point",
+        "send one follow-up if appropriate",
+        "schedule next application block"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_LEARN_001",
+      "event_domain": "learning",
+      "event_type": "certificate_or_skill_learning_pressure",
+      "title": "Trying to learn a new skill while life is busy",
+      "core_issue": "The user wants to improve skills but struggles with time, confidence, or consistency.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A07_unemployed_job_seeker",
+        "A10_international_student_admin_pressure",
+        "A09_retirement_adjustment",
+        "A05_single_parent_service_worker",
+        "A08_shift_worker_family_pressure"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether goal is realistic",
+        "what to study first",
+        "how to restart after falling behind"
+      ],
+      "possible_emotional_load": [
+        "shame",
+        "comparison",
+        "hope"
+      ],
+      "possible_actions": [
+        "reduce study unit size",
+        "set weekly minimum",
+        "connect skill to concrete goal"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_EDU_001",
+      "event_domain": "education",
+      "event_type": "study_deadline_or_assignment_pressure",
+      "title": "Study deadline or assignment pressure",
+      "core_issue": "The user must handle a school assignment, exam, or project under time pressure.",
+      "compatible_archetypes": [
+        "A10_international_student_admin_pressure",
+        "A01_early_career_renter"
+      ],
+      "incompatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what to prioritize",
+        "how good is enough",
+        "whether to ask for extension"
+      ],
+      "possible_emotional_load": [
+        "panic",
+        "perfectionism",
+        "avoidance"
+      ],
+      "possible_actions": [
+        "define minimum submission",
+        "freeze scope",
+        "ask focused question"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_ADMIN_STUDY_001",
+      "event_domain": "visa_administration",
+      "event_type": "visa_or_school_document_uncertainty",
+      "title": "Visa or school document uncertainty",
+      "core_issue": "The user worries about missing an administrative rule, document, or deadline while studying away from home.",
+      "compatible_archetypes": [
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "which rule applies",
+        "what document is missing",
+        "whether to contact office"
+      ],
+      "possible_emotional_load": [
+        "fear of irreversible mistake",
+        "bureaucratic frustration",
+        "isolation"
+      ],
+      "possible_actions": [
+        "list known requirements",
+        "identify official source",
+        "send clarification email"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "inventing official rules",
+        "giving legal certainty"
+      ]
+    },
+    {
+      "event_category_id": "E_RETIRE_001",
+      "event_domain": "retirement",
+      "event_type": "retirement_routine_and_identity",
+      "title": "Rebuilding routine and identity after retirement",
+      "core_issue": "The user no longer has work as the main daily structure and is searching for meaningful routine.",
+      "compatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what counts as meaningful",
+        "how much to rely on family",
+        "how to structure time"
+      ],
+      "possible_emotional_load": [
+        "quiet loneliness",
+        "loss of identity",
+        "reluctance to complain"
+      ],
+      "possible_actions": [
+        "build weekly anchors",
+        "choose small community activity",
+        "plan family contact rhythm"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_RETIRE_002",
+      "event_domain": "retirement",
+      "event_type": "adult_children_contact_rhythm",
+      "title": "Finding a comfortable rhythm with adult children",
+      "core_issue": "The user wants contact with adult children but does not want to feel like a burden.",
+      "compatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "how often to contact",
+        "whether children are too busy",
+        "how to ask without pressure"
+      ],
+      "possible_emotional_load": [
+        "longing",
+        "restraint",
+        "loneliness"
+      ],
+      "possible_actions": [
+        "make predictable low-pressure contact",
+        "avoid testing love through response speed",
+        "share small concrete updates"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_RETIRE_003",
+      "event_domain": "community",
+      "event_type": "community_activity_hesitation",
+      "title": "Hesitation about joining a community activity",
+      "core_issue": "The user considers joining a local activity but feels awkward or unsure.",
+      "compatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether they will fit in",
+        "whether it is worth trying",
+        "how to leave if uncomfortable"
+      ],
+      "possible_emotional_load": [
+        "awkwardness",
+        "hope",
+        "fear of embarrassment"
+      ],
+      "possible_actions": [
+        "try once with exit plan",
+        "choose low-pressure activity",
+        "focus on routine not instant belonging"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_RETIRE_004",
+      "event_domain": "health_routine",
+      "event_type": "physical_activity_restart_retirement",
+      "title": "Restarting physical activity after retirement",
+      "core_issue": "The user wants to stay active but struggles to make exercise routine meaningful.",
+      "compatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what routine is safe and realistic",
+        "how much is enough",
+        "how to stay consistent"
+      ],
+      "possible_emotional_load": [
+        "worry about aging",
+        "resistance",
+        "hope"
+      ],
+      "possible_actions": [
+        "start small",
+        "pair with daily errand",
+        "avoid comparison with past self"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "medical advice beyond scope",
+        "patronizing tone"
+      ]
+    },
+    {
+      "event_category_id": "E_PLAN_001",
+      "event_domain": "personal_planning",
+      "event_type": "too_many_tasks_overload",
+      "title": "Too many tasks pile up at once",
+      "core_issue": "The user feels overwhelmed because several ordinary tasks become urgent together.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what to do first",
+        "what can be dropped",
+        "whether they are failing"
+      ],
+      "possible_emotional_load": [
+        "overwhelm",
+        "self-blame",
+        "fatigue"
+      ],
+      "possible_actions": [
+        "triage must/should/can-wait",
+        "choose first 20-minute action",
+        "avoid solving all at once"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_PLAN_002",
+      "event_domain": "personal_planning",
+      "event_type": "decision_fatigue_small_choices",
+      "title": "Decision fatigue from many small choices",
+      "core_issue": "The user is worn down by repeated small decisions around life logistics.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A08_shift_worker_family_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "which choice matters",
+        "whether to optimize",
+        "how to reduce mental load"
+      ],
+      "possible_emotional_load": [
+        "fatigue",
+        "irritation",
+        "indecision"
+      ],
+      "possible_actions": [
+        "set default rule",
+        "reduce options",
+        "choose good-enough threshold"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_PLAN_003",
+      "event_domain": "personal_planning",
+      "event_type": "unfinished_home_task",
+      "title": "Unfinished home task keeps returning",
+      "core_issue": "A small home task or repair keeps being postponed and creates repeated stress.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to do it now",
+        "whether to pay someone",
+        "why it keeps getting avoided"
+      ],
+      "possible_emotional_load": [
+        "annoyance",
+        "guilt",
+        "avoidance"
+      ],
+      "possible_actions": [
+        "define smallest next step",
+        "set time-box",
+        "decide DIY vs paid help"
+      ],
+      "relational_memory_potential": "low",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_PLAN_004",
+      "event_domain": "personal_planning",
+      "event_type": "holiday_or_family_visit_planning",
+      "title": "Holiday or family visit planning pressure",
+      "core_issue": "Planning a family visit or holiday creates schedule, money, or relationship pressure.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to go",
+        "how long to stay",
+        "how to manage cost or conflict"
+      ],
+      "possible_emotional_load": [
+        "obligation",
+        "anticipatory stress",
+        "guilt"
+      ],
+      "possible_actions": [
+        "define constraints first",
+        "choose one boundary",
+        "avoid overpromising"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_PLAN_005",
+      "event_domain": "personal_planning",
+      "event_type": "phone_message_reply_pressure",
+      "title": "Pressure to reply to accumulated messages",
+      "core_issue": "The user has delayed replying to messages and now feels awkward or guilty.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A07_unemployed_job_seeker",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "how to restart",
+        "whether to explain",
+        "whether delay damaged relationship"
+      ],
+      "possible_emotional_load": [
+        "guilt",
+        "avoidance",
+        "awkwardness"
+      ],
+      "possible_actions": [
+        "send short restart message",
+        "avoid over-explaining",
+        "reply to one person first"
+      ],
+      "relational_memory_potential": "low",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_INTER_001",
+      "event_domain": "work_family_intersection",
+      "event_type": "work_call_interrupts_family_time",
+      "title": "Work messages interrupt family or rest time",
+      "core_issue": "The user struggles with work messages invading family or rest time.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A08_shift_worker_family_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to reply now",
+        "what boundary is safe",
+        "how to explain delay"
+      ],
+      "possible_emotional_load": [
+        "resentment",
+        "pressure",
+        "guilt"
+      ],
+      "possible_actions": [
+        "define response window",
+        "draft delayed reply",
+        "separate urgency from habit"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_INTER_002",
+      "event_domain": "work_family_intersection",
+      "event_type": "care_need_conflicts_with_work",
+      "title": "Care need conflicts with work obligation",
+      "core_issue": "A child, elder, or family need conflicts with work obligations.",
+      "compatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A08_shift_worker_family_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A04_small_business_owner",
+        "A07_unemployed_job_seeker",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to ask leave",
+        "who can cover",
+        "how to avoid repeated crisis"
+      ],
+      "possible_emotional_load": [
+        "panic",
+        "guilt",
+        "responsibility overload"
+      ],
+      "possible_actions": [
+        "identify non-negotiable need",
+        "contact one backup",
+        "communicate work constraint"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_INTER_003",
+      "event_domain": "work_family_intersection",
+      "event_type": "overtime_money_vs_health",
+      "title": "Overtime money versus health or family time",
+      "core_issue": "The user needs extra income but overtime harms rest, safety, or family life.",
+      "compatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A08_shift_worker_family_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "how much overtime is worth it",
+        "what threshold to set",
+        "how to explain family absence"
+      ],
+      "possible_emotional_load": [
+        "pressure",
+        "fatigue",
+        "guilt"
+      ],
+      "possible_actions": [
+        "define income target and safety cutoff",
+        "schedule recovery block",
+        "communicate limits"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_SELF_001",
+      "event_domain": "self_worth",
+      "event_type": "feeling_behind_peers",
+      "title": "Feeling behind peers",
+      "core_issue": "The user compares themselves with peers and worries they are falling behind.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A07_unemployed_job_seeker",
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether comparison is fair",
+        "what progress counts",
+        "what to do next"
+      ],
+      "possible_emotional_load": [
+        "envy",
+        "shame",
+        "discouragement"
+      ],
+      "possible_actions": [
+        "define own baseline",
+        "choose one controllable action",
+        "avoid broad life verdict"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_SELF_002",
+      "event_domain": "self_worth",
+      "event_type": "not_being_seen_or_recognized",
+      "title": "Feeling unseen despite effort",
+      "core_issue": "The user feels their effort is not recognized at work or home.",
+      "compatible_archetypes": [
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A08_shift_worker_family_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to speak up",
+        "whether the feeling is fair",
+        "what recognition would change"
+      ],
+      "possible_emotional_load": [
+        "hurt",
+        "resentment",
+        "fatigue"
+      ],
+      "possible_actions": [
+        "name concrete effort",
+        "ask for specific support",
+        "avoid proving worth through more labor"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_SELF_003",
+      "event_domain": "self_worth",
+      "event_type": "fear_of_being_too_sensitive",
+      "title": "Fear of being too sensitive",
+      "core_issue": "The user worries their reaction to a situation may be too sensitive or unreasonable.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A10_international_student_admin_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether reaction is proportional",
+        "whether to bring it up",
+        "how to calibrate"
+      ],
+      "possible_emotional_load": [
+        "self-doubt",
+        "embarrassment",
+        "need for validation"
+      ],
+      "possible_actions": [
+        "separate fact, interpretation, need",
+        "calibrate with concrete evidence",
+        "choose low-stakes response"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_PET_001",
+      "event_domain": "pet_care",
+      "event_type": "pet_care_schedule_or_cost",
+      "title": "Pet care schedule or cost pressure",
+      "core_issue": "The user has a pet-related responsibility that conflicts with work, money, or housing constraints.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A07_unemployed_job_seeker",
+        "A09_retirement_adjustment"
+      ],
+      "incompatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether care plan is enough",
+        "whether cost is manageable",
+        "who can help"
+      ],
+      "possible_emotional_load": [
+        "worry",
+        "guilt",
+        "attachment"
+      ],
+      "possible_actions": [
+        "list care needs",
+        "identify backup helper",
+        "separate urgent from optional cost"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_TRANSPORT_001",
+      "event_domain": "commuting",
+      "event_type": "commute_disruption",
+      "title": "Commute disruption affects work or care plans",
+      "core_issue": "Transport disruption threatens punctuality, care pickup, rest, or income.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A08_shift_worker_family_pressure",
+        "A10_international_student_admin_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to notify someone",
+        "which backup route is worth it",
+        "how to avoid repeated issue"
+      ],
+      "possible_emotional_load": [
+        "stress",
+        "helplessness",
+        "time pressure"
+      ],
+      "possible_actions": [
+        "notify early",
+        "choose backup threshold",
+        "prepare one contingency"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_DIGITAL_001",
+      "event_domain": "digital_life",
+      "event_type": "phone_or_account_problem",
+      "title": "Phone, account, or app problem disrupts daily life",
+      "core_issue": "A phone/app/account issue blocks work, payment, transport, or communication.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A10_international_student_admin_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether account is safe",
+        "what step to try first",
+        "whether to contact support"
+      ],
+      "possible_emotional_load": [
+        "panic",
+        "annoyance",
+        "dependence anxiety"
+      ],
+      "possible_actions": [
+        "avoid sharing codes",
+        "list official support path",
+        "try one safe recovery step"
+      ],
+      "relational_memory_potential": "low",
+      "memory_risks": [
+        "cybersecurity advice beyond scope",
+        "unsafe account recovery suggestions"
+      ]
+    },
+    {
+      "event_category_id": "E_CONSUMER_001",
+      "event_domain": "consumer_issue",
+      "event_type": "refund_or_return_dispute",
+      "title": "Refund, return, or consumer dispute",
+      "core_issue": "The user is unsure how to handle a refund or return conflict.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether request is reasonable",
+        "what evidence to keep",
+        "how firm to be"
+      ],
+      "possible_emotional_load": [
+        "annoyance",
+        "fear of confrontation",
+        "unfairness"
+      ],
+      "possible_actions": [
+        "collect receipt/evidence",
+        "write concise request",
+        "use official channel"
+      ],
+      "relational_memory_potential": "low",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_NEIGHBOR_001",
+      "event_domain": "neighborhood",
+      "event_type": "neighbor_noise_or_boundary",
+      "title": "Neighbor noise or boundary problem",
+      "core_issue": "A neighbor issue disrupts rest or comfort and the user is unsure how to address it.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A05_single_parent_service_worker",
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A06_midlife_caregiver",
+        "A08_shift_worker_family_pressure",
+        "A10_international_student_admin_pressure"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether to talk directly",
+        "whether to contact property management",
+        "how to avoid escalation"
+      ],
+      "possible_emotional_load": [
+        "irritation",
+        "fear of conflict",
+        "feeling trapped"
+      ],
+      "possible_actions": [
+        "document pattern",
+        "try neutral first message",
+        "use formal channel if repeated"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_COMMUNITY_001",
+      "event_domain": "community",
+      "event_type": "community_or_school_group_obligation",
+      "title": "Community or group obligation pressure",
+      "core_issue": "The user is asked to join a group task and feels pressure to accept.",
+      "compatible_archetypes": [
+        "A05_single_parent_service_worker",
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work",
+        "A01_early_career_renter",
+        "A02_service_emotional_labor"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether refusal is acceptable",
+        "how much time it will take",
+        "whether saying no hurts relationship"
+      ],
+      "possible_emotional_load": [
+        "obligation",
+        "guilt",
+        "resentment"
+      ],
+      "possible_actions": [
+        "ask scope first",
+        "offer limited contribution",
+        "decline with simple boundary"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_LEGALADMIN_001",
+      "event_domain": "administration",
+      "event_type": "minor_dispute_documentation",
+      "title": "Minor dispute needs careful documentation",
+      "core_issue": "A minor dispute with landlord, workplace, customer, or service provider requires careful factual documentation.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A04_small_business_owner",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A10_international_student_admin_pressure"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what to record",
+        "whether to escalate",
+        "how to stay factual"
+      ],
+      "possible_emotional_load": [
+        "anger",
+        "fear",
+        "confusion"
+      ],
+      "possible_actions": [
+        "write timeline",
+        "keep receipts/screenshots",
+        "separate facts from emotion"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "giving legal conclusions",
+        "encouraging escalation without facts"
+      ]
+    },
+    {
+      "event_category_id": "E_FOOD_001",
+      "event_domain": "daily_life",
+      "event_type": "meal_planning_under_fatigue",
+      "title": "Meal planning under fatigue or budget limits",
+      "core_issue": "The user struggles to plan meals because of fatigue, schedule, or money constraints.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A10_international_student_admin_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what is realistic",
+        "how much prep is worth it",
+        "how to avoid waste"
+      ],
+      "possible_emotional_load": [
+        "fatigue",
+        "guilt",
+        "decision fatigue"
+      ],
+      "possible_actions": [
+        "choose two default meals",
+        "reduce prep complexity",
+        "align with budget"
+      ],
+      "relational_memory_potential": "low",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_CLEAN_001",
+      "event_domain": "daily_life",
+      "event_type": "home_cleaning_overwhelm",
+      "title": "Home cleaning or clutter overwhelm",
+      "core_issue": "The user feels overwhelmed by accumulated home tasks or clutter.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "where to start",
+        "whether mess means personal failure",
+        "how much to do at once"
+      ],
+      "possible_emotional_load": [
+        "shame",
+        "avoidance",
+        "fatigue"
+      ],
+      "possible_actions": [
+        "choose one visible area",
+        "time-box 15 minutes",
+        "separate function from perfection"
+      ],
+      "relational_memory_potential": "low",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_TIME_001",
+      "event_domain": "personal_planning",
+      "event_type": "always_running_late",
+      "title": "Repeatedly running late",
+      "core_issue": "The user keeps running late and worries about reliability or self-management.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A03_gig_worker_parent",
+        "A05_single_parent_service_worker",
+        "A07_unemployed_job_seeker",
+        "A08_shift_worker_family_pressure",
+        "A10_international_student_admin_pressure",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A09_retirement_adjustment",
+        "A11_adult_child_boundary_family"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "what causes delay",
+        "how much buffer is enough",
+        "how to apologize"
+      ],
+      "possible_emotional_load": [
+        "embarrassment",
+        "self-blame",
+        "frustration"
+      ],
+      "possible_actions": [
+        "identify repeat bottleneck",
+        "set one departure trigger",
+        "send short notice when late"
+      ],
+      "relational_memory_potential": "medium",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    },
+    {
+      "event_category_id": "E_BOUNDARY_001",
+      "event_domain": "personal_boundary",
+      "event_type": "difficulty_saying_no",
+      "title": "Difficulty saying no to requests",
+      "core_issue": "The user has trouble refusing requests from work, family, or friends.",
+      "compatible_archetypes": [
+        "A01_early_career_renter",
+        "A02_service_emotional_labor",
+        "A05_single_parent_service_worker",
+        "A06_midlife_caregiver",
+        "A07_unemployed_job_seeker",
+        "A10_international_student_admin_pressure",
+        "A11_adult_child_boundary_family",
+        "A12_early_parenthood_return_to_work"
+      ],
+      "incompatible_archetypes": [
+        "A03_gig_worker_parent",
+        "A04_small_business_owner",
+        "A08_shift_worker_family_pressure",
+        "A09_retirement_adjustment"
+      ],
+      "stage_patterns": [
+        [
+          "initial concern",
+          "recurrence",
+          "turning point",
+          "partial resolution",
+          "reflection"
+        ]
+      ],
+      "possible_uncertainties": [
+        "whether refusal is selfish",
+        "what wording is acceptable",
+        "whether relationship will suffer"
+      ],
+      "possible_emotional_load": [
+        "guilt",
+        "pressure",
+        "resentment"
+      ],
+      "possible_actions": [
+        "offer limited yes",
+        "state capacity plainly",
+        "avoid over-explaining"
+      ],
+      "relational_memory_potential": "high",
+      "memory_risks": [
+        "overgeneralizing from sparse evidence",
+        "giving generic advice instead of tracking the concrete event"
+      ]
+    }
+  ]
+}

@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
+import tempfile
 import types
 import unittest
 from pathlib import Path
@@ -118,12 +119,12 @@ class DocxRoutePipelineTests(unittest.TestCase):
         self.assertFalse(payloads["M0"]["requires_runtime_letta"])
         self.assertTrue(payloads["M0"]["requires_runtime_ld_agent_memory"])
         self.assertNotIn("第 10 天", payloads["M0"]["memory_context"])
-        self.assertNotIn("M0_session_summary_memory", specs["M1"]["can_read"])
-        self.assertNotIn("M0_session_summary_memory", specs["M2"]["can_read"])
-        self.assertNotIn("M0_session_summary_memory", specs["M3"]["can_read"])
+        self.assertIn("shared_m0_ld_agent_retrieved_payload", specs["M1"]["can_read"])
+        self.assertIn("shared_m0_ld_agent_retrieved_payload", specs["M2"]["can_read"])
+        self.assertIn("shared_m0_ld_agent_retrieved_payload", specs["M3"]["can_read"])
         self.assertIn("独立 runtime namespace", specs["M1"]["definition"])
-        self.assertIn("不读取 M0/M1 的 payload", specs["M2"]["definition"])
-        self.assertIn("不读取其他条件的 payload", specs["M3"]["definition"])
+        self.assertIn("同轮 M0 检索结果组合", specs["M2"]["definition"])
+        self.assertIn("不读取其他关系条件的 payload", specs["M3"]["definition"])
         self.assertIn("结论级关系记忆", payloads["M2"]["memory_context"])
         self.assertIn("摘要级事件记忆", payloads["M2"]["memory_context"])
         self.assertIn("细节级关系锚点", payloads["M3"]["memory_context"])
@@ -169,7 +170,7 @@ class DocxRoutePipelineTests(unittest.TestCase):
             1,
         )
 
-    def test_runner_payload_for_relational_conditions_isolates_m0_base_memory(self) -> None:
+    def test_runner_payload_for_relational_conditions_composes_m0_base_memory(self) -> None:
         conditions = generate_memory_conditions(
             timeline=_timeline_doc(),
             daily_messages=_daily_messages_doc(),
@@ -192,38 +193,103 @@ class DocxRoutePipelineTests(unittest.TestCase):
         )
 
         self.assertIn("摘要级事件记忆", payload["memory_context"])
-        self.assertNotIn("M0 LD-Agent 普通记忆", payload["memory_context"])
-        self.assertNotIn("M0 基石记忆检索结果", payload["memory_context"])
-        self.assertNotIn("m0_base_memory", payload)
-        self.assertNotIn("m0_source", payload.get("source_detail_ids", []))
-        self.assertIsNone(payload["memory_composition"]["base_condition"])
+        self.assertIn("M0 LD-Agent 普通记忆", payload["memory_context"])
+        self.assertIn("M0 基石记忆检索结果", payload["memory_context"])
+        self.assertLess(
+            payload["memory_context"].index("M2 关系记忆增强层"),
+            payload["memory_context"].index("M0 基石记忆检索结果"),
+        )
+        self.assertIn("主记忆：M2 关系记忆增强层", payload["memory_context"])
+        self.assertIn("辅助背景：M0 基石记忆检索结果", payload["memory_context"])
+        self.assertIn("不要跟随 M0 背景", payload["memory_context"])
+        self.assertIn("当前事件感知 overlay", payload["memory_context"])
+        self.assertIn("当前用户输入点名主题/事件线时", payload["memory_context"])
+        self.assertIn("不得回答 M0 背景或历史短期上下文中的其他事件线", payload["memory_context"])
+        self.assertIn("必须回答最后一条当前用户输入", payload["memory_context"])
+        self.assertIn("m0_base_memory", payload)
+        self.assertIn("m0_source", payload.get("source_detail_ids", []))
+        self.assertEqual(payload["memory_composition"]["base_condition"], "M0")
         self.assertEqual(
             payload["memory_composition"]["composition_rule"],
-            "condition_isolated_relational_payload",
+            "m0_base_plus_condition_relational_overlay",
         )
-        self.assertFalse(payload["search_indexing_policy"]["uses_m0_search_indexing"])
-        self.assertIsNone(payload["search_indexing_policy"]["m0_retrieval_strategy"])
-        self.assertIsNone(payload["search_indexing_policy"]["m0_storage_backend"])
-        self.assertTrue(
+        self.assertTrue(payload["search_indexing_policy"]["uses_m0_search_indexing"])
+        self.assertEqual(
+            payload["search_indexing_policy"]["m0_retrieval_strategy"],
+            "topic_overlap_time_decay",
+        )
+        self.assertEqual(payload["search_indexing_policy"]["m0_storage_backend"], "chroma")
+        self.assertFalse(
             payload["search_indexing_policy"]["relational_layer_has_independent_generic_search"]
         )
         self.assertEqual(
             payload["retrieval"]["strategy"],
-            "condition_isolated_static_relational_payload",
+            "m0_retrieval_plus_relational_overlay",
         )
-        self.assertFalse(payload["retrieval"]["uses_m0_payload"])
+        self.assertTrue(payload["retrieval"]["uses_m0_payload"])
+        self.assertTrue(payload["memory_composition"]["relational_overlay_precedence"])
+        self.assertFalse(payload["memory_composition"]["m0_event_line_filtering"])
 
-    def test_relational_payload_allows_empty_m0_base_context_when_isolated(self) -> None:
-        payload = runner._isolated_relational_payload(
-            {
+    def test_relational_payload_uses_empty_m0_base_fallback(self) -> None:
+        payload = runner._compose_relational_payload_with_m0_base(
+            condition_id="M1",
+            m0_ld_agent_payload={
+                "condition_id": "M0",
+                "memory_provider": "ld_agent_memory",
+                "memory_context": "",
+                "source_detail_ids": [],
+                "retrieval": {},
+            },
+            relational_overlay={
                 "condition_id": "M1",
                 "memory_context": "结论级关系记忆：测试",
                 "source_detail_ids": [],
-            }
+            },
+            overlay_source="unit_test",
         )
 
         self.assertIn("结论级关系记忆：测试", payload["memory_context"])
-        self.assertFalse(payload["search_indexing_policy"]["uses_m0_search_indexing"])
+        self.assertIn("当前 M0 runtime 没有检索到可用普通长期记忆", payload["memory_context"])
+        self.assertTrue(payload["search_indexing_policy"]["uses_m0_search_indexing"])
+
+    def test_relational_payload_strips_m0_current_session_agent_answers(self) -> None:
+        payload = runner._compose_relational_payload_with_m0_base(
+            condition_id="M2",
+            m0_ld_agent_payload={
+                "condition_id": "M0",
+                "memory_provider": "ld_agent_memory",
+                "memory_context": "\n".join(
+                    [
+                        "[Available M0 Memory: LD-Agent-style Session-Summary Memory]",
+                        "",
+                        "Current short-term session:",
+                        "- (line 1) User: 当前用户问题 | Assistant(M0): M0 上一轮错误回答",
+                        "",
+                        "Retrieved session snippets:",
+                        "   - (line 1) User: 长期片段 | Assistant(M0): 长期 M0 回答",
+                        "",
+                        "Retrieved session summaries:",
+                        "1. Long-term summary can remain.",
+                    ]
+                ),
+                "source_detail_ids": [],
+                "retrieval": {},
+            },
+            relational_overlay={
+                "condition_id": "M2",
+                "memory_context": "摘要级关系记忆：测试",
+                "source_detail_ids": [],
+            },
+            overlay_source="unit_test",
+        )
+
+        self.assertIn("- (line 1) User: 当前用户问题", payload["memory_context"])
+        self.assertNotIn("M0 上一轮错误回答", payload["memory_context"])
+        self.assertIn("   - (line 1) User: 长期片段", payload["memory_context"])
+        self.assertNotIn("长期 M0 回答", payload["memory_context"])
+        self.assertTrue(
+            payload["memory_composition"]["m0_current_session_agent_answers_removed"]
+        )
 
     def test_runner_prompt_blinds_condition_labels(self) -> None:
         prompt = runner._build_condition_system_prompt(
@@ -241,6 +307,34 @@ class DocxRoutePipelineTests(unittest.TestCase):
         self.assertNotIn("当前条件", prompt)
         self.assertNotIn("M0 是", prompt)
         self.assertNotIn("bei_annotations", prompt)
+        self.assertNotIn("本轮主记忆", prompt)
+        self.assertNotIn("关系记忆增强层", prompt)
+        self.assertNotIn("M0 只是普通 session/day 背景", prompt)
+        self.assertNotIn("不要跟随 M0 背景", prompt)
+        self.assertNotIn("当前用户输入是本轮唯一需要回答的问题", prompt)
+        self.assertNotIn("本轮必须只围绕该主题/事件线回答", prompt)
+        self.assertNotIn("不得替代当前用户点名的事件线", prompt)
+
+    def test_runner_prompt_prioritizes_relational_overlay_for_relational_conditions(self) -> None:
+        prompt = runner._build_condition_system_prompt(
+            condition_id="M2",
+            condition_spec={
+                "name": "Summary-level Relational Memory",
+                "definition": "普通记忆加摘要级关系记忆",
+            },
+            memory_payload={"memory_context": "M2 关系记忆增强层：测试\nM0 基石记忆检索结果：测试"},
+        )
+
+        self.assertIn("本轮主记忆是 M2 关系记忆增强层", prompt)
+        self.assertIn("M0 只是普通 session/day 背景", prompt)
+        self.assertIn("若二者冲突，不要跟随 M0 背景", prompt)
+        self.assertIn("当前用户输入是本轮唯一需要回答的问题", prompt)
+        self.assertIn("本轮必须只围绕该主题/事件线回答", prompt)
+        self.assertIn("不得替代当前用户点名的事件线", prompt)
+        self.assertLess(
+            prompt.index("本轮主记忆是 M2 关系记忆增强层"),
+            prompt.index("本轮你只能使用下面这段可用长期记忆载荷"),
+        )
 
     def test_runner_rebuild_runtime_state_handles_four_conditions(self) -> None:
         turns = [
@@ -307,6 +401,10 @@ class DocxRoutePipelineTests(unittest.TestCase):
                 "topic": "孩子幼儿园可能不稳定",
                 "turn_type": "scripted_opening",
                 "user_message": "我今天又在想幼儿园这件事。",
+                "tau": {
+                    "event_line_id": "L_kindergarten",
+                    "event_stage": "initial",
+                },
             },
             scene_card=None,
             llm_client=client,
@@ -357,6 +455,10 @@ class DocxRoutePipelineTests(unittest.TestCase):
                 "topic": "孩子幼儿园可能不稳定",
                 "turn_type": "scripted_opening",
                 "user_message": "我今天又在想幼儿园这件事。",
+                "tau": {
+                    "event_line_id": "L_kindergarten",
+                    "event_stage": "initial",
+                },
             },
             scene_card=None,
             llm_client=client,
@@ -387,9 +489,21 @@ class DocxRoutePipelineTests(unittest.TestCase):
         )
 
         self.assertEqual(m2_runtime.snapshot()["memory_count"], 2)
+        self.assertIn("L_kindergarten", m2_runtime.snapshot()["event_line_memory_index"])
         self.assertEqual(
             turn["variants"]["M2"]["memory_payload"]["memory_provider"],
+            "m0_base_plus_relational_overlay",
+        )
+        self.assertEqual(
+            turn["variants"]["M2"]["memory_payload"]["relational_overlay"]["memory_provider"],
             "independent_relational_memory_runtime",
+        )
+        self.assertTrue(
+            turn["variants"]["M2"]["memory_payload"]["retrieval"]["uses_m0_payload"]
+        )
+        self.assertEqual(
+            turn["variants"]["M2"]["memory_payload"]["memory_composition"]["base_condition"],
+            "M0",
         )
         self.assertNotIn(
             "静态 payload 不应该被 runtime 路径使用",
@@ -403,6 +517,61 @@ class DocxRoutePipelineTests(unittest.TestCase):
             "M2",
             turn["memory_setup"]["relational_runtime_conditions"],
         )
+        self.assertTrue(turn["memory_setup"]["m1_m2_m3_share_m0_base_memory"])
+
+    def test_run_config_records_m1_m2_m3_share_m0_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            result = {
+                "run_id": "test_run",
+                "created_at": "2026-06-27T00:00:00",
+                "expected_turns": 1,
+                "tau_contract": {},
+                "m0_ld_agent_memory": {
+                    "ld_agent_reference": "ld_agent://test",
+                },
+            }
+            args = types.SimpleNamespace(
+                temperature=0.2,
+                top_p=1.0,
+                llm_timeout=60,
+                condition_workers=1,
+                daily_messages=temp_path / "daily.json",
+                scene_cards=temp_path / "scene.json",
+                probe_questions=temp_path / "probe.json",
+                memory_conditions=temp_path / "memory.json",
+                relational_memory_top_k=5,
+                m0_ld_agent_top_k=6,
+                m0_ld_agent_short_term_k=3,
+                m0_ld_agent_storage_backend="json",
+                m0_ld_agent_chroma_path=None,
+                scene_followups=False,
+                output=temp_path / "responses_by_condition.json",
+                conversation_log=temp_path / "conversation_log.json",
+            )
+            llm_config = types.SimpleNamespace(
+                provider="deepseek",
+                base_url="https://api.deepseek.com",
+                model="deepseek-v4-pro",
+            )
+
+            runner._write_run_config(
+                temp_path / "run_config.json",
+                result=result,
+                args=args,
+                llm_config=llm_config,
+                max_tokens=1200,
+                condition_ids=["M0", "M1", "M2", "M3"],
+            )
+
+            self.assertTrue(
+                result["run_config"]["controlled_variables"][
+                    "m1_m2_m3_share_m0_base_memory"
+                ]
+            )
+            self.assertTrue(
+                result["run_config"]["relational_memory_runtimes"]["uses_m0_payload"]
+            )
 
 
 def _timeline_doc() -> dict:

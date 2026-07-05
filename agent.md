@@ -2,7 +2,7 @@
 
 ## 当前记录：2026-06-17 AAAI 2027 正式版关键论文依据
 
-用户指定正式版 `/Users/tom/Library/Containers/com.tencent.xinWeChat/Data/Documents/xwechat_files/sun414776205_04e4/msg/file/2026-06/aaai2027(1).pdf` 替代此前 `/Users/tom/Desktop/aaai2027.pdf`，作为本项目后续执行的最高论文依据。当前 PDF 标题为：
+用户指定正式版 `docs/references/aaai2027_remem_re.pdf` 替代此前 `/Users/tom/Desktop/aaai2027.pdf`，作为本项目后续执行的最高论文依据。该 workspace 拷贝来自原始微信文件 `/Users/tom/Library/Containers/com.tencent.xinWeChat/Data/Documents/xwechat_files/sun414776205_04e4/msg/file/2026-06/aaai2027(1).pdf`。当前 PDF 标题为：
 
 > How Agents Remember the Relationship: Evaluating Relational Memory
 
@@ -378,6 +378,14 @@ HTML 第二节已经详细解释 `tau=(z,T,L,I,P)` 在当前系统中的应用�
 
 主实验采用同一 M0 普通长短期记忆底座：`M1/M2/M3` 不是独立系统，而是在同一个 M0 架构上追加不同粒度的 relational memory representation。这样实验问题是“普通 LD-Agent-style memory 是否足够；如果不够，关系记忆粒度逐步加深是否提升长期陪伴 ToM-like 表现”。
 
+关键组合原则：**不改变 M0 检索语义**。M0 必须保持论文中的 session/day 级 generic long-term memory baseline，不做 `event_line_id` 过滤、不做 persistent event identity resolution，也不根据关系层信息重排检索结果。M1/M2/M3 的改进只能发生在 M0 之上的关系记忆 overlay：最终 prompt 中关系层是当前 event-aware overlay，M0 是普通 session/day 背景；当 M0 普通背景与关系层对当前 probe 的解释冲突时，回答应优先依据关系层解释当前用户输入，M0 只作补充背景。这保证实验问题仍然是“在同一 M0 普通记忆底座上构建 M1-M3”，而不是把 M0 本身修成关系记忆系统。
+
+提示词加载原则：对话 Agent 在 `M1/M2/M3` 条件下加载记忆时，必须把当前 `M` 线关系记忆增强层作为主记忆，把 `M0` 基石记忆作为辅助背景。system prompt 必须在展示 memory payload 之前先声明：本轮主记忆是当前 `M` 线关系记忆增强层；M0 只是普通 session/day 背景；先用关系层判断当前用户输入绑定的事件线、关系期待、状态变化和回应边界；只有在关系层没有覆盖普通事实时才使用 M0；若二者冲突，不跟随 M0 背景。payload 文本也必须使用“主记忆：M1/M2/M3 关系记忆增强层”和“辅助背景：M0 基石记忆检索结果”这类标题，避免模型把 M0 当成主上下文。
+
+当前事件线锁定原则：对话 Agent 在 `M1/M2/M3` 条件下，如果当前用户输入明确点名某个主题、事件线或“这条线”，本轮必须只围绕该主题/事件线回答。历史短期上下文和 M0 普通背景中出现的其他事件线只能作为背景，不能替代当前用户点名的事件线；如有多个相邻事件线，先用当前用户输入中的显式主题锁定回答对象，不能为了延续记忆而切到其他事件线。
+
+这条提示词加载原则只适用于 `M1/M2/M3`。`M0` 一直是独立 baseline，不参加 M1/M2/M3 的 prompt/composition 改动：M0 condition 只能收到自己的 LD-Agent memory payload，不能出现“主记忆”“关系记忆增强层”“M0 只是背景”“不要跟随 M0 背景”等 M 线加载提示。
+
 ### 当前 M0 LD-Agent 实现边界
 
 当前正式 M0 使用本地 `LD-Agent memory-only adapter`，参考官方实现：
@@ -407,6 +415,8 @@ M0 的职责是提供普通 long-term personalized dialogue agent memory baselin
 
 M0 不能读取本实验人工整理的 relational memory、BEI、gold strategy、failure mode、judge 信息、probe type、event-line stage、M2/M3 detail anchors 或人工关系结论。M0 只能写普通事件摘要和普通 persona，例如“用户讨论过孩子入园适应相关压力”，不能写成“该事件体现了长期关系外溢模式”。
 
+M0 也不能为了提升 M1/M2/M3 分数而被改成 event-aware retrieval：不得使用 `event_line_id` 过滤 M0 short-term/session-summary hits，不得把 M0 session summaries 合并成事件轨迹，不得把关系层 overlay 回写进 M0。若 M0 generic session/day 背景出现跨事件串线，这是 M0 baseline 的可评估局限；修正应发生在 M1/M2/M3 prompt 组合和关系 overlay 优先级，而不是改变 M0 检索。
+
 Letta 已降级为 historical pilot：
 
 - archived implementation: `src/long_memory_test/legacy/letta_memory_legacy.py`
@@ -421,9 +431,9 @@ timeline / probe plan 决定 user_message
 同一个 user_message 发给 M0/M1/M2/M3
 ↓
 M0 读 LD-Agent memory runtime 检索出的 generic event/persona memory
-M1 读 M0 generic memory + 结论级关系记忆
-M2 读 M0 generic memory + M1 + 摘要级事件记忆
-M3 读 M0 generic memory + M1 + M2 + 细节级关系锚点
+M1 读 M0 generic memory + 结论级关系记忆；最终 prompt 中 M1 overlay 优先于 M0 背景
+M2 读 M0 generic memory + M1 + 摘要级事件记忆；最终 prompt 中 M2 overlay 优先于 M0 背景
+M3 读 M0 generic memory + M1 + M2 + 细节级关系锚点；最终 prompt 中 M3 overlay 优先于 M0 背景
 ↓
 每轮结束后，M0 runtime 追加 short-term session 并更新 persona traits；day/session boundary 时写入 long-term event memory
 ↓
@@ -441,6 +451,10 @@ M0 是 M1/M2/M3 的共同基石。后续任何关系型记忆实验必须先满�
 - `M0` 的 payload 不包含 `结论级关系记忆`、`摘要级事件记忆`、`细节级关系锚点`、BEI、gold strategy、failure mode、probe type 或人工事件阶段标签。
 - `M1/M2/M3` 必须读取同一份 M0 payload，再追加自己的关系型记忆文件；不能各自构造不同的普通记忆底座。
 - `M1/M2/M3` 的 searching/indexing 继承 M0：先使用 M0 的 LD-Agent generic event/persona search 输出，再叠加关系型 overlay。关系层不能单独实现另一套 generic search，也不能绕开 M0 的 storage backend / retrieval strategy。
+- `M1/M2/M3` 的 prompt 组合必须显式声明 overlay precedence：关系层是当前 event-aware overlay 和主记忆，M0 是普通 session/day 辅助背景；加载顺序必须是 M 线关系层在前、M0 背景在后；冲突时以关系层解释当前 probe，M0 背景只作补充。
+- `M1/M2/M3` 的 prompt 组合必须显式声明 current-event lock：当前用户点名主题/事件线时，只回答该主题/事件线；历史短期上下文和 M0 背景里的其他事件线不得抢占当前回答焦点。
+- `M0` condition 不参加上述 prompt/composition 改动；M1/M2/M3 的加载提示词不得进入 M0 prompt。
+- `M0` 的 `m0_event_line_filtering` 必须保持 `False`；任何试图用 `event_line_id` 修正 M0 检索命中的改动都违反正式 M0 baseline。
 - `M0` 的 summary/persona writer、retrieval strategy、storage backend、LD reference、是否使用 ChromaDB/spaCy/generator/checkpoint 必须写入 run config 或 snapshot，保证实验可审计。
 
 当前自动化保护：`tests/test_ld_agent_memory_runtime.py` 覆盖 M0 写入、检索、snapshot 恢复、LLM summary/persona、ChromaDB optional backend 和关系层隔离；`tests/test_docx_route_pipeline.py` 覆盖 M1/M2/M3 叠加同一份 M0 base memory，并检查 `memory_composition` / `search_indexing_policy` 必须是 `M0_search_output_plus_relational_overlay`。
@@ -500,7 +514,7 @@ M0 是 M1/M2/M3 的共同基石。后续任何关系型记忆实验必须先满�
 
 当前工程中的模型和提示词链路：
 
-- 四条件回答生成使用 `src/long_memory_test/llm.py:create_llm_client()`，从 `.env.local` 读取 `LLM_PROVIDER`、base URL 和 model。默认支持 `poixe/gpt-5.2` 与 `deepseek/deepseek-v4-pro`。
+- 四条件回答生成使用 `src/long_memory_test/llm.py:create_llm_client()`，从 `.env.local` 读取 `LLM_PROVIDER`、base URL 和 model。默认 provider 是 `deepseek/deepseek-v4-pro`，仍支持显式切换到 `poixe/gpt-5.2`。
 - 回答生成统一经过 `scripts/run_dialogue_conditions.py:_build_condition_system_prompt()`。prompt 外壳固定为：长期陪伴型 Agent、不要暴露实验、不要编造未提供事实、不要机械背历史、记忆不足时区分已知和推测；然后插入 `memory_payload["memory_context"]`。
 - M0 session summary writer 走 `LDAgentMemoryRuntime._context_summarize()`，使用 LD-style EventSummary prompt；失败时使用 `_fallback_session_summary()`。
 - M0 persona trait writer 走 `LDAgentMemoryRuntime._extract_persona_trait()`，使用 LD-style PersonaExtraction prompt；失败时使用 `_fallback_persona_trait()`；输出通过 `_is_valid_trait()` 过滤。
@@ -846,12 +860,12 @@ DEEPSEEK_API_KEY=your-deepseek-api-key-here
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-v4-pro
 
-LLM_PROVIDER=poixe
+LLM_PROVIDER=deepseek
 ```
 
-共享模型客户端位于 `src/long_memory_test/llm.py`。A 后续做自然语言润色、B 后续做记忆判断时，都应从该模块读取统一配置，避免散落多个 API key 和 base URL。当前 `LLM_PROVIDER` 支持 `poixe` 和 `deepseek`。
+共享模型客户端位于 `src/long_memory_test/llm.py`。A 后续做自然语言润色、B 后续做记忆判断时，都应从该模块读取统一配置，避免散落多个 API key 和 base URL。当前默认 `LLM_PROVIDER=deepseek`，也支持显式切换到 `poixe`。
 
-Poixe smoke test 位于 `scripts/poixe_smoke_test.py`，用于验证本地 key、base URL 和模型名是否可用。
+LLM smoke test 位于 `scripts/poixe_smoke_test.py`，按当前 `LLM_PROVIDER` 验证本地 key、base URL 和模型名是否可用。文件名沿用早期 Poixe 配置阶段的历史名称。
 
 Letta 相关代码只作为历史 pilot 保留：
 
@@ -984,7 +998,7 @@ python3 scripts/generate_p3_daily_interaction_report_html.py
 
 第 3 节 `Timeline：T/L 的结构` 已从结果展示改为设计说明：
 
-- 说明最高论文来源是 `/Users/tom/Library/Containers/com.tencent.xinWeChat/Data/Documents/xwechat_files/sun414776205_04e4/msg/file/2026-06/aaai2027(1).pdf`，即 ReMem-RE 的 `tau=(z,T,L,I,P)` 受控长期互动轨迹框架。
+- 说明最高论文来源是 `docs/references/aaai2027_remem_re.pdf`，即 ReMem-RE 的 `tau=(z,T,L,I,P)` 受控长期互动轨迹框架。
 - 明确正式版论文提供的是 `T=accepted event categories`、`L=recurring event lines`、长期关系期待形成/延迟/评测的研究口径。
 - 明确 docx/config 提供的是第一阶段规模和验收约束；当前高密度配置为 5 人、30 天、每人 88 active sessions、每条 event line 6-14 次、每日事件数 median=3。
 - 明确当前工程实现来自 `src/long_memory_test/sampling/timeline_constructor.py`：occurrence round、固定每日事件数打包、同日最多 5 条事件、并行事件日、固定随机种子等不是论文原生概念。
@@ -1078,9 +1092,9 @@ python3 scripts/run_p4_tau_contract_construction.py
 
 用户提供正式版论文：
 
-- `/Users/tom/Library/Containers/com.tencent.xinWeChat/Data/Documents/xwechat_files/sun414776205_04e4/msg/file/2026-06/aaai2027(1).pdf`
+- `docs/references/aaai2027_remem_re.pdf`
 
-该文件已替代此前 `/Users/tom/Desktop/aaai2027.pdf`，作为当前项目最高论文依据。
+该文件已替代此前 `/Users/tom/Desktop/aaai2027.pdf`，作为当前项目最高论文依据；workspace 拷贝来自原始微信文件 `/Users/tom/Library/Containers/com.tencent.xinWeChat/Data/Documents/xwechat_files/sun414776205_04e4/msg/file/2026-06/aaai2027(1).pdf`。
 
 正式版关键差异已同步：
 
@@ -1646,3 +1660,47 @@ python3 scripts/generate_demo5_persona_daily_timeline_html.py
 1. 定义 M0/M1/M2/M3 的实验输入 payload：每个 condition 接收相同 I/P/T/L/z 绑定，但 memory 可见范围不同。
 2. 构建 Probe evaluator：读取 agent 回答、对应 `ground_truth`、`reference_answer_zh`、`failure_modes`，输出 0/1/2 分和扣分理由。
 3. 跑 5 人 demo 的小规模端到端对比：先抽 10-20 个 Probe 验证评分稳定性，再扩到 127 个 Probe。
+
+## 当前记录：2026-07-05 two-person M0-M3 current-event lock 里程碑
+
+本轮结果作为当前 M0/M1/M2/M3 对照实验的里程碑版本。核心结论：在不改变 M0 baseline 的前提下，仅修正 M1/M2/M3 的关系层 prompt 组合和当前事件线锁定后，DeepSeek LLM-as-judge 结果呈现预期阶梯：`M0 < M1 < M2 < M3`。
+
+本轮关键修正过程：
+
+- 坚持 `M0` 是独立 baseline：M0 仍为 LD-Agent-compatible memory-only / session-day 级 generic long-term memory baseline，不增加 event-line filtering，不读取 relational overlay，不接收 M1/M2/M3 的 prompt/composition 提示。
+- 修正 `M1/M2/M3` 的 prompt 优先级：system prompt 与 payload 均明确“关系层是当前 event-aware overlay / 主记忆，M0 只是普通 session/day 背景”；当 M0 背景与关系层对当前 probe 的解释冲突时，M1/M2/M3 以关系层解释当前用户输入。
+- 增加 `current-event lock`：当前用户点名主题、事件线或“这条线”时，M1/M2/M3 只能围绕当前点名事件线回答；历史短期上下文和 M0 普通背景里的其他事件线不能抢占当前回答焦点。
+- 报告中增加 M1/M2/M3 prompt reference：包含 system prompt template、relational payload template 和当前 run 的示例 prompt，便于审计关系层加载方式。
+- DeepSeek 作为默认真实网络评测 API 使用；生成与评测均使用当前 DeepSeek 配置。
+
+本轮生成 run：
+
+- Run dir：`long_memory_experiment/outputs/run_20260704_two_person_m0_m3_current_event_lock_generation`
+- 输入：`P0001,P0002` 两人完整 30 天链路。
+- 生成范围：`228/228` turns 完成，`M0/M1/M2/M3` 四条件均生成。
+- Probe：`52` 个 targeted probe turns。
+- LLM judge cases：`52 probes x 4 conditions = 208`，全部有效，`invalid_judge=0`。
+
+DeepSeek LLM-as-judge 主结果：
+
+| Condition | Average ToM score | Valid judge | Human review | Flags |
+|---|---:|---:|---:|---:|
+| `M0` | `60.02` | `52` | `17` | `52` |
+| `M1` | `76.76` | `52` | `8` | `20` |
+| `M2` | `79.97` | `52` | `4` | `10` |
+| `M3` | `87.66` | `52` | `0` | `0` |
+
+正式结论口径：
+
+- 以 `llm_judge_scores_two_person.json` / `llm_judge_scores_two_person.md` 为主评测依据。
+- `automatic_scores_two_person.json` 只作为 rule-based triage / 诊断层，不作为最终质量排序依据。
+- 当前结果说明：普通 M0 generic memory 可以提供基础连续性，但在跨事件线、关系期待、状态变化和细节边界方面不足；M1/M2/M3 的累计关系记忆层级带来显著提升，其中 M3 细节锚点层当前表现最稳定。
+
+当前报告入口：
+
+- HTML：`docs/two_person_m0_m3_probe_evaluation_report.html`
+- Markdown：`long_memory_experiment/outputs/run_20260704_two_person_m0_m3_current_event_lock_generation/two_person_m0_m3_evaluation_report.md`
+- LLM judge JSON：`long_memory_experiment/outputs/run_20260704_two_person_m0_m3_current_event_lock_generation/llm_judge_scores_two_person.json`
+- 规则诊断 JSON：`long_memory_experiment/outputs/run_20260704_two_person_m0_m3_current_event_lock_generation/automatic_scores_two_person.json`
+
+旧的同类 report 产物可清理；不要删除旧 run 的原始 `responses_by_condition.json` / `conversation_log.json`，除非明确要释放磁盘空间并已确认不再需要复核。

@@ -15,21 +15,29 @@ class MemoryRecord:
     timestamp: str = ""
     importance: int = 3
     topic: str = ""
+    domains: list[str] = field(default_factory=list)
+    available_from_session: str = ""
     created_day: int = 0
     updated_day: int = 0
     ld_agent_metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        topics = [item for item in self.topic.split(",") if item]
         return {
             "memory_id": self.memory_id,
             "memory_type": self.memory_type,
             "summary": self.summary,
             "raw_dialogue": self.raw_dialogue,
             "source_session": self.source_session,
+            "source_session_id": self.source_session,
             "source_turn_ids": list(self.source_turn_ids),
             "timestamp": self.timestamp,
             "importance": self.importance,
             "topic": self.topic,
+            "topics": topics,
+            "domains": list(self.domains),
+            "created_at": self.created_day,
+            "available_from_session": self.available_from_session,
             "created_day": self.created_day,
             "updated_day": self.updated_day,
             "ld_agent_metadata": dict(self.ld_agent_metadata),
@@ -37,16 +45,21 @@ class MemoryRecord:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "MemoryRecord":
+        topic = str(data.get("topic", ""))
+        if not topic and isinstance(data.get("topics"), list):
+            topic = ",".join(str(item) for item in data.get("topics", []) if item)
         return cls(
             memory_id=str(data.get("memory_id", "")),
             memory_type=str(data.get("memory_type", "")),
             summary=str(data.get("summary", "")),
             raw_dialogue=str(data.get("raw_dialogue", "")),
-            source_session=str(data.get("source_session", "")),
+            source_session=str(data.get("source_session") or data.get("source_session_id", "")),
             source_turn_ids=[str(item) for item in data.get("source_turn_ids", [])],
             timestamp=str(data.get("timestamp", "")),
             importance=int(data.get("importance", 3) or 3),
-            topic=str(data.get("topic", "")),
+            topic=topic,
+            domains=[str(item) for item in data.get("domains", [])],
+            available_from_session=str(data.get("available_from_session", "")),
             created_day=int(data.get("created_day", 0) or 0),
             updated_day=int(data.get("updated_day", 0) or 0),
             ld_agent_metadata=dict(data.get("ld_agent_metadata", {}) or {}),

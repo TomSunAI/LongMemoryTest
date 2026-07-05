@@ -143,7 +143,7 @@ DEEPSEEK_API_KEY=your-deepseek-api-key-here
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-v4-pro
 
-LLM_PROVIDER=poixe
+LLM_PROVIDER=deepseek
 ```
 
 `.env.local` 已加入 `.gitignore`，不要提交真实 key。
@@ -152,18 +152,22 @@ LLM_PROVIDER=poixe
 
 ```bash
 .venv/bin/pip install openai
-python3 scripts/poixe_smoke_test.py
+PYTHONPATH=src .venv/bin/python scripts/poixe_smoke_test.py
 ```
 
-共享客户端位于 `src/long_memory_test/llm.py`。后续 A 的文本润色、运行时记忆写入和对话实验都应通过这个入口读取模型配置。
-
-切换到 DeepSeek 时，将本地 `.env.local` 中的 `LLM_PROVIDER` 改为：
+共享客户端位于 `src/long_memory_test/llm.py`。后续 A 的文本润色、运行时记忆写入和对话实验都应通过这个入口读取模型配置。当前默认 provider 是 DeepSeek：
 
 ```bash
 LLM_PROVIDER=deepseek
 ```
 
 DeepSeek 官方 API 使用 OpenAI-compatible 格式，默认 base URL 为 `https://api.deepseek.com`。当前默认模型使用 `deepseek-v4-pro`，也就是官方价格表里当前价格更高的 DeepSeek 模型。
+
+如需临时切换到 Poixe，将本地 `.env.local` 中的 `LLM_PROVIDER` 改为：
+
+```bash
+LLM_PROVIDER=poixe
+```
 
 早期 Letta pilot 代码已归档到 `src/long_memory_test/legacy/letta_memory_legacy.py`，不参与正式实验。
 

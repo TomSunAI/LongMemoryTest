@@ -8,6 +8,17 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from _mac_awake import (
+    DEFAULT_CAFFEINATE_FLAGS,
+    mark_caffeinate_disabled,
+    maybe_reexec_under_awake_guard,
+    parse_caffeinate_flags,
+)
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src"
@@ -112,14 +123,41 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-report", action="store_true")
     parser.add_argument("--print-mode", choices=["summary", "all"], default="summary")
     parser.add_argument("--no-progress", action="store_true")
+    parser.add_argument(
+        "--no-caffeinate",
+        action="store_true",
+        help=(
+            "Disable the macOS caffeinate awake guard. By default long runs "
+            "prevent system sleep while allowing display sleep."
+        ),
+    )
+    parser.add_argument(
+        "--caffeinate-flags",
+        default=DEFAULT_CAFFEINATE_FLAGS,
+        help=(
+            "Flags passed to caffeinate on macOS. Default '-i -m -s' prevents "
+            "idle system sleep and disk sleep without preventing display sleep."
+        ),
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    caffeinate_flags = parse_caffeinate_flags(args.caffeinate_flags)
+    reexec_code = maybe_reexec_under_awake_guard(
+        sys.argv,
+        disabled=args.no_caffeinate,
+        flags=caffeinate_flags,
+    )
+    if reexec_code is not None:
+        return reexec_code
+
     run_dir = args.run_dir or _default_run_dir()
     env = dict(os.environ)
     env["PYTHONPATH"] = _pythonpath(env)
+    if args.no_caffeinate:
+        mark_caffeinate_disabled(env)
 
     if args.rebuild_data:
         _run_stage(

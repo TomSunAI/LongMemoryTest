@@ -12,6 +12,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from _mac_awake import (
+    DEFAULT_CAFFEINATE_FLAGS,
+    maybe_reexec_under_awake_guard,
+    parse_caffeinate_flags,
+)
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src"
@@ -20,6 +30,10 @@ if str(SRC_ROOT) not in sys.path:
 
 from long_memory_test.llm import create_llm_client  # noqa: E402
 from long_memory_test.memory import LDAgentMemoryRuntime, RelationalMemoryRuntime  # noqa: E402
+from long_memory_test.evaluation.generation_prompt_reference import (  # noqa: E402
+    build_answer_condition_system_prompt,
+    build_relational_payload_context,
+)
 from long_memory_test.experiment_cache import (  # noqa: E402
     CACHE_MEMORY_CONDITIONS_PATH,
     DAILY_SCENE_CARDS_PATH,
@@ -131,6 +145,22 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--print-progress", action="store_true")
     parser.add_argument("--print-mode", choices=["summary", "all"], default="summary")
+    parser.add_argument(
+        "--no-caffeinate",
+        action="store_true",
+        help=(
+            "Disable the macOS caffeinate awake guard. By default long runs "
+            "prevent system sleep while allowing display sleep."
+        ),
+    )
+    parser.add_argument(
+        "--caffeinate-flags",
+        default=DEFAULT_CAFFEINATE_FLAGS,
+        help=(
+            "Flags passed to caffeinate on macOS. Default '-i -m -s' prevents "
+            "idle system sleep and disk sleep without preventing display sleep."
+        ),
+    )
     args = parser.parse_args()
     if args.no_probe_questions:
         args.probe_questions = None
@@ -145,6 +175,15 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    caffeinate_flags = parse_caffeinate_flags(args.caffeinate_flags)
+    reexec_code = maybe_reexec_under_awake_guard(
+        sys.argv,
+        disabled=args.no_caffeinate,
+        flags=caffeinate_flags,
+    )
+    if reexec_code is not None:
+        return reexec_code
+
     messages_doc = _load_json(args.daily_messages)
     message_ids = legacy._resolve_message_ids(args, messages_doc["messages"])
     messages = [
@@ -226,6 +265,9 @@ def main() -> int:
         condition_ids=condition_ids,
         output_dir=args.output.parent,
         top_k=args.relational_memory_top_k,
+        llm_client=llm_client,
+        llm_model=llm_config.model,
+        llm_timeout=args.llm_timeout,
     )
     result["relational_memory_runtimes"] = _relational_runtime_snapshots(
         relational_memory_runtimes
@@ -594,7 +636,7 @@ def _run_condition_turn(
             "memory_payload_source": legacy._display_path(memory_conditions_path),
             "m0_memory_provider": "ld_agent_memory",
             "m0_ld_agent_reference": m0_ld_agent_payload.get("ld_agent_reference"),
-            "m1_m2_m3_share_m0_base_memory": False,
+            "m1_m2_m3_share_m0_base_memory": True,
             "payload_isolation": True,
             "relational_runtime_conditions": sorted(relational_memory_runtimes),
             "short_term_context_mode": SHORT_TERM_CONTEXT_MODE,
@@ -659,21 +701,10 @@ def _build_condition_system_prompt(
     condition_spec: dict[str, Any],
     memory_payload: dict[str, Any],
 ) -> str:
-    common = [
-        "你是 A，一个拟人、自然、长期陪伴型对话 Agent。",
-        "你要回应当前用户输入，不要暴露实验设置。",
-        "不要编造用户没有说过或没有在可用记忆中提供的事实。",
-        "不要为了显得熟悉而机械背诵历史。",
-        "如果历史记忆不足以确定，就明确区分已知和推测。",
-        "回答要中文、自然、具体，优先给 1-3 个实在下一步，"
-        "不要写成报告。",
-    ]
-    condition_lines = [
-        "本轮你只能使用下面这段可用长期记忆载荷；不要猜测或使用未列出的历史：",
-        str(memory_payload.get("memory_context", "")),
-        "如果这段记忆不足以确定，就说明哪些是已知、哪些只是推测。",
-    ]
-    return "\n".join(common + condition_lines)
+    return build_answer_condition_system_prompt(
+        condition_id=condition_id,
+        memory_context=str(memory_payload.get("memory_context", "")),
+    )
 
 
 def _build_result(
@@ -805,7 +836,7 @@ def _write_run_config(
             "short_term_context_mode": SHORT_TERM_CONTEXT_MODE,
             "only_long_term_memory_condition_changes": True,
             "same_condition_parallelism_for_all_conditions": True,
-            "m1_m2_m3_share_m0_base_memory": False,
+            "m1_m2_m3_share_m0_base_memory": True,
             "condition_payloads_are_isolated": True,
             "m1_m2_m3_are_independent_memory_runtimes": True,
             "evaluation_metadata_visible_to_model": False,
@@ -848,11 +879,12 @@ def _write_run_config(
             "storage_root": legacy._display_path(path.parent / "memory_runtimes"),
             "namespace_policy": (
                 "M1/M2/M3 each read and write only their own condition namespace; "
-                "cumulative lower-level memories are copied inside the same condition namespace."
+                "cumulative lower-level memories are copied inside the same condition namespace. "
+                "The final prompt payload is composed with the same-turn M0 retrieved base."
             ),
-            "writeback_method": "deterministic_completed_turn_relational_memory",
+            "writeback_method": "llm_event_line_relational_memory_consolidation_with_deterministic_fallback",
             "probe_writeback": False,
-            "uses_m0_payload": False,
+            "uses_m0_payload": True,
             "uses_other_condition_payloads": False,
         },
         "m0_ld_agent_memory_baseline": {
@@ -874,10 +906,11 @@ def _write_run_config(
             "writeback_method": "ld_agent_session_summary_and_personas_traits",
             "payload_isolation": {
                 "M0": "runtime_ld_agent_session_summary_payload",
-                "M1": "independent_runtime_conclusion_memory",
-                "M2": "independent_runtime_conclusion_plus_event_summary_memory",
-                "M3": "independent_runtime_conclusion_plus_event_summary_plus_detail_anchor_memory",
-                "m1_m2_m3_share_m0_payload": False,
+                "M1": "runtime_ld_agent_session_summary_payload_plus_conclusion_overlay",
+                "M2": "runtime_ld_agent_session_summary_payload_plus_conclusion_and_event_summary_overlay",
+                "M3": "runtime_ld_agent_session_summary_payload_plus_conclusion_event_summary_and_detail_anchor_overlay",
+                "m1_m2_m3_share_m0_payload": True,
+                "m1_m2_m3_answer_writeback_isolated": True,
             },
             "long_term_memory_bank": [
                 "session_summary_memories",
@@ -966,6 +999,9 @@ def _build_relational_memory_runtimes(
     condition_ids: list[str],
     output_dir: Path,
     top_k: int,
+    llm_client: Any | None = None,
+    llm_model: str | None = None,
+    llm_timeout: float = 60.0,
 ) -> dict[str, RelationalMemoryRuntime]:
     snapshots = result.get("relational_memory_runtimes", {})
     runtimes: dict[str, RelationalMemoryRuntime] = {}
@@ -980,6 +1016,9 @@ def _build_relational_memory_runtimes(
                 condition_id=condition_id,
                 top_k=top_k,
                 storage_root=storage_root,
+                llm_client=llm_client,
+                llm_model=llm_model,
+                llm_timeout=llm_timeout,
             )
         else:
             runtimes[condition_id] = RelationalMemoryRuntime.from_completed_turns(
@@ -987,6 +1026,9 @@ def _build_relational_memory_runtimes(
                 condition_id=condition_id,
                 top_k=top_k,
                 storage_root=storage_root,
+                llm_client=llm_client,
+                llm_model=llm_model,
+                llm_timeout=llm_timeout,
             )
     return runtimes
 
@@ -1012,7 +1054,13 @@ def _runtime_payload_for_condition(
         return dict(m0_ld_agent_payload)
     runtime = relational_memory_runtimes.get(condition_id)
     if runtime is not None:
-        return runtime.retrieve_payload(message)
+        relational_overlay = runtime.retrieve_payload(message)
+        return _compose_relational_payload_with_m0_base(
+            condition_id=condition_id,
+            m0_ld_agent_payload=m0_ld_agent_payload,
+            relational_overlay=relational_overlay,
+            overlay_source="relational_memory_runtime",
+        )
     return _payload_for_condition(
         memory_conditions,
         condition_id,
@@ -1041,51 +1089,154 @@ def _payload_for_condition(
         if isinstance(per_message, dict) and condition_id in per_message:
             payload = dict(per_message[condition_id])
             payload.setdefault("condition_id", condition_id)
-            return _isolated_relational_payload(payload)
+            return _compose_relational_payload_with_m0_base(
+                condition_id=condition_id,
+                m0_ld_agent_payload=m0_ld_agent_payload,
+                relational_overlay=payload,
+                overlay_source="memory_conditions",
+            )
     default_payload = memory_conditions.get("default_payloads", {}).get(condition_id, {})
     payload = dict(default_payload)
     payload.setdefault("condition_id", condition_id)
-    return _isolated_relational_payload(payload)
+    return _compose_relational_payload_with_m0_base(
+        condition_id=condition_id,
+        m0_ld_agent_payload=m0_ld_agent_payload,
+        relational_overlay=payload,
+        overlay_source="memory_conditions_default",
+    )
 
 
-def _isolated_relational_payload(relational_payload: dict[str, Any]) -> dict[str, Any]:
-    payload = dict(relational_payload)
-    if payload.get("condition_id") not in {"M1", "M2", "M3"}:
-        return payload
-    condition_id = str(payload.get("condition_id"))
-    payload["memory_composition"] = {
-        "base_condition": None,
-        "base_provider": None,
-        "base_payload_required": False,
-        "base_payload_shared_by": [],
-        "overlay_condition": condition_id,
-        "overlay_source": "memory_conditions",
-        "composition_rule": "condition_isolated_relational_payload",
-    }
-    payload["search_indexing_policy"] = {
-        "uses_m0_search_indexing": False,
-        "m0_retrieval_strategy": None,
-        "m0_storage_backend": None,
-        "relational_layer_has_independent_generic_search": True,
-        "relational_layer_role": "condition_isolated_memory_payload",
+def _compose_relational_payload_with_m0_base(
+    *,
+    condition_id: str,
+    m0_ld_agent_payload: dict[str, Any],
+    relational_overlay: dict[str, Any],
+    overlay_source: str,
+) -> dict[str, Any]:
+    if condition_id not in {"M1", "M2", "M3"}:
+        return dict(relational_overlay)
+
+    overlay = dict(relational_overlay)
+    m0_base = dict(m0_ld_agent_payload)
+    m0_context = _sanitize_m0_base_context_for_relational_overlay(
+        str(m0_base.get("memory_context", ""))
+    ).strip()
+    overlay_context = str(overlay.get("memory_context", "")).strip()
+    if not m0_context:
+        m0_context = "- 当前 M0 runtime 没有检索到可用普通长期记忆。"
+    if not overlay_context:
+        overlay_context = "- 当前没有检索到可用关系记忆增强。"
+
+    payload = dict(overlay)
+    payload["condition_id"] = condition_id
+    payload["memory_provider"] = "m0_base_plus_relational_overlay"
+    payload["requires_runtime_letta"] = False
+    payload["requires_runtime_ld_agent_memory"] = True
+    payload["payload_role"] = "final_condition_payload"
+    payload["memory_context"] = build_relational_payload_context(
+        condition_id=condition_id,
+        overlay_context=overlay_context,
+        m0_context=m0_context,
+    )
+    payload["source_detail_ids"] = _unique_strings(
+        [
+            *[str(item) for item in m0_base.get("source_detail_ids", []) if item],
+            *[str(item) for item in overlay.get("source_detail_ids", []) if item],
+        ]
+    )
+    payload["m0_base_memory"] = {
+        "condition_id": "M0",
+        "memory_provider": m0_base.get("memory_provider"),
+        "runtime_id": m0_base.get("runtime_id"),
+        "memory_unit": m0_base.get("memory_unit"),
+        "storage_backend": m0_base.get("storage_backend"),
+        "source_detail_ids": list(m0_base.get("source_detail_ids", [])),
+        "memory_context": m0_context,
+        "retrieval": dict(m0_base.get("retrieval", {})),
     }
     payload["relational_overlay"] = {
         "condition_id": condition_id,
-        "source_detail_ids": list(payload.get("source_detail_ids", [])),
-        "memory_context": str(payload.get("memory_context", "")).strip(),
+        "memory_provider": overlay.get("memory_provider"),
+        "runtime_id": overlay.get("runtime_id"),
+        "enabled_memory_types": list(overlay.get("enabled_memory_types", [])),
+        "source_detail_ids": list(overlay.get("source_detail_ids", [])),
+        "memory_context": overlay_context,
+        "retrieval": dict(overlay.get("retrieval", {})),
+    }
+    payload["memory_composition"] = {
+        "base_condition": "M0",
+        "base_provider": m0_base.get("memory_provider"),
+        "base_payload_required": True,
+        "base_payload_shared_by": ["M1", "M2", "M3"],
+        "overlay_condition": condition_id,
+        "overlay_source": overlay_source,
+        "composition_rule": "m0_base_plus_condition_relational_overlay",
+        "condition_answer_isolation": (
+            "only the shared user turn is reused; condition assistant answers "
+            "do not feed other conditions"
+        ),
+        "m0_current_session_agent_answers_removed": True,
+        "m0_event_line_filtering": False,
+        "m0_base_role": "generic_session_day_background",
+        "relational_overlay_precedence": True,
+    }
+    m0_retrieval = m0_base.get("retrieval", {})
+    if not isinstance(m0_retrieval, dict):
+        m0_retrieval = {}
+    relational_retrieval = overlay.get("retrieval", {})
+    if not isinstance(relational_retrieval, dict):
+        relational_retrieval = {}
+    payload["search_indexing_policy"] = {
+        "uses_m0_search_indexing": True,
+        "m0_retrieval_strategy": m0_retrieval.get("strategy")
+        or m0_base.get("retrieval_strategy"),
+        "m0_storage_backend": m0_base.get("storage_backend"),
+        "relational_layer_has_independent_generic_search": False,
+        "relational_layer_role": "condition_specific_overlay_after_m0_retrieval",
+        "relational_retrieval_strategy": relational_retrieval.get("strategy"),
     }
     payload["retrieval"] = {
-        "strategy": "condition_isolated_static_relational_payload",
-        "relational_payload_source": "memory_conditions",
+        "strategy": "m0_retrieval_plus_relational_overlay",
+        "uses_m0_payload": True,
+        "uses_other_condition_payloads": False,
+        "m0_retrieval": m0_retrieval,
+        "relational_retrieval": relational_retrieval,
         "relational_overlay_condition": condition_id,
-        "uses_m0_payload": False,
+        "relational_payload_source": overlay_source,
     }
     return payload
 
 
+def _sanitize_m0_base_context_for_relational_overlay(memory_context: str) -> str:
+    """Prevent M1/M2/M3 from reading M0's current-session assistant answers."""
+    lines = []
+    for line in str(memory_context).splitlines():
+        for marker in (" | Assistant(M0):", " | Assistant:", " | Agent:"):
+            if line.lstrip().startswith(("- (line ", "   - (line ")) and marker in line:
+                line = line.split(marker, 1)[0]
+                break
+        lines.append(line)
+    return "\n".join(lines)
+
+
+def _unique_strings(items: list[str]) -> list[str]:
+    result: list[str] = []
+    seen: set[str] = set()
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        result.append(item)
+    return result
+
+
 def _load_memory_conditions(path: Path) -> dict[str, Any]:
     data = _load_json(path)
-    if data.get("schema_version") != "memory_conditions_v0.1_docx_route":
+    supported_schemas = {
+        "memory_conditions_v0.1_docx_route",
+        "memory_conditions_v0.2_tau_route",
+    }
+    if data.get("schema_version") not in supported_schemas:
         raise ValueError(f"Unsupported memory condition schema: {data.get('schema_version')}")
     return data
 

@@ -12,3 +12,30 @@ venv/
 dist/
 build/
 *.egg-info/
+
+# Experiment outputs and generated data
+long_memory_experiment/outputs/
+long_memory_experiment/cache/
+long_memory_experiment/data/generated/
+sample_output/
+
+# Generated reports
+docs/*.html
+docs/*.pdf
+docs/*.docx
+docs/*_report.md
+docs/*_summary.md
+
+# Test and run artifacts
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.hypothesis/
+junit.xml
+test-results/
+*.log
+*.pid
+*.pid.json
+supervisor_status.json
+background_supervisor.log

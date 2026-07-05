@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import json
 import unittest
+from unittest import mock
 
 from long_memory_test.evaluation.llm_tom_judge import (
+    LLMJudgeRequestError,
     build_judge_case,
     evaluate_tom_quality_with_llm_judge,
     normalize_judgement,
     parse_judge_output,
+    request_parseable_llm_judgement,
 )
 from long_memory_test.llm import LLMConfig
 
@@ -28,23 +31,26 @@ class _FakeCompletion:
 
 
 class _FakeCompletions:
-    def __init__(self, content: str) -> None:
+    def __init__(self, content: str, error: Exception | None = None) -> None:
         self.content = content
+        self.error = error
         self.requests = []
 
     def create(self, **kwargs):
         self.requests.append(kwargs)
+        if self.error is not None:
+            raise self.error
         return _FakeCompletion(self.content)
 
 
 class _FakeChat:
-    def __init__(self, content: str) -> None:
-        self.completions = _FakeCompletions(content)
+    def __init__(self, content: str, error: Exception | None = None) -> None:
+        self.completions = _FakeCompletions(content, error)
 
 
 class _FakeClient:
-    def __init__(self, content: str) -> None:
-        self.chat = _FakeChat(content)
+    def __init__(self, content: str, error: Exception | None = None) -> None:
+        self.chat = _FakeChat(content, error)
 
     def with_options(self, **kwargs):
         return self
@@ -186,8 +192,63 @@ class LlmTomJudgeTests(unittest.TestCase):
         )
 
         self.assertEqual(evaluation["summary"]["variants"]["M0"]["turn_count"], 1)
+        self.assertEqual(evaluation["summary"]["variants"]["M0"]["valid_judge_count"], 1)
+        self.assertEqual(evaluation["summary"]["variants"]["M0"]["invalid_judge_count"], 0)
         self.assertEqual(evaluation["summary"]["variants"]["M0"]["average_tom_score"], 100.0)
         self.assertEqual(evaluation["method"]["judge_model"], "deepseek-test")
+
+    def test_request_failure_raises_by_default(self) -> None:
+        with mock.patch("long_memory_test.evaluation.llm_tom_judge.time.sleep"):
+            with self.assertRaises(LLMJudgeRequestError) as raised:
+                request_parseable_llm_judgement(
+                    client=_FakeClient("", error=OSError("nodename nor servname provided")),
+                    llm_config=LLMConfig(
+                        provider="deepseek",
+                        api_key="test",
+                        base_url="https://example.test",
+                        model="deepseek-test",
+                    ),
+                    judge_case={"case_id": "D01_P001"},
+                    dimensions=["hidden_intent_recognition"],
+                    max_output_tokens=128,
+                    timeout_seconds=1.0,
+                )
+
+        self.assertEqual(raised.exception.diagnostic["classification"], "dns_resolution")
+
+    def test_partial_request_failure_is_invalid_not_averaged(self) -> None:
+        with mock.patch("long_memory_test.evaluation.llm_tom_judge.time.sleep"):
+            evaluation = evaluate_tom_quality_with_llm_judge(
+                conversation_log={
+                    "turns": [
+                        _turn(
+                            "D01_P001",
+                            "我有点怕你又开始给我标准答案了。",
+                            "我不会用标准答案，我们先拆事实。",
+                            {"tom_dimensions": ["hidden_intent_recognition"]},
+                        )
+                    ]
+                },
+                client=_FakeClient("", error=OSError("nodename nor servname provided")),
+                llm_config=LLMConfig(
+                    provider="deepseek",
+                    api_key="test",
+                    base_url="https://example.test",
+                    model="deepseek-test",
+                ),
+                limit=1,
+                allow_partial_failures=True,
+            )
+
+        variant = evaluation["summary"]["variants"]["M0"]
+        self.assertEqual(variant["turn_count"], 1)
+        self.assertEqual(variant["valid_judge_count"], 0)
+        self.assertEqual(variant["invalid_judge_count"], 1)
+        self.assertEqual(variant["judge_status_counts"], {"request_error": 1})
+        self.assertEqual(variant["average_tom_score"], 0.0)
+        result = evaluation["turns"][0]["variants"]["M0"]
+        self.assertFalse(result["is_valid_judge_result"])
+        self.assertEqual(result["judge_status"], "request_error")
 
 
 def _turn(

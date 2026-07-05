@@ -12,6 +12,18 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from _mac_awake import (
+    DEFAULT_CAFFEINATE_FLAGS,
+    awake_guard_metadata,
+    mark_caffeinate_disabled,
+    maybe_reexec_under_awake_guard,
+    parse_caffeinate_flags,
+)
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src"
@@ -59,16 +71,47 @@ def parse_args() -> tuple[argparse.Namespace, list[str]]:
         default=None,
         help="Status JSON path. Defaults to RUN_DIR/supervisor_status.json.",
     )
+    parser.add_argument(
+        "--no-caffeinate",
+        action="store_true",
+        help=(
+            "Disable the macOS caffeinate awake guard. By default the supervisor "
+            "prevents system sleep while allowing display sleep."
+        ),
+    )
+    parser.add_argument(
+        "--caffeinate-flags",
+        default=DEFAULT_CAFFEINATE_FLAGS,
+        help=(
+            "Flags passed to caffeinate on macOS. Default '-i -m -s' prevents "
+            "idle system sleep and disk sleep without preventing display sleep."
+        ),
+    )
     return parser.parse_known_args()
 
 
 def main() -> int:
     args, passthrough = parse_args()
+    caffeinate_flags = parse_caffeinate_flags(args.caffeinate_flags)
+    reexec_code = maybe_reexec_under_awake_guard(
+        sys.argv,
+        disabled=args.no_caffeinate,
+        flags=caffeinate_flags,
+    )
+    if reexec_code is not None:
+        return reexec_code
+
     run_dir = args.run_dir or _default_run_dir()
     run_dir.mkdir(parents=True, exist_ok=True)
     status_path = args.supervisor_status or run_dir / "supervisor_status.json"
     env = dict(os.environ)
     env["PYTHONPATH"] = _pythonpath(env)
+    if args.no_caffeinate:
+        mark_caffeinate_disabled(env)
+    awake_guard = awake_guard_metadata(
+        disabled=args.no_caffeinate,
+        flags=caffeinate_flags,
+    )
 
     attempt = 0
     while True:
@@ -92,6 +135,7 @@ def main() -> int:
                 "command_text": shlex.join(cmd),
                 "max_attempts": args.max_attempts,
                 "retry_sleep": args.retry_sleep,
+                "awake_guard": awake_guard,
             },
         )
         print(f"\n==> supervised attempt {attempt}", flush=True)
@@ -111,6 +155,7 @@ def main() -> int:
                     "return_code": return_code,
                     "command": cmd,
                     "command_text": shlex.join(cmd),
+                    "awake_guard": awake_guard,
                 },
             )
             print(f"\nSupervised full experiment complete: {run_dir}", flush=True)
@@ -131,6 +176,7 @@ def main() -> int:
                 "command_text": shlex.join(cmd),
                 "next_attempt_after_seconds": None if exhausted else args.retry_sleep,
                 "max_attempts": args.max_attempts,
+                "awake_guard": awake_guard,
             },
         )
         if exhausted:

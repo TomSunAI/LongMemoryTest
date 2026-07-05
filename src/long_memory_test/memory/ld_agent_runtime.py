@@ -25,17 +25,19 @@ SESSION_SUMMARY_MEMORY_TYPE = "session_summary_memory"
 PERSONA_MEMORY_TYPE = "persona_memory"
 
 LD_SESSION_SUMMARY_SYSTEM_PROMPT = (
-    "You are a long-term dialogue memory summarizer.\n"
-    "Summarize the completed dialogue session into one ordinary session-level memory.\n"
+    "You are a user-fact-only long-term dialogue memory summarizer.\n"
+    "Summarize the completed user turns into one ordinary session-level memory.\n"
     "Rules:\n"
-    "1. Summarize only what happened in this session.\n"
+    "1. Summarize only user-provided content from this session.\n"
     "2. Preserve the user's main topic, concern, preference, or task.\n"
-    "3. Do not infer persistent event objects.\n"
-    "4. Do not decide whether this session updates a previous event.\n"
-    "5. Do not create event trajectories.\n"
-    "6. Do not include shared handling strategies, relational anchors, or boundary-sensitive cues.\n"
-    "7. Do not use probe labels, gold response strategies, or evaluation annotations.\n"
-    "8. Output one concise summary."
+    "3. Do not treat assistant answers, suggestions, examples, or plans as user facts.\n"
+    "4. Do not infer persistent event objects.\n"
+    "5. Do not decide whether this session updates a previous event.\n"
+    "6. Do not create event trajectories.\n"
+    "7. Do not include shared handling strategies, relational anchors, "
+    "or boundary-sensitive cues.\n"
+    "8. Do not use probe labels, gold response strategies, or evaluation annotations.\n"
+    "9. Output one concise summary."
 )
 LD_PERSONA_SYSTEM_PROMPT = (
     "Extract only ordinary user persona, preference, or fact memories. "
@@ -462,10 +464,10 @@ class LDAgentMemoryRuntime:
         day: int,
         reason: str,
         next_day: int | None,
-    ) -> list[dict[str, Any]]:
-        merged_context = _build_raw_dialogue(self.short_term_session)
-        context_lines = [line for line in merged_context.splitlines() if line.strip()]
-        summary = self._context_summarize(merged_context, len(context_lines))
+        ) -> list[dict[str, Any]]:
+        user_memory_context = _build_user_memory_dialogue(self.short_term_session)
+        context_lines = [line for line in user_memory_context.splitlines() if line.strip()]
+        summary = self._context_summarize(user_memory_context, len(context_lines))
         topic_list = _ld_topic_tokens(_session_topic_text(self.short_term_session))
         topics = ",".join(topic_list)
         domains = _unique(
@@ -487,6 +489,19 @@ class LDAgentMemoryRuntime:
         metadata = {
             "memory_name": "event_memory",
             "implementation_unit": "session_summary",
+            "write_policy": "user_only_no_assistant_answer_writeback",
+            "assistant_answer_writeback": False,
+            "fact_layer_sources": [
+                "user_message",
+                "topic",
+                "domains",
+                "intent",
+                "memory_relevance",
+            ],
+            "answer_layer_policy": (
+                "assistant answers are excluded from M0 long-term memory summary, "
+                "raw_dialogue, topics, persona extraction, and retrieval indexing"
+            ),
             "idx": self._session_summary_memory_count(),
             "dialog": "",
             "time": _ld_time(day=day, idx=len(self.short_term_session)),
@@ -500,7 +515,7 @@ class LDAgentMemoryRuntime:
             memory_id=memory_id,
             memory_type=SESSION_SUMMARY_MEMORY_TYPE,
             summary=summary,
-            raw_dialogue=merged_context,
+            raw_dialogue=user_memory_context,
             source_session=session,
             source_turn_ids=source_turn_ids,
             timestamp=session,
@@ -748,11 +763,13 @@ class LDAgentMemoryRuntime:
         if not context.strip():
             return "NO_SUMMARY"
         user_prompt = (
-            "#Completed dialogue session#:\n"
+            "#Completed user turns for long-term memory#:\n"
             f"{context}\n\n"
-            "Output one concise ordinary session-level memory. Summarize only this session. "
-            "Do not infer persistent events, event updates, trajectories, relational anchors, "
-            "shared handling strategies, or evaluation labels.\nSUMMARY:"
+            "Output one concise ordinary session-level memory. Summarize only user-provided "
+            "content from this session. Assistant answers, suggestions, examples, and plans "
+            "are not user facts and must not be preserved as memory. Do not infer persistent "
+            "events, event updates, trajectories, relational anchors, shared handling "
+            "strategies, or evaluation labels.\nSUMMARY:"
         )
         fallback = _fallback_session_summary(context, length)
         return self._call_memory_llm(
@@ -828,14 +845,7 @@ class LDAgentMemoryRuntime:
 
     def _query_text(self, message: dict[str, Any]) -> str:
         recent = " ".join(
-            " ".join(
-                item
-                for item in [
-                    str(turn.get("user_message", "")),
-                    str(turn.get("m0_answer") or turn.get("assistant_answer", "")),
-                ]
-                if item
-            )
+            str(turn.get("user_message", ""))
             for turn in self.short_term_session[-self.short_term_k :]
         )
         return " ".join(
@@ -876,7 +886,6 @@ def _session_topic_text(turns: list[dict[str, Any]]) -> str:
         for item in [
             str(turn.get("topic", "")),
             str(turn.get("user_message", "")),
-            str(turn.get("m0_answer") or turn.get("assistant_answer", "")),
             " ".join(str(domain) for domain in turn.get("domains", []) if domain),
         ]
         if item
@@ -945,9 +954,6 @@ def _format_short_term_turn(turn: dict[str, Any]) -> str:
     user_message = str(turn.get("user_message", "")).strip()
     if user_message:
         parts.append(f"User: {user_message}")
-    m0_answer = str(turn.get("m0_answer") or turn.get("assistant_answer", "")).strip()
-    if m0_answer:
-        parts.append(f"Agent: {m0_answer}")
     return " | ".join(parts)
 
 
@@ -974,18 +980,12 @@ class _ChromaTopicEmbeddingFunction:
         return [_topic_embedding(text) for text in texts]
 
 
-def _build_raw_dialogue(turns: list[dict[str, Any]]) -> str:
+def _build_user_memory_dialogue(turns: list[dict[str, Any]]) -> str:
     lines = []
     line_no = 1
     for turn in turns:
         if turn.get("user_message"):
             lines.append(f"(line {line_no}) User: {turn.get('user_message')}")
-            line_no += 1
-        answer = turn.get("m0_answer") or turn.get("assistant_answer")
-        if answer:
-            lines.append(
-                f"(line {line_no}) Agent: {_truncate(str(answer), 240)}"
-            )
             line_no += 1
     return "\n".join(lines)
 
@@ -994,7 +994,7 @@ def _fallback_session_summary(context: str, length: int) -> str:
     clean = re.sub(r"\s+", " ", context).strip()
     if not clean:
         return "NO_SUMMARY"
-    return _truncate(f"Session summary from {length} line(s): {clean}", 220)
+    return _truncate(f"User-only session summary from {length} line(s): {clean}", 220)
 
 
 def _fallback_persona_trait(sentence: str) -> str:

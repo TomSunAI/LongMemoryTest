@@ -11,7 +11,12 @@ SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-from long_memory_test.evaluation.llm_tom_judge import evaluate_files_with_llm_judge  # noqa: E402
+from long_memory_test.evaluation.llm_tom_judge import (  # noqa: E402
+    LLMJudgeError,
+    evaluate_files_with_llm_judge,
+    preflight_llm_judge,
+    summarize_llm_diagnostic,
+)
 from long_memory_test.experiment_cache import latest_run_dir  # noqa: E402
 from long_memory_test.llm import create_llm_client, get_llm_config  # noqa: E402
 
@@ -100,6 +105,25 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Print one progress line before each judge case.",
     )
+    parser.add_argument(
+        "--judge-workers",
+        type=int,
+        default=1,
+        help="Number of parallel LLM judge requests. Use 1 for serial scoring.",
+    )
+    parser.add_argument(
+        "--skip-preflight",
+        action="store_true",
+        help="Skip the tiny API preflight request before scoring.",
+    )
+    parser.add_argument(
+        "--allow-partial-judge-failures",
+        action="store_true",
+        help=(
+            "Keep request/parse failures as invalid judge cases instead of failing "
+            "the run. Invalid cases are not included in score averages."
+        ),
+    )
     args = parser.parse_args()
     if args.conversation_log is None or args.output_json is None or args.output_md is None:
         run_dir = args.run_dir or latest_run_dir()
@@ -113,33 +137,58 @@ def main() -> int:
     args = parse_args()
     llm_config = get_llm_config(provider=args.provider)
     client, llm_config = create_llm_client(llm_config)
+    if not args.skip_preflight:
+        try:
+            preflight = preflight_llm_judge(
+                client=client,
+                llm_config=llm_config,
+                timeout_seconds=min(args.judge_timeout, 30.0),
+            )
+        except LLMJudgeError as exc:
+            print("LLM judge preflight failed.", file=sys.stderr)
+            print(summarize_llm_diagnostic(exc.diagnostic), file=sys.stderr)
+            return 1
+        print(
+            "LLM judge preflight ok: "
+            f"{preflight['provider']} {preflight['model']} @ {preflight['base_url']}",
+            flush=True,
+        )
     variants = (
         [item.strip() for item in args.variants.split(",") if item.strip()]
         if args.variants
         else None
     )
-    evaluation = evaluate_files_with_llm_judge(
-        conversation_log_path=args.conversation_log,
-        output_json_path=args.output_json,
-        output_markdown_path=args.output_md,
-        client=client,
-        llm_config=llm_config,
-        limit=args.limit,
-        message_id=args.message_id,
-        variants=variants,
-        context_turns=args.context_turns,
-        max_answer_chars=args.max_answer_chars,
-        max_context_answer_chars=args.max_context_answer_chars,
-        max_output_tokens=args.max_output_tokens,
-        timeout_seconds=args.judge_timeout,
-        print_progress=args.print_progress,
-    )
+    try:
+        evaluation = evaluate_files_with_llm_judge(
+            conversation_log_path=args.conversation_log,
+            output_json_path=args.output_json,
+            output_markdown_path=args.output_md,
+            client=client,
+            llm_config=llm_config,
+            limit=args.limit,
+            message_id=args.message_id,
+            variants=variants,
+            context_turns=args.context_turns,
+            max_answer_chars=args.max_answer_chars,
+            max_context_answer_chars=args.max_context_answer_chars,
+            max_output_tokens=args.max_output_tokens,
+            timeout_seconds=args.judge_timeout,
+            print_progress=args.print_progress,
+            judge_workers=args.judge_workers,
+            allow_partial_failures=args.allow_partial_judge_failures,
+        )
+    except LLMJudgeError as exc:
+        print("LLM judge failed; no score file was written.", file=sys.stderr)
+        print(summarize_llm_diagnostic(exc.diagnostic), file=sys.stderr)
+        return 1
     print("Wrote", args.output_json)
     print("Wrote", args.output_md)
     for variant_name, item in sorted(evaluation["summary"]["variants"].items()):
         print(
             f"{variant_name}: avg_tom_score={item['average_tom_score']} "
             f"probe_answers={item['turn_count']} "
+            f"valid_judge={item.get('valid_judge_count', item['turn_count'])} "
+            f"invalid_judge={item.get('invalid_judge_count', 0)} "
             f"avg_confidence={item['average_confidence']} "
             f"human_review={item['needs_human_review_count']} "
             f"flags={item['flag_count']}"

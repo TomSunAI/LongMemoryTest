@@ -15,7 +15,9 @@ from long_memory_test.llm import LLMConfigError, create_llm_client  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Smoke test the Poixe OpenAI-compatible API.")
+    parser = argparse.ArgumentParser(
+        description="Smoke test the configured OpenAI-compatible LLM API."
+    )
     parser.add_argument(
         "--prompt",
         default="用一句话说明你已连接成功。",

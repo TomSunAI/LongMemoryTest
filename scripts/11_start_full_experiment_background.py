@@ -11,6 +11,18 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from _mac_awake import (
+    DEFAULT_CAFFEINATE_FLAGS,
+    mark_caffeinate_disabled,
+    mark_caffeinated,
+    parse_caffeinate_flags,
+    wrap_command_for_awake,
+)
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RUN_ROOT = REPO_ROOT / "long_memory_experiment/outputs"
@@ -42,6 +54,22 @@ def parse_args() -> tuple[argparse.Namespace, list[str]]:
         default=None,
         help="PID metadata path. Defaults to RUN_DIR/background_supervisor.pid.json.",
     )
+    parser.add_argument(
+        "--no-caffeinate",
+        action="store_true",
+        help=(
+            "Disable the macOS caffeinate awake guard. By default the background "
+            "supervisor prevents system sleep while allowing display sleep."
+        ),
+    )
+    parser.add_argument(
+        "--caffeinate-flags",
+        default=DEFAULT_CAFFEINATE_FLAGS,
+        help=(
+            "Flags passed to caffeinate on macOS. Default '-i -m -s' prevents "
+            "idle system sleep and disk sleep without preventing display sleep."
+        ),
+    )
     return parser.parse_known_args()
 
 
@@ -51,18 +79,33 @@ def main() -> int:
     run_dir.mkdir(parents=True, exist_ok=True)
     log_file = args.log_file or run_dir / "background_supervisor.log"
     pid_file = args.pid_file or run_dir / "background_supervisor.pid.json"
+    supervisor_passthrough = list(passthrough)
+    if args.no_caffeinate:
+        supervisor_passthrough.append("--no-caffeinate")
+    elif args.caffeinate_flags != DEFAULT_CAFFEINATE_FLAGS:
+        supervisor_passthrough.extend(["--caffeinate-flags", args.caffeinate_flags])
     cmd = [
         sys.executable,
         "scripts/10_supervise_full_experiment.py",
         "--run-dir",
         str(run_dir),
-        *passthrough,
+        *supervisor_passthrough,
     ]
     env = dict(os.environ)
+    caffeinate_flags = parse_caffeinate_flags(args.caffeinate_flags)
+    if args.no_caffeinate:
+        mark_caffeinate_disabled(env)
+    launch_cmd, awake_guard = wrap_command_for_awake(
+        cmd,
+        disabled=args.no_caffeinate,
+        flags=caffeinate_flags,
+    )
+    if awake_guard["enabled"]:
+        mark_caffeinated(env)
     log_file.parent.mkdir(parents=True, exist_ok=True)
     log_handle = log_file.open("ab")
     process = subprocess.Popen(
-        cmd,
+        launch_cmd,
         cwd=REPO_ROOT,
         env=env,
         stdout=log_handle,
@@ -78,14 +121,26 @@ def main() -> int:
         "log_file": _display_path(log_file),
         "pid_file": _display_path(pid_file),
         "started_at": _now(),
-        "command": cmd,
-        "command_text": shlex.join(cmd),
+        "command": launch_cmd,
+        "command_text": shlex.join(launch_cmd),
+        "supervisor_command": cmd,
+        "supervisor_command_text": shlex.join(cmd),
+        "awake_guard": awake_guard,
     }
     _write_json(pid_file, pid_payload)
     print(f"Started background full experiment supervisor: pid={process.pid}")
     print(f"Run dir: {run_dir}")
     print(f"Log: {log_file}")
     print(f"PID file: {pid_file}")
+    print(
+        "Awake guard: "
+        + (
+            f"enabled via caffeinate {' '.join(caffeinate_flags)} "
+            "(display may sleep)"
+            if awake_guard["enabled"]
+            else f"not enabled ({awake_guard['reason']})"
+        )
+    )
     return 0
 
 

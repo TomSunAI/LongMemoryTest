@@ -29,7 +29,7 @@ class _FakeCompletions:
     def create(self, **kwargs):
         self.requests.append(kwargs)
         prompt = kwargs["messages"][-1]["content"]
-        if "#Completed dialogue session#" in prompt:
+        if "#Completed user turns for long-term memory#" in prompt:
             return _FakeCompletion(
                 "User sought practical planning around possible kindergarten instability."
             )
@@ -106,10 +106,20 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
         self.assertEqual(session_hit["memory_type"], "session_summary_memory")
         self.assertEqual(session_hit["source_session_id"], "D01")
         self.assertEqual(session_hit["available_from_session"], "D02")
-        self.assertIn("Agent: 先拆事实和下一步。", session_hit["raw_dialogue"])
+        self.assertIn(
+            "User: 我想要一个实在一点的处理思路",
+            session_hit["raw_dialogue"],
+        )
+        self.assertNotIn("Agent:", session_hit["raw_dialogue"])
+        self.assertNotIn("先拆事实和下一步。", session_hit["raw_dialogue"])
         self.assertIn("topics", session_hit)
         self.assertGreater(len(session_hit["topics"]), 0)
         self.assertEqual(session_hit["ld_agent_metadata"]["datatype"], "text")
+        self.assertFalse(session_hit["ld_agent_metadata"]["assistant_answer_writeback"])
+        self.assertEqual(
+            session_hit["ld_agent_metadata"]["write_policy"],
+            "user_only_no_assistant_answer_writeback",
+        )
         self.assertEqual(
             session_hit["ld_agent_metadata"]["implementation_unit"],
             "session_summary",
@@ -134,6 +144,52 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
         self.assertEqual(payload["retrieval"]["session_summary_memory_count"], 0)
         self.assertNotIn("gold_response_strategy", payload["memory_context"])
         self.assertNotIn("m2_event_continuity", payload["memory_context"])
+
+    def test_m0_user_only_memory_writeback_excludes_assistant_answer_terms(self) -> None:
+        runtime = LDAgentMemoryRuntime()
+        runtime.record_completed_turn(
+            message={
+                "message_id": "D01_M001",
+                "day": 1,
+                "topic": "学习新技能",
+                "user_message": (
+                    "学习新技能这条线里，我主要卡在每天练习时间太碎。"
+                ),
+            },
+            assistant_answer="你可以申请延期，把项目截止日期往后推。",
+            run_id="run-test",
+        )
+
+        same_day_payload = runtime.retrieve_payload(
+            {
+                "message_id": "D01_M002",
+                "day": 1,
+                "topic": "学习新技能",
+                "user_message": "我想继续聊这个练习安排。",
+            }
+        )
+
+        self.assertNotIn("申请延期", same_day_payload["retrieval"]["query_text"])
+        self.assertNotIn("项目截止日期", same_day_payload["retrieval"]["query_text"])
+        self.assertNotIn("申请延期", same_day_payload["memory_context"])
+        self.assertIn("每天练习时间太碎", same_day_payload["memory_context"])
+
+        next_day_payload = runtime.retrieve_payload(
+            {
+                "message_id": "D02_M001",
+                "day": 2,
+                "topic": "学习新技能",
+                "user_message": "昨天那个练习安排我还没想明白。",
+            }
+        )
+        session_hit = next_day_payload["retrieval"]["session_hits"][0]["memory"]
+
+        self.assertIn("每天练习时间太碎", session_hit["summary"])
+        self.assertNotIn("申请延期", session_hit["summary"])
+        self.assertNotIn("项目截止日期", session_hit["raw_dialogue"])
+        self.assertNotIn("申请延期", session_hit["topic"])
+        self.assertNotIn("项目截止日期", session_hit["ld_agent_metadata"]["topics"])
+        self.assertFalse(session_hit["ld_agent_metadata"]["assistant_answer_writeback"])
 
     def test_probe_turn_is_read_only_for_writeback(self) -> None:
         runtime = LDAgentMemoryRuntime()
@@ -196,6 +252,15 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
         )
         self.assertGreaterEqual(len(client.chat.completions.requests), 2)
         self.assertEqual(snapshot["agent_traits"], [])
+        summary_prompts = [
+            request["messages"][-1]["content"]
+            for request in client.chat.completions.requests
+            if "#Completed user turns for long-term memory#"
+            in request["messages"][-1]["content"]
+        ]
+        self.assertEqual(len(summary_prompts), 1)
+        summary_prompt = summary_prompts[0]
+        self.assertNotIn("先拆事实和下一步。", summary_prompt)
 
     def test_snapshot_resume_preserves_ld_memory_without_replaying_turns(self) -> None:
         runtime = LDAgentMemoryRuntime()
@@ -271,6 +336,37 @@ class LDAgentMemoryRuntimeTests(unittest.TestCase):
         ]
         for term in forbidden_terms:
             self.assertNotIn(term, payload["memory_context"])
+
+    def test_m0_remains_session_level_without_event_line_filtering(self) -> None:
+        runtime = LDAgentMemoryRuntime()
+        runtime.record_completed_turn(
+            message={
+                "message_id": "D01_M001",
+                "day": 1,
+                "topic": "工作消息打断休息",
+                "user_message": "下班后工作消息一来，我就容易紧张。",
+                "tau": {"event_line_id": "L_work_boundary"},
+            },
+            assistant_answer="可以先写一个延迟回复模板。",
+            run_id="run-test",
+        )
+
+        payload = runtime.retrieve_payload(
+            {
+                "message_id": "D02_M001",
+                "day": 2,
+                "topic": "工作消息打断休息",
+                "user_message": "这个紧张感今天又来了。",
+                "tau": {"event_line_id": "L_other_line"},
+            }
+        )
+
+        self.assertEqual(payload["memory_unit"], "session")
+        self.assertEqual(payload["retrieval"]["strategy"], "topic_overlap_time_decay")
+        self.assertGreaterEqual(payload["retrieval"]["session_summary_memory_count"], 1)
+        self.assertIn("下班后工作消息", payload["memory_context"])
+        self.assertNotIn("L_work_boundary", payload["memory_context"])
+        self.assertNotIn("L_other_line", payload["memory_context"])
 
     def test_chroma_backend_stores_session_summary_and_retrieves_candidates(self) -> None:
         fake_chroma_client = _FakeChromaClient()

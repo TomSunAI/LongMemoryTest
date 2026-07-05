@@ -1,7 +1,7 @@
 {
   "schema_version": "memory_conditions_v0.1_docx_route",
   "generation_mode": "deterministic_docx_m0_m1_m2_m3_memory_packages",
-  "description": "M0/M1/M2/M3 memory payloads for the docx route. M0 is a runtime LD-Agent memory-only baseline, not no-memory. M1/M2/M3 are relational memory enhancement conditions backed by independent runtime namespaces; M2 writes its own M1-level content, and M3 writes its own M1+M2-level content, but no condition shares another condition's runtime payload.",
+  "description": "M0/M1/M2/M3 memory payloads for the docx route. M0 is a runtime LD-Agent memory-only baseline, not no-memory. M1/M2/M3 final runtime payloads are composed as the same-turn M0 retrieved base + a condition-specific relational overlay. The relational overlay uses independent runtime namespaces; M2 writes its own M1-level content, and M3 writes its own M1+M2-level content, but no condition reads another condition's answers or relational namespace.",
   "tau_contract": {
     "available": true,
     "schema_version": "tau_construction_contract_v1",
@@ -45,9 +45,10 @@
     {
       "condition_id": "M1",
       "name": "Conclusion-level Relational Memory",
-      "definition": "相对 M0 的结论级关系记忆增强条件；使用独立 runtime namespace，不读取 M0 或其他条件的 payload，只保存重要结论、稳定偏好、回应风格、关系期待、关键判断和不要做什么。",
+      "definition": "M0 普通长期记忆底座 + 结论级关系记忆增强条件；关系记忆使用独立 runtime namespace，最终 payload 与同轮 M0 检索结果组合，不读取其他关系条件的 payload，只保存重要结论、稳定偏好、回应风格、关系期待、关键判断和不要做什么。",
       "can_read": [
-        "condition_isolated_conclusion_memory",
+        "shared_m0_ld_agent_retrieved_payload",
+        "own_condition_conclusion_memory",
         "stable_preferences",
         "response_style",
         "relationship_expectation",
@@ -58,6 +59,9 @@
       "cannot_read": [
         "bei_annotations",
         "gold_response_strategy",
+        "probe_type",
+        "event_line_stage_labels",
+        "other_condition_payloads",
         "event_summary",
         "specific_dates",
         "specific_process",
@@ -70,10 +74,11 @@
     {
       "condition_id": "M2",
       "name": "Summary-level Relational Memory",
-      "definition": "相对 M0/M1 的摘要级关系记忆增强条件；使用独立 runtime namespace，不读取 M0/M1 的 payload，在自身 namespace 内保存结论级关系记忆和关键事件线、跨天主题进展、状态变化和处理结果摘要。",
+      "definition": "M0 普通长期记忆底座 + M1 结论级关系记忆 + 摘要级关系记忆增强条件；关系记忆使用独立 runtime namespace，最终 payload 与同轮 M0 检索结果组合，不读取其他关系条件的 payload。",
       "can_read": [
-        "condition_isolated_conclusion_memory",
-        "condition_isolated_event_line_summary_memory",
+        "shared_m0_ld_agent_retrieved_payload",
+        "own_condition_conclusion_memory",
+        "own_condition_event_line_summary_memory",
         "cross_day_progress",
         "state_change_summary",
         "outcome_summary"
@@ -81,6 +86,9 @@
       "cannot_read": [
         "bei_annotations",
         "gold_response_strategy",
+        "probe_type",
+        "event_line_stage_labels",
+        "other_condition_payloads",
         "raw_user_quotes",
         "detailed_scene",
         "shared_language",
@@ -93,11 +101,12 @@
     {
       "condition_id": "M3",
       "name": "Detail-level / Relational Anchor Memory",
-      "definition": "相对 M0/M1/M2 的细节级关系锚点增强条件；使用独立 runtime namespace，不读取其他条件的 payload，在自身 namespace 内保存结论级关系记忆、摘要级事件线记忆、必要细节、共同语言、边界说明和误用风险。",
+      "definition": "M0 普通长期记忆底座 + M1 结论级关系记忆 + M2 摘要级事件线记忆 + 细节级关系锚点增强条件；关系记忆使用独立 runtime namespace，最终 payload 与同轮 M0 检索结果组合，不读取其他关系条件的 payload。",
       "can_read": [
-        "condition_isolated_conclusion_memory",
-        "condition_isolated_event_line_summary_memory",
-        "condition_isolated_detail_anchor_memory",
+        "shared_m0_ld_agent_retrieved_payload",
+        "own_condition_conclusion_memory",
+        "own_condition_event_line_summary_memory",
+        "own_condition_detail_anchor_memory",
         "necessary_details",
         "specific_scenes",
         "shared_language",
@@ -109,6 +118,9 @@
       "cannot_read": [
         "bei_annotations",
         "gold_response_strategy",
+        "probe_type",
+        "event_line_stage_labels",
+        "other_condition_payloads",
         "full_raw_history",
         "unstored_or_fabricated_facts",
         "irrelevant_private_details"
@@ -127,9 +139,10 @@
     },
     "M1": {
       "condition_id": "M1",
-      "memory_provider": "condition_isolated_relational_memory",
+      "memory_provider": "m0_base_plus_relational_overlay",
       "requires_runtime_letta": false,
-      "requires_runtime_ld_agent_memory": false,
+      "requires_runtime_ld_agent_memory": true,
+      "payload_role": "relational_overlay",
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -138,9 +151,10 @@
     },
     "M2": {
       "condition_id": "M2",
-      "memory_provider": "condition_isolated_relational_memory",
+      "memory_provider": "m0_base_plus_relational_overlay",
       "requires_runtime_letta": false,
-      "requires_runtime_ld_agent_memory": false,
+      "requires_runtime_ld_agent_memory": true,
+      "payload_role": "relational_overlay",
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：当前没有与本轮输入绑定的具体事件摘要，只能使用普通主题连续性。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -149,9 +163,10 @@
     },
     "M3": {
       "condition_id": "M3",
-      "memory_provider": "condition_isolated_relational_memory",
+      "memory_provider": "m0_base_plus_relational_overlay",
       "requires_runtime_letta": false,
-      "requires_runtime_ld_agent_memory": false,
+      "requires_runtime_ld_agent_memory": true,
+      "payload_role": "relational_overlay",
       "memory_context": "结论级关系记忆：用户偏好直接、自然、少废话的回应；不喜欢客服式寒暄和空泛安慰。当用户焦虑或反复卡住时，更需要先拆事实、脑补风险、行动边界和下一步，而不是被泛泛安抚。用户期待 agent 像稳定熟悉的长期陪伴对象，熟悉但不过度亲密，必要时明确区分已知和推测。\n摘要级事件记忆：当前没有与本轮输入绑定的具体事件摘要。\n细节级关系锚点：只在服务当前判断时调用必要细节；不要机械背日志。",
       "source_detail_ids": [
         "m1_response_style_direct",
@@ -190,9 +205,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -220,9 +236,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -249,9 +266,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -310,9 +328,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -342,9 +361,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -373,9 +393,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -436,9 +457,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -468,9 +490,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -499,9 +522,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -562,9 +586,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -594,9 +619,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -625,9 +651,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -690,9 +717,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -724,9 +752,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -759,9 +788,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -832,9 +862,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -868,9 +899,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -905,9 +937,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -980,9 +1013,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1016,9 +1050,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1053,9 +1088,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1125,9 +1161,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1158,9 +1195,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1191,9 +1229,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1260,9 +1299,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1295,9 +1335,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1330,9 +1371,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1401,9 +1443,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1436,9 +1479,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1471,9 +1515,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1542,9 +1587,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1577,9 +1623,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1612,9 +1659,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1680,9 +1728,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1712,9 +1761,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1745,9 +1795,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1814,9 +1865,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1848,9 +1900,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1883,9 +1936,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1948,9 +2002,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -1976,9 +2031,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2004,9 +2060,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2069,9 +2126,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2105,9 +2163,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2142,9 +2201,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2219,9 +2279,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2257,9 +2318,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2296,9 +2358,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2375,9 +2438,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2413,9 +2477,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2452,9 +2517,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2531,9 +2597,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2569,9 +2636,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2608,9 +2676,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2687,9 +2756,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2725,9 +2795,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2764,9 +2835,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2835,9 +2907,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2865,9 +2938,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2896,9 +2970,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2955,9 +3030,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -2981,9 +3057,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3006,9 +3083,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3061,9 +3139,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3091,9 +3170,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3121,9 +3201,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3184,9 +3265,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3216,9 +3298,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3248,9 +3331,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3316,9 +3400,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3351,9 +3436,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3388,9 +3474,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3465,9 +3552,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3502,9 +3590,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3541,9 +3630,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3620,9 +3710,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3657,9 +3748,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3696,9 +3788,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3772,9 +3865,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3806,9 +3900,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3841,9 +3936,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3914,9 +4010,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3950,9 +4047,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -3987,9 +4085,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4062,9 +4161,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4098,9 +4198,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4135,9 +4236,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4206,9 +4308,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4238,9 +4341,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4272,9 +4376,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4344,9 +4449,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4379,9 +4485,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4416,9 +4523,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4493,9 +4601,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4530,9 +4639,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4569,9 +4679,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4648,9 +4759,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4685,9 +4797,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4724,9 +4837,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4798,9 +4912,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4830,9 +4945,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4864,9 +4980,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4933,9 +5050,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4965,9 +5083,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -4998,9 +5117,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5067,9 +5187,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5101,9 +5222,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5136,9 +5258,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5207,9 +5330,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5241,9 +5365,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5277,9 +5402,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5352,9 +5478,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5388,9 +5515,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5426,9 +5554,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5497,9 +5626,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5527,9 +5657,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5558,9 +5689,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5624,9 +5756,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5657,9 +5790,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5690,9 +5824,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5759,9 +5894,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5794,9 +5930,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5829,9 +5966,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5900,9 +6038,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5935,9 +6074,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -5970,9 +6110,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6041,9 +6182,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6076,9 +6218,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6111,9 +6254,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6182,9 +6326,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6217,9 +6362,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6252,9 +6398,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6320,9 +6467,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6352,9 +6500,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6385,9 +6534,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6454,9 +6604,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6488,9 +6639,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6523,9 +6675,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6595,9 +6748,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6630,9 +6784,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6667,9 +6822,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6744,9 +6900,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6781,9 +6938,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6820,9 +6978,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6899,9 +7058,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6936,9 +7096,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -6975,9 +7136,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7049,9 +7211,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7081,9 +7244,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7115,9 +7279,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7184,9 +7349,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7216,9 +7382,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7250,9 +7417,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7319,9 +7487,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7351,9 +7520,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7384,9 +7554,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7453,9 +7624,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7487,9 +7659,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7522,9 +7695,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7593,9 +7767,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7627,9 +7802,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7663,9 +7839,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7738,9 +7915,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7774,9 +7952,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7812,9 +7991,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7881,9 +8061,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7909,9 +8090,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7937,9 +8119,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -7998,9 +8181,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8030,9 +8214,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8064,9 +8249,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8135,9 +8321,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8169,9 +8356,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8205,9 +8393,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8280,9 +8469,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8316,9 +8506,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8354,9 +8545,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8425,9 +8617,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8455,9 +8648,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8485,9 +8679,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8548,9 +8743,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8580,9 +8776,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8612,9 +8809,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8676,9 +8874,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8707,9 +8906,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8738,9 +8938,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8803,9 +9004,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8836,9 +9038,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8869,9 +9072,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8936,9 +9140,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -8969,9 +9174,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -9002,9 +9208,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -9068,9 +9275,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -9100,9 +9308,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -9133,9 +9342,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -9202,9 +9412,10 @@
       },
       "M1": {
         "condition_id": "M1",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -9236,9 +9447,10 @@
       },
       "M2": {
         "condition_id": "M2",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -9271,9 +9483,10 @@
       },
       "M3": {
         "condition_id": "M3",
-        "memory_provider": "condition_isolated_relational_memory",
+        "memory_provider": "m0_base_plus_relational_overlay",
         "requires_runtime_letta": false,
-        "requires_runtime_ld_agent_memory": false,
+        "requires_runtime_ld_agent_memory": true,
+        "payload_role": "relational_overlay",
         "tau": {
           "schema_version": "tau_binding_v1",
           "persona_id": "user_001",
@@ -9321,7 +9534,7 @@
     "tau_bound_message_count": 66
   },
   "source_paths": {
-    "timeline_cache": "long_memory_experiment/cache/timeline_events.json",
+    "timeline": "long_memory_experiment/cache/timeline_events.json",
     "daily_messages": "long_memory_experiment/data/script/daily_user_message.json",
     "probe_questions": "long_memory_experiment/data/script/probe_question_plan.json",
     "bei_annotations": "long_memory_experiment/data/script/bei_annotations.json",

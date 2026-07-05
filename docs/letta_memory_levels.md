@@ -1,5 +1,9 @@
 # Letta Memory Level Design
 
+> Status: historical pilot document.
+>
+> 当前正式研究主线已经切换为 docx 路线：`M0 generic agent memory baseline` vs 累计式 `M1/M2/M3` 关系记忆层级。新的正式条件定义以 `docs/letta_current_memory_structure.md` 为准。本文保留用于复盘早期 `M0=no long-term memory` pilot，不再作为主实验定义。
+
 本文档定义 LongMemoryTest 中 M0/M1/M2/M3 四个记忆层级在 Letta 中的第一版实现方式。
 
 核心原则：实验比较的是同一个对话 Agent 在不同记忆权限下的表现差异。因此 A 的人格和回复能力应尽量一致，差异主要来自 B 给 A 暴露的 Letta 记忆范围。
@@ -22,7 +26,7 @@
 
 ### 目标
 
-作为无记忆基线组。M0 不应知道任何历史事件，也不应假装记得用户过去说过什么。
+作为无长期关系记忆基线组。M0 可以看到同一聊天窗口内的短期上下文，但不应知道跨 session 的长期历史事件，也不应假装记得未出现在当前窗口中的过去内容。
 
 ### Letta 设计
 
@@ -30,13 +34,14 @@ M0 不使用 Letta 长期记忆。
 
 可选实现方式：
 
-- 不创建 Letta agent，直接让 A 只看当前用户消息。
-- 或创建临时 agent，但不挂载任何用户 memory block，且不持久化对话。
+- 不创建 Letta agent，直接让 A 看当前用户消息和同一窗口内短期上下文。
+- 或创建临时 agent，但不挂载任何用户长期 memory block，且不持久化为跨 session 长期记忆。
 
 ### 可读取内容
 
 - 当前用户消息。
 - 当前系统提示。
+- 同一聊天窗口内的短期上下文。
 
 ### 禁止读取内容
 
@@ -44,7 +49,7 @@ M0 不使用 Letta 长期记忆。
 - `m2_shared_events`
 - `m3_event_details`
 - archival memory
-- 历史对话日志
+- 跨 session 历史对话日志
 
 ### 写入策略
 
@@ -53,6 +58,8 @@ M0 不使用 Letta 长期记忆。
 ### 合规表现
 
 当用户问“你还记得我最近一直在纠结什么吗？”时，M0 应承认不知道具体历史，并邀请用户补充背景。
+
+如果用户问的是同一聊天窗口内刚刚说过的内容，M0 可以基于短期上下文回应；这不算长期关系记忆。
 
 ## M1：结论级关系记忆
 
@@ -75,6 +82,7 @@ M0 不使用 Letta 长期记忆。
 ### 可读取内容
 
 - 当前用户消息。
+- 同一聊天窗口内的短期上下文。
 - `m1_relationship` block。
 
 ### 禁止读取内容
@@ -184,6 +192,13 @@ M3 写入要克制，避免把用户所有生活碎片都细节化。
 
 M3 最大风险是让用户感觉 Agent 像在翻日志。
 
+当前实验仍保留“细节”作为后续单独 memory audit 的候选，但不再把细节命中并入对话质量评分：
+
+- `user_actor.json` 中的 `stable_details_for_m1`：M1 可用的稳定关系细节。
+- `event_templates.json` 中的 `memory_detail_anchors`：M2/M3 可用的事件细节候选。
+- `daily_scene_cards.json` 中的 `memory_detail_expectations`：后续 memory audit 候选。
+- `conversation_log.json` 中的 `evaluation_targets.tom_quality`：当前对话质量只记录和评估 ToM 目标。
+
 禁止行为：
 
 - 机械复述日期、原话、过多细节。
@@ -221,7 +236,7 @@ B 每轮需要判断：
 ## 第一版实现顺序
 
 1. 已完成：Letta server 本地运行。
-2. 已完成：Poixe 作为 OpenAI-compatible provider 接入 Letta。
+2. 已完成：DeepSeek 作为 OpenAI-compatible provider 接入 Letta。
 3. 已完成：`letta_memory_smoke.py` 验证 B agent 可以创建并修改 `m2_shared_events`。
 4. 下一步：读取 `daily_user_message.json`，生成 `memory_actions.json`。
 5. 下一步：把 `memory_actions.json` 的 M1/M2/M3 动作写入 Letta blocks。
@@ -233,4 +248,3 @@ B 每轮需要判断：
 - 不让 A 直接写长期记忆。
 - 不在 M0 中加载 Letta 历史。
 - 不把所有事件细节都写入 M3。
-

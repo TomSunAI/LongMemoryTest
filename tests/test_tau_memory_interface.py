@@ -64,6 +64,46 @@ class TauMemoryInterfaceTests(unittest.TestCase):
         self.assertEqual(probe_payloads["M0"]["tau"]["event_line_id"], "L001")
         self.assertIn("L001:target_detail", probe_payloads["M3"]["source_detail_ids"])
 
+    def test_tau_memory_payload_prefers_zh_fields(self) -> None:
+        tau = _tau_contract()
+        tau["L"][0]["persistent_event_summary"] = "The child is adapting to kindergarten."
+        tau["L"][0]["persistent_event_summary_zh"] = ""
+        tau["L"][0]["relational_memory_targets"][0]["target"] = "Use concrete next steps."
+        tau["L"][0]["relational_memory_targets"][0]["target_zh"] = "使用具体下一步。"
+        tau["L"][0]["observed_stage_sequence"][0][
+            "assistant_memory_expectation"
+        ] = "Separate facts first."
+        tau["L"][0]["observed_stage_sequence"][0][
+            "assistant_memory_expectation_zh"
+        ] = "先拆事实。"
+        unit = tau["I"][0]
+        unit["scene_boundary"]["allowed_facts"][0]["text"] = "English fact."
+        unit["scene_boundary"]["allowed_facts"][0]["text_zh"] = "中文事实。"
+        unit["scene_boundary"]["allowed_facts"].append(
+            {
+                "fact_id": "P0001_D01_M001:event_summary",
+                "type": "event_summary",
+                "text": "English summary.",
+                "text_zh": "孩子正在适应幼儿园。",
+            }
+        )
+        unit["scene_boundary"]["latent_concerns"][0]["text"] = "English latent concern."
+        unit["scene_boundary"]["latent_concerns"][0]["text_zh"] = "中文隐含担心。"
+        unit["source_timeline_fields"]["prohibited_facts"] = ["Do not add names."]
+        unit["source_timeline_fields"]["prohibited_facts_zh"] = ["不能补充姓名。"]
+
+        memory_conditions = generate_memory_conditions_from_tau_contract(tau_contract=tau)
+        payloads = memory_conditions["memory_payloads_by_message_id"]["P0001_D02_P001"]
+
+        self.assertIn("使用具体下一步。", payloads["M1"]["memory_context"])
+        self.assertIn("孩子正在适应幼儿园。", payloads["M2"]["memory_context"])
+        self.assertIn("先拆事实。", payloads["M2"]["memory_context"])
+        self.assertIn("中文事实。", payloads["M3"]["memory_context"])
+        self.assertIn("中文隐含担心。", payloads["M3"]["memory_context"])
+        self.assertIn("不能补充姓名。", payloads["M3"]["memory_context"])
+        self.assertNotIn("Use concrete next steps.", payloads["M1"]["memory_context"])
+        self.assertNotIn("English fact.", payloads["M3"]["memory_context"])
+
     def test_tau_dialogue_adapter_preserves_i_unit_and_groups_probes(self) -> None:
         tau = _tau_contract()
         naturalized = {
