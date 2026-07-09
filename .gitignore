@@ -19,7 +19,8 @@ long_memory_experiment/cache/
 long_memory_experiment/data/generated/
 sample_output/
 
-# Generated reports
+# Generated reports and local paper drafts
+docs/
 docs/*.html
 docs/*.pdf
 docs/*.docx
