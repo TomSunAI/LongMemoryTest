@@ -1,5 +1,201 @@
 # LongMemoryTest Agent Notes
 
+## 当前规则：仓库清理与主干边界
+
+从 2026-07-09 起，仓库清理边界记录在 `docs/repository_cleanup_plan.md`。后续新增实验入口、报告生成器、临时脚本或历史迁移时，必须同步更新该文件，避免正式论文主线与早期 pilot/临时产物混在一起。
+
+当前默认主线：
+
+- 服务器一键实验入口：`scripts/23_run_server_experiment.py`
+- 生成/评测后台入口：`scripts/21_experiment_backend.py`
+- 最终实验报告归档：`docs/experiments/<experiment_id>/`
+- AAAI appendix 工作版：`docs/appendix/aaai_appendix/`
+- appendix 生成入口：`scripts/22_generate_appendix_html.py`
+- 50 人 candidate trajectory pool：`long_memory_experiment/data/generated/p0_persona_event_sampling_demo50_candidate/`
+- 历史文档归档：`docs/history/`
+
+清理原则：
+
+- `.DS_Store`、`__pycache__`、`.pytest_cache`、临时日志、PID 文件等机器产物可以直接清理，且不得进入 tracked trunk。
+- 早期 scene-card / sample_output / Letta pilot / first-generation report generator 只能按 `docs/repository_cleanup_plan.md` 标为 archived/transitional；如果仍被当前脚本或测试引用，不能直接删除。
+- `long_memory_experiment/outputs/` 是原始运行证据与断点恢复区，虽然不进入 Git，但正在审计或要复现实验时不能批量删除。
+- 历史已跟踪的生成产物如需退出 Git，优先使用 `git rm --cached` 取消跟踪；不要静默删除本地证据。
+- `docs/history/` 只作为历史档案和 provenance 保留；后续编程、报告生成、实验设计默认不得把该目录作为当前实现依据，除非用户明确要求查看历史材料。
+- 旧历史记录中如果仍提到 `docs/*.html`、`docs/*.pdf` 或早期 demo report 路径，统一按已迁入 `docs/history/` 理解；当前输出标准仍以 `docs/experiments/` 与 `docs/appendix/` 为准。
+
+## 当前规则：服务器一键实验入口
+
+从 2026-07-09 起，面向服务器的正式启动入口是 `scripts/23_run_server_experiment.py`。该入口负责把 50 人 candidate tau contract 按 persona 子集切成 run-private inputs，再调用 `scripts/21_experiment_backend.py`，因此服务器运行不依赖 Codex 手工拼命令。
+
+默认数据源：
+
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo50_candidate/`
+
+默认安全策略：
+
+- `--persona-count` 默认是 `2`，用于低成本 smoke test。
+- 完整 50 人实验必须显式传 `--persona-count 50`。
+- 也可以用 `--personas P0001,P0007,...` 精确指定人员子集；此参数优先于 `--persona-count`。
+- 每次 run 都会在 `long_memory_experiment/outputs/<run_dir>/inputs/` 下写入私有 `tau_contract.filtered.json`、`daily_messages.json`、`probe_questions.json`、`memory_conditions.json`，不污染全局 cache。
+- 服务器默认传 `--no-caffeinate`，不依赖 macOS awake guard。
+
+常用命令：
+
+```bash
+.venv/bin/python scripts/23_run_server_experiment.py prepare \
+  --persona-count 1 \
+  --conditions M0
+
+.venv/bin/python scripts/23_run_server_experiment.py start \
+  --persona-count 5 \
+  --conditions M0,U1,U2,U3 \
+  --experiment-name m0_u_smoke5
+
+.venv/bin/python scripts/23_run_server_experiment.py start \
+  --persona-count 50 \
+  --conditions M0,M1,M2,M3,Z1,Z2,Z3,U1,U2,U3 \
+  --experiment-name final50_all_conditions
+
+.venv/bin/python scripts/23_run_server_experiment.py status \
+  --run-dir long_memory_experiment/outputs/<run_dir>
+```
+
+## 当前规则：最终实验报告按实验归档到 docs/experiments
+
+从 2026-07-08 起，所有通过统一后台入口跑出的两人长期记忆实验，最终可读报告必须自动归档到仓库 `docs/experiments/<experiment_id>/` 目录。`long_memory_experiment/outputs/<run_dir>/` 仍保留原始运行产物、断点、日志、评测 JSON 和可恢复状态，但用户最终查看和横向对比时以 `docs/experiments/` 下的实验文件夹为准。
+
+统一目录规则：
+
+- 实验目录：`docs/experiments/two_person_<run_descriptor>_eval_report_<YYYYMMDD>/`
+- HTML 主报告：`two_person_<run_descriptor>_eval_report_<YYYYMMDD>.html`
+- Markdown 主报告：`two_person_<run_descriptor>_eval_report_<YYYYMMDD>.md`
+- LLM judge 摘要：`two_person_<run_descriptor>_eval_report_<YYYYMMDD>_llm_judge.md`
+- LLM judge JSON：`two_person_<run_descriptor>_eval_report_<YYYYMMDD>_llm_judge.json`
+- 自动诊断摘要：`two_person_<run_descriptor>_eval_report_<YYYYMMDD>_automatic_scores.md`
+- 自动诊断 JSON：`two_person_<run_descriptor>_eval_report_<YYYYMMDD>_automatic_scores.json`
+- 归档 manifest：`two_person_<run_descriptor>_eval_report_<YYYYMMDD>_manifest.json`
+- 文件说明：`two_person_<run_descriptor>_eval_report_<YYYYMMDD>_README.md`
+
+其中 `<run_descriptor>` 优先来自 run 目录名去掉 `run_<YYYYMMDD>_` 后的描述，例如 `run_20260707_two_person_m0_u1_u2_u3_m0_augmented_atomic` 会归档为：
+
+- `docs/experiments/two_person_m0_u1_u2_u3_m0_augmented_atomic_eval_report_20260707/two_person_m0_u1_u2_u3_m0_augmented_atomic_eval_report_20260707.html`
+- `docs/experiments/two_person_m0_u1_u2_u3_m0_augmented_atomic_eval_report_20260707/two_person_m0_u1_u2_u3_m0_augmented_atomic_eval_report_20260707.md`
+- `docs/experiments/two_person_m0_u1_u2_u3_m0_augmented_atomic_eval_report_20260707/two_person_m0_u1_u2_u3_m0_augmented_atomic_eval_report_20260707_llm_judge.md`
+
+执行规范：
+
+- 生成、评测、后处理仍走 `scripts/21_experiment_backend.py` 统一后台入口。
+- `scripts/18_run_two_person_postprocess_after_generation.py` 是最终报告发布点；它必须在评测完成后把 HTML/Markdown/LLM judge/automatic scores 复制到 `docs/experiments/<experiment_id>/`，并写出 run 目录内的 `final_report_manifest.json` 与 docs 实验目录内的 `manifest.json`。
+- 新增 M/Z/U 或其它 runtime 组合时，只能改变 runtime 条件和 run descriptor，不应绕过统一后端或把最终报告只留在 run 目录。
+
+## 当前规则：AAAI 附录框架 HTML 由统一脚本生成
+
+从 2026-07-09 起，AAAI appendix / supplementary material 的可读 HTML 框架由 `scripts/22_generate_appendix_html.py` 统一生成，不再手工拼一次性附录页面。该脚本用于把“具体实验 run + trajectory 数据源 + 本轮改动说明”整理成可审阅 HTML，并为最终 50 人完整实验预留同一套结构。
+
+默认输出规则：
+
+- 附录目录：`docs/appendix/aaai_appendix/`
+- HTML：`aaai_appendix.html`
+- Manifest：`aaai_appendix.manifest.json`
+- Dynamic translation cache：`aaai_appendix.translation_cache.json`
+- 默认不保留历史版本；重复运行 `scripts/22_generate_appendix_html.py` 必须直接覆盖上述固定文件。只有用户明确要求保留版本、快照或历史对照时，才允许通过 `--experiment-id <custom_id>` 生成新的 appendix 目录和 HTML。
+
+默认数据源：
+
+- canonical/pilot trajectory：`long_memory_experiment/data/generated/p0_persona_event_sampling_demo5/`
+- candidate trajectory pool：`long_memory_experiment/data/generated/p0_persona_event_sampling_demo50_candidate/`
+- raw persona pool：`long_memory_experiment/data/generated/p0_persona_event_sampling_100/`
+- pilot run summaries：当前 M-series、Z-series、U-series two-person generation/evaluation runs。
+
+使用规范：
+
+```bash
+.venv/bin/python scripts/22_generate_appendix_html.py \
+  --target-persona-count 50 \
+  --change-note "本页为当前 pilot/candidate 数据生成的 AAAI 附录框架；最终 50 人完整实验完成后替换 --data-dir 与 --run-dir。"
+```
+
+后续如果已经有 50 人完整数据或新的实验组合，必须通过参数显式传入：
+
+```bash
+.venv/bin/python scripts/22_generate_appendix_html.py \
+  --data-dir long_memory_experiment/data/generated/<final50_data_dir> \
+  --run-dir "M-series final=long_memory_experiment/outputs/<m_run>" \
+  --run-dir "Z-series final=long_memory_experiment/outputs/<z_run>" \
+  --run-dir "U-series final=long_memory_experiment/outputs/<u_run>" \
+  --change-note "说明本次相对上一版的 runtime、prompt、judge 或数据改动。"
+```
+
+双语生成规范：
+
+- 附录中关键描述必须中英文对照，包括页面标题/副标题、section heading、实验口径说明、trajectory 构造说明、rubric 说明、表格字段解释、flags/failure type 解释、extra results 说明。
+- 结构性文本由 `scripts/22_generate_appendix_html.py` 内置双语模板生成，不应只在 HTML 后处理阶段手工翻译。
+- 数据驱动的动态内容，如 change note、user message、memory payload excerpt、answer excerpt、probe example、expected recognition，可使用 `--translate-dynamic --translation-provider deepseek` 生成英文译文。
+- 动态译文默认缓存到 `docs/appendix/aaai_appendix/aaai_appendix.translation_cache.json`；如果用户明确要求快照并传入 `--experiment-id <custom_id>`，则缓存到 `docs/appendix/<custom_id>/<custom_id>.translation_cache.json`。manifest 中必须记录 `dynamic_translation_enabled`、provider、cache path 和 cache item count，方便复现与审计。
+- prompt 原文、代码抽取出的 rubric 原文和实验日志摘录默认保持真实源文本，不做改写；但其标题、来源说明和审计口径必须双语说明，避免翻译改变被审计对象。
+
+附录框架固定包含 6 个部分：
+
+- Complete memory condition example：同一 user/probe turn 下展示 M0/M1/M2/M3 的 memory payload 与回答摘录；可用 `--example-run-dir` 和 `--example-message-id` 指定代表样例。
+- Trajectory construction details：解释 persona、event categories/themes、event lines、30-day interaction units、opening/follow-up/probe、tau validation。
+- Probe examples：按 D1-D4 与 P1-P6/probe type 自动抽取样例。
+- Evaluation rubric：从 `llm_tom_judge.py` 抽取 diagnostic dimensions、0/1/2 标准、strict caps、flags 和 failure types。
+- Prompts：从正式代码源抽取 agent response prompt、M0 memory writing prompt、relational memory writing prompt、memory reading payload prompt、evaluator prompt。
+- Extra results：统一展示 per-condition、per-dimension、persona variance、low-score examples；当前可用 pilot 数字占位，最终 50 人 run 完成后自动刷新。
+
+Trajectory construction details 的展示粒度：
+
+- 必须按 `z / T / L / I / P` 层级写清楚，不只写抽象流程。
+- `z / personas` 默认全量列出当前 construction detail data dir 中的 persona inventory，包括 persona_id、source archetype、职业/生活阶段、生活域、沟通风格和 memory-relevant traits。
+- `T / accepted themes` 默认全量展示 domain/category 分布、unique event categories，以及每个 persona 的 accepted event IDs。
+- `L / event lines` 如果数量较大，不在主页面逐条展开全部事件线正文；必须给出全量 event_line_count、每人 event line count/IDs，并展开一条可追踪 sample event line 的完整 stage sequence。
+- `I / interaction units` 如果数量较大，不逐条展开全部 unit；必须给出全量 interaction_unit_count、每人 unit/probe 计数，并展开一个 sample interaction unit 的 scripted opening、follow-up budget、reveal rules 和 scene boundary allowed facts。
+- `P / probes` 必须给出全量 probe type / dimension 分布，并展开一个 sample probe 的 `insert_after_message_id`、`event_line_id`、read-only/writeback policy 和 ground truth 摘要。
+- 当默认 `--data-dir` 仍是 5 人 pilot，而 50 人 candidate pool 已存在时，section 2 的 construction detail data dir 使用 `p0_persona_event_sampling_demo50_candidate/`；如果后续传入 final 50 `--data-dir`，则以 final data dir 为准。
+
+当前评测维度口径：
+
+- 独立的“关系期待识别”不再作为 diagnostic dimension / ToM score dimension 使用。
+- 关系语气相关质量，如熟悉、直接、不过度表演、不过度亲密、不卡成客服语气，统一并入 `alienation_error_rate` 与 failure flags（尤其是 `alienation`、`asks_user_to_repeat_context`、`generic_comfort`）判断。
+- active diagnostic dimensions 固定为：`hidden_intent_recognition`、`emotional_state_recognition`、`shared_context_invocation`、`alienation_error_rate`、`natural_detail_use`、`memory_misuse`。
+- 旧 run 或旧 probe JSON 中如果仍带有历史维度字段，新的 judge/evaluator 入口必须过滤掉，不再送入评分；历史原始产物不回写修改。
+- prompt 或 memory schema 中仍可使用“关系期待”作为关系记忆内容描述，不等同于评测诊断维度。
+
+原则：
+
+- 附录 HTML 是“框架 + 当前数据填充”，不能把当前 2 人评测或 5/15 人数据误写成最终 50 人结果。
+- raw persona pool 只有 `sampled_personas.json` 时只能称为 sampling reserve，不能称为完整 trajectory experiment。
+- 附录中的 prompt、rubric、runtime condition inventory 必须从代码源生成或引用，避免报告和实现漂移。
+- 每次生成附录 HTML 时同步保留 manifest，方便追踪使用了哪些 run、data dir 和 change notes。
+- 附录不能放在 `docs/experiments/`；`docs/experiments/` 只保留生成/评测实验报告，AAAI appendix / supplementary material 统一放在 `docs/appendix/`。
+- 附录默认是一个持续更新的工作文件，不按日期或 v1/v2 自动滚动新 HTML；历史版本只在用户明确提出“保留这一版”“创建快照”“另存版本”时生成。
+
+## 当前记录：2026-07-09 50 人 candidate trajectory pool 已生成
+
+本轮在 15 人 candidate pool 的基础上扩展到 50 人，正式目录为：
+
+- `long_memory_experiment/data/generated/p0_persona_event_sampling_demo50_candidate/`
+
+保留原则：
+
+- `P0001-P0015` 完整保留自 `p0_persona_event_sampling_demo15_candidate`。
+- 已校验 `P0001-P0015` 在 `sampled_personas.json`、`candidate_event_sets.json`、`accepted_persona_event_sets.json`、`event_lines_batch.json`、`timeline.json`、`probe_plan.json`、`daily_interaction_units.json` 中均与 15 人版本一致。
+- `P0016-P0050` 来自同 seed 的 50 人 P0 draft，再与前 15 人合并后重建 P1-P4。
+
+当前 50 人 candidate 关键计数：
+
+- Personas：50
+- Event lines / themes：449
+- Calendar days：1500
+- Active days：1400
+- Interaction units：4400
+- Targeted probes：1293
+- Message bindings：5693
+- Tau validation：pass
+- P0 realism validation：pass，issues=0，warnings=0
+
+该目录是当前默认 candidate trajectory pool。后续 AAAI 附录框架脚本 `scripts/22_generate_appendix_html.py` 默认读取此 50 人 candidate pool；当前 generation/evaluation run 仍是 two-person pilot，不能把 50 人 candidate pool 误写为已完成 50 人 M/Z/U 生成评测。
+
 ## 当前记录：2026-06-17 AAAI 2027 正式版关键论文依据
 
 用户指定正式版 `docs/references/aaai2027_remem_re.pdf` 替代此前 `/Users/tom/Desktop/aaai2027.pdf`，作为本项目后续执行的最高论文依据。该 workspace 拷贝来自原始微信文件 `/Users/tom/Library/Containers/com.tencent.xinWeChat/Data/Documents/xwechat_files/sun414776205_04e4/msg/file/2026-06/aaai2027(1).pdf`。当前 PDF 标题为：
@@ -417,10 +613,10 @@ M0 不能读取本实验人工整理的 relational memory、BEI、gold strategy�
 
 M0 也不能为了提升 M1/M2/M3 分数而被改成 event-aware retrieval：不得使用 `event_line_id` 过滤 M0 short-term/session-summary hits，不得把 M0 session summaries 合并成事件轨迹，不得把关系层 overlay 回写进 M0。若 M0 generic session/day 背景出现跨事件串线，这是 M0 baseline 的可评估局限；修正应发生在 M1/M2/M3 prompt 组合和关系 overlay 优先级，而不是改变 M0 检索。
 
-Letta 已降级为 historical pilot：
+Letta historical pilot 已从正式仓库主线删除：
 
-- archived implementation: `src/long_memory_test/legacy/letta_memory_legacy.py`
-- compatibility wrapper: `src/long_memory_test/letta_memory.py`
+- 已删除 `src/long_memory_test/legacy/letta_memory_legacy.py`
+- 已删除 `src/long_memory_test/letta_memory.py`
 - formal runner 不再导入 Letta，也不再暴露 `--m0-letta-*` 参数。
 
 `timeline.json` 是实验脚本和评测用的 ground truth：它决定每天问什么、哪些天是复现/升级/转折、probe 如何插入，以及最终如何评分。它不是被测模型回答时的可读记忆。正式运行时流程是：
@@ -640,7 +836,7 @@ initial -> recurrence -> turning_point/escalation -> resolution -> reflection
 - `scripts/run_dialogue_conditions.py`：同一用户 turn 下运行 M0/M1/M2/M3，记录 `memory_payload`、`input_hash` 和固定模型参数。
 - `scripts/evaluate_tom_quality_llm.py`：继续作为主评分入口，后续补人工复核与依赖题分析。
 
-旧 `run_m0_m1_dialogue_probe.py` 保留为历史 pilot 工具；新实验入口是 `run_dialogue_conditions.py`。
+旧 `run_m0_m1_dialogue_probe.py` 已删除；可复用 helper 已迁入 `src/long_memory_test/agents/dialogue_runner_helpers.py`，新实验入口是 `run_dialogue_conditions.py` 与服务器入口 `scripts/23_run_server_experiment.py`。
 
 ## 一版双 Agent 架构
 
@@ -761,31 +957,25 @@ PYTHONPATH=src .venv/bin/python scripts/run_dialogue_conditions.py \
 
 长时间对话脚本必须可恢复。`run_dialogue_conditions.py` 每完成一个用户 turn 就把当前 run 原子写入 `--output`，并按 `run_id` 同步 `conversation_log_docx_conditions.json`，不再依赖最后一次性写文件。如果进程中断，使用同一组参数加 `--resume`，脚本会从 `--output` 读取已完成 turns，重建 M0/M1/M2/M3 短期上下文，跳过已完成 message_id，从下一个未完成 turn 继续。恢复时不能更换 `message_ids`、`--scene-followups`、`--probe-questions`、`--conditions` 或 `--memory-conditions`。
 
-正式长跑优先使用 supervisor：
+正式长跑优先使用服务器入口 `scripts/23_run_server_experiment.py`。该入口会先生成 run-private inputs，再调用统一 backend：
 
 ```bash
-PYTHONPATH=src .venv/bin/python scripts/10_supervise_full_experiment.py \
-  --run-dir long_memory_experiment/outputs/run_YYYYMMDD_HHMM_full \
-  --max-attempts 0 \
-  --retry-sleep 30 \
-  --scene-followups 1 \
-  --judge-workers 4
+.venv/bin/python scripts/23_run_server_experiment.py start \
+  --persona-count 5 \
+  --conditions M0,U1,U2,U3 \
+  --experiment-name smoke5_m0_u
 ```
 
-后台启动：
+完整 50 人实验必须显式传 `--persona-count 50`：
 
 ```bash
-PYTHONPATH=src .venv/bin/python scripts/11_start_full_experiment_background.py \
-  --run-dir long_memory_experiment/outputs/run_YYYYMMDD_HHMM_full \
-  --max-attempts 0 \
-  --retry-sleep 30 \
-  --scene-followups 1 \
-  --judge-workers 4
+.venv/bin/python scripts/23_run_server_experiment.py start \
+  --persona-count 50 \
+  --conditions M0,M1,M2,M3,Z1,Z2,Z3,U1,U2,U3 \
+  --experiment-name final50_all_conditions
 ```
 
-后台脚本会写入 `background_supervisor.log`、`background_supervisor.pid.json` 和 `supervisor_status.json`。如果某一轮模型调用失败，supervisor 会用同一 run-dir 自动加 `--resume` 重试；已完成 turn 不会重跑，M0 LD-Agent memory runtime 优先从 `m0_ld_agent_memory` snapshot 恢复，缺失旧 snapshot 时才从已完成 turns 重建 short-term/long-term memory。
-
-`09_run_full_experiment.py` 默认使用 `--condition-workers 4`，即同一 user turn 下的 M0/M1/M2/M3 四个回答并行生成。并行不会改变实验输入：每个 condition 的 `user_message`、短期上下文快照和 memory payload 都在提交任务前固定；M0 memory runtime 记录在四组回答都完成后执行。
+旧 `scripts/09_run_full_experiment.py`、`scripts/10_supervise_full_experiment.py`、`scripts/11_start_full_experiment_background.py` 已删除。后台状态统一由 `scripts/23_run_server_experiment.py status --run-dir <run_dir>` 或 `scripts/21_experiment_backend.py status --run-dir <run_dir>` 查询。生成阶段失败时 supervisor 会用同一 run-dir 自动加 `--resume` 重试；已完成 turn 不会重跑，M0 LD-Agent memory runtime 优先从 `m0_ld_agent_memory` snapshot 恢复，缺失旧 snapshot 时才从已完成 turns 重建 short-term/long-term memory。
 
 DeepSeek provider 不做低额度人工截断。`deepseek-v4-*` 默认 `max_tokens` 使用官方最大输出上限 `384000`，让模型自行在任务完成时停止。日志中的 `llm.max_tokens` 必须记录实际请求上限，便于排查回答被截断、长请求等待和成本问题。
 
@@ -867,18 +1057,18 @@ LLM_PROVIDER=deepseek
 
 LLM smoke test 位于 `scripts/poixe_smoke_test.py`，按当前 `LLM_PROVIDER` 验证本地 key、base URL 和模型名是否可用。文件名沿用早期 Poixe 配置阶段的历史名称。
 
-Letta 相关代码只作为历史 pilot 保留：
+Letta 相关 pilot 代码已从正式主线删除：
 
-- `src/long_memory_test/legacy/letta_memory_legacy.py`：旧 Letta 实现归档。
-- `src/long_memory_test/letta_memory.py`：兼容 wrapper，避免旧 pilot 脚本立刻失效。
-- `scripts/letta_memory_smoke.py`、`scripts/create_m0_letta_baseline.py`、`scripts/12_check_m0_letta_full_retrieval.py`：历史工具，不参与正式 M0/M1/M2/M3 实验。
+- 已删除 `src/long_memory_test/legacy/letta_memory_legacy.py`、`src/long_memory_test/letta_memory.py`。
+- 已删除 `scripts/letta_memory_smoke.py`、`scripts/create_m0_letta_baseline.py`、`scripts/12_check_m0_letta_full_retrieval.py`。
+- 正式 M0 只走 LD-Agent-compatible memory runtime。
 
 最近已完成的 docx 路线基础改造：
 
 - `scripts/annotate_bei.py` 已能从现有 probe 生成 `sample_output/bei_annotations.json`。
 - `scripts/build_memory_conditions.py` 已能生成 `sample_output/memory_conditions.json`，其中 M0 是 LD-Agent memory-only generic baseline，M1/M2/M3 为叠加在同一 M0 底座上的累计关系记忆层级。
 - `scripts/run_dialogue_conditions.py` 已能按同一用户输入运行 M0/M1/M2/M3，并为每轮记录 memory payload、input hash、模型参数和四组回答；M0 由 `LDAgentMemoryRuntime` 负责 LD-compatible short-term session、LLM session summary、persona traits、LD metadata snapshot 和 topic-overlap/time-decay retrieval。
-- 旧 `scripts/run_m0_m1_dialogue_probe.py` 仅作为历史 pilot 工具保留。
+- 旧 `scripts/run_m0_m1_dialogue_probe.py` 已删除；可复用 helper 已迁入 `src/long_memory_test/agents/dialogue_runner_helpers.py`。
 
 ## 核心数据流程
 

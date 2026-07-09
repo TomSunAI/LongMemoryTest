@@ -2,14 +2,9 @@
 from __future__ import annotations
 
 import argparse
-import json
-import os
-import shlex
-import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -18,11 +13,8 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from _mac_awake import (  # noqa: E402
     DEFAULT_CAFFEINATE_FLAGS,
-    mark_caffeinate_disabled,
-    mark_caffeinated,
-    parse_caffeinate_flags,
-    wrap_command_for_awake,
 )
+from _backend_common import start_background_job  # noqa: E402
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -62,80 +54,22 @@ def main() -> int:
         str(run_dir),
         *supervisor_passthrough,
     ]
-    env = dict(os.environ)
-    caffeinate_flags = parse_caffeinate_flags(args.caffeinate_flags)
-    if args.no_caffeinate:
-        mark_caffeinate_disabled(env)
-    launch_cmd, awake_guard = wrap_command_for_awake(
-        cmd,
-        disabled=args.no_caffeinate,
-        flags=caffeinate_flags,
+    return start_background_job(
+        command=cmd,
+        run_dir=run_dir,
+        log_file=log_file,
+        pid_file=pid_file,
+        schema_version="dialogue_conditions_background_pid_v1",
+        job_label="dialogue supervisor",
+        command_label="supervisor_command",
+        no_caffeinate=args.no_caffeinate,
+        caffeinate_flags_value=args.caffeinate_flags,
     )
-    if awake_guard["enabled"]:
-        mark_caffeinated(env)
-    log_file.parent.mkdir(parents=True, exist_ok=True)
-    log_handle = log_file.open("ab")
-    process = subprocess.Popen(
-        launch_cmd,
-        cwd=REPO_ROOT,
-        env=env,
-        stdout=log_handle,
-        stderr=subprocess.STDOUT,
-        start_new_session=True,
-    )
-    log_handle.close()
-    pid_payload = {
-        "schema_version": "dialogue_conditions_background_pid_v1",
-        "status": "started",
-        "pid": process.pid,
-        "run_dir": _display_path(run_dir),
-        "log_file": _display_path(log_file),
-        "pid_file": _display_path(pid_file),
-        "started_at": _now(),
-        "command": launch_cmd,
-        "command_text": shlex.join(launch_cmd),
-        "supervisor_command": cmd,
-        "supervisor_command_text": shlex.join(cmd),
-        "awake_guard": awake_guard,
-    }
-    _write_json(pid_file, pid_payload)
-    print(f"Started background dialogue supervisor: pid={process.pid}")
-    print(f"Run dir: {run_dir}")
-    print(f"Log: {log_file}")
-    print(f"PID file: {pid_file}")
-    print(
-        "Awake guard: "
-        + (
-            f"enabled via caffeinate {' '.join(caffeinate_flags)} "
-            "(display may sleep)"
-            if awake_guard["enabled"]
-            else f"not enabled ({awake_guard['reason']})"
-        )
-    )
-    return 0
-
-
-def _write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = path.with_suffix(path.suffix + ".tmp")
-    tmp_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    tmp_path.replace(path)
 
 
 def _default_run_dir() -> Path:
     stamp = datetime.now().strftime("%Y%m%d_%H%M")
     return DEFAULT_RUN_ROOT / f"run_{stamp}_dialogue_background"
-
-
-def _now() -> str:
-    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-
-
-def _display_path(path: Path) -> str:
-    try:
-        return str(path.resolve().relative_to(REPO_ROOT.resolve()))
-    except ValueError:
-        return str(path)
 
 
 if __name__ == "__main__":

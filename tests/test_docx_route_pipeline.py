@@ -132,6 +132,36 @@ class DocxRoutePipelineTests(unittest.TestCase):
         self.assertNotIn("误用风险", payloads["M3"]["memory_context"])
         self.assertNotIn("- 关系锚点：", payloads["M3"]["memory_context"])
 
+    def test_z_memory_conditions_are_single_feature_payloads(self) -> None:
+        conditions = generate_memory_conditions(
+            timeline=_timeline_doc(),
+            daily_messages=_daily_messages_doc(),
+            probe_question_plan=_probe_doc(),
+            bei_annotations={},
+        )
+
+        payloads = conditions["memory_payloads_by_message_id"]["D10_P001"]
+        specs = {item["condition_id"]: item for item in conditions["condition_specs"]}
+        self.assertIn("Z1", specs)
+        self.assertIn("Z2", specs)
+        self.assertIn("Z3", specs)
+        self.assertIn("结论级关系记忆", payloads["Z1"]["memory_context"])
+        self.assertFalse(payloads["Z1"]["requires_runtime_ld_agent_memory"])
+        self.assertIn("摘要级事件记忆", payloads["Z2"]["memory_context"])
+        self.assertFalse(payloads["Z2"]["requires_runtime_ld_agent_memory"])
+        self.assertNotIn("结论级关系记忆", payloads["Z2"]["memory_context"])
+        self.assertIn("细节级关系锚点", payloads["Z3"]["memory_context"])
+        self.assertFalse(payloads["Z3"]["requires_runtime_ld_agent_memory"])
+        self.assertNotIn("摘要级事件记忆", payloads["Z3"]["memory_context"])
+
+        self.assertEqual(
+            runner._resolve_condition_ids(
+                "M0,Z1,Z2,Z3",
+                {"condition_specs": [{"condition_id": "M0"}]},
+            ),
+            ["M0", "Z1", "Z2", "Z3"],
+        )
+
     def test_memory_conditions_carry_tau_contract_bindings(self) -> None:
         tau_contract = {
             "schema_version": "tau_construction_contract_v1",
@@ -229,6 +259,41 @@ class DocxRoutePipelineTests(unittest.TestCase):
         self.assertTrue(payload["retrieval"]["uses_m0_payload"])
         self.assertTrue(payload["memory_composition"]["relational_overlay_precedence"])
         self.assertFalse(payload["memory_composition"]["m0_event_line_filtering"])
+
+    def test_z_payload_is_not_composed_with_m0_base_memory(self) -> None:
+        conditions = generate_memory_conditions(
+            timeline=_timeline_doc(),
+            daily_messages=_daily_messages_doc(),
+            probe_question_plan=_probe_doc(),
+            bei_annotations={},
+        )
+
+        payload = runner._payload_for_condition(
+            conditions,
+            "Z2",
+            _probe_doc()["probe_questions"][0],
+            m0_ld_agent_payload={
+                "condition_id": "M0",
+                "memory_provider": "ld_agent_memory",
+                "memory_context": "M0 LD-Agent 普通记忆：不应拼入 Z2",
+                "source_detail_ids": ["m0_source"],
+                "retrieval": {"strategy": "topic_overlap_time_decay"},
+            },
+        )
+
+        self.assertIn("摘要级事件记忆", payload["memory_context"])
+        self.assertNotIn("M0 LD-Agent 普通记忆", payload["memory_context"])
+        self.assertNotIn("M0 基石记忆检索结果", payload["memory_context"])
+        self.assertNotIn("m0_base_memory", payload)
+        self.assertNotIn("m0_source", payload.get("source_detail_ids", []))
+        self.assertFalse(payload["requires_runtime_ld_agent_memory"])
+        self.assertEqual(payload["memory_composition"]["base_condition"], None)
+        self.assertEqual(
+            payload["memory_composition"]["composition_rule"],
+            "independent_relational_payload_no_m0_base",
+        )
+        self.assertFalse(payload["retrieval"]["uses_m0_payload"])
+        self.assertFalse(payload["search_indexing_policy"]["uses_m0_search_indexing"])
 
     def test_relational_payload_uses_empty_m0_base_fallback(self) -> None:
         payload = runner._compose_relational_payload_with_m0_base(
@@ -519,6 +584,64 @@ class DocxRoutePipelineTests(unittest.TestCase):
         )
         self.assertTrue(turn["memory_setup"]["m1_m2_m3_share_m0_base_memory"])
 
+    def test_runner_records_z_turn_without_m0_base_or_writeback(self) -> None:
+        client = _FakeClient()
+        m0_runtime = LDAgentMemoryRuntime()
+        z2_runtime = RelationalMemoryRuntime(condition_id="Z2")
+        turn = runner._run_condition_turn(
+            run_id="run-test",
+            created_at="2026-06-05T00:00:00Z",
+            turn_index=1,
+            daily_messages_path=Path("daily.json"),
+            scene_cards_path=None,
+            memory_conditions_path=Path("memory.json"),
+            message={
+                "message_id": "D01_M001",
+                "day": 1,
+                "topic": "孩子幼儿园可能不稳定",
+                "turn_type": "scripted_opening",
+                "user_message": "我今天又在想幼儿园这件事。",
+                "tau": {
+                    "event_line_id": "L_kindergarten",
+                    "event_stage": "initial",
+                },
+            },
+            scene_card=None,
+            llm_client=client,
+            llm_config=types.SimpleNamespace(provider="fake", base_url="fake", model="fake-model"),
+            max_tokens=100,
+            temperature=0.2,
+            top_p=1.0,
+            timeout_seconds=1,
+            condition_workers=1,
+            print_condition_progress=False,
+            memory_conditions={
+                "condition_specs": [
+                    {"condition_id": "Z2", "definition": "Z2 independent runtime"},
+                ],
+            },
+            m0_memory_runtime=m0_runtime,
+            relational_memory_runtimes={"Z2": z2_runtime},
+            condition_ids=["Z2"],
+            short_term_histories={"Z2": []},
+            previous_message_ids=[],
+        )
+
+        payload = turn["variants"]["Z2"]["memory_payload"]
+        self.assertEqual(z2_runtime.snapshot()["memory_count"], 1)
+        self.assertEqual(len(m0_runtime.actions), 0)
+        self.assertEqual(turn["memory_actions"], [turn["variants"]["Z2"]["memory_writeback"]])
+        self.assertNotIn("m0_base_memory", payload)
+        self.assertFalse(payload["requires_runtime_ld_agent_memory"])
+        self.assertFalse(payload["retrieval"]["uses_m0_payload"])
+        self.assertEqual(
+            payload["memory_composition"]["composition_rule"],
+            "independent_relational_payload_no_m0_base",
+        )
+        self.assertFalse(turn["memory_setup"]["m1_m2_m3_share_m0_base_memory"])
+        self.assertFalse(turn["memory_setup"]["relational_conditions_share_m0_base_memory"])
+        self.assertFalse(turn["memory_setup"]["z1_z2_z3_use_m0_base_memory"])
+
     def test_run_config_records_m1_m2_m3_share_m0_payload(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
@@ -571,6 +694,86 @@ class DocxRoutePipelineTests(unittest.TestCase):
             )
             self.assertTrue(
                 result["run_config"]["relational_memory_runtimes"]["uses_m0_payload"]
+            )
+            self.assertEqual(
+                result["run_config"]["relational_memory_runtimes"][
+                    "uses_m0_payload_by_condition"
+                ],
+                {"M1": True, "M2": True, "M3": True},
+            )
+
+    def test_run_config_records_z_conditions_without_m0_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            result = {
+                "run_id": "test_run",
+                "created_at": "2026-06-27T00:00:00",
+                "expected_turns": 1,
+                "tau_contract": {},
+                "m0_ld_agent_memory": {
+                    "ld_agent_reference": "ld_agent://test",
+                },
+            }
+            args = types.SimpleNamespace(
+                temperature=0.2,
+                top_p=1.0,
+                llm_timeout=60,
+                condition_workers=1,
+                daily_messages=temp_path / "daily.json",
+                scene_cards=temp_path / "scene.json",
+                probe_questions=temp_path / "probe.json",
+                memory_conditions=temp_path / "memory.json",
+                relational_memory_top_k=5,
+                m0_ld_agent_top_k=6,
+                m0_ld_agent_short_term_k=3,
+                m0_ld_agent_storage_backend="json",
+                m0_ld_agent_chroma_path=None,
+                scene_followups=False,
+                output=temp_path / "responses_by_condition.json",
+                conversation_log=temp_path / "conversation_log.json",
+            )
+            llm_config = types.SimpleNamespace(
+                provider="deepseek",
+                base_url="https://api.deepseek.com",
+                model="deepseek-v4-pro",
+            )
+
+            runner._write_run_config(
+                temp_path / "run_config.json",
+                result=result,
+                args=args,
+                llm_config=llm_config,
+                max_tokens=1200,
+                condition_ids=["Z1", "Z2", "Z3"],
+            )
+
+            self.assertFalse(
+                result["run_config"]["controlled_variables"][
+                    "m1_m2_m3_share_m0_base_memory"
+                ]
+            )
+            self.assertFalse(
+                result["run_config"]["controlled_variables"][
+                    "relational_conditions_share_m0_base_memory"
+                ]
+            )
+            self.assertFalse(
+                result["run_config"]["controlled_variables"][
+                    "z1_z2_z3_use_m0_base_memory"
+                ]
+            )
+            self.assertFalse(
+                result["run_config"]["relational_memory_runtimes"]["uses_m0_payload"]
+            )
+            self.assertEqual(
+                result["run_config"]["relational_memory_runtimes"][
+                    "uses_m0_payload_by_condition"
+                ],
+                {"Z1": False, "Z2": False, "Z3": False},
+            )
+            self.assertEqual(
+                result["run_config"]["m0_ld_agent_memory_baseline"]["used_by_conditions"],
+                [],
             )
 
 

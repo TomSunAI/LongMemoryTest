@@ -25,7 +25,16 @@ def parse_args() -> argparse.Namespace:
         description="Convert tau=(z,T,L,I,P) into run_dialogue_conditions input JSON files."
     )
     parser.add_argument("--tau-contract", type=Path, default=DEFAULT_TAU_CONTRACT)
-    parser.add_argument("--naturalized-dialogues", type=Path, default=DEFAULT_NATURALIZED)
+    parser.add_argument(
+        "--naturalized-dialogues",
+        type=Path,
+        default=None,
+        help=(
+            "Optional naturalized dialogue file. When omitted, the demo5 default is "
+            "used only with the default demo5 tau contract; custom tau contracts stay "
+            "canonical-only unless this path is provided."
+        ),
+    )
     parser.add_argument("--daily-output", type=Path, default=DEFAULT_DAILY_OUTPUT)
     parser.add_argument("--probe-output", type=Path, default=DEFAULT_PROBE_OUTPUT)
     return parser.parse_args()
@@ -33,8 +42,12 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    naturalized_path = _resolve_naturalized_dialogues_path(
+        args.tau_contract,
+        args.naturalized_dialogues,
+    )
     tau_contract = _load_json(args.tau_contract)
-    naturalized = _load_naturalized(args.naturalized_dialogues)
+    naturalized = _load_naturalized(naturalized_path)
     bindings = tau_contract.get("message_bindings", {})
     daily_messages = [
         _daily_message_from_unit(unit, naturalized=naturalized, bindings=bindings)
@@ -53,7 +66,9 @@ def main() -> int:
         "schema_version": "tau_runner_daily_messages_full_v0.1",
         "source_paths": {
             "tau_contract": _display_path(args.tau_contract),
-            "naturalized_dialogues": _display_path(args.naturalized_dialogues),
+            "naturalized_dialogues": (
+                _display_path(naturalized_path) if naturalized_path is not None else None
+            ),
         },
         "messages": daily_messages,
         "summary": {
@@ -187,8 +202,19 @@ def _probe_question_from_probe(
     }
 
 
-def _load_naturalized(path: Path) -> dict[str, dict[str, Any]]:
-    if not path.exists():
+def _resolve_naturalized_dialogues_path(
+    tau_contract_path: Path,
+    naturalized_dialogues_path: Path | None,
+) -> Path | None:
+    if naturalized_dialogues_path is not None:
+        return naturalized_dialogues_path
+    if tau_contract_path.resolve() == DEFAULT_TAU_CONTRACT.resolve():
+        return DEFAULT_NATURALIZED
+    return None
+
+
+def _load_naturalized(path: Path | None) -> dict[str, dict[str, Any]]:
+    if path is None or not path.exists():
         return {}
     doc = _load_json(path)
     result: dict[str, dict[str, Any]] = {}

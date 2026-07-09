@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>P3b DeepSeek 5 Persona Naturalization</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d7dee9;
+      --panel: #ffffff;
+      --band: #f4f6f9;
+      --soft: #f9fbfd;
+      --ok: #0f766e;
+      --warn: #b42318;
+      --accent: #3347b8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--band);
+      color: var(--ink);
+      font: 14px/1.62 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 26px 18px 50px;
+    }
+    h1 { margin: 0 0 10px; font-size: 28px; letter-spacing: 0; }
+    h2 { margin: 0; font-size: 20px; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 15px; letter-spacing: 0; }
+    p { margin: 0; }
+    code {
+      padding: 1px 5px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #f8fafc;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .metric, .card, .box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+    .metric { padding: 12px; }
+    .metric b { display: block; font-size: 23px; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    .note {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf7;
+      margin: 0 0 16px;
+    }
+    .card {
+      margin-top: 14px;
+      overflow: hidden;
+    }
+    .card header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 14px;
+    }
+    .box { padding: 12px; background: var(--soft); }
+    .message {
+      padding: 10px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: #fff;
+      white-space: pre-wrap;
+    }
+    .tag {
+      display: inline-block;
+      margin: 0 6px 6px 0;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .ok { color: var(--ok); }
+    .fail { color: var(--warn); }
+    ul { margin: 0; padding-left: 18px; }
+    li + li { margin-top: 4px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      vertical-align: top;
+      text-align: left;
+      word-break: break-word;
+    }
+    th {
+      background: #f2f5f9;
+      color: #344054;
+      font-size: 12px;
+    }
+    .muted { color: var(--muted); }
+    @media (max-width: 920px) {
+      .summary, .grid { grid-template-columns: 1fr; }
+      .card header { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>P3b DeepSeek 5 Persona 自然化候选</h1>
+    <p class="muted">输入是标准 P3 I unit；DeepSeek 只生成自然语言候选，不覆盖 canonical I。</p>
+    <section class="summary">
+      <div class="metric"><b>deepseek</b><span>LLM Provider</span></div>
+      <div class="metric"><b>deepseek-v4-pro</b><span>LLM Model</span></div>
+      <div class="metric"><b>5</b><span>候选数</span></div>
+      <div class="metric"><b>5</b><span>校验通过</span></div>
+    </section>
+    <section class="note">
+      <p><b>边界：</b>P3b 输出是候选层，字段 <code>canonical_i_units_preserved=true</code>、<code>naturalized_text_is_candidate_only=true</code>。正式结构真值仍是 <code>daily_interaction_units.json</code>。</p>
+    </section>
+    
+    <section class="card">
+      <header>
+        <div>
+          <p class="muted"><code>P0001</code> · <code>P0001_D01_M001</code> · <code>L_p0001_e_move_001_30d01803</code></p>
+          <h2>适应新城市但本地支持较弱</h2>
+        </div>
+        <div>
+          <span class="tag">initial</span>
+          <span class="tag ok">validation=pass</span>
+        </div>
+      </header>
+      <div class="grid">
+        <div class="box">
+          <h3>Canonical I · 规则生成</h3>
+          <p class="muted">scripted_opening.user_message</p>
+          <p class="message">我最近卡在「适应新城市但本地支持较弱」这件事上。我现在做物业服务助理，时间和预算都不是很宽，所以有点拿不准该把社交精力投在哪里。你先帮我拆一下。</p>
+          <p class="muted">conversation_goal</p>
+          <p>第一次提出担心，说明触发点和不确定处。</p>
+        </div>
+        <div class="box">
+          <h3>P3b DeepSeek · 自然化候选</h3>
+          <p class="muted">opening_user_message</p>
+          <p class="message">最近一直被一件事困着：刚来这个城市，感觉很陌生，适应起来有点吃力。我在物业公司做助理，时间上不自由，手头也不宽裕，所以不知道该把社交的精力往哪投。你能先帮我理理吗？</p>
+          <p class="muted">followup_user_messages</p>
+          <ul><li>其实来这边后，我一直没交到什么能互相照应的朋友，有时候觉得挺孤单的。</li><li>嗯，听你这么说，我这次其实就是想先把我的担心和不确定的地方说出来，再让你帮我拆开事实和风险，然后给我一个低成本的小下一步试试。</li></ul>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="box">
+          <h3>候选使用的 fact ids</h3>
+          <table><thead><tr><th>fact_id</th><th>type</th><th>text</th></tr></thead><tbody><tr><td><code>P0001_D01_M001:event_title</code></td><td>event_title</td><td>适应新城市但本地支持较弱</td></tr><tr><td><code>P0001_D01_M001:persona_occupation</code></td><td>persona_occupation</td><td>物业服务助理</td></tr><tr><td><code>P0001_D01_M001:event_summary</code></td><td>event_summary</td><td>用户正在适应新环境，但缺少稳定的本地关系支持。</td></tr><tr><td><code>P0001_D01_M001:stage_goal</code></td><td>stage_goal</td><td>第一次提出担心，说明触发点和不确定处。</td></tr><tr><td><code>P0001_D01_M001:assistant_memory_expectation</code></td><td>assistant_memory_expectation</td><td>先拆事实、未知、风险和一个低成本下一步。</td></tr></tbody></table>
+        </div>
+        <div class="box">
+          <h3>来源事实摘要</h3>
+          <p><span class="tag">allowed_base</span></p>
+          <ul><li>用户正在适应新环境，但缺少稳定的本地关系支持。</li></ul>
+          <p><span class="tag">persona_conditioned</span></p>
+          <ul><li>这条搬迁适应事件线需要放在人物现实身份中处理：物业服务助理，单身，租住单间。</li><li>可行方案必须受人物经济条件约束：收入基本稳定但月度预算偏紧。</li><li>是否求助或外部协同时，需要考虑支持边界：家人在另一个城市。</li><li>建议不能偏离人物长期目标：避免工作失误、攒够钱搬到更好的住处。</li><li>方案排序要符合人物决策方式：预算敏感、风险规避。</li><li>对话表达应贴合人物沟通风格：谨慎、重视细节。</li></ul>
+          <p><span class="tag">stage_delta</span></p>
+          <ul><li>第 1 阶段新增：用户第一次把「适应新城市但本地支持较弱」说清楚，首要不确定点是「该把社交精力投在哪里」。</li><li>本阶段只允许推进一个低成本起点：「选择一个固定出现的社交锚点」。</li></ul>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="box">
+          <h3>模型审计 notes</h3>
+          <p>自然化改写，保留所有原始事实，添加两个跟进消息逐步深化：先揭示事件概况，再明确阶段目标与期望的拆解路径。</p>
+        </div>
+        <div class="box">
+          <h3>校验结果</h3>
+          <p>status: <b class="ok">pass</b></p>
+          <p class="muted">无</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <header>
+        <div>
+          <p class="muted"><code>P0002</code> · <code>P0002_D01_M001</code> · <code>L_p0002_e_boundary_001_d115fdc0</code></p>
+          <h2>难以拒绝他人请求</h2>
+        </div>
+        <div>
+          <span class="tag">initial</span>
+          <span class="tag ok">validation=pass</span>
+        </div>
+      </header>
+      <div class="grid">
+        <div class="box">
+          <h3>Canonical I · 规则生成</h3>
+          <p class="muted">scripted_opening.user_message</p>
+          <p class="message">我最近卡在「难以拒绝他人请求」这件事上。我现在做呼叫中心客服，时间和预算都不是很宽，所以有点拿不准拒绝是否自私。你先帮我拆一下。</p>
+          <p class="muted">conversation_goal</p>
+          <p>第一次提出担心，说明触发点和不确定处。</p>
+        </div>
+        <div class="box">
+          <h3>P3b DeepSeek · 自然化候选</h3>
+          <p class="muted">opening_user_message</p>
+          <p class="message">最近发现自己特别难拒绝别人，这真的挺困扰的。我在呼叫中心做客服，平时时间紧、预算也不多，所以一直拿不准：拒绝别人的请求是不是太自私了？你能先帮我理一理吗？</p>
+          <p class="muted">followup_user_messages</p>
+          <ul><li>坦白说，也不是所有请求都难拒绝。主要是工作上领导或同事临时加活，还有朋友偶尔借点小钱周转。我特别怕因为拒绝而把关系搞僵，所以每次都硬着头皮答应。你说的那种‘事实’和‘未知’，能再具体点吗？</li><li>嗯，你说的这些我大概明白了。但我现在最需要的是一个能马上试试的小方法。比如，下次同事再让我帮忙加班，我该怎么说才能既拒绝又不伤和气？你能给我一个低风险的起步动作吗？</li></ul>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="box">
+          <h3>候选使用的 fact ids</h3>
+          <table><thead><tr><th>fact_id</th><th>type</th><th>text</th></tr></thead><tbody><tr><td><code>P0002_D01_M001:persona_occupation</code></td><td>persona_occupation</td><td>呼叫中心客服</td></tr><tr><td><code>P0002_D01_M001:event_title</code></td><td>event_title</td><td>难以拒绝他人请求</td></tr><tr><td><code>P0002_D01_M001:event_summary</code></td><td>event_summary</td><td>用户很难拒绝来自工作、家人或朋友的请求。</td></tr><tr><td><code>P0002_D01_M001:assistant_memory_expectation</code></td><td>assistant_memory_expectation</td><td>先拆事实、未知、风险和一个低成本下一步。</td></tr></tbody></table>
+        </div>
+        <div class="box">
+          <h3>来源事实摘要</h3>
+          <p><span class="tag">allowed_base</span></p>
+          <ul><li>用户很难拒绝来自工作、家人或朋友的请求。</li></ul>
+          <p><span class="tag">persona_conditioned</span></p>
+          <ul><li>这条个人边界事件线需要放在人物现实身份中处理：呼叫中心客服，单身，与室友合住。</li><li>可行方案必须受人物经济条件约束：月度预算偏紧。</li><li>是否求助或外部协同时，需要考虑支持边界：室友友好但都很忙。</li><li>建议不能偏离人物长期目标：转到消耗更低的岗位、为证书或技能课程攒钱。</li><li>方案排序要符合人物决策方式：重视规则。</li><li>对话表达应贴合人物沟通风格：礼貌、容易自我怀疑。</li></ul>
+          <p><span class="tag">stage_delta</span></p>
+          <ul><li>第 1 阶段新增：用户第一次把「难以拒绝他人请求」说清楚，首要不确定点是「拒绝是否自私」。</li><li>本阶段只允许推进一个低成本起点：「有限度地答应」。</li></ul>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="box">
+          <h3>模型审计 notes</h3>
+          <p>自然化改写，保留所有核心事实，未引入新事实。跟进消息逐步澄清约束并请求低成本下一步，符合 allowed moves。</p>
+        </div>
+        <div class="box">
+          <h3>校验结果</h3>
+          <p>status: <b class="ok">pass</b></p>
+          <p class="muted">无</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <header>
+        <div>
+          <p class="muted"><code>P0003</code> · <code>P0003_D01_M001</code> · <code>L_p0003_e_inter_003_fdd7b5c2</code></p>
+          <h2>家庭责任和工作安排相互挤压</h2>
+        </div>
+        <div>
+          <span class="tag">initial</span>
+          <span class="tag ok">validation=pass</span>
+        </div>
+      </header>
+      <div class="grid">
+        <div class="box">
+          <h3>Canonical I · 规则生成</h3>
+          <p class="muted">scripted_opening.user_message</p>
+          <p class="message">我最近卡在「家庭责任和工作安排相互挤压」这件事上。我现在做平台服务劳动者，时间和预算都不是很宽，所以有点拿不准多少加班值得承担。你先帮我拆一下。</p>
+          <p class="muted">conversation_goal</p>
+          <p>第一次提出担心，说明触发点和不确定处。</p>
+        </div>
+        <div class="box">
+          <h3>P3b DeepSeek · 自然化候选</h3>
+          <p class="muted">opening_user_message</p>
+          <p class="message">唉，最近老觉得家里和工作两头都顾不过来。我在平台接单干活，收入不稳定，还得带着学龄前的娃，时间和钱都紧巴巴的。现在最头疼的是要不要加班多挣点儿，但一加班就容易顾不上孩子，自己还累得够呛。你帮我理理，到底该怎么想这个事儿？</p>
+          <p class="muted">followup_user_messages</p>
+          <ul><li>其实我最怕的是，万一为了多挣点儿把身体搞垮了，或者路上出点什么事，家里更转不动了。</li><li>嗯，你说的这些我都理解。但能不能先给我一个具体的小动作，比如这周我试着控制一下加班上限，看看效果？</li></ul>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="box">
+          <h3>候选使用的 fact ids</h3>
+          <table><thead><tr><th>fact_id</th><th>type</th><th>text</th></tr></thead><tbody><tr><td><code>P0003_D01_M001:persona_occupation</code></td><td>persona_occupation</td><td>平台服务劳动者</td></tr><tr><td><code>P0003_D01_M001:persona_family_structure</code></td><td>persona_family_structure</td><td>已婚，有一个学龄前孩子</td></tr><tr><td><code>P0003_D01_M001:event_title</code></td><td>event_title</td><td>家庭责任和工作安排相互挤压</td></tr><tr><td><code>P0003_D01_M001:event_summary</code></td><td>event_summary</td><td>用户需要额外收入，但加班伤害休息、安全或家庭生活。</td></tr><tr><td><code>P0003_D01_M001:allowed_base_fact_1</code></td><td>allowed_base_fact</td><td>用户需要额外收入，但加班伤害休息、安全或家庭生活。</td></tr></tbody></table>
+        </div>
+        <div class="box">
+          <h3>来源事实摘要</h3>
+          <p><span class="tag">allowed_base</span></p>
+          <ul><li>用户需要额外收入，但加班伤害休息、安全或家庭生活。</li></ul>
+          <p><span class="tag">persona_conditioned</span></p>
+          <ul><li>这条工作-家庭交叉事件线需要放在人物现实身份中处理：平台服务劳动者，已婚，有一个学龄前孩子。</li><li>可行方案必须受人物经济条件约束：积蓄有限且支出上升。</li><li>是否求助或外部协同时，需要考虑支持边界：配偶会帮忙但日程经常冲突。</li><li>建议不能偏离人物长期目标：降低过劳带来的健康和事故风险、给孩子更稳定可预期的陪伴时间。</li><li>方案排序要符合人物决策方式：受现金流驱动。</li><li>对话表达应贴合人物沟通风格：直接、务实。</li></ul>
+          <p><span class="tag">stage_delta</span></p>
+          <ul><li>第 1 阶段新增：用户第一次把「家庭责任和工作安排相互挤压」说清楚，首要不确定点是「多少加班值得承担」。</li><li>本阶段只允许推进一个低成本起点：「定义收入目标和安全停止线」。</li></ul>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="box">
+          <h3>模型审计 notes</h3>
+          <p>Opening 自然地整合了职业、家庭结构和事件标题，保持口语化；followup 1 基于事件摘要澄清了对安全与健康的担心，不引入新事实；followup 2 要求收束到一个低成本下一步，符合 stage goal 和 assistant memory expectation。</p>
+        </div>
+        <div class="box">
+          <h3>校验结果</h3>
+          <p>status: <b class="ok">pass</b></p>
+          <p class="muted">无</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <header>
+        <div>
+          <p class="muted"><code>P0004</code> · <code>P0004_D01_M001</code> · <code>L_p0004_e_fin_001_4ccc68e4</code></p>
+          <h2>月度预算吃紧或意外支出</h2>
+        </div>
+        <div>
+          <span class="tag">initial</span>
+          <span class="tag ok">validation=pass</span>
+        </div>
+      </header>
+      <div class="grid">
+        <div class="box">
+          <h3>Canonical I · 规则生成</h3>
+          <p class="muted">scripted_opening.user_message</p>
+          <p class="message">我最近卡在「月度预算吃紧或意外支出」这件事上。我现在做便利店店主，时间和预算都不是很宽，所以有点拿不准应该先支付什么。你先帮我拆一下。</p>
+          <p class="muted">conversation_goal</p>
+          <p>第一次提出担心，说明触发点和不确定处。</p>
+        </div>
+        <div class="box">
+          <h3>P3b DeepSeek · 自然化候选</h3>
+          <p class="muted">opening_user_message</p>
+          <p class="message">我最近老被「月度预算吃紧或意外支出」这件事困住。我是开便利店的，手里时间和钱都不宽裕，所以现在特别拿不准该优先付哪笔。你先帮我拆一下。</p>
+          <p class="muted">followup_user_messages</p>
+          <ul><li>最让我卡住的是：收入一不稳，是先撑着店里的账单，还是先顾家里的开销。两边都拖不得，但就是排不出个先后。</li><li>其实我头一回聊这个，就是希望你能把中间轻重缓急理一遍，别让我一上来就做太大的决定。能不能先给我一个特别小、不用冒风险的下一步？</li></ul>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="box">
+          <h3>候选使用的 fact ids</h3>
+          <table><thead><tr><th>fact_id</th><th>type</th><th>text</th></tr></thead><tbody><tr><td><code>P0004_D01_M001:persona_occupation</code></td><td>persona_occupation</td><td>便利店店主</td></tr><tr><td><code>P0004_D01_M001:event_title</code></td><td>event_title</td><td>月度预算吃紧或意外支出</td></tr><tr><td><code>P0004_D01_M001:event_summary</code></td><td>event_summary</td><td>用户需要在有限或不稳定收入下管理必要支出。</td></tr><tr><td><code>P0004_D01_M001:stage_goal</code></td><td>stage_goal</td><td>第一次提出担心，说明触发点和不确定处。</td></tr></tbody></table>
+        </div>
+        <div class="box">
+          <h3>来源事实摘要</h3>
+          <p><span class="tag">allowed_base</span></p>
+          <ul><li>用户需要在有限或不稳定收入下管理必要支出。</li></ul>
+          <p><span class="tag">persona_conditioned</span></p>
+          <ul><li>这条财务事件线需要放在人物现实身份中处理：便利店店主，与大家庭同住。</li><li>可行方案必须受人物经济条件约束：店铺租金是主要固定成本。</li><li>是否求助或外部协同时，需要考虑支持边界：配偶支持但担心钱。</li><li>建议不能偏离人物长期目标：管理租金和进货成本、设定更清晰的工作时间。</li><li>方案排序要符合人物决策方式：对现金流敏感。</li><li>对话表达应贴合人物沟通风格：说话直白、不喜欢术语堆砌。</li></ul>
+          <p><span class="tag">stage_delta</span></p>
+          <ul><li>第 1 阶段新增：用户第一次把「月度预算吃紧或意外支出」说清楚，首要不确定点是「应该先支付什么」。</li><li>本阶段只允许推进一个低成本起点：「给固定支出排序」。</li></ul>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="box">
+          <h3>模型审计 notes</h3>
+          <p>开场改写得更像日常吐槽，保留全部事实。followup1用具体两难场景引出收入不稳的约束（event_summary），followup2点明初次求助意图（stage_goal）并索要低风险下一步，未引入新事实；两轮均在reveal_steps框架内收束。</p>
+        </div>
+        <div class="box">
+          <h3>校验结果</h3>
+          <p>status: <b class="ok">pass</b></p>
+          <p class="muted">无</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <header>
+        <div>
+          <p class="muted"><code>P0005</code> · <code>P0005_D01_M001</code> · <code>L_p0005_e_health_001_33482086</code></p>
+          <h2>睡眠打乱和低精力管理</h2>
+        </div>
+        <div>
+          <span class="tag">initial</span>
+          <span class="tag ok">validation=pass</span>
+        </div>
+      </header>
+      <div class="grid">
+        <div class="box">
+          <h3>Canonical I · 规则生成</h3>
+          <p class="muted">scripted_opening.user_message</p>
+          <p class="message">我最近卡在「睡眠打乱和低精力管理」这件事上。我现在做酒店前台，时间和预算都不是很宽，所以有点拿不准什么改变是现实的。你先帮我拆一下。</p>
+          <p class="muted">conversation_goal</p>
+          <p>第一次提出担心，说明触发点和不确定处。</p>
+        </div>
+        <div class="box">
+          <h3>P3b DeepSeek · 自然化候选</h3>
+          <p class="muted">opening_user_message</p>
+          <p class="message">最近我真的被睡觉不规律和没精神的事折腾得够呛。我在酒店前台工作，时间和钱都很紧，所以完全拿不准哪些改变是现实可行的。你帮我先拆解一下？</p>
+          <p class="muted">followup_user_messages</p>
+          <ul><li>我白天经常困得不行，做事都糊涂，晚上又翻来覆去睡不着。这事儿我最近才开始认真想。</li><li>我就是想先弄明白，像我这种情况，有没有那种不用花太多钱和时间就能试的小改变？我总担心一动就乱套。</li></ul>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="box">
+          <h3>候选使用的 fact ids</h3>
+          <table><thead><tr><th>fact_id</th><th>type</th><th>text</th></tr></thead><tbody><tr><td><code>P0005_D01_M001:persona_occupation</code></td><td>persona_occupation</td><td>酒店前台</td></tr><tr><td><code>P0005_D01_M001:event_title</code></td><td>event_title</td><td>睡眠打乱和低精力管理</td></tr><tr><td><code>P0005_D01_M001:event_summary</code></td><td>event_summary</td><td>用户反复受睡眠、疲惫或低精力影响，进而影响判断。</td></tr><tr><td><code>P0005_D01_M001:event_stage</code></td><td>event_stage</td><td>初始提出</td></tr><tr><td><code>P0005_D01_M001:stage_goal</code></td><td>stage_goal</td><td>第一次提出担心，说明触发点和不确定处。</td></tr></tbody></table>
+        </div>
+        <div class="box">
+          <h3>来源事实摘要</h3>
+          <p><span class="tag">allowed_base</span></p>
+          <ul><li>用户反复受睡眠、疲惫或低精力影响，进而影响判断。</li></ul>
+          <p><span class="tag">persona_conditioned</span></p>
+          <ul><li>这条健康日常事件线需要放在人物现实身份中处理：酒店前台，单亲，有一个学龄前孩子。</li><li>可行方案必须受人物经济条件约束：积蓄有限且时间安排弹性很小。</li><li>是否求助或外部协同时，需要考虑支持边界：朋友能提供情绪支持但难以实际帮忙。</li><li>建议不能偏离人物长期目标：让照护安排不那么脆弱、避免客户或住户相关工作失误。</li><li>方案排序要符合人物决策方式：保护性强。</li><li>对话表达应贴合人物沟通风格：保护性强、务实。</li></ul>
+          <p><span class="tag">stage_delta</span></p>
+          <ul><li>第 1 阶段新增：用户第一次把「睡眠打乱和低精力管理」说清楚，首要不确定点是「什么改变是现实的」。</li><li>本阶段只允许推进一个低成本起点：「简化晚间日常」。</li></ul>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="box">
+          <h3>模型审计 notes</h3>
+          <p>自然化开头并添加两个跟进，第一个跟进揭示症状细节与事件阶段，第二个跟进表达初次尝试的担忧并要求低成本下一步，严格遵循reveal_steps，未引入新事实。</p>
+        </div>
+        <div class="box">
+          <h3>校验结果</h3>
+          <p>status: <b class="ok">pass</b></p>
+          <p class="muted">无</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

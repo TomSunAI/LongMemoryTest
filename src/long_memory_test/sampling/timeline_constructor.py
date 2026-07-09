@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, deque
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -558,43 +558,80 @@ def _pack_tokens_into_daily_event_counts(
         for day in active_days
     }
     bins: dict[int, list[dict[str, Any]]] = {day: [] for day in active_days}
-    slot_days = [
-        day
-        for day in active_days
-        for _ in range(capacities[day])
-    ]
-    last_day_by_line: dict[str, int] = {}
-    for token_index, token in enumerate(tokens):
-        preferred_day = slot_days[token_index]
-        candidates = sorted(
-            active_days,
-            key=lambda day: (abs(day - preferred_day), day),
-        )
-        equal_distance_groups: dict[int, list[int]] = defaultdict(list)
-        for day in candidates:
-            equal_distance_groups[abs(day - preferred_day)].append(day)
-        candidates = []
-        for distance in sorted(equal_distance_groups):
-            group = equal_distance_groups[distance]
-            rng.shuffle(group)
-            candidates.extend(sorted(group))
-        selected_day = None
+    tokens_by_line: dict[str, deque[dict[str, Any]]] = defaultdict(deque)
+    for token in tokens:
         line_id = str(token["event_line"].get("event_line_id"))
-        for day in candidates:
-            if len(bins[day]) >= capacities[day]:
-                continue
-            if any(str(item["event_line"].get("event_line_id")) == line_id for item in bins[day]):
-                continue
-            if day <= last_day_by_line.get(line_id, 0):
-                continue
-            selected_day = day
-            break
-        if selected_day is None:
+        tokens_by_line[line_id].append(token)
+    for line_id, line_tokens in tokens_by_line.items():
+        tokens_by_line[line_id] = deque(
+            sorted(line_tokens, key=lambda item: int(item.get("occurrence_index", 0)))
+        )
+    line_order = list(tokens_by_line)
+    rng.shuffle(line_order)
+    tie_breaker = {line_id: index for index, line_id in enumerate(line_order)}
+
+    for day_index, day in enumerate(active_days):
+        capacity = capacities[day]
+        selected_line_ids: list[str] = []
+        future_active_day_count = len(active_days) - day_index - 1
+        remaining_by_line = {
+            line_id: len(line_tokens)
+            for line_id, line_tokens in tokens_by_line.items()
+            if line_tokens
+        }
+        forced_line_ids = [
+            line_id
+            for line_id, remaining in remaining_by_line.items()
+            if remaining > future_active_day_count
+        ]
+        if len(forced_line_ids) > capacity:
             raise ValueError(
-                f"Could not allocate high-density timeline day for event line {line_id}."
+                "Could not allocate high-density timeline day: "
+                f"day={day}, forced_lines={len(forced_line_ids)}, capacity={capacity}."
             )
-        bins[selected_day].append(token)
-        last_day_by_line[line_id] = selected_day
+        selected_line_ids.extend(
+            sorted(
+                forced_line_ids,
+                key=lambda line_id: (
+                    -remaining_by_line[line_id],
+                    tie_breaker.get(line_id, 0),
+                    line_id,
+                ),
+            )
+        )
+        if len(selected_line_ids) < capacity:
+            optional_line_ids = [
+                line_id
+                for line_id in remaining_by_line
+                if line_id not in selected_line_ids
+            ]
+            optional_line_ids.sort(
+                key=lambda line_id: (
+                    -remaining_by_line[line_id],
+                    tie_breaker.get(line_id, 0),
+                    line_id,
+                )
+            )
+            selected_line_ids.extend(
+                optional_line_ids[: capacity - len(selected_line_ids)]
+            )
+        if len(selected_line_ids) != capacity:
+            raise ValueError(
+                "Could not allocate high-density timeline day: "
+                f"day={day}, selected_lines={len(selected_line_ids)}, capacity={capacity}."
+            )
+        for line_id in selected_line_ids:
+            bins[day].append(tokens_by_line[line_id].popleft())
+
+    leftovers = {
+        line_id: len(line_tokens)
+        for line_id, line_tokens in tokens_by_line.items()
+        if line_tokens
+    }
+    if leftovers:
+        raise ValueError(
+            f"Could not allocate all high-density timeline tokens: {leftovers}."
+        )
     return bins
 
 

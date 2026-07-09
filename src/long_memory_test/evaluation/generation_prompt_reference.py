@@ -4,8 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
-
-RELATIONAL_CONDITION_IDS = ("M1", "M2", "M3")
+from long_memory_test.memory import (
+    INDEPENDENT_RELATIONAL_CONDITION_IDS,
+    M0_AUGMENTED_ATOMIC_RELATIONAL_CONDITION_IDS,
+    RELATIONAL_CONDITION_IDS,
+    relational_condition_is_independent,
+)
 
 COMMON_ANSWER_SYSTEM_PROMPT_LINES = (
     "你是 A，一个拟人、自然、长期陪伴型对话 Agent。",
@@ -20,6 +24,23 @@ COMMON_ANSWER_SYSTEM_PROMPT_LINES = (
 def relational_priority_prompt_lines(condition_id: str) -> list[str]:
     if condition_id not in RELATIONAL_CONDITION_IDS:
         return []
+    if relational_condition_is_independent(condition_id):
+        return [
+            f"本轮主记忆是 {condition_id} 独立关系记忆层；不要假设存在 M0 普通记忆底座。",
+            f"只能使用 {condition_id} 载荷中列出的长期关系记忆和本轮用户输入。",
+            "当前用户输入是本轮唯一需要回答的问题；历史短期上下文只用于理解背景，不是待回答的新请求。",
+            "如果这一个 Z 层记忆不足以确定，就明确说明记忆不足，不要借用其他层或普通 session/day 背景补齐。",
+            "不要读取、推断或模拟 M0/M1/M2/M3/其他 Z 条件的记忆内容。",
+        ]
+    if condition_id in M0_AUGMENTED_ATOMIC_RELATIONAL_CONDITION_IDS:
+        return [
+            f"本轮主记忆是 {condition_id} 单功能关系记忆层；M0 只是普通 session/day 背景。",
+            f"{condition_id} 只包含一个原子关系层，不继承 M1/M2/M3 或 Z1/Z2/Z3 的其他层。",
+            "加载记忆时必须先读单功能关系记忆层，用它判断当前用户输入绑定的事件线、关系期待、状态变化和回应边界。",
+            "只有在单功能关系记忆层没有覆盖某个普通事实时，才使用 M0 背景补充；若二者冲突，不要跟随 M0 背景。",
+            "当前用户输入是本轮唯一需要回答的问题；历史短期上下文只用于理解背景，不是待回答的新请求。",
+            "不要读取、推断或模拟其他条件的关系记忆内容。",
+        ]
     return [
         f"本轮主记忆是 {condition_id} 关系记忆增强层；M0 只是普通 session/day 背景。",
         "加载记忆时必须先读关系记忆增强层，用它判断当前用户输入绑定的事件线、关系期待、状态变化和回应边界。",
@@ -60,7 +81,15 @@ def build_relational_payload_context(
     m0_context: str,
 ) -> str:
     if condition_id not in RELATIONAL_CONDITION_IDS:
-        raise ValueError(f"Relational payload context is only defined for M1/M2/M3: {condition_id}")
+        raise ValueError(
+            "Relational payload context is only defined for relational "
+            f"conditions {list(RELATIONAL_CONDITION_IDS)}: {condition_id}"
+        )
+    if relational_condition_is_independent(condition_id):
+        return build_independent_relational_payload_context(
+            condition_id=condition_id,
+            overlay_context=overlay_context,
+        )
     m0_context = str(m0_context or "").strip()
     overlay_context = str(overlay_context or "").strip()
     if not m0_context:
@@ -82,6 +111,33 @@ def build_relational_payload_context(
             "- 不要把 M0 session summaries 或 snippets 自行合并成事件轨迹；只把它们当作普通背景补充。",
             "- 当前用户输入点名主题/事件线时，必须锁定该主题/事件线；不得回答 M0 背景或历史短期上下文中的其他事件线。",
             "- 历史用户 turn 只作为背景，不是本轮待回答请求；必须回答最后一条当前用户输入。",
+        ]
+    ).strip()
+
+
+def build_independent_relational_payload_context(
+    *,
+    condition_id: str,
+    overlay_context: str,
+) -> str:
+    if condition_id not in INDEPENDENT_RELATIONAL_CONDITION_IDS:
+        raise ValueError(
+            "Independent relational payload context is only defined for "
+            f"{list(INDEPENDENT_RELATIONAL_CONDITION_IDS)}: {condition_id}"
+        )
+    overlay_context = str(overlay_context or "").strip()
+    if not overlay_context:
+        overlay_context = "- 当前没有检索到可用关系记忆增强。"
+    return "\n".join(
+        [
+            f"主记忆：{condition_id} 独立关系记忆层（不拼接 M0，不读取其他条件）：",
+            overlay_context,
+            "",
+            "组合规则：",
+            f"- {condition_id} 是独立实验条件，只能使用本条件自己的关系记忆层。",
+            "- 本 payload 不包含 M0 普通长期记忆、M1/M2/M3 累积记忆或其他 Z 条件记忆。",
+            "- 如果本层记忆无法支持某个历史判断，必须说明不确定，不要用泛化背景补齐。",
+            "- 当前用户输入是本轮唯一需要回答的问题；必须回答最后一条当前用户输入。",
         ]
     ).strip()
 

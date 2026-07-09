@@ -183,7 +183,6 @@ def _standard_tom_dimensions() -> list[str]:
     return [
         "hidden_intent_recognition",
         "emotional_state_recognition",
-        "relationship_expectation_recognition",
         "shared_context_invocation",
         "natural_detail_use",
         "memory_misuse",

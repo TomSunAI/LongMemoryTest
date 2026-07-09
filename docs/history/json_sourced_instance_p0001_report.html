@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSON 来源单人实例 P0001</title>
+  <style>
+    :root {
+      --ink: #172026;
+      --muted: #5b6670;
+      --line: #d8e0e7;
+      --soft: #f6f8fb;
+      --accent: #1558d6;
+      --chip: #eef4ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #fff;
+      font: 15px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main { max-width: 1180px; margin: 0 auto; padding: 34px 26px 72px; }
+    h1, h2, h3 { margin: 0; line-height: 1.25; }
+    h1 { font-size: 30px; }
+    h2 {
+      margin-top: 34px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      font-size: 22px;
+    }
+    h3 { margin-top: 14px; font-size: 17px; }
+    p { margin: 8px 0; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #edf1f5;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      margin: 14px 0 20px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 9px;
+      vertical-align: top;
+      word-break: break-word;
+    }
+    th { background: var(--soft); text-align: left; }
+    .meta { color: var(--muted); font-size: 13px; }
+    .callout {
+      margin: 16px 0;
+      padding: 13px 15px;
+      background: var(--soft);
+      border-left: 4px solid var(--accent);
+    }
+    .tag {
+      display: inline-block;
+      margin: 2px 4px 2px 0;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--chip);
+      border: 1px solid #d6e5ff;
+      font-size: 12px;
+    }
+    ul.compact { margin: 6px 0 0 20px; padding: 0; }
+    li { margin: 3px 0; }
+    @media (max-width: 900px) {
+      main { padding: 24px 14px 56px; }
+      table { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>JSON 来源单人实例：<code>P0001</code></h1>
+  <p class="meta">
+    P0 输出目录：<code>long_memory_experiment/data/generated/p0_persona_event_sampling_demo5</code><br>
+    人物来源 JSON：<code>long_memory_experiment/data/sampling/persona_archetype_pool_v0.1.json</code><br>
+    事件来源 JSON：<code>long_memory_experiment/data/sampling/event_category_pool_v0.1_60events.json</code>
+  </p>
+
+  <section>
+    <h2>结论</h2>
+    <div class="callout">
+      这个实例 <code>P0001</code> 是从今天整理的
+      <code>persona_archetype_pool_v0.1.json</code> 中的
+      <code>A01_early_career_renter</code> 采样出来的；
+      它的接受事件来自 <code>event_category_pool_v0.1_60events.json</code>。
+      当前只完成到 <strong>P0</strong>，也就是具体人物和接受事件集合；
+      还没有生成真正的 <code>event_lines.json</code>、timeline、daily interaction 或 probe。
+    </div>
+  </section>
+
+  <section>
+    <h2>来源 Archetype</h2>
+    
+    <table>
+      <tbody>
+        <tr><th>archetype_id</th><td><code>A01_early_career_renter</code></td></tr>
+        <tr><th>label</th><td>Early-career renter with unstable city life</td></tr>
+        <tr><th>core_description</th><td>A young adult with a stable but not high-paying job, trying to manage rent, commute, workplace adaptation, and weak local support.</td></tr>
+        <tr><th>likely_life_domains</th><td><span class='tag'>work</span><span class='tag'>housing</span><span class='tag'>finance</span><span class='tag'>commuting</span><span class='tag'>social_connection</span></td></tr>
+      </tbody>
+    </table>
+    
+  </section>
+
+  <section>
+    <h2>具体人物字段 z</h2>
+    <table><thead><tr><th>字段</th><th>采样值</th><th>来源 JSON 字段</th><th>JSON 允许候选</th></tr></thead><tbody><tr><th>年龄范围</th><td>30s</td><td><code>age_range_options</code></td><td><span class='tag'>20s</span><span class='tag'>30s</span></td></tr><tr><th>职业</th><td>property service assistant</td><td><code>occupation_options</code></td><td><span class='tag'>administrative assistant</span><span class='tag'>junior office clerk</span><span class='tag'>junior software engineer</span><span class='tag'>sales assistant</span><span class='tag'>property service assistant</span></td></tr><tr><th>职业状态</th><td>employed</td><td><code>occupation_status_options</code></td><td><span class='tag'>employed</span></td></tr><tr><th>教育背景</th><td>vocational college graduate</td><td><code>education_options</code></td><td><span class='tag'>vocational college graduate</span><span class='tag'>associate degree</span><span class='tag'>bachelor&#x27;s degree</span></td></tr><tr><th>家庭结构</th><td>single, rents a room</td><td><code>family_structure_options</code></td><td><span class='tag'>single, rents a room</span><span class='tag'>single, lives with roommates</span><span class='tag'>newly married, no children</span></td></tr><tr><th>人生阶段</th><td>first years after moving to a new city</td><td><code>life_stage_options</code></td><td><span class='tag'>early-career adaptation</span><span class='tag'>stable job but unstable city life</span><span class='tag'>first years after moving to a new city</span></td></tr><tr><th>经济状态</th><td>stable but tight monthly budget</td><td><code>economic_condition_options</code></td><td><span class='tag'>stable but tight monthly budget</span><span class='tag'>rent and commute costs are stressful</span><span class='tag'>limited savings and cautious spending</span></td></tr><tr><th>社会支持</th><td>family in another city</td><td><code>social_support_options</code></td><td><span class='tag'>family in another city</span><span class='tag'>a few close friends but weak local support</span><span class='tag'>roommates are friendly but not close</span></td></tr><tr><th>主要生活领域</th><td><span class='tag'>social_connection</span><span class='tag'>commuting</span><span class='tag'>housing</span></td><td><code>likely_life_domains</code></td><td><span class='tag'>work</span><span class='tag'>housing</span><span class='tag'>finance</span><span class='tag'>commuting</span><span class='tag'>social_connection</span></td></tr><tr><th>长期目标</th><td><span class='tag'>avoid workplace mistakes</span><span class='tag'>save enough to move to a better apartment</span></td><td><code>long_term_goal_options</code></td><td><span class='tag'>save enough to move to a better apartment</span><span class='tag'>avoid workplace mistakes</span><span class='tag'>build a stable city routine</span><span class='tag'>develop a local support network</span></td></tr><tr><th>沟通风格</th><td><span class='tag'>cautious</span><span class='tag'>detail-seeking</span><span class='tag'>self-questioning</span></td><td><code>communication_style_options</code></td><td><span class='tag'>plain</span><span class='tag'>cautious</span><span class='tag'>detail-seeking</span><span class='tag'>self-questioning</span></td></tr><tr><th>压力反应</th><td><span class='tag'>overthinks whether they are bothering others</span><span class='tag'>checks messages repeatedly</span></td><td><code>stress_response_options</code></td><td><span class='tag'>checks messages repeatedly</span><span class='tag'>worries about small mistakes</span><span class='tag'>hesitates before asking for help</span><span class='tag'>overthinks whether they are bothering others</span></td></tr><tr><th>决策风格</th><td><span class='tag'>budget-aware</span><span class='tag'>risk-averse</span></td><td><code>decision_style_options</code></td><td><span class='tag'>risk-averse</span><span class='tag'>budget-aware</span><span class='tag'>evidence-seeking</span></td></tr><tr><th>记忆相关特征</th><td><span class='tag'>responds well to practical planning with limited resources</span><span class='tag'>needs help separating real risk from imagined risk</span></td><td><code>memory_relevant_trait_options</code></td><td><span class='tag'>needs help separating real risk from imagined risk</span><span class='tag'>prefers concrete next steps</span><span class='tag'>responds well to practical planning with limited resources</span></td></tr></tbody></table>
+  </section>
+
+  <section>
+    <h2>接受事件集合 T</h2>
+    <p class="meta">
+      这些还只是 event category，不是跨天事件线。下一步 P1 才会把每个 category
+      展开成带 initial / recurrence / turning point / partial resolution / reflection 的事件线。
+    </p>
+    <table><thead><tr><th>ID</th><th>领域</th><th>标题</th><th>核心问题</th><th>P1 可用阶段模板</th><th>可能行动</th></tr></thead><tbody><tr><td><code>E_MOVE_001</code></td><td>relocation</td><td>Adapting to a new city with weak local support</td><td>The user is adjusting to a new environment while lacking stable local relationships.</td><td><span class='tag'>initial concern</span><span class='tag'>recurrence</span><span class='tag'>turning point</span><span class='tag'>partial resolution</span><span class='tag'>reflection</span></td><td><span class='tag'>choose one recurring social anchor</span><span class='tag'>make low-stakes routine</span><span class='tag'>separate adjustment pain from regret</span></td></tr><tr><td><code>E_EDU_001</code></td><td>教育/学业</td><td>Study deadline or assignment pressure</td><td>The user must handle a school assignment, exam, or project under time pressure.</td><td><span class='tag'>initial concern</span><span class='tag'>recurrence</span><span class='tag'>turning point</span><span class='tag'>partial resolution</span><span class='tag'>reflection</span></td><td><span class='tag'>define minimum submission</span><span class='tag'>freeze scope</span><span class='tag'>ask focused question</span></td></tr><tr><td><code>E_NEIGHBOR_001</code></td><td>neighborhood</td><td>Neighbor noise or boundary problem</td><td>A neighbor issue disrupts rest or comfort and the user is unsure how to address it.</td><td><span class='tag'>initial concern</span><span class='tag'>recurrence</span><span class='tag'>turning point</span><span class='tag'>partial resolution</span><span class='tag'>reflection</span></td><td><span class='tag'>document pattern</span><span class='tag'>try neutral first message</span><span class='tag'>use formal channel if repeated</span></td></tr><tr><td><code>E_ADMIN_001</code></td><td>行政手续</td><td>Administrative document or deadline uncertainty</td><td>The user worries about missing a rule, document, or deadline in an official process.</td><td><span class='tag'>initial concern</span><span class='tag'>recurrence</span><span class='tag'>turning point</span><span class='tag'>partial resolution</span><span class='tag'>reflection</span></td><td><span class='tag'>list known requirements</span><span class='tag'>identify official source</span><span class='tag'>send clarification message</span></td></tr><tr><td><code>E_HOME_002</code></td><td>housing</td><td>Rent increase or lease uncertainty</td><td>The user faces uncertainty around renewing a lease, rising rent, or unstable housing.</td><td><span class='tag'>initial concern</span><span class='tag'>recurrence</span><span class='tag'>turning point</span><span class='tag'>partial resolution</span><span class='tag'>reflection</span></td><td><span class='tag'>compare total moving cost</span><span class='tag'>ask landlord concrete terms</span><span class='tag'>set decision deadline</span></td></tr><tr><td><code>E_PLAN_003</code></td><td>personal_planning</td><td>Unfinished home task keeps returning</td><td>A small home task or repair keeps being postponed and creates repeated stress.</td><td><span class='tag'>initial concern</span><span class='tag'>recurrence</span><span class='tag'>turning point</span><span class='tag'>partial resolution</span><span class='tag'>reflection</span></td><td><span class='tag'>define smallest next step</span><span class='tag'>set time-box</span><span class='tag'>decide DIY vs paid help</span></td></tr></tbody></table>
+  </section>
+
+  <section>
+    <h2>候选事件决策</h2>
+    <table><thead><tr><th>ID</th><th>领域</th><th>决策</th><th>理由</th></tr></thead><tbody><tr><td><code>E_PLAN_003</code></td><td>personal_planning</td><td>accept</td><td><span class='tag'>source_archetype 在 compatible_archetypes 中</span><span class='tag'>通过 hard rule 检查</span><span class='tag'>被选入 4-6 条接受事件集合以满足领域覆盖</span></td></tr><tr><td><code>E_EDU_001</code></td><td>教育/学业</td><td>accept</td><td><span class='tag'>source_archetype 在 compatible_archetypes 中</span><span class='tag'>通过 hard rule 检查</span><span class='tag'>被选入 4-6 条接受事件集合以满足领域覆盖</span></td></tr><tr><td><code>E_HOME_002</code></td><td>housing</td><td>accept</td><td><span class='tag'>source_archetype 在 compatible_archetypes 中</span><span class='tag'>通过 hard rule 检查</span><span class='tag'>被选入 4-6 条接受事件集合以满足领域覆盖</span></td></tr><tr><td><code>E_CONSUMER_001</code></td><td>consumer_issue</td><td>reject</td><td><span class='tag'>本轮保留 4-6 条事件预算，优先选择更能补足领域覆盖的候选事件</span></td></tr><tr><td><code>E_NEIGHBOR_001</code></td><td>neighborhood</td><td>accept</td><td><span class='tag'>source_archetype 在 compatible_archetypes 中</span><span class='tag'>通过 hard rule 检查</span><span class='tag'>被选入 4-6 条接受事件集合以满足领域覆盖</span></td></tr><tr><td><code>E_MOVE_001</code></td><td>relocation</td><td>accept</td><td><span class='tag'>source_archetype 在 compatible_archetypes 中</span><span class='tag'>通过 hard rule 检查</span><span class='tag'>被选入 4-6 条接受事件集合以满足领域覆盖</span></td></tr><tr><td><code>E_LEARN_001</code></td><td>学习转型</td><td>reject</td><td><span class='tag'>本轮保留 4-6 条事件预算，优先选择更能补足领域覆盖的候选事件</span></td></tr><tr><td><code>E_ADMIN_001</code></td><td>行政手续</td><td>accept</td><td><span class='tag'>source_archetype 在 compatible_archetypes 中</span><span class='tag'>通过 hard rule 检查</span><span class='tag'>被选入 4-6 条接受事件集合以满足领域覆盖</span></td></tr></tbody></table>
+  </section>
+</main>
+</body>
+</html>

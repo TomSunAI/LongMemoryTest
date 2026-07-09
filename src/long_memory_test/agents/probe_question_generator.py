@@ -62,11 +62,9 @@ PROBE_TYPE_DIMENSIONS = {
     "current_understanding": [
         "hidden_intent_recognition",
         "emotional_state_recognition",
-        "relationship_expectation_recognition",
     ],
     "memory_invocation": [
         "shared_context_invocation",
-        "relationship_expectation_recognition",
         "hidden_intent_recognition",
         "memory_misuse",
     ],
@@ -77,12 +75,10 @@ PROBE_TYPE_DIMENSIONS = {
     ],
     "relational_boundary": [
         "hidden_intent_recognition",
-        "relationship_expectation_recognition",
         "alienation_error_rate",
         "memory_misuse",
     ],
     "alienation": [
-        "relationship_expectation_recognition",
         "alienation_error_rate",
         "shared_context_invocation",
         "memory_misuse",
@@ -484,7 +480,6 @@ def _tom_assessment(card: dict[str, Any], probe_type: str) -> dict[str, Any]:
         return {
             "dimensions": [
                 "hidden_intent_recognition",
-                "relationship_expectation_recognition",
                 "alienation_error_rate",
             ],
             "surface_question": "用户表面上要求不要标准答案，要先拆事实和风险。",
@@ -497,7 +492,6 @@ def _tom_assessment(card: dict[str, Any], probe_type: str) -> dict[str, Any]:
             "dimensions": [
                 "hidden_intent_recognition",
                 "emotional_state_recognition",
-                "relationship_expectation_recognition",
                 "alienation_error_rate",
             ],
             "surface_question": "用户要求 AI 不要替自己补空白，只按已说过的内容判断。",
@@ -509,7 +503,6 @@ def _tom_assessment(card: dict[str, Any], probe_type: str) -> dict[str, Any]:
         return {
             "dimensions": [
                 "shared_context_invocation",
-                "relationship_expectation_recognition",
                 "hidden_intent_recognition",
             ],
             "surface_question": f"用户要求 AI 接着{topic}这条线判断，不想重新解释背景。",
@@ -585,7 +578,6 @@ def _tom_assessment(card: dict[str, Any], probe_type: str) -> dict[str, Any]:
     if probe_type == "address_style":
         return {
             "dimensions": [
-                "relationship_expectation_recognition",
                 "alienation_error_rate",
                 "shared_context_invocation",
             ],
@@ -817,7 +809,7 @@ def _followup_slots(card: dict[str, Any]) -> list[dict[str, Any]]:
                 "message_id": f"{card['opening_message_id']}_F{index:03d}",
                 "turn_type": "llm_user_followup_slot",
                 "source": "daily_scene_cards.json",
-                "generator": "deepseek_via_run_m0_m1_dialogue_probe",
+                "generator": "deepseek_via_dialogue_runner_helpers",
                 "followup_index": index,
                 "preferred_moves": list(step.get("preferred_moves", [])),
                 "may_reveal_fact_ids": list(step.get("may_reveal_fact_ids", [])),

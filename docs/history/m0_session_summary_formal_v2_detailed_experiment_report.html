@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>M0 Session-Summary Memory Formal Experiment Detailed Report</title>
+<style>
+:root {
+  --bg:#f7f8fa; --paper:#ffffff; --ink:#1f2933; --muted:#667085; --line:#d9dee7;
+  --blue:#2563eb; --green:#16804a; --amber:#b45309; --red:#b42318; --slate:#344054;
+  --soft-blue:#eaf1ff; --soft-green:#eaf7ef; --soft-amber:#fff4e5;
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif; }
+header { padding:34px 36px 26px; background:#172033; color:#fff; border-bottom:5px solid #2f80ed; }
+header h1 { margin:0 0 10px; font-size:28px; line-height:1.25; letter-spacing:0; }
+header p { margin:5px 0; color:#d6deea; max-width:1180px; }
+main { max-width:1280px; margin:0 auto; padding:24px 28px 60px; }
+section { background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:20px 22px; margin:16px 0; box-shadow:0 1px 2px rgba(16,24,40,.04); }
+h2 { margin:0 0 12px; font-size:20px; line-height:1.35; }
+h3 { margin:18px 0 8px; font-size:15px; color:#263343; }
+p { margin:8px 0; }
+code { background:#f2f4f7; border:1px solid #e4e7ec; border-radius:5px; padding:1px 5px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px; }
+pre { white-space:pre-wrap; word-break:break-word; background:#101828; color:#f2f4f7; padding:14px 16px; border-radius:7px; overflow:auto; font-size:12px; }
+table { width:100%; border-collapse:collapse; margin:10px 0 12px; table-layout:auto; }
+th, td { border:1px solid var(--line); padding:7px 9px; vertical-align:top; }
+th { background:#f2f5f9; text-align:left; font-weight:650; color:#263343; }
+td { background:#fff; }
+.small { color:var(--muted); font-size:12px; }
+.grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.metric { border:1px solid var(--line); border-radius:8px; padding:12px 14px; background:#fbfcfe; min-height:92px; }
+.metric span { display:block; color:var(--muted); font-size:12px; }
+.metric b { display:block; margin-top:4px; font-size:28px; line-height:1.1; }
+.metric small { display:block; margin-top:6px; color:var(--muted); }
+.callout { border-left:4px solid var(--blue); background:var(--soft-blue); padding:10px 12px; border-radius:6px; margin:10px 0; }
+.callout.warn { border-left-color:var(--amber); background:var(--soft-amber); }
+.callout.ok { border-left-color:var(--green); background:var(--soft-green); }
+.badge { display:inline-block; padding:2px 7px; border-radius:999px; font-size:12px; font-weight:650; }
+.badge.ok { background:#dcfae6; color:#067647; } .badge.warn { background:#fef0c7; color:#93370d; } .badge.info { background:#dbeafe; color:#1d4ed8; }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.barcell { position:relative; min-width:110px; height:22px; line-height:22px; background:#f7f8fa; border-radius:4px; overflow:hidden; }
+.barcell i { position:absolute; left:0; top:0; bottom:0; background:#c7d7fe; display:block; }
+.barcell span { position:relative; z-index:1; padding-left:7px; font-variant-numeric:tabular-nums; }
+.kv td:first-child { width:260px; color:#344054; font-weight:600; background:#fbfcfe; }
+.long td { max-width:760px; }
+.toc a { display:inline-block; margin:3px 8px 3px 0; color:#155eef; text-decoration:none; }
+@media (max-width:900px) { .grid,.two { grid-template-columns:1fr; } main { padding:16px; } header { padding:24px 18px; } }
+</style>
+</head>
+<body>
+<header>
+<h1>M0 LD-Agent-style Session-Summary Memory 正式实验详细报告</h1>
+<p>正式运行目录：<code>long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2</code> · 报告由已落盘 JSON 实验产物生成 · Letta M0 仅作为 legacy 保留，本报告只分析当前 M0 baseline。</p>
+<p>生成依据为本地实验产物；评估结果来自 <code>automatic_scores.json</code> 的规则化 ToM 分诊评估，不包含 LLM-as-judge。</p>
+</header>
+<main>
+<section id="toc"><h2>目录</h2><p class="toc">
+<a href="#summary">结论</a><a href="#scope">实验定位</a><a href="#design">实验结构</a><a href="#m0">M0 实现</a><a href="#flow">执行流程</a><a href="#diagnosis">排查修复</a><a href="#memory">Memory 审计</a><a href="#retrieval">Retrieval 统计</a><a href="#eval-method">评估方法</a><a href="#eval-results">评估结果</a><a href="#examples">样例</a><a href="#artifacts">产物与复现</a>
+</p></section>
+
+<section id="summary"><h2>1. 结论摘要</h2><div class="grid"><div class="metric"><span>运行状态</span><b>完成</b><small>96/96 轮</small></div><div class="metric"><span>平均 ToM 分</span><b>69.44</b><small>36 个 probe 轮</small></div><div class="metric"><span>记忆上下文</span><b>2298.8</b><small>平均字符数，最大 2962</small></div><div class="metric"><span>Session 摘要记忆</span><b>30</b><small>最终 memory snapshot</small></div><div class="metric"><span>Persona 画像记忆</span><b>36</b><small>普通用户事实/偏好</small></div><div class="metric"><span>零命中</span><b>5</b><small>占全部轮次 5.2%</small></div></div>
+<div class="callout ok"><b>正式结论：</b>v2 run 已完成 96/96 turns，可以作为当前 M0 baseline 的正式实验结果。v1 partial 只作为诊断记录，不进入正式分数。</div>
+<div class="callout warn"><b>关键限制：</b>M0 是 session-summary memory baseline，不是完整 LD-Agent event memory。它保留 LD-Agent-compatible metadata，但不做 event identity、event merge、event trajectory 或关系策略长期化。</div>
+</section>
+
+<section id="scope"><h2>2. 实验定位与问题定义</h2>
+<p>本次实验只回答一个问题：在 30 天连续对话脚本中，当前版本 M0 作为 <b>session-summary + ordinary persona</b> 的长记忆基线，能否稳定完成全量运行，并在 ToM probe 上表现出可评估的上下文理解能力。</p>
+<table class="kv"><tbody>
+<tr><td>实验对象</td><td><b>M0_ld_agent_style_session_summary</b>，当前新 M0 baseline</td></tr>
+<tr><td>Legacy 处理</td><td>Letta M0 不参与本次基线，只作为保留实现</td></tr>
+<tr><td>并行策略</td><td>本次按用户决策采用串行：<code>condition_workers=1</code>；且只跑 M0，没有 M0-M3 并行</td></tr>
+<tr><td>正式结果</td><td>采用 <code>run_20260609_m0_session_summary_formal_v2</code></td></tr>
+<tr><td>诊断结果</td><td>v1 partial run 仅用于定位 prompt 膨胀原因</td></tr>
+<tr><td>评估边界</td><td>只运行 rule-based ToM triage；未运行 LLM-as-judge，也未做 M1/M2/M3 对照</td></tr>
+</tbody></table>
+</section>
+
+<section id="design"><h2>3. 实验结构</h2>
+<h3>3.1 Run 身份</h3>
+<table><thead><tr><th>字段</th><th>值</th></tr></thead><tbody><tr><td>schema_version</td><td>run_config_v1</td></tr><tr><td>run_id</td><td>docx_conditions_20260609075004</td></tr><tr><td>created_at</td><td>2026-06-09T07:50:04.790671Z</td></tr><tr><td>route</td><td>event_first_bei_calibrated_m0_m1_m2_m3</td></tr><tr><td>conditions</td><td>M0</td></tr><tr><td>expected_turns</td><td>96</td></tr><tr><td>checkpoint_status</td><td>complete</td></tr><tr><td>last_message_id</td><td>D30_P001</td></tr></tbody></table>
+<h3>3.2 控制变量</h3>
+<table class="kv"><thead><tr><th>控制变量</th><th>值</th></tr></thead><tbody><tr><td>same_user_input_for_all_conditions</td><td>True</td></tr><tr><td>same_model_for_all_conditions</td><td>True</td></tr><tr><td>same_short_term_context_policy</td><td>True</td></tr><tr><td>short_term_context_mode</td><td>shared_user_turns_only</td></tr><tr><td>only_long_term_memory_condition_changes</td><td>True</td></tr><tr><td>same_condition_parallelism_for_all_conditions</td><td>True</td></tr><tr><td>m1_m2_m3_share_m0_base_memory</td><td>True</td></tr><tr><td>evaluation_metadata_visible_to_model</td><td>False</td></tr><tr><td>bei_gold_failure_modes_visible_to_model</td><td>False</td></tr></tbody></table>
+<h3>3.3 模型与运行参数</h3>
+<table class="kv"><thead><tr><th>模型字段</th><th>值</th></tr></thead><tbody><tr><td>provider</td><td>deepseek</td></tr><tr><td>base_url</td><td>https://api.deepseek.com</td></tr><tr><td>model</td><td>deepseek-v4-pro</td></tr><tr><td>temperature</td><td>0.2</td></tr><tr><td>top_p</td><td>1.0</td></tr><tr><td>max_tokens</td><td>900</td></tr><tr><td>timeout_seconds</td><td>240.0</td></tr><tr><td>condition_workers</td><td>1</td></tr></tbody></table>
+<h3>3.4 输入数据</h3>
+<table class="kv"><thead><tr><th>输入项</th><th>路径</th></tr></thead><tbody><tr><td>daily_messages</td><td><code>long_memory_experiment/data/script/daily_user_message.json</code></td></tr><tr><td>scene_cards</td><td><code>long_memory_experiment/data/script/daily_scene_cards.json</code></td></tr><tr><td>probe_questions</td><td><code>long_memory_experiment/data/script/probe_question_plan.json</code></td></tr><tr><td>memory_conditions</td><td><code>long_memory_experiment/cache/memory_conditions_combined.json</code></td></tr></tbody></table>
+<h3>3.5 Turn 构成</h3>
+<div class="two"><div>
+<table><thead><tr><th>轮次类型</th><th>数量</th><th>占比</th></tr></thead><tbody><tr><td>targeted_probe</td><td><div class="barcell"><span>36</span><i style="width:100.0%"></i></div></td><td>37.5%</td></tr><tr><td>scripted_opening</td><td><div class="barcell"><span>30</span><i style="width:83.3%"></i></div></td><td>31.2%</td></tr><tr><td>llm_user_followup</td><td><div class="barcell"><span>30</span><i style="width:83.3%"></i></div></td><td>31.2%</td></tr></tbody></table>
+</div><div>
+<table><thead><tr><th>脚本阶段</th><th>数量</th><th>占比</th></tr></thead><tbody><tr><td>0</td><td><div class="barcell"><span>26</span><i style="width:100.0%"></i></div></td><td>27.1%</td></tr><tr><td>2</td><td><div class="barcell"><span>20</span><i style="width:76.9%"></i></div></td><td>20.8%</td></tr><tr><td>3</td><td><div class="barcell"><span>18</span><i style="width:69.2%"></i></div></td><td>18.8%</td></tr><tr><td>4</td><td><div class="barcell"><span>17</span><i style="width:65.4%"></i></div></td><td>17.7%</td></tr><tr><td>1</td><td><div class="barcell"><span>15</span><i style="width:57.7%"></i></div></td><td>15.6%</td></tr></tbody></table>
+</div></div>
+<h3>3.6 主题与领域分布</h3>
+<div class="two"><div>
+<table><thead><tr><th>主题</th><th>轮次数</th><th>占比</th></tr></thead><tbody><tr><td>孩子幼儿园可能不稳定</td><td><div class="barcell"><span>18</span><i style="width:100.0%"></i></div></td><td>18.8%</td></tr><tr><td>合作项目推进不顺</td><td><div class="barcell"><span>18</span><i style="width:100.0%"></i></div></td><td>18.8%</td></tr><tr><td>家里分工和伴侣沟通</td><td><div class="barcell"><span>16</span><i style="width:88.9%"></i></div></td><td>16.7%</td></tr><tr><td>睡眠被打碎</td><td><div class="barcell"><span>16</span><i style="width:88.9%"></i></div></td><td>16.7%</td></tr><tr><td>论文截稿前的取舍</td><td><div class="barcell"><span>14</span><i style="width:77.8%"></i></div></td><td>14.6%</td></tr><tr><td>孩子入园适应</td><td><div class="barcell"><span>14</span><i style="width:77.8%"></i></div></td><td>14.6%</td></tr></tbody></table>
+</div><div>
+<table><thead><tr><th>领域标签</th><th>出现次数</th><th>占全部轮次比例</th></tr></thead><tbody><tr><td>parenting</td><td><div class="barcell"><span>55</span><i style="width:100.0%"></i></div></td><td>57.3%</td></tr><tr><td>career</td><td><div class="barcell"><span>53</span><i style="width:96.4%"></i></div></td><td>55.2%</td></tr><tr><td>self_management</td><td><div class="barcell"><span>35</span><i style="width:63.6%"></i></div></td><td>36.5%</td></tr><tr><td>intimate_relationship</td><td><div class="barcell"><span>32</span><i style="width:58.2%"></i></div></td><td>33.3%</td></tr><tr><td>friendship</td><td><div class="barcell"><span>3</span><i style="width:5.5%"></i></div></td><td>3.1%</td></tr></tbody></table>
+</div></div>
+<p class="small">domain 是轮次级多标签计数，同一轮可能同时属于 parenting/career/self_management 等多个 domain，因此总数可以超过 96。</p>
+<h3>3.7 Probe 设计分布</h3>
+<div class="two"><div>
+<table><thead><tr><th>Probe 类型</th><th>数量</th><th>占 probe 比例</th></tr></thead><tbody><tr><td>current_understanding</td><td><div class="barcell"><span>7</span><i style="width:100.0%"></i></div></td><td>19.4%</td></tr><tr><td>natural_detail</td><td><div class="barcell"><span>7</span><i style="width:100.0%"></i></div></td><td>19.4%</td></tr><tr><td>relational_boundary</td><td><div class="barcell"><span>6</span><i style="width:85.7%"></i></div></td><td>16.7%</td></tr><tr><td>memory_invocation</td><td><div class="barcell"><span>6</span><i style="width:85.7%"></i></div></td><td>16.7%</td></tr><tr><td>alienation</td><td><div class="barcell"><span>5</span><i style="width:71.4%"></i></div></td><td>13.9%</td></tr><tr><td>state_transformation</td><td><div class="barcell"><span>5</span><i style="width:71.4%"></i></div></td><td>13.9%</td></tr></tbody></table>
+</div><div>
+<table><thead><tr><th>目标 ToM 维度</th><th>数量</th><th>占 probe 轮比例</th></tr></thead><tbody><tr><td>hidden_intent_recognition</td><td><div class="barcell"><span>31</span><i style="width:100.0%"></i></div></td><td>86.1%</td></tr><tr><td>relationship_expectation_recognition</td><td><div class="barcell"><span>24</span><i style="width:77.4%"></i></div></td><td>66.7%</td></tr><tr><td>memory_misuse</td><td><div class="barcell"><span>24</span><i style="width:77.4%"></i></div></td><td>66.7%</td></tr><tr><td>emotional_state_recognition</td><td><div class="barcell"><span>19</span><i style="width:61.3%"></i></div></td><td>52.8%</td></tr><tr><td>shared_context_invocation</td><td><div class="barcell"><span>16</span><i style="width:51.6%"></i></div></td><td>44.4%</td></tr><tr><td>alienation_error_rate</td><td><div class="barcell"><span>11</span><i style="width:35.5%"></i></div></td><td>30.6%</td></tr><tr><td>natural_detail_use</td><td><div class="barcell"><span>7</span><i style="width:22.6%"></i></div></td><td>19.4%</td></tr></tbody></table>
+</div></div>
+<table><thead><tr><th>需要的记忆类型</th><th>数量</th><th>占 probe 轮比例</th></tr></thead><tbody><tr><td>relational_anchor</td><td><div class="barcell"><span>36</span><i style="width:100.0%"></i></div></td><td>100.0%</td></tr><tr><td>event_memory</td><td><div class="barcell"><span>36</span><i style="width:100.0%"></i></div></td><td>100.0%</td></tr><tr><td>summary_memory</td><td><div class="barcell"><span>12</span><i style="width:33.3%"></i></div></td><td>33.3%</td></tr><tr><td>response_boundary</td><td><div class="barcell"><span>11</span><i style="width:30.6%"></i></div></td><td>30.6%</td></tr></tbody></table>
+</section>
+
+<section id="m0"><h2>4. M0 当前实现细节</h2>
+<table class="kv"><tbody>
+<tr><td>Runtime 文件</td><td><code>src/long_memory_test/memory/ld_agent_runtime.py</code></td></tr>
+<tr><td>Schema 文件</td><td><code>src/long_memory_test/memory/schema.py</code></td></tr>
+<tr><td>Condition builder</td><td><code>src/long_memory_test/agents/memory_condition_builder.py</code></td></tr>
+<tr><td>runtime_id</td><td><code>M0_ld_agent_style_session_summary</code></td></tr>
+<tr><td>schema_version</td><td><code>m0_ld_agent_style_session_summary_runtime_v1</code></td></tr>
+<tr><td>compatibility_mode</td><td><code>ld_agent_style_session_summary_memory_baseline</code></td></tr>
+<tr><td>memory_unit</td><td><code>session</code></td></tr>
+<tr><td>long-term bank</td><td><code>session_summary_memories</code> + <code>generic_persona_memories</code></td></tr>
+<tr><td>retrieval_strategy</td><td><code>topic_overlap_time_decay</code></td></tr>
+<tr><td>top_k / short_term_k</td><td><code>5</code> / <code>5</code></td></tr>
+<tr><td>storage_backend</td><td><code>json</code>; ChromaDB used: <code>False</code></td></tr>
+<tr><td>LD-Agent generator/checkpoint</td><td>generator: <code>False</code>; checkpoint: <code>False</code></td></tr>
+<tr><td>writer</td><td>summary_writer: <code>llm</code>; persona_writer: <code>llm</code></td></tr>
+</tbody></table>
+<h3>4.1 与完整 LD-Agent event memory 的差异</h3>
+<ul>
+<li>M0 保留 <code>ld_agent_metadata.memory_name = event_memory</code> 的兼容字段，但实际 memory unit 是 completed session/day 的 summary。</li>
+<li>不做 event detection、event identity resolution、event merge、persistent event update、event trajectory construction。</li>
+<li>不把 relational anchors、shared handling strategy、boundary-sensitive cues 写成长期策略记忆。</li>
+<li>Probe turn 是 read-only：读取记忆生成回答，但默认 <code>skip_probe_writeback</code>，避免评估问题污染长期记忆。</li>
+</ul>
+<h3>4.2 Prompt 压缩</h3>
+<table class="kv"><tbody>
+<tr><td>当前代码策略</td><td><b>topics 不再写入 LLM prompt</b>。prompt 只保留 session summary 内容、source_session、score、overlap、time_decay。</td></tr>
+<tr><td>保留策略</td><td>完整 topics 仍保留在 retrieval JSON diagnostics 和 memory snapshot，用于检索、审计和复盘。</td></tr>
+<tr><td>v2 正式实验历史行为</td><td>本报告对应的 v2 正式实验产物是在修正前生成的，当时 prompt 中仍有压缩后的 <code>topics=...(+N)</code>。该行为已在当前代码中移除。</td></tr>
+</tbody></table>
+<h3>4.3 Topic 到底渲染什么</h3>
+<p>这里的 <code>topics</code> 不是自然语言摘要，也不是最终回答内容，而是每条 <code>session_summary_memory</code> 附带的检索标签。它由 domain、脚本 topic、用户输入/summary/raw dialogue 中抽出的中文和英文关键词/ngram 混合组成，用于 topic overlap 检索与诊断。</p>
+<table class="kv"><tbody>
+<tr><td>完整保存位置</td><td><code>responses_by_condition.json</code> 的 <code>memory_context.retrieval.session_hits[].memory.topics</code> / <code>memory.topic</code>。这里保留完整 topic 列表，通常可达到数百到两千多个条目。</td></tr>
+<tr><td>当前是否给 LLM 看</td><td><b>不看。</b>当前代码已移除 <code>topics=...</code> prompt 渲染；topics 只参与检索和 diagnostics。</td></tr>
+<tr><td>当前 prompt metadata 行</td><td><code>source_session=...; score=...; overlap=...; time_decay=...</code></td></tr>
+<tr><td>不会渲染 topic 的地方</td><td><code>Current short-term session</code> 只渲染当前 session 的 User/Agent 文本；<code>Persona memories</code> 只渲染 persona summary，不渲染 persona topic metadata。</td></tr>
+</tbody></table>
+<h3>4.4 Topic 历史样例与当前 prompt 样例</h3>
+<table><thead><tr><th>样例 turn</th><th>命中 session</th><th>v2 历史产物中的 topics 诊断样例</th><th>当前代码行为</th></tr></thead><tbody>
+<tr><td><code>D02_M001</code></td><td><code>D01</code></td><td><code>parenting,user_message,一下,一下咱,一下太,一下孩,一下对,一下附,一个,一个你,一个可,一个基,...(+2284)</code></td><td>不写入 prompt，仅保留在 diagnostics。</td></tr>
+<tr><td><code>D15_P001</code></td><td><code>D10</code></td><td><code>career,parenting,user_message,一下,一下消,一个,一个保,一个实,一个飘,一件,一件事,一反,...(+812)</code></td><td>不写入 prompt，仅保留在 diagnostics。</td></tr>
+<tr><td><code>D30_P001</code></td><td><code>D22</code></td><td><code>career,intimate_relationship,一下,一个,一个坑,一个触,一反,一反应,一听,一听到,一听到风声就想铺安全网,一旦,...(+969)</code></td><td>不写入 prompt，仅保留在 diagnostics。</td></tr>
+</tbody></table>
+<pre>Retrieved session summaries:
+1. 用户提到上次聊过的担忧仍未完全过去，同时叠加合作项目不顺和孩子入园适应...
+   source_session=D10; score=0.2466; overlap=0.2575; time_decay=0.9577</pre>
+</section>
+
+<section id="flow"><h2>5. 正式执行流程</h2>
+<p>每个 turn 的执行路径保持一致，只改变 M0 的长期记忆状态。整体流程如下：</p>
+<ol>
+<li>从脚本输入中取出当前 <code>message_id</code>、day、topic、domains、turn_type。</li>
+<li>M0 runtime 根据当前 user input、topic、domain 和短期 session 内容做 <code>topic_overlap_time_decay</code> 检索。</li>
+<li>构造 <code>memory_context</code>：包含 session summary hits、persona hits、short-term session 摘要信息和 source_detail_ids。</li>
+<li>调用主 LLM 生成 M0 assistant answer。</li>
+<li>按 turn type 写回：ordinary opening/followup 进入 short-term session；probe read-only；跨 session 时将上一 session flush 成 session summary。</li>
+<li>写入 <code>responses_by_condition.json</code>、<code>conversation_log.json</code>，并在最终 snapshot 中保存 M0 memory bank。</li>
+<li>运行 <code>scripts/06_evaluate_tom.py</code> 对 36 条 targeted_probe 做 rule-based ToM triage。</li>
+</ol>
+<h3>5.1 复现实验命令</h3>
+<pre>.venv/bin/python scripts/05_run_dialogue_conditions.py --run-dir long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2 --scene-followups 1 --conditions M0 --all-message-ids --condition-workers 1 --llm-timeout 240 --max-tokens 900 --temperature 0.2 --top-p 1.0 --print-mode summary --print-progress --reset-conversation-log</pre>
+<h3>5.2 评估命令</h3>
+<pre>.venv/bin/python scripts/06_evaluate_tom.py --run-dir long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2</pre>
+</section>
+
+<section id="diagnosis"><h2>6. v1 Prompt 膨胀排查与 v2 修复</h2>
+<div class="callout warn"><b>诊断结论：</b>阻塞不是单条测试坏了，也不是 D06/D07 应被跳过；根因是完整 topic n-gram 被渲染进 prompt，导致 memory_context 暴涨。</div>
+<table><thead><tr><th>运行版本</th><th>统计轮数</th><th>平均上下文字符数</th><th>最大值</th><th>最小值</th><th>零命中</th><th>状态</th></tr></thead><tbody><tr><td>v1 partial diagnostic</td><td>26</td><td>17432.5</td><td>31514</td><td>464</td><td>5</td><td>running</td></tr><tr><td>v2 formal</td><td>96</td><td>2298.8</td><td>2962</td><td>464</td><td>5</td><td>complete</td></tr></tbody></table>
+<h3>6.1 v1 最大上下文样例</h3>
+<table><thead><tr><th>message_id</th><th>轮次类型</th><th>上下文字符数</th><th>session 命中</th><th>是否零命中</th></tr></thead><tbody><tr><td>D06_P001</td><td>targeted_probe</td><td>31514</td><td>5</td><td>否</td></tr><tr><td>D06_P004</td><td>targeted_probe</td><td>31514</td><td>5</td><td>否</td></tr><tr><td>D06_P003</td><td>targeted_probe</td><td>31513</td><td>5</td><td>否</td></tr><tr><td>D06_P002</td><td>targeted_probe</td><td>31511</td><td>5</td><td>否</td></tr><tr><td>D06_M001_F001</td><td>llm_user_followup</td><td>31280</td><td>5</td><td>否</td></tr><tr><td>D06_M001</td><td>scripted_opening</td><td>31080</td><td>5</td><td>否</td></tr><tr><td>D05_M001_F001</td><td>llm_user_followup</td><td>28170</td><td>4</td><td>否</td></tr><tr><td>D05_M001</td><td>scripted_opening</td><td>27966</td><td>4</td><td>否</td></tr></tbody></table>
+<p>v1 在 D06 附近出现 31k 字符级别 memory_context。v2 只改变 prompt 可见渲染，不改变 retrieval diagnostics，因此保留了排查可追溯性，同时让正式 run 能稳定完成。</p>
+<h3>6.2 为什么不采用 skip</h3>
+<table><thead><tr><th>问题</th><th>判断</th><th>执行决策</th></tr></thead><tbody>
+<tr><td>是否是单条样本异常</td><td>否。多个 D06 turn 同时出现上下文过大，且都与 topic 渲染长度有关。</td><td>不设置 message-id skip 作为正式方案。</td></tr>
+<tr><td>是否退出正式实验</td><td>否。修正后 v2 完成全量，说明样本可继续用于 M0 baseline。</td><td>保留 v1 diagnostic；v2 为正式结果。</td></tr>
+<tr><td>是否改变记忆检索</td><td>否。检索命中和完整 diagnostics 不改。</td><td>只压缩 LLM prompt 的 topic 展示。</td></tr>
+</tbody></table>
+</section>
+
+<section id="memory"><h2>7. Memory 行为审计</h2>
+<h3>7.1 最终 Memory Snapshot</h3>
+<table class="kv"><tbody>
+<tr><td>session_summary_memories</td><td>30</td></tr>
+<tr><td>persona_memories</td><td>36</td></tr>
+<tr><td>short_term_session</td><td>0</td></tr>
+<tr><td>current_session_id/day</td><td>D30 / 30</td></tr>
+<tr><td>memory_llm_failure_count</td><td>26</td></tr>
+</tbody></table>
+<h3>7.2 Per-turn Action Log</h3>
+<div class="callout"><b>审计口径说明：</b>per-turn action log 记录了 29 次 <code>add_session_summary_memory</code>，对应 D02_M001 到 D30_M001 对上一 session 的 flush；最终 snapshot 另包含 D30 结束后的最终 session summary，因此最终 session summary 总数是 30。</div>
+<table><thead><tr><th>写回动作</th><th>日志计数</th><th>占比</th></tr></thead><tbody><tr><td>append_short_term_session</td><td><div class="barcell"><span>60</span><i style="width:100.0%"></i></div></td><td>37.3%</td></tr><tr><td>add_persona_memory</td><td><div class="barcell"><span>36</span><i style="width:60.0%"></i></div></td><td>22.4%</td></tr><tr><td>skip_probe_writeback</td><td><div class="barcell"><span>36</span><i style="width:60.0%"></i></div></td><td>22.4%</td></tr><tr><td>add_session_summary_memory</td><td><div class="barcell"><span>29</span><i style="width:48.3%"></i></div></td><td>18.0%</td></tr></tbody></table>
+<table><thead><tr><th>写回动作</th><th>状态</th><th>数量</th></tr></thead><tbody><tr><td>append_short_term_session</td><td>success</td><td>60</td></tr><tr><td>add_persona_memory</td><td>success</td><td>36</td></tr><tr><td>skip_probe_writeback</td><td>skipped</td><td>36</td></tr><tr><td>add_session_summary_memory</td><td>success</td><td>29</td></tr></tbody></table>
+<table><thead><tr><th>轮次类型</th><th>动作分布</th></tr></thead><tbody><tr><td>scripted_opening</td><td>{&#x27;append_short_term_session&#x27;: 30, &#x27;add_persona_memory&#x27;: 23, &#x27;add_session_summary_memory&#x27;: 29}</td></tr><tr><td>llm_user_followup</td><td>{&#x27;append_short_term_session&#x27;: 30, &#x27;add_persona_memory&#x27;: 13}</td></tr><tr><td>targeted_probe</td><td>{&#x27;skip_probe_writeback&#x27;: 36}</td></tr></tbody></table>
+<h3>7.3 Memory Writer Fallback</h3>
+<table><thead><tr><th>字段</th><th>值</th></tr></thead><tbody><tr><td>失败次数</td><td>26</td></tr><tr><td>按任务分布</td><td>{&#x27;SessionSummary&#x27;: 7, &#x27;PersonaExtraction&#x27;: 19}</td></tr><tr><td>按原因分布</td><td>{&#x27;empty_response_attempt_2_max_tokens_500&#x27;: 26}</td></tr><tr><td>fallback 策略</td><td>memory writer 的 LLM 空返回并重试后，使用 deterministic fallback；主实验继续运行。</td></tr></tbody></table>
+<h3>7.4 Session Summary 样例</h3>
+<table class="long"><thead><tr><th>来源 session</th><th>创建日</th><th>可用起点</th><th>memory_id</th><th>summary 摘要片段</th></tr></thead><tbody><tr><td>D01</td><td>1</td><td>D02</td><td>m0_ld_agent:session_summary_memory:be6c797c9ea1</td><td>用户听说孩子所在的幼儿园可能有不稳定的消息（来自家长群），想寻求一个实在的、非标准化的处理思路，考虑是否要提前看其他选择。Agent</td></tr><tr><td>D02</td><td>2</td><td>D03</td><td>m0_ld_agent:session_summary_memory:803ff60da384</td><td>Session summary from 23 line(s): (line 1) User: 合作那边今天又聊了一轮，对方理解的方向和我想推进的东西还是错位。你先别急着给建议，帮我听听我到底是在怕什么。 (line 2) Agent: 嗯，我听到了。你其实在问的不是“幼儿园要不要换”，而是“我该不该继续这么紧着”。 我按现在手里有的说，不往外补—— **已知：** - 家长群传了幼儿园可能不稳定的消息。 - 你第一反应是“要不要提前…</td></tr><tr><td>D03</td><td>3</td><td>D04</td><td>m0_ld_agent:session_summary_memory:787f73fdba22</td><td>用户就论文截稿前的修改取舍寻求帮助，纠结“必须认真改”和“可以放过”的边界。Agent指出用户真正的问题不是不会判断，而是将“放过”默认为偷懒，导致恐惧和焦虑，并在焦虑驱动下反复横跳，而非基于内容本身做决策。用户的核心需求是厘清这种紧张状态，找到不自我敷衍的停止线。</td></tr><tr><td>D28</td><td>28</td><td>D29</td><td>m0_ld_agent:session_summary_memory:5f3d34e549fa</td><td>Session summary from 13 line(s): (line 1) User: 接着之前聊过的那件事，睡眠这件小事拖久了，好像会把别的压力都放大。它还没有完全过去。你帮我整理一下，我现在说的这些里面，哪个才是真正的担心。 (line 2) Agent: 嗯，我听明白了。 你现在问的，表面是要不要提前看备选方案，但底下真正在转的是另一个东西：**你已经在&quot;提前紧张&quot;了自己，并且隐约觉得这个反应是不是又来了。** 所以先把…</td></tr><tr><td>D29</td><td>29</td><td>D30</td><td>m0_ld_agent:session_summary_memory:028610a6295f</td><td>用户提及幼儿园相关消息仍模糊，自己主动去问后仍无定论。用户感到烦恼，因为意识到自己又在同一问题上打转——消息一模糊就自动开始思考备选方案，并审判自己“又犯老毛病”。与agent的对话帮助用户将“主动确认事实的行动”与“因模糊而提前脑内铺网的旧模式”区分开来，指出反应比事实跑得快，需要先聚焦于消息是否落地而非急于铺安全网。</td></tr><tr><td>D30</td><td>30</td><td>D31</td><td>m0_ld_agent:session_summary_memory:6a2cb81a4a90</td><td>用户描述了自己再次陷入入园焦虑的反复状态，孩子哭闹加剧引发自我怀疑。助手识别出用户的旧模式再次启动：一旦听到“幼儿园可能不稳定”的模糊风声，就自动跳过等待事实，直接开始思考备选方案。助手建议将“收集确切事实”与“开始选择方案”拆开处理。</td></tr></tbody></table>
+<h3>7.5 Persona Memory 样例</h3>
+<table class="long"><thead><tr><th>来源 session</th><th>创建日</th><th>memory_id</th><th>summary 摘要片段</th></tr></thead><tbody><tr><td>D01</td><td>1</td><td>m0_ld_agent:persona_memory:cdfd9794d269</td><td>I tend to be pragmatic and proactive, preferring practical advice.</td></tr><tr><td>D02</td><td>2</td><td>m0_ld_agent:persona_memory:d7b9e4130697</td><td>The speaker prefers to explore their own fears before receiving advice.</td></tr><tr><td>D02</td><td>2</td><td>m0_ld_agent:persona_memory:372482584658</td><td>I prefer direction over details; I get exhausted when discussions feel unproductive.</td></tr><tr><td>D03</td><td>3</td><td>m0_ld_agent:persona_memory:e2a7dc12e387</td><td>Deadline-conscious, meticulous in revision, self-reflective, and values external input.</td></tr><tr><td>D28</td><td>28</td><td>m0_ld_agent:persona_memory:e564d341d0bb</td><td>晚上赶工后孩子哭闹，睡眠破碎，次日耐心专注下降。</td></tr><tr><td>D29</td><td>29</td><td>m0_ld_agent:persona_memory:b490f61e7236</td><td>接着之前聊过的那件事，幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。它还没有完全过去。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不…</td></tr><tr><td>D30</td><td>30</td><td>m0_ld_agent:persona_memory:a75a694f58db</td><td>接着之前聊过的那件事，我感觉自己又回到同一个坑里了。入园这件事看起来每天都差不多，但我自己的反应其实一阵一阵的。它还没有完全过去。我会忍不住怀疑自己是不是哪里…</td></tr><tr><td>D30</td><td>30</td><td>m0_ld_agent:persona_memory:6b6b648e02fe</td><td>I&#x27;m a parent on the verge of breaking down from my child&#x27;s crying, uncertain if I&#x27;m handling it right.</td></tr></tbody></table>
+</section>
+
+<section id="retrieval"><h2>8. Retrieval 与 Prompt 统计</h2>
+<h3>8.1 总体统计</h3>
+<table><thead><tr><th>指标</th><th>最小值</th><th>平均值</th><th>中位数</th><th>最大值</th></tr></thead><tbody>
+<tr><td>memory_context 字符数</td><td>464</td><td>2298.8</td><td>2456.5</td><td>2962</td></tr>
+<tr><td>session 命中数</td><td>0</td><td>4.33</td><td>5</td><td>5</td></tr>
+<tr><td>persona 命中数</td><td>0</td><td>4.59</td><td>5</td><td>5</td></tr>
+<tr><td>source_detail_ids 数量</td><td>0</td><td>8.93</td><td>10</td><td>10</td></tr>
+</tbody></table>
+<p>零命中轮次：<code>D01_M001, D01_M001_F001, D01_P001, D01_P002, D01_P003</code>。这些全部集中在 D01 早期，原因是 session summary 尚未形成，只有初始 persona 或无可检索长期记忆。</p>
+<h3>8.2 Hit 分布</h3>
+<div class="two"><div>
+<table><thead><tr><th>session 命中数</th><th>轮次数</th><th>占比</th></tr></thead><tbody><tr><td>0</td><td><div class="barcell"><span>5</span><i style="width:6.5%"></i></div></td><td>5.2%</td></tr><tr><td>1</td><td><div class="barcell"><span>4</span><i style="width:5.2%"></i></div></td><td>4.2%</td></tr><tr><td>2</td><td><div class="barcell"><span>5</span><i style="width:6.5%"></i></div></td><td>5.2%</td></tr><tr><td>3</td><td><div class="barcell"><span>3</span><i style="width:3.9%"></i></div></td><td>3.1%</td></tr><tr><td>4</td><td><div class="barcell"><span>2</span><i style="width:3.0%"></i></div></td><td>2.1%</td></tr><tr><td>5</td><td><div class="barcell"><span>77</span><i style="width:100.0%"></i></div></td><td>80.2%</td></tr></tbody></table>
+</div><div>
+<table><thead><tr><th>persona 命中数</th><th>轮次数</th><th>占比</th></tr></thead><tbody><tr><td>0</td><td><div class="barcell"><span>1</span><i style="width:3.0%"></i></div></td><td>1.0%</td></tr><tr><td>1</td><td><div class="barcell"><span>5</span><i style="width:6.2%"></i></div></td><td>5.2%</td></tr><tr><td>2</td><td><div class="barcell"><span>1</span><i style="width:3.0%"></i></div></td><td>1.0%</td></tr><tr><td>3</td><td><div class="barcell"><span>3</span><i style="width:3.7%"></i></div></td><td>3.1%</td></tr><tr><td>4</td><td><div class="barcell"><span>5</span><i style="width:6.2%"></i></div></td><td>5.2%</td></tr><tr><td>5</td><td><div class="barcell"><span>81</span><i style="width:100.0%"></i></div></td><td>84.4%</td></tr></tbody></table>
+</div></div>
+<h3>8.3 按轮次类型</h3>
+<table><thead><tr><th>轮次类型</th><th>数量</th><th>平均上下文字符数</th><th>平均 session 命中</th><th>平均 persona 命中</th><th>零命中</th></tr></thead><tbody><tr><td>scripted_opening</td><td>30</td><td>2108.5</td><td>4.5</td><td>4.6</td><td>1</td></tr><tr><td>llm_user_followup</td><td>30</td><td>2352.3</td><td>4.5</td><td>4.73</td><td>1</td></tr><tr><td>targeted_probe</td><td>36</td><td>2412.9</td><td>4.06</td><td>4.47</td><td>3</td></tr></tbody></table>
+<h3>8.4 最大上下文样例</h3>
+<table><thead><tr><th>message_id</th><th>轮次类型</th><th>主题</th><th>上下文字符数</th><th>session 命中</th><th>persona 命中</th><th>平均 overlap</th></tr></thead><tbody><tr><td>D15_P001</td><td>targeted_probe</td><td>孩子入园适应</td><td>2962</td><td>5</td><td>5</td><td>0.1912</td></tr><tr><td>D18_P002</td><td>targeted_probe</td><td>合作项目推进不顺</td><td>2947</td><td>5</td><td>5</td><td>0.1607</td></tr><tr><td>D18_P003</td><td>targeted_probe</td><td>合作项目推进不顺</td><td>2946</td><td>5</td><td>5</td><td>0.1564</td></tr><tr><td>D18_P004</td><td>targeted_probe</td><td>合作项目推进不顺</td><td>2946</td><td>5</td><td>5</td><td>0.1591</td></tr><tr><td>D18_P001</td><td>targeted_probe</td><td>合作项目推进不顺</td><td>2944</td><td>5</td><td>5</td><td>0.1563</td></tr><tr><td>D16_P001</td><td>targeted_probe</td><td>论文截稿前的取舍</td><td>2932</td><td>5</td><td>5</td><td>0.1742</td></tr><tr><td>D27_P001</td><td>targeted_probe</td><td>睡眠被打碎</td><td>2899</td><td>5</td><td>5</td><td>0.1813</td></tr><tr><td>D20_P001</td><td>targeted_probe</td><td>睡眠被打碎</td><td>2848</td><td>5</td><td>5</td><td>0.1687</td></tr><tr><td>D20_P002</td><td>targeted_probe</td><td>睡眠被打碎</td><td>2847</td><td>5</td><td>5</td><td>0.1719</td></tr><tr><td>D30_P001</td><td>targeted_probe</td><td>孩子入园适应</td><td>2823</td><td>5</td><td>5</td><td>0.2304</td></tr><tr><td>D19_P001</td><td>targeted_probe</td><td>家里分工和伴侣沟通</td><td>2812</td><td>5</td><td>5</td><td>0.1688</td></tr><tr><td>D20_M001_F001</td><td>llm_user_followup</td><td>睡眠被打碎</td><td>2753</td><td>5</td><td>5</td><td>0.1747</td></tr></tbody></table>
+<h3>8.5 最小上下文样例</h3>
+<table><thead><tr><th>message_id</th><th>轮次类型</th><th>主题</th><th>上下文字符数</th><th>session 命中</th><th>persona 命中</th><th>是否零命中</th></tr></thead><tbody><tr><td>D01_M001</td><td>scripted_opening</td><td>孩子幼儿园可能不稳定</td><td>464</td><td>0</td><td>0</td><td>是</td></tr><tr><td>D02_M001</td><td>scripted_opening</td><td>合作项目推进不顺</td><td>686</td><td>1</td><td>1</td><td>否</td></tr><tr><td>D01_M001_F001</td><td>llm_user_followup</td><td>孩子幼儿园可能不稳定</td><td>706</td><td>0</td><td>1</td><td>是</td></tr><tr><td>D01_P001</td><td>targeted_probe</td><td>孩子幼儿园可能不稳定</td><td>938</td><td>0</td><td>1</td><td>是</td></tr><tr><td>D01_P002</td><td>targeted_probe</td><td>孩子幼儿园可能不稳定</td><td>938</td><td>0</td><td>1</td><td>是</td></tr><tr><td>D01_P003</td><td>targeted_probe</td><td>孩子幼儿园可能不稳定</td><td>938</td><td>0</td><td>1</td><td>是</td></tr><tr><td>D02_M001_F001</td><td>llm_user_followup</td><td>合作项目推进不顺</td><td>964</td><td>1</td><td>2</td><td>否</td></tr><tr><td>D03_M001</td><td>scripted_opening</td><td>论文截稿前的取舍</td><td>1280</td><td>2</td><td>3</td><td>否</td></tr></tbody></table>
+</section>
+
+<section id="eval-method"><h2>9. ToM 评估方法</h2>
+<table class="kv"><tbody>
+<tr><td>评估器</td><td>rule_based_tom_quality_evaluator</td></tr>
+<tr><td>说明</td><td>只用于 ToM 质量分诊的规则评估器，检查回答是否识别隐藏意图、情绪状态、关系期待、共享上下文、疏离风险、自然细节使用和记忆误用风险。不使用 detail-hit、memory-level compliance 或旧版粗略记忆分。</td></tr>
+<tr><td>评分维度</td><td>hidden_intent_recognition, emotional_state_recognition, relationship_expectation_recognition, shared_context_invocation, alienation_error_rate, natural_detail_use, memory_misuse</td></tr>
+<tr><td>明确排除</td><td>detail_hit, correct_memory_level, natural_use_not_mechanical_recall, no_unprovided_or_forbidden_detail, raw_keyword_memory_detail_score</td></tr>
+</tbody></table>
+<p>评估只覆盖 targeted_probe turns，共 36 条。ordinary opening/followup 不进入 ToM score，但会影响后续 M0 memory state。</p>
+</section>
+
+<section id="eval-results"><h2>10. ToM 评估结果</h2>
+<h3>10.1 总体分数</h3>
+<table><thead><tr><th>指标</th><th>值</th></tr></thead><tbody>
+<tr><td>进入评分的 probe 轮数</td><td>36</td></tr>
+<tr><td>平均 ToM 分</td><td>69.44</td></tr>
+<tr><td>中位数</td><td>70.84</td></tr>
+<tr><td>最低 / 最高</td><td>12.5 / 100</td></tr>
+<tr><td>疏离错误数</td><td>0</td></tr>
+<tr><td>要求用户重复上下文次数</td><td>0</td></tr>
+<tr><td>泛泛安慰命中次数</td><td>0</td></tr>
+</tbody></table>
+<h3>10.2 分数分布</h3>
+<table><thead><tr><th>ToM 分数</th><th>轮次数</th><th>占比</th></tr></thead><tbody><tr><td>100</td><td><div class="barcell"><span>7</span><i style="width:100.0%"></i></div></td><td>19.4%</td></tr><tr><td>87.5</td><td><div class="barcell"><span>3</span><i style="width:42.9%"></i></div></td><td>8.3%</td></tr><tr><td>83.33</td><td><div class="barcell"><span>3</span><i style="width:42.9%"></i></div></td><td>8.3%</td></tr><tr><td>75</td><td><div class="barcell"><span>5</span><i style="width:71.4%"></i></div></td><td>13.9%</td></tr><tr><td>66.67</td><td><div class="barcell"><span>3</span><i style="width:42.9%"></i></div></td><td>8.3%</td></tr><tr><td>62.5</td><td><div class="barcell"><span>5</span><i style="width:71.4%"></i></div></td><td>13.9%</td></tr><tr><td>50</td><td><div class="barcell"><span>5</span><i style="width:71.4%"></i></div></td><td>13.9%</td></tr><tr><td>37.5</td><td><div class="barcell"><span>3</span><i style="width:42.9%"></i></div></td><td>8.3%</td></tr><tr><td>25</td><td><div class="barcell"><span>1</span><i style="width:14.3%"></i></div></td><td>2.8%</td></tr><tr><td>12.5</td><td><div class="barcell"><span>1</span><i style="width:14.3%"></i></div></td><td>2.8%</td></tr></tbody></table>
+<h3>10.3 按 Probe Type</h3>
+<table><thead><tr><th>Probe 类型</th><th>数量</th><th>平均 ToM 分</th><th>分数分布</th></tr></thead><tbody><tr><td>alienation</td><td>5</td><td>72.5</td><td>[(62.5, 1), (100.0, 1), (87.5, 1), (75.0, 1), (37.5, 1)]</td></tr><tr><td>current_understanding</td><td>7</td><td>78.57</td><td>[(100.0, 3), (66.67, 3), (50.0, 1)]</td></tr><tr><td>memory_invocation</td><td>6</td><td>81.25</td><td>[(75.0, 3), (100.0, 2), (62.5, 1)]</td></tr><tr><td>natural_detail</td><td>7</td><td>51.79</td><td>[(50.0, 2), (62.5, 2), (37.5, 1), (87.5, 1), (12.5, 1)]</td></tr><tr><td>relational_boundary</td><td>6</td><td>56.25</td><td>[(87.5, 1), (75.0, 1), (37.5, 1), (50.0, 1), (62.5, 1), (25.0, 1)]</td></tr><tr><td>state_transformation</td><td>5</td><td>80</td><td>[(83.33, 3), (100.0, 1), (50.0, 1)]</td></tr></tbody></table>
+<h3>10.4 按 Topic</h3>
+<table><thead><tr><th>主题</th><th>数量</th><th>平均 ToM 分</th><th>最低</th><th>最高</th></tr></thead><tbody><tr><td>合作项目推进不顺</td><td>8</td><td>62.5</td><td>37.5</td><td>83.33</td></tr><tr><td>孩子入园适应</td><td>4</td><td>90.62</td><td>62.5</td><td>100</td></tr><tr><td>孩子幼儿园可能不稳定</td><td>8</td><td>74.48</td><td>37.5</td><td>100</td></tr><tr><td>家里分工和伴侣沟通</td><td>6</td><td>64.58</td><td>12.5</td><td>100</td></tr><tr><td>睡眠被打碎</td><td>6</td><td>52.78</td><td>25</td><td>75</td></tr><tr><td>论文截稿前的取舍</td><td>4</td><td>84.38</td><td>75</td><td>100</td></tr></tbody></table>
+<h3>10.5 维度结果</h3>
+<table><thead><tr><th>维度</th><th>数量</th><th>平均原始分 / 2</th><th>满分数量</th><th>满分率</th></tr></thead><tbody><tr><td>alienation_error_rate</td><td>11</td><td>1.55</td><td>6/11</td><td>54.5%</td></tr><tr><td>emotional_state_recognition</td><td>19</td><td>1.26</td><td>8/19</td><td>42.1%</td></tr><tr><td>hidden_intent_recognition</td><td>31</td><td>1.68</td><td>23/31</td><td>74.2%</td></tr><tr><td>memory_misuse</td><td>24</td><td>1.5</td><td>13/24</td><td>54.2%</td></tr><tr><td>natural_detail_use</td><td>7</td><td>0.29</td><td>0/7</td><td>0.0%</td></tr><tr><td>relationship_expectation_recognition</td><td>24</td><td>1.17</td><td>10/24</td><td>41.7%</td></tr><tr><td>shared_context_invocation</td><td>16</td><td>1.38</td><td>9/16</td><td>56.2%</td></tr></tbody></table>
+<h3>10.6 风险项</h3>
+<table><thead><tr><th>风险组</th><th>轮次数</th></tr></thead><tbody><tr><td>fabrication_risk_terms</td><td>1</td></tr></tbody></table>
+<table><thead><tr><th>风险组</th><th>触发词</th><th>数量</th></tr></thead><tbody><tr><td>fabrication_risk_terms</td><td>老师明确</td><td>1</td></tr></tbody></table>
+</section>
+
+<section id="examples"><h2>11. 评分样例</h2>
+<h3>11.1 低分样例</h3>
+<p class="small">表头说明：<code>message_id</code> 是消息编号，<code>day</code> 是第几天，<code>probe_type</code> 是 probe 类型，<code>topic</code> 是主题，<code>score</code> 是 ToM 分数，<code>target dimensions</code> 是目标评估维度，<code>answer excerpt</code> 是回答片段。</p>
+<table class="long"><thead><tr><th>message_id</th><th>day</th><th>probe_type</th><th>topic</th><th>score</th><th>target dimensions</th><th>answer excerpt</th></tr></thead><tbody><tr><td>D06_P002</td><td>6</td><td>natural_detail</td><td>家里分工和伴侣沟通</td><td>12.5</td><td>natural_detail_use, emotional_state_recognition, hidden_intent_recognition, memory_misuse</td><td>是家长群里的消息。 话没说完，我听到了，你先往下说。</td></tr><tr><td>D20_P001</td><td>20</td><td>relational_boundary</td><td>睡眠被打碎</td><td>25</td><td>hidden_intent_recognition, relationship_expectation_recognition, alienation_error_rate, memory_misuse</td><td>嗯，你最后这句话把调子定得很清楚——你让我只看“睡眠</td></tr><tr><td>D02_P002</td><td>2</td><td>natural_detail</td><td>合作项目推进不顺</td><td>37.5</td><td>natural_detail_use, emotional_state_recognition, hidden_intent_recognition, memory_misuse</td><td>嗯，我听出来了。你怕的不是项目推不动，而是你“紧着”的这种方式，正在被消耗。 **按已有的这条线来看：** 上次是幼儿园的消息让你想“提前看别的选择”，这次是合作方向错位让你觉得“说再多也没用”。两次你都在第一时间准备做些什么、推进些什么——这是你习惯的处理方式。 **但现在最关键的变化在于：** 它已经不是单纯的“双方理解有偏差”的沟通问题了。因为沟通问题还能靠换说法、换例子去尝试对齐，但你说“越想推进方向，对方就越往流程细节里绕”，...</td></tr><tr><td>D04_P001</td><td>4</td><td>relational_boundary</td><td>孩子幼儿园可能不稳定</td><td>37.5</td><td>hidden_intent_recognition, relationship_expectation_recognition, alienation_error_rate, memory_misuse</td><td>听出来了，你这次不是要分析，而是要一个落得了地的抓手——又不想被套进那种“先冷静、多沟通”的标准</td></tr><tr><td>D29_P001</td><td>29</td><td>alienation</td><td>孩子幼儿园可能不稳定</td><td>37.5</td><td>relationship_expectation_recognition, alienation_error_rate, shared_context_invocation, memory_misuse</td><td>嗯，我看到你在群里和老师那边的消息都还是模糊的，没有正式说法——这是目前唯一的事实基础。你试着去问过了，也在等，但暂时没有新变化。 现在让你烦躁的，其实不是“要不要看备选方案”这个决定本身，而是你又捕捉到了自己的第一反应：一听到风声，脑子里立刻弹出“是不是该提前准备别的路”。你好像在审判自己“怎么又来了”。 我按你已有的东西帮我校准一下： - 事实：消息模糊，暂无时间表，暂无必须应对的事件。 - 你的反应：身体和脑子先一步进入“要解决”...</td></tr><tr><td>D06_P003</td><td>6</td><td>relational_boundary</td><td>家里分工和伴侣沟通</td><td>50</td><td>hidden_intent_recognition, relationship_expectation_recognition, alienation_error_rate, memory_misuse</td><td>嗯，我听懂了。你这次其实是把两件悬着的事摞在一起了——幼儿园的信息还是糊的，论文那边还有个尾巴，结果就是两边都在占着心力，谁都放不下。 按你说的，我尽量贴着已知的来，不往外补： **已知：** - 你又去问了幼儿园的情况（这次应该是主动去确认，不是被动等消息）。 - 但信息还是不清楚，所以悬着的感觉没解除。 - 论文截稿前的取舍还没完全收尾，还在占着一个后台线程。 **推测（但我先标清楚）：** - 这两件事叠加的时候，你可能会把它们归...</td></tr><tr><td>D11_P001</td><td>11</td><td>current_understanding</td><td>睡眠被打碎</td><td>50</td><td>hidden_intent_recognition, emotional_state_recognition, relationship_expectation_recognition</td><td>嗯，你自己已经抓到很准了。 就是降噪，不是不想处理。 你脑子现在不是“不愿意面对”，是信号太杂、电量太低，点开任何一个话题都怕触发更多情绪线程，所以才说不想聊太重。 按你现在这个状态——昨晚睡那么碎，今天又要面对家里分工、幼儿园不定、合作错位，叠在一起——最实在的降噪步骤是： **今天只做一件事：把“处理”和“撑过去”分开。** 具体来说： 1. **给自己一个15分钟的“不处理”窗口** 不是刷手机，是找一个没人要求你的地方，闭眼或者...</td></tr><tr><td>D11_P002</td><td>11</td><td>natural_detail</td><td>睡眠被打碎</td><td>50</td><td>natural_detail_use, emotional_state_recognition, hidden_intent_recognition, memory_misuse</td><td>你这几段我收到了。 按我们之前捋过的，孩子幼儿园这条线最该抓住的不是“看不看备选”，而是**你现在这个“第一反应”本身就是问题信号**——消息还不清楚，你就已经启动“提前找退路”的惯性了。 这不是说你不对，而是这个反应不是针对事实，是针对你怕孩子被折腾那层紧张。你现在最该抓住的就是把这个第一反应当成一个信号，而不是一个命令。命令会让你觉得必须马上做点什么，信号只会告诉你：“哦，我又在提前背压力了。” 所以今天稳一下的步骤很简单：先不碰备...</td></tr><tr><td>D24_P001</td><td>24</td><td>natural_detail</td><td>合作项目推进不顺</td><td>50</td><td>natural_detail_use, emotional_state_recognition, hidden_intent_recognition, memory_misuse</td><td>嗯，你问的这个问题本身就是答案。 **它已经在从“沟通问题”变成“消耗问题”了。** 如果还是沟通问题，你的第一反应会是“怎么换种说法让对方懂”。但现在你的第一反应是“怎么又来了”——这是防御，不是策略。那个“先紧一下”的身体反应已经告诉你了：**这件事开始消耗你，而不是你可以调动资源去解决它。** 至于今天上午的泄气，其实不难理解：对方在概念层绕，你反复解释同一个框架，说明你们对“什么才算推进”的理解根本不一样。他可能觉得把概念讨论清...</td></tr><tr><td>D28_P001</td><td>28</td><td>state_transformation</td><td>睡眠被打碎</td><td>50</td><td>hidden_intent_recognition, emotional_state_recognition, shared_context_invocation</td><td>我能看到的是，你把“睡眠碎了一地”和“耐心掉了”这两件事，悄悄合成了一条逻辑：**反应变慢 = 自己又没控制住 = 旧模式复发了。** 但这里面有一个需要拆开的地方——睡眠剥夺带来的迟钝和烦躁，是一个生理结果，不是你的应对模式。真正让你紧张的，可能不是累本身，而是**你把这种正常反应，当成了“自己又要失控”的证据。** 现在最实在的一步，不是去追究“是不是又掉进坑里了”，而是先把这两层分开。今天如果只能做一件事，可以试试这个：下一次你发...</td></tr><tr><td>D01_P003</td><td>1</td><td>alienation</td><td>孩子幼儿园可能不稳定</td><td>62.5</td><td>relationship_expectation_recognition, alienation_error_rate, shared_context_invocation, memory_misuse</td><td>嗯，你这次把话挑得很明了——你在问自己“该不该继续紧着”，而不是单纯在问幼儿园这件事怎么办。这个区分很重要。 那我按你已有的东西来校准，不多补空白。 **现在事实就两条：** - 消息来源是家长群，不是幼儿园官方通知，也不是你亲眼看到的问题。 - 你心里那根弦是紧着的，否则你不会第一反应是“要不要看别的选择”。 **真正的问题可能是：你不是不知道该怎么处理这件事，而是不确定自己这股“紧着”的劲儿，是合理的预警，还是已经变成常态的过度消耗...</td></tr><tr><td>D09_P001</td><td>9</td><td>memory_invocation</td><td>合作项目推进不顺</td><td>62.5</td><td>shared_context_invocation, relationship_expectation_recognition, hidden_intent_recognition, memory_misuse</td><td>嗯，我记得。你之前卡住的那个点，不是“对方不理解我”，而是“我以为说清楚的话，对方好像根本没听见，下一次还得从头再来”。 现在听起来，这个模式又往前滚了一轮：你越想往“方向”和“概念层”推进，对方就越往“流程细节”里绕。这已经不是沟通问题，是消耗问题。你的累，是“每次都要把底层逻辑重新对齐”的那种累——好像你在反复重启一个游戏，对方却总是从第一关开始玩。 直接抓现在的核心：**该不该继续紧着，取决于你还要不要在这个合作里要结果。** 如...</td></tr></tbody></table>
+<h3>11.2 高分样例</h3>
+<table class="long"><thead><tr><th>message_id</th><th>day</th><th>probe_type</th><th>topic</th><th>score</th><th>answer excerpt</th></tr></thead><tbody><tr><td>D01_P001</td><td>1</td><td>current_understanding</td><td>孩子幼儿园可能不稳定</td><td>100</td><td>好，我听到了。你给的这句话很关键：**“我其实是在问自己该不该继续紧着”**。 既然你让我帮你抓真正的问题，那我就不客气，直接说了。 表面问题是：“幼儿园是不是真不稳定、要不要看新学校？” 深层问题是：“我维持这种**高警惕、提前准备、把所有风险都扛在肩上**的状态，是不是该停了？” 你用的“紧着”这个词，太准了。它不是简单的焦虑，而是一种身体和心理的慢性绷紧状态，就像一个随时待命的保镖，哪怕警报解除，肌肉也放松不下来。 所以，你现在面...</td></tr><tr><td>D03_P003</td><td>3</td><td>current_understanding</td><td>论文截稿前的取舍</td><td>100</td><td>听着，你这句话本身就已经把答案戳穿了一半。 你问的是“是真的还有很多必须改，还是又把不完美当成不能交”——这说明你自己其实隐隐知道后一种可能性更大，只是不敢认。 按你之前扔给我的线，上次我们聊的时候，我就说你在改的不是内容，是焦虑：每改一处，焦虑就消一点；不改，就觉得在偷懒。现在你卡在这里，大概率不是论文真的不能交，而是你又在用“再改一个地方，我就放心一点”来哄自己。 **我手里没有你论文的具体章节，所以没法替你判“这三页必须改，那两页...</td></tr><tr><td>D06_P004</td><td>6</td><td>alienation</td><td>家里分工和伴侣沟通</td><td>100</td><td>嗯，我按你给的这条线来说，不多补。 **已知的只有这些：** - 你又听到幼儿园可能不稳定的消息（上次是家长群，这次你没说来源）。 - 你第一反应是“要不要提前看别的选择”——这个反应本身很熟悉，像是你一贯的提前紧张模式。 **那现在真正的问题可能不是“要不要看”，而是：** 你听到一个模糊信号，又自动进入了“我得先绷起来、先做点什么”的状态。这个状态本身消耗你，比事情还快。 **实在的处理思路，不标准的那种：** 1. **先分清楚，...</td></tr><tr><td>D10_P001</td><td>10</td><td>memory_invocation</td><td>孩子幼儿园可能不稳定</td><td>100</td><td>嗯，我收到了。你不想从头解释，我也不替你补。就按我们之前已经抓到的那个最关键的底来说—— 这条线里，你真正要抓住的，**不是“换不换园”这个动作，而是“要不要提前紧张”这个惯性。** 上次我们已经把这件事掰开过：消息现在还只是家长群里飘着的不确定传言，你第一反应不是去核实，而是直接跳到了“要不要看别的选择”。那个第一反应本身，才是你反复卡住的地方。 按这个思路往下，你现在最该抓住的不是做决定，而是**停一下，把“核实”和“反应”分开**...</td></tr><tr><td>D13_P002</td><td>13</td><td>current_understanding</td><td>孩子入园适应</td><td>100</td><td>嗯，我接上了。这次不从头捋，直接抓你现在的状态。 老师那句“后来缓过来了”，是今天最重要的**事实锚点**。孩子有能力在分离后自我调节，这是他给出的证据。 但你说“一闭眼就是那个画面”，这才是现在最耗你的地方——不是早上那几分钟的对抗，而是之后整个上午，你都在脑子里反复播放那个场景，好像多看几遍就能看出哪里做错了。这不是在观察孩子，这是在审查自己。 **画面反复出现，不是你处理失败，是疲劳把情绪放大了。** 你昨晚又没睡好，大脑缺一个把...</td></tr><tr><td>D15_P001</td><td>15</td><td>state_transformation</td><td>孩子入园适应</td><td>100</td><td>我听到你说的那个变化了——从“担心孩子适应不了”转向“担心自己总被画面牵着走”。这个转向本身，其实已经是往前走了一步。 按我们之前在这条线上碰过的东西，你现在真正需要校准的不是“孩子适应得慢还是快”，而是**你把“早上那个画面”当成了什么**。它现在在你脑子里已经不是信息，是情绪记忆。所以即使老师说后来缓过来了，那个画面还是会压回来。 我按你给的这两条线分一下： **已知的** - 孩子早上分离会哭，有时哭得很激烈，但老师反馈说后面能缓...</td></tr><tr><td>D30_P001</td><td>30</td><td>memory_invocation</td><td>孩子入园适应</td><td>100</td><td>嗯，你这句话本身就已经把问题说清楚了一大半。“一听到消息，第一反应就是看别的选择”——你捕捉到的不是消息本身，而是你**对这个消息的自动化反应**。 顺着我们之前捋过很多次的那条线，现在真正卡住你的，其实就一个点： **你把“感到不确定”直接等同于“必须马上准备备用计划”。** 这个等式一跳出来，你的精力就会被“要不要看别的选择”这个念头给吸走，而不是先去问“这个消息到底有多确定”。 这算是一个很结实的处理思路，不是标准答案，你品品看是...</td></tr><tr><td>D01_P002</td><td>1</td><td>relational_boundary</td><td>孩子幼儿园可能不稳定</td><td>87.5</td><td>好，我答应你：只沿着你已经说出来的东西走，不替你发明新的细节，也不补你没讲过的心理活动。 你这句“其实我是在问自己该不该继续紧着”，把真正的问题抓出来了。那我顺着这个点，帮你校准一下现在的状态： **现在你手里已经有的东西是这些：** - 消息来源是**家长群**，属于模糊的、情绪浓度很高的信息传输通道。 - 你的第一反应是“要不要提前看别的选择”，这是一个**往远处看、想拿回主动权**的动作。 - 你现在在反思这个动作本身，觉得也许自...</td></tr><tr><td>D03_P001</td><td>3</td><td>natural_detail</td><td>论文截稿前的取舍</td><td>87.5</td><td>嗯，我听到了。 你其实在问的不是“哪些地方该改”，而是“**我该在哪条线上停下来，才不算对自己敷衍**”。 按你给的这条线看： **你说的纠结是“认真改 vs 先放过”** **真正的问题更可能是：你默认“放过”就等于偷懒，所以不敢放。** 我往下挖一层，你感受一下准不准—— 你现在论文改到最后阶段，其实不是在改内容，是在改焦虑。每改一处，焦虑就消一点；不改，焦虑就堆着。所以你才会在“这个地方到底值不值得花三小时”上反复横跳。 你怕的不...</td></tr><tr><td>D10_P002</td><td>10</td><td>alienation</td><td>孩子幼儿园可能不稳定</td><td>87.5</td><td>嗯，我知道了。“那件事”就是上次你说的那个底：怕孩子被折腾。现在三件事搅在一起，乱不是因为事情多，而是同一个怕在三个地方被同时触发——幼儿园消息的不确定让你想提前铺路，合作里的错位让你觉得怎么解释都没用像在消耗孩子一样消耗自己，入园适应时孩子一哭你就又背上“是不是我没做好”的重量。 按我们之前聊的思路，你现在不是要判断要不要换园、要不要推进合作、要不要安抚孩子，而是先把这个怕单独拎出来看一看。事实这边：幼儿园消息还是不清楚，合作的方向和...</td></tr></tbody></table>
+</section>
+
+<section id="interpretation"><h2>12. 结果解释</h2>
+<h3>12.1 当前 M0 的优势</h3>
+<ul>
+<li>正式 v2 能稳定跑完全量 96 turns，说明 prompt compaction 后 M0 baseline 可作为后续 M1-M3 对照的底座。</li>
+<li>session summary + persona retrieval 在中后期大多数 turn 都能提供 top-k 上下文：77/96 turns 命中 5 条 session summary，81/96 turns 命中 5 条 persona。</li>
+<li>alienation/ask-repeat/generic-comfort 三类显式风险在 rule-based triage 中均为 0，说明没有明显“疏离式追问”或空泛安慰倾向。</li>
+</ul>
+<h3>12.2 当前 M0 的短板</h3>
+<ul>
+<li><code>natural_detail_use</code> 平均 raw score 只有 0.29/2，是最弱维度；说明 M0 能调用关系/意图框架，但自然嵌入具体细节的能力不足。</li>
+<li>低分集中在 natural_detail 和 relational_boundary probe，尤其 D06_P002、D20_P001，显示 M0 有时会过短、截断或没有充分贴合 probe 要求。</li>
+<li>Persona writer 有 19 次 fallback，SessionSummary writer 有 7 次 fallback；虽然没有中断正式实验，但说明 memory writer LLM 的空返回仍是工程风险。</li>
+<li>由于 M0 不做 event identity/trajectory，长期跨事件演进只能通过 session summary 的文本相似度间接体现，不能代表完整 LD-Agent event memory 能力。</li>
+</ul>
+<h3>12.3 后续对照实验建议</h3>
+<ul>
+<li>以本次 v2 为 M0 baseline，后续 M1/M2/M3 对照应保持同一输入、模型、temperature/top_p/max_tokens 和 serial/parallel 口径。</li>
+<li>补充 LLM-as-judge 或人工 blind review，用于验证 rule-based ToM triage 对“自然细节使用”和“关系边界”的判断。</li>
+<li>单独跟踪 writer fallback，必要时提高 memory writer token limit、改 JSON schema 或加更严格 retry parse，以降低 deterministic fallback 比例。</li>
+</ul>
+</section>
+
+<section id="artifacts"><h2>13. 产物、验证与复现</h2>
+<h3>13.1 文件产物</h3>
+<table class="kv"><thead><tr><th>产物</th><th>路径</th></tr></thead><tbody><tr><td>详细报告</td><td><code>docs/m0_session_summary_formal_v2_detailed_experiment_report.html</code></td></tr><tr><td>摘要报告</td><td><code>docs/m0_session_summary_formal_v2_report.html</code></td></tr><tr><td>运行配置</td><td><code>long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2/run_config.json</code></td></tr><tr><td>条件响应结果</td><td><code>long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2/responses_by_condition.json</code></td></tr><tr><td>对话日志</td><td><code>long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2/conversation_log.json</code></td></tr><tr><td>自动评分 JSON</td><td><code>long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2/automatic_scores.json</code></td></tr><tr><td>自动评分 Markdown</td><td><code>long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2/automatic_scores.md</code></td></tr><tr><td>v1 诊断运行</td><td><code>long_memory_experiment/outputs/run_20260609_m0_session_summary_formal</code></td></tr></tbody></table>
+<h3>13.2 代码验证</h3>
+<pre>PYTHONPATH=src .venv/bin/python -m unittest tests.test_ld_agent_memory_runtime tests.test_docx_route_pipeline
+
+................
+----------------------------------------------------------------------
+Ran 16 tests in 0.003s
+
+OK</pre>
+<h3>13.3 本报告读取的数据源</h3>
+<ul>
+<li><code>responses_by_condition.json</code>：turn 结构、memory payload、retrieval diagnostics、final M0 snapshot、checkpoint。</li>
+<li><code>conversation_log.json</code>：结构化对话记录；与 responses 的 action count 一致。</li>
+<li><code>automatic_scores.json</code>：36 条 probe 的 ToM triage 结果、维度明细和风险项。</li>
+<li><code>run_config.json</code>：模型、输入、控制变量和 checkpoint policy。</li>
+</ul>
+</section>
+</main>
+</body>
+</html>

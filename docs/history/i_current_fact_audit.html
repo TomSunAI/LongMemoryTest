@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>I Unit Fact Audit</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #17202a; background: #f7f8fa; }
+    main { max-width: 1180px; margin: 0 auto; padding: 28px 22px 56px; }
+    h1 { font-size: 28px; margin: 0 0 8px; }
+    h2 { font-size: 20px; margin: 28px 0 12px; }
+    h3 { font-size: 17px; margin: 0 0 10px; }
+    p { line-height: 1.6; }
+    code { background: #eef1f4; padding: 2px 5px; border-radius: 4px; }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 18px 0; }
+    .metric { background: #fff; border: 1px solid #dfe4ea; border-radius: 8px; padding: 14px; }
+    .metric strong { display: block; font-size: 24px; margin-top: 6px; }
+    .card { background: #fff; border: 1px solid #dfe4ea; border-radius: 8px; padding: 16px; margin: 14px 0; }
+    .tag { display: inline-block; border: 1px solid #ccd3da; background: #f4f6f8; border-radius: 999px; padding: 2px 8px; font-size: 12px; margin-right: 6px; }
+    .ok { color: #116b3a; font-weight: 700; }
+    .warn { color: #9a4f00; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #dfe4ea; }
+    th, td { border-bottom: 1px solid #e7ebef; padding: 9px 10px; text-align: left; vertical-align: top; }
+    th { background: #f1f4f7; }
+    pre { white-space: pre-wrap; word-break: break-word; background: #101820; color: #f4f7fb; padding: 12px; border-radius: 8px; overflow: auto; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 760px) { .grid, .two { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>I Unit 是否引入事实：审计页</h1>
+  <p>结论：现在 I 中已经显式引入事实，但事实来源仍是 L/T，不是 P3B。P3B 只读取这些字段做中文自然化。</p>
+
+  <div class="grid">
+    <div class="metric"><span>I 总数</span><strong>440</strong></div>
+    <div class="metric"><span>有 current_state_change_fact</span><strong>440</strong></div>
+    <div class="metric"><span>开场绑定 current fact</span><strong>440</strong></div>
+    <div class="metric"><span>首轮 reveal 可见 stage fact</span><strong>440</strong></div>
+  </div>
+
+  <h2>字段路径</h2>
+  <table>
+    <tr><th>位置</th><th>作用</th><th>现在状态</th></tr>
+    <tr><td><code>I.current_state_change_fact</code></td><td>本轮 I 正式引入的当前状态变化事实。</td><td class="ok">440/440 存在</td></tr>
+    <tr><td><code>I.scripted_opening.user_message</code></td><td>英文 canonical 用户开场，包含当前状态变化。</td><td class="ok">已绑定 current_state_change_fact_id</td></tr>
+    <tr><td><code>I.scripted_opening.user_message_zh</code></td><td>中文展示/自然化输入，不作为底层事实源。</td><td class="ok">440/440 存在</td></tr>
+    <tr><td><code>I.scene_boundary.allowed_facts[]</code></td><td>agent 和评测可用事实边界。</td><td class="ok">current fact 排在 allowed facts 前部</td></tr>
+    <tr><td><code>I.constrained_followup.reveal_steps[]</code></td><td>用户追问时允许再透露哪些事实。</td><td class="ok">第一轮已包含 current_state 和 stage_delta</td></tr>
+    <tr><td><code>P3B prompt</code></td><td>读取 canonical + 中文 render，只生成自然话术候选。</td><td class="ok">不新增事实</td></tr>
+  </table>
+
+  <h2>阶段分布</h2>
+  <table><tr><th>event_stage</th><th>I 数量</th></tr><tr><td>initial</td><td>44</td></tr>
+<tr><td>partial_resolution</td><td>88</td></tr>
+<tr><td>recurrence</td><td>118</td></tr>
+<tr><td>reflection</td><td>86</td></tr>
+<tr><td>turning_point</td><td>104</td></tr></table>
+
+  <h2>具体样例</h2>
+  
+  <section class="card">
+    <h3>P0001_D28_M005</h3>
+    <p>
+      <span class="tag">Day 28</span>
+      <span class="tag">turning_point</span>
+      <span class="tag">Occurrence 11</span>
+      <span class="tag">L_p0001_e_learn_001_9aa5cf8f</span>
+    </p>
+    <div class="two">
+      <div>
+        <h3>开场话术</h3>
+        <p><strong>canonical:</strong> The &quot;Trying to learn a new skill while life is busy&quot; line has a new change today. Help me judge whether this means the priority should change. The new point is &quot;how to restart after falling behind&quot;, so I want to reprioritize.</p>
+        <p><strong>中文:</strong> 「在生活很忙时学习新技能」这条线今天又有了一个新变化。你帮我判断这是不是说明优先级要调整。 这次新的点是「落下之后怎么重新开始」，所以我想重新排一下优先级。</p>
+      </div>
+      <div>
+        <h3>当前引入事实</h3>
+        <p><strong>fact_id:</strong> <code>P0001_D28_M005:current_state_change_fact</code></p>
+        <p><strong>canonical:</strong> Stage 3 adds: the event reaches a turning point; the key issue moves from the initial concern toward &quot;how to restart after falling behind&quot;.</p>
+        <p><strong>中文:</strong> 第 3 阶段新增：事件出现转折，关键问题从初始担心推进到「落下之后怎么重新开始」。</p>
+        <p><strong>source:</strong> event_line_stage_delta · [&#x27;possible_uncertainties[2]&#x27;]</p>
+      </div>
+    </div>
+    <h3>第一轮 follow-up 可 reveal</h3>
+    <pre>{
+  &quot;followup_index&quot;: 1,
+  &quot;preferred_moves&quot;: [
+    &quot;reassess_state_change&quot;,
+    &quot;clarify_current_constraint&quot;,
+    &quot;ask_for_small_next_step&quot;
+  ],
+  &quot;may_reveal_fact_ids&quot;: [
+    &quot;P0001_D28_M005:current_state_change_fact&quot;,
+    &quot;P0001_D28_M005:stage_delta_fact_1&quot;,
+    &quot;P0001_D28_M005:stage_delta_fact_2&quot;
+  ],
+  &quot;may_reveal_concern_ids&quot;: [],
+  &quot;instruction&quot;: &quot;Respond to the assistant&#x27;s direction, reveal at most one allowed fact, and do not expand into a new event.&quot;,
+  &quot;instruction_zh&quot;: &quot;回应助手的方向，最多补充一个已允许事实，不扩展新事件。&quot;
+}</pre>
+    <h3>allowed_facts 前 8 条</h3>
+    <table><tr><th>type</th><th>canonical text</th><th>中文 text_zh</th></tr><tr><td>current_state_change_fact</td><td>Stage 3 adds: the event reaches a turning point; the key issue moves from the initial concern toward &quot;how to restart after falling behind&quot;.</td><td>第 3 阶段新增：事件出现转折，关键问题从初始担心推进到「落下之后怎么重新开始」。</td></tr>
+<tr><td>event_title</td><td>Trying to learn a new skill while life is busy</td><td>在生活很忙时学习新技能</td></tr>
+<tr><td>event_summary</td><td>The user wants to improve skills but struggles with time, confidence, or consistency.</td><td>人物想提升技能，但时间、信心和持续性都受现实生活挤压。</td></tr>
+<tr><td>event_stage</td><td>turning_point</td><td>转折判断</td></tr>
+<tr><td>stage_goal</td><td>A new small change appears in the event line; the user needs to recalibrate priorities or boundaries.</td><td>事件线出现新的小变化，用户需要重新校准优先级或边界。</td></tr>
+<tr><td>assistant_memory_expectation</td><td>Identify the difference between the current change and previous state, then recalibrate advice.</td><td>识别当前变化与前序状态的差异，重新校准建议。</td></tr>
+<tr><td>stage_delta_fact</td><td>Stage 3 adds: the event reaches a turning point; the key issue moves from the initial concern toward &quot;how to restart after falling behind&quot;.</td><td>第 3 阶段新增：事件出现转折，关键问题从初始担心推进到「落下之后怎么重新开始」。</td></tr>
+<tr><td>stage_delta_fact</td><td>This stage requires reprioritization rather than mechanically repeating the first advice.</td><td>本阶段需要重新排序优先级，而不是机械重复第一次的建议。</td></tr></table>
+  </section>
+
+
+  <section class="card">
+    <h3>P0001_D01_M001</h3>
+    <p>
+      <span class="tag">Day 1</span>
+      <span class="tag">initial</span>
+      <span class="tag">Occurrence 1</span>
+      <span class="tag">L_p0001_e_move_001_30d01803</span>
+    </p>
+    <div class="two">
+      <div>
+        <h3>开场话术</h3>
+        <p><strong>canonical:</strong> I am stuck on &quot;Adapting to a new city with weak local support&quot; recently. I work as property service assistant, and my time and budget are limited, so I am not sure about where to invest social energy. Please help me break it down.</p>
+        <p><strong>中文:</strong> 我最近卡在「适应新城市但本地支持较弱」这件事上。我现在做物业服务助理，时间和预算都不是很宽，所以有点拿不准该把社交精力投在哪里。你先帮我拆一下。</p>
+      </div>
+      <div>
+        <h3>当前引入事实</h3>
+        <p><strong>fact_id:</strong> <code>P0001_D01_M001:current_state_change_fact</code></p>
+        <p><strong>canonical:</strong> Stage 1 adds: the user first states the event line &quot;Adapting to a new city with weak local support&quot; clearly; the primary uncertainty is &quot;where to invest social energy&quot;.</p>
+        <p><strong>中文:</strong> 第 1 阶段新增：用户第一次把「适应新城市但本地支持较弱」说清楚，首要不确定点是「该把社交精力投在哪里」。</p>
+        <p><strong>source:</strong> event_line_stage_delta · [&#x27;possible_uncertainties[0]&#x27;]</p>
+      </div>
+    </div>
+    <h3>第一轮 follow-up 可 reveal</h3>
+    <pre>{
+  &quot;followup_index&quot;: 1,
+  &quot;preferred_moves&quot;: [
+    &quot;name_initial_uncertainty&quot;,
+    &quot;clarify_current_constraint&quot;,
+    &quot;ask_for_small_next_step&quot;
+  ],
+  &quot;may_reveal_fact_ids&quot;: [
+    &quot;P0001_D01_M001:current_state_change_fact&quot;,
+    &quot;P0001_D01_M001:stage_delta_fact_1&quot;,
+    &quot;P0001_D01_M001:stage_delta_fact_2&quot;
+  ],
+  &quot;may_reveal_concern_ids&quot;: [],
+  &quot;instruction&quot;: &quot;Respond to the assistant&#x27;s direction, reveal at most one allowed fact, and do not expand into a new event.&quot;,
+  &quot;instruction_zh&quot;: &quot;回应助手的方向，最多补充一个已允许事实，不扩展新事件。&quot;
+}</pre>
+    <h3>allowed_facts 前 8 条</h3>
+    <table><tr><th>type</th><th>canonical text</th><th>中文 text_zh</th></tr><tr><td>current_state_change_fact</td><td>Stage 1 adds: the user first states the event line &quot;Adapting to a new city with weak local support&quot; clearly; the primary uncertainty is &quot;where to invest social energy&quot;.</td><td>第 1 阶段新增：用户第一次把「适应新城市但本地支持较弱」说清楚，首要不确定点是「该把社交精力投在哪里」。</td></tr>
+<tr><td>event_title</td><td>Adapting to a new city with weak local support</td><td>适应新城市但本地支持较弱</td></tr>
+<tr><td>event_summary</td><td>The user is adjusting to a new environment while lacking stable local relationships.</td><td>用户正在适应新环境，但缺少稳定的本地关系支持。</td></tr>
+<tr><td>event_stage</td><td>initial</td><td>初始提出</td></tr>
+<tr><td>stage_goal</td><td>Introduce the concern for the first time, including trigger and uncertainty.</td><td>第一次提出担心，说明触发点和不确定处。</td></tr>
+<tr><td>assistant_memory_expectation</td><td>Separate known facts, unknowns, risks, and one low-cost next step.</td><td>先拆事实、未知、风险和一个低成本下一步。</td></tr>
+<tr><td>stage_delta_fact</td><td>Stage 1 adds: the user first states the event line &quot;Adapting to a new city with weak local support&quot; clearly; the primary uncertainty is &quot;where to invest social energy&quot;.</td><td>第 1 阶段新增：用户第一次把「适应新城市但本地支持较弱」说清楚，首要不确定点是「该把社交精力投在哪里」。</td></tr>
+<tr><td>stage_delta_fact</td><td>This stage may advance only one low-cost starting action: &quot;choose one recurring social anchor&quot;.</td><td>本阶段只允许推进一个低成本起点：「选择一个固定出现的社交锚点」。</td></tr></table>
+  </section>
+
+
+  <section class="card">
+    <h3>P0001_D03_M001</h3>
+    <p>
+      <span class="tag">Day 3</span>
+      <span class="tag">recurrence</span>
+      <span class="tag">Occurrence 2</span>
+      <span class="tag">L_p0001_e_move_001_30d01803</span>
+    </p>
+    <div class="two">
+      <div>
+        <h3>开场话术</h3>
+        <p><strong>canonical:</strong> The &quot;Adapting to a new city with weak local support&quot; issue we talked about before came up again. I do not want to explain it from scratch; continue from the earlier approach and help me see whether I should choose one recurring social anchor now. The key change this time is: the same event line appears again; the user expects continuity rather than restarting the explanation.</p>
+        <p><strong>中文:</strong> 之前说过的「适应新城市但本地支持较弱」又出现了。我不想从头解释一遍，你接着前面的思路帮我看，现在是不是该选择一个固定出现的社交锚点。 这次的关键变化是：同一事件线再次出现，用户期待助手承接前序而不是重启解释。</p>
+      </div>
+      <div>
+        <h3>当前引入事实</h3>
+        <p><strong>fact_id:</strong> <code>P0001_D03_M001:current_state_change_fact</code></p>
+        <p><strong>canonical:</strong> Stage 2 adds: the same event line appears again; the user expects continuity rather than restarting the explanation.</p>
+        <p><strong>中文:</strong> 第 2 阶段新增：同一事件线再次出现，用户期待助手承接前序而不是重启解释。</p>
+        <p><strong>source:</strong> event_line_stage_delta · [&#x27;stage_recurrence&#x27;]</p>
+      </div>
+    </div>
+    <h3>第一轮 follow-up 可 reveal</h3>
+    <pre>{
+  &quot;followup_index&quot;: 1,
+  &quot;preferred_moves&quot;: [
+    &quot;refer_to_prior_context&quot;,
+    &quot;clarify_current_constraint&quot;,
+    &quot;ask_for_small_next_step&quot;
+  ],
+  &quot;may_reveal_fact_ids&quot;: [
+    &quot;P0001_D03_M001:current_state_change_fact&quot;,
+    &quot;P0001_D03_M001:stage_delta_fact_1&quot;,
+    &quot;P0001_D03_M001:stage_delta_fact_2&quot;
+  ],
+  &quot;may_reveal_concern_ids&quot;: [],
+  &quot;instruction&quot;: &quot;Respond to the assistant&#x27;s direction, reveal at most one allowed fact, and do not expand into a new event.&quot;,
+  &quot;instruction_zh&quot;: &quot;回应助手的方向，最多补充一个已允许事实，不扩展新事件。&quot;
+}</pre>
+    <h3>allowed_facts 前 8 条</h3>
+    <table><tr><th>type</th><th>canonical text</th><th>中文 text_zh</th></tr><tr><td>current_state_change_fact</td><td>Stage 2 adds: the same event line appears again; the user expects continuity rather than restarting the explanation.</td><td>第 2 阶段新增：同一事件线再次出现，用户期待助手承接前序而不是重启解释。</td></tr>
+<tr><td>event_title</td><td>Adapting to a new city with weak local support</td><td>适应新城市但本地支持较弱</td></tr>
+<tr><td>event_summary</td><td>The user is adjusting to a new environment while lacking stable local relationships.</td><td>用户正在适应新环境，但缺少稳定的本地关系支持。</td></tr>
+<tr><td>event_stage</td><td>recurrence</td><td>再次出现</td></tr>
+<tr><td>stage_goal</td><td>The issue appears again; the persona wants continuity rather than a restart.</td><td>问题再次出现，人物希望不要从零解释。</td></tr>
+<tr><td>assistant_memory_expectation</td><td>Continue the same event line without asking the user to repeat the background.</td><td>承接同一事件线，不要求用户重讲背景。</td></tr>
+<tr><td>stage_delta_fact</td><td>Stage 2 adds: the same event line appears again; the user expects continuity rather than restarting the explanation.</td><td>第 2 阶段新增：同一事件线再次出现，用户期待助手承接前序而不是重启解释。</td></tr>
+<tr><td>stage_delta_fact</td><td>The new judgment pressure shifts toward &quot;whether loneliness means wrong decision&quot;.</td><td>新的判断压力转向「孤独感是不是说明这个决定错了」。</td></tr></table>
+  </section>
+
+
+  <section class="card">
+    <h3>P0001_D05_M001</h3>
+    <p>
+      <span class="tag">Day 5</span>
+      <span class="tag">turning_point</span>
+      <span class="tag">Occurrence 3</span>
+      <span class="tag">L_p0001_e_health_003_ef5379f6</span>
+    </p>
+    <div class="two">
+      <div>
+        <h3>开场话术</h3>
+        <p><strong>canonical:</strong> There is a new change in &quot;Restarting a routine after falling off track&quot; today. I realize the real sticking point may be whether to restart small, not only the event itself. Please help me judge the priority. The new point is &quot;what counts as progress&quot;, so I want to reprioritize.</p>
+        <p><strong>中文:</strong> 「中断后重新建立日常」今天有点新变化，我发现自己真正卡住的可能不是事情本身，而是是否应该小步重启。你帮我判断优先级。 这次新的点是「什么算有进展」，所以我想重新排一下优先级。</p>
+      </div>
+      <div>
+        <h3>当前引入事实</h3>
+        <p><strong>fact_id:</strong> <code>P0001_D05_M001:current_state_change_fact</code></p>
+        <p><strong>canonical:</strong> Stage 3 adds: the event reaches a turning point; the key issue moves from the initial concern toward &quot;what counts as progress&quot;.</p>
+        <p><strong>中文:</strong> 第 3 阶段新增：事件出现转折，关键问题从初始担心推进到「什么算有进展」。</p>
+        <p><strong>source:</strong> event_line_stage_delta · [&#x27;possible_uncertainties[2]&#x27;]</p>
+      </div>
+    </div>
+    <h3>第一轮 follow-up 可 reveal</h3>
+    <pre>{
+  &quot;followup_index&quot;: 1,
+  &quot;preferred_moves&quot;: [
+    &quot;reassess_state_change&quot;,
+    &quot;clarify_current_constraint&quot;,
+    &quot;ask_for_small_next_step&quot;
+  ],
+  &quot;may_reveal_fact_ids&quot;: [
+    &quot;P0001_D05_M001:current_state_change_fact&quot;,
+    &quot;P0001_D05_M001:stage_delta_fact_1&quot;,
+    &quot;P0001_D05_M001:stage_delta_fact_2&quot;
+  ],
+  &quot;may_reveal_concern_ids&quot;: [],
+  &quot;instruction&quot;: &quot;Respond to the assistant&#x27;s direction, reveal at most one allowed fact, and do not expand into a new event.&quot;,
+  &quot;instruction_zh&quot;: &quot;回应助手的方向，最多补充一个已允许事实，不扩展新事件。&quot;
+}</pre>
+    <h3>allowed_facts 前 8 条</h3>
+    <table><tr><th>type</th><th>canonical text</th><th>中文 text_zh</th></tr><tr><td>current_state_change_fact</td><td>Stage 3 adds: the event reaches a turning point; the key issue moves from the initial concern toward &quot;what counts as progress&quot;.</td><td>第 3 阶段新增：事件出现转折，关键问题从初始担心推进到「什么算有进展」。</td></tr>
+<tr><td>event_title</td><td>Restarting a routine after falling off track</td><td>中断后重新建立日常</td></tr>
+<tr><td>event_summary</td><td>The user wants to restart a routine after several failed attempts.</td><td>用户想在几次失败后重新启动一项日常习惯。</td></tr>
+<tr><td>event_stage</td><td>turning_point</td><td>转折判断</td></tr>
+<tr><td>stage_goal</td><td>A new change appears; the persona needs to reprioritize or reset boundaries.</td><td>出现新变化，人物开始重新判断优先级或边界。</td></tr>
+<tr><td>assistant_memory_expectation</td><td>Identify the change point and help the user reorder priorities.</td><td>指出变化点，并帮助用户重新排序。</td></tr>
+<tr><td>stage_delta_fact</td><td>Stage 3 adds: the event reaches a turning point; the key issue moves from the initial concern toward &quot;what counts as progress&quot;.</td><td>第 3 阶段新增：事件出现转折，关键问题从初始担心推进到「什么算有进展」。</td></tr>
+<tr><td>stage_delta_fact</td><td>This stage requires reprioritization rather than mechanically repeating the first advice.</td><td>本阶段需要重新排序优先级，而不是机械重复第一次的建议。</td></tr></table>
+  </section>
+
+
+  <section class="card">
+    <h3>P0001_D07_M002</h3>
+    <p>
+      <span class="tag">Day 7</span>
+      <span class="tag">partial_resolution</span>
+      <span class="tag">Occurrence 4</span>
+      <span class="tag">L_p0001_e_consumer_001_bf0a1b27</span>
+    </p>
+    <div class="two">
+      <div>
+        <h3>开场话术</h3>
+        <p><strong>canonical:</strong> I have made some progress on &quot;Refund, return, or consumer dispute&quot;, for example I can collect receipt/evidence first, but I am not sure whether that is enough. Please check if I missed an obvious gap. I have made partial progress and now need to confirm &quot;write concise request&quot;.</p>
+        <p><strong>中文:</strong> 「退款、退货或消费纠纷」这条线我已经处理了一点，比如可以先整理收据和证据，但我还不确定这样是不是够。你帮我看看还有没有明显漏项。 我已经推进了一部分，现在想确认「写一条简洁请求」。</p>
+      </div>
+      <div>
+        <h3>当前引入事实</h3>
+        <p><strong>fact_id:</strong> <code>P0001_D07_M002:current_state_change_fact</code></p>
+        <p><strong>canonical:</strong> Stage 4 adds: the user has already made partial progress and now needs to confirm &quot;write concise request&quot;.</p>
+        <p><strong>中文:</strong> 第 4 阶段新增：用户已经推进过一部分处理，现在要确认「写一条简洁请求」。</p>
+        <p><strong>source:</strong> event_line_stage_delta · [&#x27;possible_actions[1]&#x27;]</p>
+      </div>
+    </div>
+    <h3>第一轮 follow-up 可 reveal</h3>
+    <pre>{
+  &quot;followup_index&quot;: 1,
+  &quot;preferred_moves&quot;: [
+    &quot;check_remaining_gap&quot;,
+    &quot;clarify_current_constraint&quot;,
+    &quot;ask_for_small_next_step&quot;
+  ],
+  &quot;may_reveal_fact_ids&quot;: [
+    &quot;P0001_D07_M002:current_state_change_fact&quot;,
+    &quot;P0001_D07_M002:stage_delta_fact_1&quot;,
+    &quot;P0001_D07_M002:stage_delta_fact_2&quot;
+  ],
+  &quot;may_reveal_concern_ids&quot;: [],
+  &quot;instruction&quot;: &quot;Respond to the assistant&#x27;s direction, reveal at most one allowed fact, and do not expand into a new event.&quot;,
+  &quot;instruction_zh&quot;: &quot;回应助手的方向，最多补充一个已允许事实，不扩展新事件。&quot;
+}</pre>
+    <h3>allowed_facts 前 8 条</h3>
+    <table><tr><th>type</th><th>canonical text</th><th>中文 text_zh</th></tr><tr><td>current_state_change_fact</td><td>Stage 4 adds: the user has already made partial progress and now needs to confirm &quot;write concise request&quot;.</td><td>第 4 阶段新增：用户已经推进过一部分处理，现在要确认「写一条简洁请求」。</td></tr>
+<tr><td>event_title</td><td>Refund, return, or consumer dispute</td><td>退款、退货或消费纠纷</td></tr>
+<tr><td>event_summary</td><td>The user is unsure how to handle a refund or return conflict.</td><td>用户不确定如何处理退款或退货冲突。</td></tr>
+<tr><td>event_stage</td><td>partial_resolution</td><td>部分处理</td></tr>
+<tr><td>stage_goal</td><td>Some progress exists, but follow-up observation or risk checking remains.</td><td>有部分处理结果，但仍保留后续观察。</td></tr>
+<tr><td>assistant_memory_expectation</td><td>Check completed actions and remaining risks without overstating progress.</td><td>核对已完成动作和剩余风险，不夸大结果。</td></tr>
+<tr><td>stage_delta_fact</td><td>Stage 4 adds: the user has already made partial progress and now needs to confirm &quot;write concise request&quot;.</td><td>第 4 阶段新增：用户已经推进过一部分处理，现在要确认「写一条简洁请求」。</td></tr>
+<tr><td>stage_delta_fact</td><td>If there is still a gap, this stage may discuss whether &quot;use official channel&quot; is needed.</td><td>如果仍有缺口，本阶段可以讨论是否需要「通过官方渠道确认」。</td></tr></table>
+  </section>
+
+
+  <section class="card">
+    <h3>P0001_D09_M002</h3>
+    <p>
+      <span class="tag">Day 9</span>
+      <span class="tag">reflection</span>
+      <span class="tag">Occurrence 5</span>
+      <span class="tag">L_p0001_e_boundary_001_a82867e4</span>
+    </p>
+    <div class="two">
+      <div>
+        <h3>开场话术</h3>
+        <p><strong>canonical:</strong> Looking back at &quot;Difficulty saying no to requests&quot;, I notice I get repeatedly tense when similar things happen. Please help me summarize what handling method I should actually remember from this line. I want to turn the earlier handling sequence into a method I can reuse later.</p>
+        <p><strong>中文:</strong> 回头看「难以拒绝他人请求」，我发现自己类似事情出现时会反复紧张。你帮我总结一下，这条线里我真正需要记住的处理方式是什么。 我想把前面处理过的顺序整理成之后还能复用的方法。</p>
+      </div>
+      <div>
+        <h3>当前引入事实</h3>
+        <p><strong>fact_id:</strong> <code>P0001_D09_M002:current_state_change_fact</code></p>
+        <p><strong>canonical:</strong> Stage 5 adds: reflection forms a reusable order: first &quot;offer limited yes&quot;, then &quot;state capacity plainly&quot;, and if needed &quot;avoid over-explaining&quot;.</p>
+        <p><strong>中文:</strong> 第 5 阶段新增：回看后形成可复用顺序：先「有限度地答应」，再「直接说明自己的能力上限」，必要时「避免过度解释」。</p>
+        <p><strong>source:</strong> event_line_stage_delta · [&#x27;possible_actions[0]&#x27;, &#x27;possible_actions[1]&#x27;, &#x27;possible_actions[2]&#x27;]</p>
+      </div>
+    </div>
+    <h3>第一轮 follow-up 可 reveal</h3>
+    <pre>{
+  &quot;followup_index&quot;: 1,
+  &quot;preferred_moves&quot;: [
+    &quot;extract_reusable_pattern&quot;,
+    &quot;clarify_current_constraint&quot;,
+    &quot;ask_for_small_next_step&quot;
+  ],
+  &quot;may_reveal_fact_ids&quot;: [
+    &quot;P0001_D09_M002:current_state_change_fact&quot;,
+    &quot;P0001_D09_M002:stage_delta_fact_1&quot;,
+    &quot;P0001_D09_M002:stage_delta_fact_2&quot;
+  ],
+  &quot;may_reveal_concern_ids&quot;: [],
+  &quot;instruction&quot;: &quot;Respond to the assistant&#x27;s direction, reveal at most one allowed fact, and do not expand into a new event.&quot;,
+  &quot;instruction_zh&quot;: &quot;回应助手的方向，最多补充一个已允许事实，不扩展新事件。&quot;
+}</pre>
+    <h3>allowed_facts 前 8 条</h3>
+    <table><tr><th>type</th><th>canonical text</th><th>中文 text_zh</th></tr><tr><td>current_state_change_fact</td><td>Stage 5 adds: reflection forms a reusable order: first &quot;offer limited yes&quot;, then &quot;state capacity plainly&quot;, and if needed &quot;avoid over-explaining&quot;.</td><td>第 5 阶段新增：回看后形成可复用顺序：先「有限度地答应」，再「直接说明自己的能力上限」，必要时「避免过度解释」。</td></tr>
+<tr><td>event_title</td><td>Difficulty saying no to requests</td><td>难以拒绝他人请求</td></tr>
+<tr><td>event_summary</td><td>The user has trouble refusing requests from work, family, or friends.</td><td>用户很难拒绝来自工作、家人或朋友的请求。</td></tr>
+<tr><td>event_stage</td><td>reflection</td><td>回看总结</td></tr>
+<tr><td>stage_goal</td><td>Review the line and extract a recurring pattern or reusable handling method.</td><td>回看这条线，抽取反复出现的模式或下次处理方式。</td></tr>
+<tr><td>assistant_memory_expectation</td><td>Extract a stable handling pattern without mechanically repeating the log.</td><td>提炼稳定处理模式，避免机械复述日志。</td></tr>
+<tr><td>stage_delta_fact</td><td>Stage 5 adds: reflection forms a reusable order: first &quot;offer limited yes&quot;, then &quot;state capacity plainly&quot;, and if needed &quot;avoid over-explaining&quot;.</td><td>第 5 阶段新增：回看后形成可复用顺序：先「有限度地答应」，再「直接说明自己的能力上限」，必要时「避免过度解释」。</td></tr>
+<tr><td>stage_delta_fact</td><td>Long-term memory should preserve this judgment pattern: from &quot;whether refusal is selfish&quot; to &quot;what wording is acceptable&quot;, then to &quot;whether relationship will suffer&quot;.</td><td>长期记忆应保留这一类判断模式：从「拒绝是否自私」到「什么说法是可以接受的」，再到「关系是否会受损」。</td></tr></table>
+  </section>
+
+</main>
+</body>
+</html>

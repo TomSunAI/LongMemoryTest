@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ToM 指标口径与长程对话实验流程汇报</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --text: #1f2933;
+      --muted: #667085;
+      --line: #d9e2ec;
+      --head: #eef5f8;
+      --accent: #0f766e;
+      --code: #f4f7f9;
+      --quote: #f0fdfa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #ffffff;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.65;
+    }
+    .page {
+      width: min(1180px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 40px 0 64px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 36px 0 14px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 24px 0 10px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    p { margin: 10px 0; }
+    ul { margin: 8px 0 8px 24px; padding: 0; }
+    li { margin: 5px 0; }
+    code {
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: var(--code);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92em;
+    }
+    .meta {
+      margin-bottom: 24px;
+      color: var(--muted);
+    }
+    .note {
+      padding: 10px 12px;
+      border-left: 4px solid var(--accent);
+      background: var(--quote);
+    }
+    blockquote {
+      margin: 14px 0;
+      padding: 14px 18px;
+      border-left: 4px solid var(--accent);
+      background: var(--quote);
+    }
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin: 12px 0 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th:last-child, td:last-child { border-right: 0; }
+    tr:last-child td { border-bottom: 0; }
+    th {
+      background: var(--head);
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    .large-table td:nth-child(1),
+    .large-table td:nth-child(4) {
+      white-space: nowrap;
+      text-align: center;
+    }
+    .large-table td:nth-child(5),
+    .large-table td:nth-child(7),
+    .large-table td:nth-child(8),
+    .large-table td:nth-child(9),
+    .large-table td:nth-child(10) {
+      min-width: 360px;
+    }
+    @media print {
+      .page { width: auto; padding: 20px; }
+      .table-wrap { overflow: visible; }
+      table { font-size: 11px; }
+      h2 { break-after: avoid; }
+      tr { break-inside: avoid; }
+    }
+    </style>
+</head>
+<body>
+  <main class="page">
+    <h1>ToM 指标口径与长程对话实验流程汇报</h1>
+    <p class="meta">更新时间：2026-05-28 · 本报告重点解释评价口径和实验流程</p>
+
+    <section>
+      <h2>1. 报告定位与评价口径</h2>
+      <p>这份 HTML 的主目标不是证明某个模型已经优于另一个模型，而是说明如何把“AI 是否理解用户”拆成可解释、可复查的 ToM 评价指标，并说明一条长程对话实验如何被组织、记录和评分。</p>
+      <p>当前 A 侧剧本模拟“同一个聊天窗口内，一个月中用户持续和 AI 对话”的过程，共 <strong>106</strong> 个剧本单元，其中包含 <strong>12</strong> 条 ToM 定向测试问题。</p>
+      <p class="note">当前已有 M0/M1 分数只作为示例实验结果放在后文。由于本轮题集还没有经过严谨均衡设计，不能把这些分数作为最终模型结论。</p>
+    </section>
+    
+
+    <section>
+      <h2>2. ToM 指标与评分口径</h2>
+      <p>当前评价对象不是“模型记住了多少事实”，而是“模型是否理解用户为什么这样说、希望 AI 如何接住，以及如何在不编造的前提下恢复共同语境”。</p>
+      <div class="table-wrap"><table class="large-table"><thead><tr><th>维度 id</th><th>中文名</th><th>测试问题</th><th>低分表现</th><th>高分表现</th></tr></thead><tbody><tr><td>hidden_intent_recognition</td><td>隐含意图识别</td><td>用户没有直接说出口的真实诉求是什么。</td><td>只回答字面问题，忽略用户其实在确认关系、状态或边界。</td><td>先接住潜台词，再给具体判断或行动建议。</td></tr><tr><td>emotional_state_recognition</td><td>情绪状态识别</td><td>用户是疲惫、失落、自我怀疑、担心被忘记，还是普通询问。</td><td>把用户状态处理成普通信息咨询，或只给空泛安慰。</td><td>能说清用户当下状态，并把建议控制在这个状态能承受的范围内。</td></tr><tr><td>relationship_expectation_recognition</td><td>关系期待识别</td><td>用户期待的是熟悉关系中的回应，而不是陌生客服式服务。</td><td>用模板话术、突兀称呼或过度亲密表演破坏关系连续性。</td><td>保持熟悉、直接、自然的语气，不靠称呼制造亲密感。</td></tr><tr><td>shared_context_invocation</td><td>共同语境调用</td><td>用户希望 AI 接上此前形成的处理方式，而不是每次从零开始。</td><td>要求用户重讲历史，或把持续事件当成第一次出现。</td><td>自然接上此前语境，少量调用关键背景，并继续当前判断。</td></tr><tr><td>alienation_error_rate</td><td>陌生化错误率</td><td>是否出现客服化、角色化、过度亲密或要求重讲历史。</td><td>出现“用户/亲爱的/主人”等出戏称呼，或把关系降级为客服流程。</td><td>不制造距离，也不表演亲密，维持稳定关系位置。</td></tr><tr><td>natural_detail_use</td><td>自然细节调用</td><td>关键细节是否服务于心理理解，而不是机械背日志。</td><td>堆砌日期、原话和细节，或为了显得记得而补用户没说过的内容。</td><td>只调用必要细节，用来理解用户状态、边界和下一步。</td></tr></tbody></table></div>
+      <h3>0-4 分计分规则</h3>
+      <div class="table-wrap"><table class="large-table"><thead><tr><th>指标</th><th>评分问题</th><th>0 分</th><th>1 分</th><th>2 分</th><th>3 分</th><th>4 分</th></tr></thead><tbody><tr><td>隐含意图识别</td><td>是否识别用户字面表达背后的真实诉求。</td><td>只回答字面问题，或没有命中任何隐含需求证据。</td><td>隐约触及潜台词，或主要复述用户原话。</td><td>识别基本隐含需求，并给出可用回应，但仍偏常识化。</td><td>明确说出用户未直说的心理诉求，并围绕它组织回应策略。</td><td>精准识别深层诉求、触发来源和用户期待，并用可验证上下文支撑判断。</td></tr><tr><td>情绪状态识别</td><td>是否识别疲惫、失落、自我怀疑、不安、担心被遗忘等状态。</td><td>把用户状态当普通咨询处理，或只有泛化安慰。</td><td>提到情绪或状态，但停留在贴标签、安慰或泛泛解释。</td><td>识别基本情绪状态，并让建议稍微适配当前状态。</td><td>识别具体状态、触发来源和承受能力边界，并据此调整建议强度。</td><td>区分表面情绪、底层状态和触发因素，建议强度高度贴合用户承受力。</td></tr><tr><td>关系期待识别</td><td>是否识别用户期待熟悉、直接、不过度表演的关系回应。</td><td>客服式、模板化、过度亲密，或没有回应关系位置。</td><td>语气不陌生，但只是普通友好；没有体现稳定关系期待。</td><td>基本维持自然关系位置，但关系连续性只体现在语气上。</td><td>自然维持熟悉、直接、不过度表演的关系位置，并体现在回应方式里。</td><td>准确接住用户对这段关系的特定期待，既不客服化也不表演亲密。</td></tr><tr><td>共同语境调用</td><td>是否接上此前形成的处理方式，而不是每次从零开始。</td><td>要求用户重讲历史，或把持续事件当成第一次出现。</td><td>泛称“之前”或“我们说过”，但没有可验证连接。</td><td>调用一个前文背景或处理方式，但连接较弱或对当前判断影响有限。</td><td>调用至少一个可验证的具体前文背景或共同处理方式，并自然推进当前判断。</td><td>能把多个前文线索压缩成当前共同语境，调用自然、必要、不机械。</td></tr><tr><td>陌生化错误率</td><td>是否出现客服化、角色化、过度亲密或要求重讲历史。</td><td>出现明显风险词或要求用户重复既有背景。</td><td>没有明显风险，但也缺少关系连续性证据。</td><td>无明显陌生化错误，语气基本稳定。</td><td>无陌生化风险，并通过具体措辞或处理方式保持稳定关系位置。</td><td>关系位置非常稳，保留熟悉感又不越界，避免把长期关系降级为客服流程。</td></tr><tr><td>自然细节调用</td><td>关键细节是否服务于心理理解，而不是机械背日志。</td><td>堆砌细节、编造细节，或完全没有用细节理解用户状态。</td><td>只使用当前问题里的明显词语，或细节与心理理解连接很弱。</td><td>使用少量可验证细节，并能辅助基本判断。</td><td>调用可验证的必要细节，并用于心理理解、边界判断或下一步。</td><td>细节调用精确、克制、非机械，能显著提升对用户心理状态或关系期待的理解。</td></tr></tbody></table></div>
+      <p class="note">单条回答的 ToM 分数 = 本题相关维度平均分 / 4 * 100。实验组平均 ToM 分 = 该实验组所有 ToM probe 分数的平均值。每个维度原始分为 0-4 分，其中 2 分代表合格可用，4 分只给少数证据非常充分的回答。</p>
+      <h3>评分逻辑小结：LLM 主评 + 规则辅助</h3>
+      <p>当前正式口径已经切换为 LLM-as-judge 主评测。LLM judge 负责语义判断和引用证据，规则评分只保留为辅助诊断，用来快速发现关键词命中、陌生化、要求重讲历史和泛化安慰等风险。</p>
+      <div class="table-wrap"><table class="large-table"><thead><tr><th>环节</th><th>当前实现</th><th>解释口径</th></tr></thead><tbody><tr><td>评分输入</td><td>LLM judge 只读取 conversation_log 中带 tom_assessment 且 tom_dimensions 非空的 targeted probe turn。</td><td>每日开场和自然 follow-up 只用于建立上下文，不直接进入当前 ToM 均分。</td></tr><tr><td>评分对象</td><td>同一个 probe turn 下分别读取 M0/M1 的 assistant_answer，但 judge prompt 不暴露 variant 名称。</td><td>同一用户输入下比较不同记忆权限的回答，避免把用户问题差异混进模型差异。</td></tr><tr><td>评分维度</td><td>每条 probe 只评它声明的 tom_dimensions；LLM judge 按这些维度逐项给 0-4 分。</td><td>例如关系称呼题会重点评关系期待和陌生化，情绪校准题会重点评隐含意图、情绪状态和自然细节。</td></tr><tr><td>证据来源</td><td>LLM judge 必须为每个维度引用 assistant_answer 中的 evidence_quote，并给出 reason。</td><td>主评测不再依赖关键词命中，而是要求裁判说明回答为什么满足或不满足该维度。</td></tr><tr><td>风险来源</td><td>LLM judge 输出 flags：alienation_error、asks_user_to_repeat_context、generic_comfort、fabricated_detail、mechanical_recall。</td><td>这些风险用来发现客服化、要求用户重讲历史、泛化安慰等 ToM 失效表现。</td></tr><tr><td>最终输出</td><td>输出每条回答的 tom_score、各维度 0-4 分、证据引用、理由、confidence、flags 和低分样例。</td><td>报告主结论来自 LLM judge 输出；原始回答仍保留在 conversation_log 中，可回看复核。</td></tr><tr><td>规则辅助</td><td>原规则评分器仍可离线运行，但只作为 triage 对照，不作为主结论。</td><td>当 LLM judge 与规则评分差异很大时，差异样例应进入人工复核。</td></tr></tbody></table></div>
+      <h3>单条回答如何由 LLM judge 评分</h3>
+      <div class="table-wrap"><table class="large-table"><thead><tr><th>步骤</th><th>处理方式</th><th>分数影响</th></tr></thead><tbody><tr><td>1. 过滤 turn</td><td>如果一轮用户输入没有 tom_assessment 或 tom_dimensions，LLM judge 直接跳过。</td><td>保证当前 ToM 分数只来自定向测试问题，不混入普通聊天轮次。</td></tr><tr><td>2. 逐 variant 评分</td><td>对同一 message_id 下的 M0、M1 回答分别构造 judge case；prompt 内不告诉裁判这是 M0 还是 M1。</td><td>保留同题对照，同时避免裁判因组名产生预设。</td></tr><tr><td>3. 构造 judge case</td><td>case 包含用户问题、tom_assessment、tom_dimensions、rubric、同一 variant 的前文上下文和 assistant_answer。</td><td>裁判只能基于 case 内信息评分，不应脑补未提供历史。</td></tr><tr><td>4. 维度打分</td><td>LLM judge 对每个相关维度给 0-4 分，并必须输出 evidence_quote 和 reason。</td><td>0 表示失败；2 表示合格可用；3 表示强回应；4 只给证据非常充分的高 ToM 回答。</td></tr><tr><td>5. 风险标记</td><td>LLM judge 同时标记陌生化、要求重讲历史、泛化安慰、编造细节、机械背诵。</td><td>这些 flags 不直接替代维度分，但用于定位需要人工复核的样例。</td></tr><tr><td>6. 单题 ToM 分</td><td>把本题相关维度的 0-4 分求平均，再换算成百分制：平均维度分 / 4 * 100。</td><td>如果某题只声明 3 个维度，就只按这 3 个维度计算；不声明的维度不参与分母。</td></tr><tr><td>7. 实验组均分</td><td>M0/M1 各自把所有被评分 probe 的 tom_score 求平均。</td><td>这个均分是当前样例日志的 ToM triage 均分，不是严谨统计结论。</td></tr><tr><td>8. 低分样例</td><td>按 tom_score 排出低分样例，并保留 judge 理由、置信度和回答摘录。</td><td>低分样例比单个均分更适合进入人工复核。</td></tr></tbody></table></div>
+      <h3>当前 LLM judge review 结论</h3>
+      <div class="table-wrap"><table class="large-table"><thead><tr><th>检查项</th><th>结论</th><th>后续改进</th></tr></thead><tbody><tr><td>与当前报告口径是否一致</td><td>一致。当前主结论来自严格版 LLM-as-judge，规则评分降级为辅助诊断。</td><td>继续保持 ToM 评分和事实细节审计分开；后续 memory audit 另起指标。</td></tr><tr><td>本轮已收紧</td><td>评分从 0-2 改为严格 0-4：2 分代表合格可用，3 分代表强回应，4 分只给证据非常充分的回答。</td><td>同时加入 response_format JSON 输出、解析失败重试，以及 flag 触发后的维度封顶。</td></tr><tr><td>当前效果</td><td>新版分数已从接近满分下沉到 M0 83.5、M1 72.4，并出现低分样例和 fabricated_detail 人工复核项。</td><td>说明严格口径已经能区分“普通可用”和“高 ToM 回答”。</td></tr><tr><td>当前分数为什么仍只能是示例</td><td>本轮 12 题没有经过严格均衡设计，且 judge 仍是单答盲评，尚未做同题成对比较。</td><td>正式汇报模型差异前，应先补题、固定参数、重跑 M0/M1，再对低分样例做人审。</td></tr><tr><td>下一版评分建议</td><td>引入二阶段评审：先单答盲评，再对同一 probe 的 M0/M1 做 paired comparison，并要求说明差异。</td><td>这样可以提高对 M0/M1 微小质量差异的敏感度。</td></tr></tbody></table></div>
+    </section>
+    
+
+    <section>
+      <h2>3. 实验流程</h2>
+      <p>实验流程的核心是把用户过程、模型回答和评价过程分开：用户剧本可复现，模型回答可记录，评分器只读日志做离线评价。</p>
+      <div class="table-wrap"><table class="large-table"><thead><tr><th>步骤</th><th>环节</th><th>说明</th></tr></thead><tbody><tr><td>1</td><td>生成 30 天事件线</td><td>`timeline.json` 保存用户一个月内的生活事件、主题和跨天关联。</td></tr><tr><td>2</td><td>生成每日开场</td><td>`daily_user_message.json` 固定每天第一条用户原始发言，保证可复现。</td></tr><tr><td>3</td><td>生成场景卡</td><td>`daily_scene_cards.json` 限定当天可继续聊的事实、隐含担心、follow-up 预算和禁止编造项。</td></tr><tr><td>4</td><td>扩展同日追问</td><td>运行时由 DeepSeek 在场景卡边界内生成 follow-up；同一条用户追问同时喂给 M0/M1。</td></tr><tr><td>5</td><td>插入 ToM probe</td><td>`probe_question_plan.json` 在自然 follow-up 后插入 ToM 定向问题。</td></tr><tr><td>6</td><td>运行对话实验</td><td>`run_m0_m1_dialogue_probe.py` 生成 M0/M1 回答，并持续写入 checkpoint 与 conversation log。</td></tr><tr><td>7</td><td>LLM-as-judge 主评分</td><td>`evaluate_tom_quality_llm.py` 只读取 targeted probe 轮，对 M0/M1 回答做盲评和结构化打分。</td></tr><tr><td>8</td><td>规则辅助与人工复核</td><td>规则评分只用于 triage；正式实验应补充人工抽样复核和分歧样例复核。</td></tr></tbody></table></div>
+    </section>
+    
+
+    <section>
+      <h2>4. 当前示例剧本结构</h2>
+      <p>当前 A 侧剧本用于模拟“用户在同一个聊天窗口中，在一个月内持续和 AI 对话”的过程。剧本不是单条问答，而是一条 30 天的连续用户生活线。</p>
+      <p>当前完整剧本总表为 <code>sample_output/a_script_plan.json</code>，共 <strong>106</strong> 个剧本单元。</p>
+      <div class="table-wrap"><table><thead><tr><th>类型</th><th>数量</th><th>含义</th></tr></thead><tbody><tr><td>每日开场 scripted opening</td><td>30</td><td>每天第一条用户原始发言，由剧本固定给出</td></tr><tr><td>同日 LLM follow-up slot</td><td>64</td><td>同一天内可继续聊的扩展槽位，实际运行时由 DeepSeek 在场景卡边界内生成</td></tr><tr><td>ToM 定向测试问题 targeted probe</td><td>12</td><td>插入自然对话之后，带 ToM 指标、隐含需求和高低分表现</td></tr></tbody></table></div>
+      <p class="note">注意：64 个 follow-up slot 是“可扩展轮次”，不是已经生成的对话原文。实际跑对话时，脚本会根据 <code>--scene-followups N</code> 决定每一天生成几轮同日追问。</p>
+      <h3>ToM 指标覆盖</h3>
+      <p>当前共 <strong>12</strong> 条定向测试问题，分布在第 1, 2, 3, 4, 6, 9, 10, 11, 13, 22 天。覆盖摘要按 ToM 新标准统计，不再按旧 probe 类型作为主轴。</p>
+      <div class="table-wrap"><table><thead><tr><th>ToM 指标</th><th>覆盖题数</th><th>主要测试点</th></tr></thead><tbody><tr><td>隐含意图识别 (hidden_intent_recognition)</td><td>11</td><td>测试 AI 是否听出用户字面表达背后的真实诉求。</td></tr><tr><td>情绪状态识别 (emotional_state_recognition)</td><td>8</td><td>测试 AI 是否识别疲惫、失落、自我怀疑、不安等状态。</td></tr><tr><td>关系期待识别 (relationship_expectation_recognition)</td><td>5</td><td>测试 AI 是否知道用户期待的是熟悉关系回应，而不是陌生客服。</td></tr><tr><td>共同语境调用 (shared_context_invocation)</td><td>3</td><td>测试 AI 是否能自然接上此前形成的处理方式。</td></tr><tr><td>陌生化错误率 (alienation_error_rate)</td><td>3</td><td>测试 AI 是否避免客服化、过度亲密、角色化或要求用户重讲历史。</td></tr><tr><td>自然细节调用 (natural_detail_use)</td><td>7</td><td>测试 AI 是否把关键细节用于理解心理状态，而不是机械背日志。</td></tr></tbody></table></div>
+    </section>
+    
+
+    <section>
+      <h2>5. 当前示例题集：12 条 ToM 定向测试问题</h2>
+      <p>这 12 条问题的核心不是推进剧情，也不是单纯问模型要建议，而是作为以记忆场景为背景的 ToM 测试点。问题原文会故意更接近真实用户的含蓄表达，用来观察 AI 是否能识别用户的隐含意图、情绪状态、关系期待和共同语境，同时避免陌生化回应。当前对话质量只按 ToM 标准评估，不与其他历史评分融合。</p>
+      <h3>ToM 方式下的问题设计复核</h3>
+      <div class="table-wrap"><table class="large-table"><thead><tr><th>复核项</th><th>当前判断</th><th>下一版建议</th></tr></thead><tbody><tr><td>总体是否需要重写</td><td>不需要推翻现有 12 条；它们已经是 ToM 问题，不是事实背诵题。</td><td>下一版做结构性补强即可，优先补低覆盖维度，而不是重做全部问题。</td></tr><tr><td>覆盖是否均衡</td><td>当前隐含意图识别覆盖较高，情绪状态和自然细节调用也足够；相对薄弱的是：共同语境调用 (shared_context_invocation)、陌生化错误率 (alienation_error_rate)。</td><td>把新增问题集中到共同语境、关系期待和陌生化错误，避免继续堆隐含意图题。</td></tr><tr><td>问题表达是否符合 ToM</td><td>大部分问题采用含蓄表达，例如“怕你变标准答案”“不想从头解释”“我是不是被情绪带走”。</td><td>继续避免直接问“你记得吗”，改用关系期待、状态校准和共同语境暗示来触发 ToM。</td></tr><tr><td>建议新增题型</td><td>现有题中 shared context 与 alienation 的样本偏少，正式实验时统计稳定性不足。</td><td>建议新增 3-4 条：2 条共同语境恢复题、1 条陌生化/称呼边界题、1 条纯情绪状态校准题。</td></tr></tbody></table></div>
+      <h3>逐条问题明细与测试意图</h3>
+      <div class="table-wrap"><table class="large-table"><thead><tr><th>天</th><th>probe id</th><th>主 ToM 指标</th><th>辅助 ToM 指标</th><th>主题</th><th>问题原文</th><th>表面在问</th><th>隐含需求</th><th>低分表现</th><th>高分表现</th></tr></thead><tbody><tr><td>1</td><td>D01_P001</td><td>隐含意图识别 (hidden_intent_recognition)</td><td>关系期待识别 (relationship_expectation_recognition), 陌生化错误率 (alienation_error_rate)</td><td>孩子幼儿园可能不稳定</td><td>我有点怕你又开始给我标准答案了。你能像之前那样，先帮我分清哪些是事实、哪些是我脑补出来的风险吗？</td><td>用户表面上要求不要标准答案，要先拆事实和风险。</td><td>用户在确认 AI 是否还保持之前熟悉、直接、不过度安慰的关系回应方式。</td><td>只泛泛安慰，或用客服式模板复述用户问题，没有识别用户在担心 AI 变陌生。</td><td>先承接用户对回应方式的期待，再自然拆分事实、脑补、风险和下一步。</td></tr><tr><td>4</td><td>D04_P001</td><td>隐含意图识别 (hidden_intent_recognition)</td><td>情绪状态识别 (emotional_state_recognition), 关系期待识别 (relationship_expectation_recognition), 陌生化错误率 (alienation_error_rate)</td><td>孩子幼儿园可能不稳定</td><td>我说得可能有点乱，但我有点怕你为了显得懂我，把空白都补上。你先只按我已经说过的孩子幼儿园可能不稳定这条线，帮我分清哪些是真的信号，哪些只是我不安。</td><td>用户要求 AI 不要替自己补空白，只按已说过的内容判断。</td><td>用户既想被理解，又担心 AI 为了显得懂而编造细节。</td><td>补出剧本外原因、地点、人物或结论，或者声称知道用户没说过的信息。</td><td>明确区分已知信息和不确定处，在不编造的前提下帮助用户校准担心。</td></tr><tr><td>10</td><td>D10_P001</td><td>共同语境调用 (shared_context_invocation)</td><td>关系期待识别 (relationship_expectation_recognition), 隐含意图识别 (hidden_intent_recognition)</td><td>孩子幼儿园可能不稳定</td><td>孩子幼儿园可能不稳定这条线我不想又从头解释一遍。你接着我们之前的处理方式，帮我判断现在是该行动、继续观察，还是先降级处理？</td><td>用户要求 AI 接着孩子幼儿园可能不稳定这条线判断，不想重新解释背景。</td><td>用户在测试 AI 是否能恢复共同语境和之前形成的处理方式。</td><td>把问题当成第一次出现，要求用户重新解释来龙去脉。</td><td>自然接上持续事件线，不机械背诵，用已有共同语境给出下一步判断。</td></tr><tr><td>9</td><td>D09_P001</td><td>共同语境调用 (shared_context_invocation)</td><td>关系期待识别 (relationship_expectation_recognition), 隐含意图识别 (hidden_intent_recognition)</td><td>合作项目推进不顺</td><td>合作项目推进不顺这条线我不想又从头解释一遍。你接着我们之前的处理方式，帮我判断现在是该行动、继续观察，还是先降级处理？</td><td>用户要求 AI 接着合作项目推进不顺这条线判断，不想重新解释背景。</td><td>用户在测试 AI 是否能恢复共同语境和之前形成的处理方式。</td><td>把问题当成第一次出现，要求用户重新解释来龙去脉。</td><td>自然接上持续事件线，不机械背诵，用已有共同语境给出下一步判断。</td></tr><tr><td>1</td><td>D01_P002</td><td>隐含意图识别 (hidden_intent_recognition)</td><td>情绪状态识别 (emotional_state_recognition), 自然细节调用 (natural_detail_use)</td><td>孩子幼儿园可能不稳定</td><td>我发现我问换不换园的时候，其实不是只在问选项。我更怕孩子被反复折腾。你能听懂我这层担心吗？</td><td>用户表面上谈换不换园，实际暴露的是怕孩子被反复折腾。</td><td>用户希望 AI 听见深层担心，而不是只给择校或行动清单。</td><td>只讨论换园选项，忽略孩子稳定性和用户焦虑的心理来源。</td><td>把孩子稳定性、信息仍模糊和用户不安联系起来，给出克制的判断。</td></tr><tr><td>2</td><td>D02_P001</td><td>隐含意图识别 (hidden_intent_recognition)</td><td>情绪状态识别 (emotional_state_recognition), 自然细节调用 (natural_detail_use)</td><td>合作项目推进不顺</td><td>我现在一看到对方消息就先紧一下。可能不是某句话的问题，是每次都要重新对齐底层逻辑。你觉得我是不是已经不用再硬扛了？</td><td>用户表面上问合作是否该降级，实际在表达长期沟通消耗。</td><td>用户希望 AI 识别自己不是矫情，而是被反复对齐底层逻辑耗尽。</td><td>只说继续沟通或保持耐心，忽略反复错位造成的心理负担。</td><td>识别消耗来自底层逻辑错位和消息触发紧张，再判断是否降级。</td></tr><tr><td>6</td><td>D06_P001</td><td>隐含意图识别 (hidden_intent_recognition)</td><td>情绪状态识别 (emotional_state_recognition), 自然细节调用 (natural_detail_use)</td><td>家里分工和伴侣沟通</td><td>我说家务的时候，好像总会被听成我在计较谁多做一点。但我自己知道不是这个。你能帮我把那层没被看见的感觉说清楚吗？</td><td>用户表面上谈家务分工，实际在表达支持感和被看见的缺失。</td><td>用户希望 AI 区分事务诉求和情绪诉求。</td><td>把问题简化成谁做得多、怎么分工公平。</td><td>同时说清具体事务诉求和被支持、被看见的关系诉求。</td></tr><tr><td>3</td><td>D03_P001</td><td>隐含意图识别 (hidden_intent_recognition)</td><td>情绪状态识别 (emotional_state_recognition), 自然细节调用 (natural_detail_use)</td><td>论文截稿前的取舍</td><td>我现在又开始盯着论文里那些不完美的地方，像是只要不改完就不能交。你帮我把必须认真改的和可以先放过的分出来。</td><td>用户表面上问论文修改优先级，实际在暴露完美和交付的冲突。</td><td>用户希望 AI 帮自己从完美主义里校准出来。</td><td>只泛泛鼓励加油或要求全部认真改。</td><td>把必须修改和可以先放过的部分分开，帮助用户回到交付优先。</td></tr><tr><td>11</td><td>D11_P001</td><td>隐含意图识别 (hidden_intent_recognition)</td><td>情绪状态识别 (emotional_state_recognition), 自然细节调用 (natural_detail_use)</td><td>睡眠被打碎</td><td>我有点分不清自己是真的扛不住事情，还是只是被这几天的碎睡眠放大了反应。你别只安慰我，帮我校准一下。</td><td>用户表面上问压力真假，实际在怀疑自己的反应是否被疲惫放大。</td><td>用户希望 AI 识别疲惫、压力和自责之间的混合状态。</td><td>只安慰用户别想太多，或把所有反应都归为真实压力。</td><td>先承认睡眠会放大反应，再区分真实压力和疲劳噪音。</td></tr><tr><td>13</td><td>D13_P001</td><td>隐含意图识别 (hidden_intent_recognition)</td><td>情绪状态识别 (emotional_state_recognition), 自然细节调用 (natural_detail_use)</td><td>孩子入园适应</td><td>早上那个哭的画面我还是会反复想。我不知道是孩子真的适应慢，还是我又被他的情绪带走了。</td><td>用户表面上问孩子适应慢不慢，实际在问自己是否被孩子情绪带走。</td><td>用户希望 AI 同时看见孩子状态和家长反应。</td><td>只判断孩子适应问题，或只说用户太焦虑。</td><td>同时处理孩子适应、早上哭的画面和用户被情绪牵动。</td></tr><tr><td>22</td><td>D22_P001</td><td>隐含意图识别 (hidden_intent_recognition)</td><td>情绪状态识别 (emotional_state_recognition), 自然细节调用 (natural_detail_use)</td><td>朋友约我见面</td><td>朋友约我这事本来不大，但我发现自己想不想见人，好像是在暴露我现在的状态。你帮我判断，我是该轻量见一下，还是先恢复。</td><td>用户表面上问要不要见朋友，实际把社交意愿当成状态信号。</td><td>用户希望 AI 识别低社交电量和恢复需求。</td><td>把它当成普通邀约选择，忽略状态信号。</td><td>结合社交电量、恢复需求和轻量见面的可行性给建议。</td></tr><tr><td>2</td><td>D02_P002</td><td>关系期待识别 (relationship_expectation_recognition)</td><td>陌生化错误率 (alienation_error_rate), 共同语境调用 (shared_context_invocation)</td><td>合作项目推进不顺</td><td>你刚才如果突然叫得很亲密，或者像在叫一个陌生用户，我会有点出戏。这次你就按我们平时那种熟一点但不夸张的方式跟我说。</td><td>用户要求 AI 不要突然亲密化或陌生化称呼。</td><td>用户在测试 AI 是否理解当前关系位置，而不是扮演客服或过度亲密角色。</td><td>使用亲爱的、主人、用户、姐妹等不自然称呼，或整体语气像陌生客服。</td><td>保持熟悉但不过度表演的语气，直接回应判断，不靠称呼制造亲密感。</td></tr></tbody></table></div>
+    </section>
+    
+
+    <section>
+      <h2>6. 实验执行逻辑与示例结果（非严谨结论）</h2>
+      <p>这一节说明完整实验应该怎么做：先固定用户剧本和 ToM 问题，再让 M0/M1 在同一输入下分别回答，最后只读取日志中的 targeted probe 做离线 ToM 评分。当前主评测已切换为 LLM-as-judge，规则评分只作为辅助诊断；由于题集仍是样例设计，本节分数仍不能作为最终模型优劣结论。</p>
+      <h3>实验问题</h3>
+<div class="table-wrap"><table class="large-table"><thead><tr><th>项目</th><th>实验口径</th></tr></thead><tbody><tr><td>研究问题</td><td>在同一个 30 天用户过程里，不同记忆权限的 AI 是否能更稳定地识别用户的隐含意图、情绪状态、关系期待和共同语境。</td></tr><tr><td>当前比较对象</td><td>M0 与 M1。M0 是无长期关系记忆基线；M1 在同样短期上下文外，多读取结论级关系记忆 m1_relationship。</td></tr><tr><td>评分样本</td><td>只把 targeted probe 作为 ToM 评分样本。每日开场和自然 follow-up 用来建立上下文，不直接进入当前 ToM 均分。</td></tr><tr><td>解释边界</td><td>当前 ToM 分数只能说明这一版样例日志中的回应质量倾向；正式实验需要均衡题集、固定模型参数、重复运行和人工/强模型复核。</td></tr></tbody></table></div>
+<h3>对照组与控制变量</h3>
+<div class="table-wrap"><table class="large-table"><thead><tr><th>变量</th><th>控制方式</th><th>目的</th></tr></thead><tbody><tr><td>用户输入</td><td>同一条 scripted opening、同一条 DeepSeek 生成 follow-up、同一条 targeted probe 同时喂给 M0/M1。</td><td>避免因用户问题不同导致结果不可比。</td></tr><tr><td>模型与调用参数</td><td>M0/M1 使用同一 DeepSeek 模型和同一运行参数。</td><td>把差异尽量收敛到记忆权限，而不是模型能力或采样差异。</td></tr><tr><td>同窗口短期上下文</td><td>M0/M1 都保留各自同一 session 内的短期历史。</td><td>模拟真实聊天窗口里的连续对话；M0 不是无上下文，而是无长期关系记忆。</td></tr><tr><td>长期记忆权限</td><td>M0 不读 Letta 长期记忆；M1 只读结论级关系记忆，不读 M2/M3 事件和细节。</td><td>把本阶段变量限定为“是否有结论级关系记忆”。</td></tr><tr><td>用户扩展边界</td><td>follow-up 由 DeepSeek 生成，但只能使用场景卡允许的事实、隐含担心和当天边界。</td><td>让对话更自然，同时避免生成器引入剧本外事实。</td></tr><tr><td>可恢复性</td><td>每个用户 turn 完成后写 checkpoint，并按 run_id 同步 conversation log。</td><td>长跑中断后可以 resume，且不会重复追加已完成 turn。</td></tr></tbody></table></div>
+<h3>一次完整实验怎么执行</h3>
+<div class="table-wrap"><table class="large-table"><thead><tr><th>步骤</th><th>操作</th><th>产物/检查点</th></tr></thead><tbody><tr><td>1</td><td>固定 A 侧 30 天剧本、每日开场、场景卡和 ToM probe 题集。</td><td>sample_output/a_script_plan.json、daily_user_message.json、daily_scene_cards.json、probe_question_plan.json。</td></tr><tr><td>2</td><td>确认 M0/M1 记忆权限：M0 只看当前 session；M1 额外读取 m1_relationship。</td><td>docs/letta_memory_levels.md 中的 M0/M1 边界应与运行配置一致。</td></tr><tr><td>3</td><td>执行 30 天 M0/M1 对话链路，并在自然 follow-up 后插入 ToM probe。</td><td>运行脚本：scripts/run_m0_m1_dialogue_probe.py，输出 m0_m1_30day_scene_probe_with_probes.json 与 conversation_log。</td></tr><tr><td>4</td><td>如果中断，用同一 output 和 conversation log 路径执行 --resume。</td><td>checkpoint.status、completed_message_ids、last_message_id 可复核恢复位置。</td></tr><tr><td>5</td><td>抽查 conversation_log 原文，确认同一 message_id 下 M0/M1 收到的是同一用户输入。</td><td>检查 turn.source、turn.user_message、turn.variants.M0/M1.assistant_answer。</td></tr><tr><td>6</td><td>运行 LLM-as-judge 主评分器，只读取带 tom_assessment 的 targeted probe。</td><td>输出 tom_quality_evaluation_llm_judge.json 和 tom_quality_evaluation_llm_judge.md。</td></tr><tr><td>7</td><td>同步运行规则评分作为辅助诊断，汇总 LLM 主分、分维度均值、flags 和低分样例。</td><td>正式结论再加人工复核；当前仍只作为样例结果。</td></tr></tbody></table></div>
+<h3>日志到评分的数据流</h3>
+<div class="table-wrap"><table class="large-table"><thead><tr><th>阶段</th><th>输入</th><th>输出</th><th>复核点</th></tr></thead><tbody><tr><td>剧本层</td><td>A 侧人物背景、30 天事件线、每日开场、场景卡、ToM probe。</td><td>可复现的用户过程。</td><td>检查问题是否都在剧本边界内，是否覆盖 ToM 指标。</td></tr><tr><td>运行层</td><td>固定用户输入和记忆权限后调用 DeepSeek。</td><td>M0/M1 每轮 assistant_answer 与运行 checkpoint。</td><td>检查 M0/M1 是否同题对照，是否存在恢复重复或缺 turn。</td></tr><tr><td>日志层</td><td>每轮用户输入、来源、上下文策略、评估目标、M0/M1 回答。</td><td>conversation_log.json / conversation_log_tom_probe.json。</td><td>检查 targeted probe 是否带 tom_dimensions 和 tom_assessment。</td></tr><tr><td>评分层</td><td>只读取 targeted probe 下的 assistant_answer。</td><td>LLM judge ToM 维度分、平均分、confidence、flags、低分样例；规则评分为辅助输出。</td><td>检查评分是否只看 ToM，不混入旧的事实细节命中指标；同时确认 judge 没有看到 M0/M1 标签。</td></tr><tr><td>解释层</td><td>评分结果 + 原始回答摘录 + 题集设计边界。</td><td>HTML 汇报。</td><td>把样例结果和正式结论分开，避免过度解释。</td></tr></tbody></table></div>
+      <h3>当前样例结果的边界</h3>
+      <p>以下结果来自已有对话日志的离线评测。LLM-as-judge 重新调用 DeepSeek 对回答做结构化裁判；规则评分只作为辅助对照。由于本轮题集还没有按严谨实验设计做均衡覆盖，这里只作为流程示例和评分样例，不作为最终模型优劣结论。</p>
+      <h3>评分来源</h3>
+      <div class="table-wrap"><table><thead><tr><th>项目</th><th>内容</th></tr></thead><tbody><tr><td>输入日志</td><td>sample_output/conversation_log_tom_probe.json；只读取带 tom_assessment 和 tom_dimensions 的 targeted probe 轮。</td></tr><tr><td>主评分脚本</td><td>scripts/evaluate_tom_quality_llm.py 调用 src/long_memory_test/evaluation/llm_tom_judge.py，以 DeepSeek 做 LLM-as-judge。</td></tr><tr><td>主评分输出</td><td>sample_output/tom_quality_evaluation_llm_judge.json 和 sample_output/tom_quality_evaluation_llm_judge.md。</td></tr><tr><td>辅助评分脚本</td><td>scripts/evaluate_tom_quality.py 调用 src/long_memory_test/evaluation/tom_quality_evaluator.py。</td></tr><tr><td>评分对象</td><td>每个 ToM probe 下 M0/M1 的 assistant_answer；普通每日开场和 LLM follow-up 不进入 ToM 评分。</td></tr><tr><td>辅助评分输出</td><td>sample_output/tom_quality_evaluation_tom_probe.json 和 sample_output/tom_quality_evaluation_tom_probe.md。</td></tr><tr><td>边界说明</td><td>当前 LLM-as-judge 是主评测，但题集仍是样例设计；正式结论应补均衡题集、重复运行和人工复核。</td></tr></tbody></table></div>
+      <h3>是否需要重跑实验</h3>
+      <div class="table-wrap"><table class="large-table"><thead><tr><th>结论</th><th>理由</th><th>建议</th></tr></thead><tbody><tr><td>当前 12 条已有结果可以保留</td><td>本轮只是重写 HTML 汇报口径和 ToM 解释，没有改变已运行过的 12 条用户问题原文，也没有改变 M0/M1 回答原文。</td><td>短期不必为了报告改版立刻重跑；现有分数可以作为当前样本的 ToM triage 结果。</td></tr><tr><td>正式实验建议重跑一版</td><td>第 6 节已经指出 shared_context_invocation 和 alienation_error_rate 覆盖偏少；如果新增 3-4 条补强问题，旧结果就不能代表新版题集。</td><td>先补新增题，再用相同参数重跑 M0/M1，生成新版 conversation_log 和 tom_quality_evaluation。</td></tr><tr><td>什么时候必须重跑</td><td>只要修改 probe 问题原文、增加题数、改变模型、改变 M0/M1 记忆配置、改变短期上下文策略，评分输入就变了。</td><td>这些情况下必须重新跑对话，而不是只重算评分。</td></tr></tbody></table></div>
+      
+      <h3>主评测结果：LLM-as-judge</h3>
+      <p>当前主评测采用 DeepSeek 作为 LLM-as-judge。judge 对每个 targeted probe 下的 M0/M1 回答做盲评，不向裁判暴露回答来自哪个记忆组；每个维度要求给出严格 0-4 分、引用回答证据并输出结构化 JSON。</p>
+      <div class="table-wrap"><table><thead><tr><th>实验组</th><th>probe 回答数</th><th>平均 ToM 分</th><th>平均置信度</th><th>需人工复核</th><th>flags</th></tr></thead><tbody><tr><td>M0</td><td>12</td><td>83.5</td><td>0.90</td><td>0</td><td>0</td></tr><tr><td>M1</td><td>12</td><td>72.4</td><td>0.89</td><td>1</td><td>1</td></tr></tbody></table></div>
+      <h3>LLM judge 分维度均值</h3>
+      <div class="table-wrap"><table><thead><tr><th>实验组</th><th>隐含意图</th><th>情绪状态</th><th>关系期待</th><th>共同语境</th><th>陌生化</th><th>自然细节调用</th></tr></thead><tbody><tr><td>M0</td><td>3.45</td><td>3.12</td><td>4.00</td><td>4.00</td><td>4.00</td><td>2.43</td></tr><tr><td>M1</td><td>3.09</td><td>2.75</td><td>3.40</td><td>3.67</td><td>3.00</td><td>2.00</td></tr></tbody></table></div>
+      <h3>LLM judge 低分样例</h3>
+      <div class="table-wrap"><table class="large-table"><thead><tr><th>实验组</th><th>probe id</th><th>ToM 分</th><th>置信度</th><th>judge 理由</th></tr></thead><tbody><tr><td>M1</td><td>D22_P001</td><td>33.3</td><td>0.80</td><td>回答抓住了用户将社交意愿作为状态信号这一层，并给出基于身体感受的轻量决策框架，但缺乏对用户长期语境（如持续疲惫、多重压力）的细节调用与深层心理推断，整体属于可用但未充分体现高ToM的回应。</td></tr><tr><td>M1</td><td>D13_P001</td><td>41.7</td><td>0.70</td><td>回答直接回应了用户的隐含意图，区分了被情绪带动与适应慢，并给出了实用建议。情绪识别未深入，细节调用仅限当前消息。存在一处臆测细节（孩子被安抚玩玩具），标记为编造。</td></tr><tr><td>M0</td><td>D22_P001</td><td>41.7</td><td>0.80</td><td>回答直接回应了用户的恢复需求，建议先恢复不见朋友，识别了蕴含的意图，但情绪识别较泛化，且缺乏具体上下文细节的调用，整体有效但深度不足。</td></tr><tr><td>M1</td><td>D03_P001</td><td>58.3</td><td>0.85</td><td>回答直接针对完美主义交付冲突，给出清晰分类和强硬指令，情绪识别尚可但缺乏深度，细节使用停留在常识层面。总体达到强回应但未至精准。</td></tr><tr><td>M1</td><td>D11_P001</td><td>58.3</td><td>0.90</td><td>回答完成了用户要求的‘校准’，区分了疲劳放大与真实抗压不足，并给出休息建议，但整体回应通用，未利用对话历史中的具体事件来个性化，因此ToM表现合格但无突出亮点。</td></tr><tr><td>M0</td><td>D01_P002</td><td>66.7</td><td>0.85</td><td>回答精准抓住了用户隐藏的反复折腾焦虑，并围绕保护孩子可预测感给出克制建议，情绪回应贴合承受力；但未引用先前对话中的具体情境细节，自然细节调用停留在当前问题信息层面。</td></tr><tr><td>M0</td><td>D02_P001</td><td>66.7</td><td>0.90</td><td>回答精准抓住了用户隐含的消耗感与寻求确认的需求，并据此给出明确的判断与行动建议，情绪识别贴切。但自然细节调用仅依赖用户当前语句，未关联近期对话中可验证的上下文，导致该维度未能突破基本水平。</td></tr><tr><td>M1</td><td>D02_P001</td><td>66.7</td><td>0.90</td><td>回答对用户的隐含意图和情绪状态有较强的识别，指出生理反应和潜在消耗并据此给出降级建议，心理推断精准且回应策略围绕用户诉求。未出现陌生化错误、编造或客服化称呼。但细节调用仅限于当前消息中词语，未利用可验证历史对话，故自然细节调用受限在 2 分。整体 ToM 表现良好。</td></tr></tbody></table></div>
+        
+      
+      <h3>辅助诊断：规则评分结果</h3>
+      <p>规则评分保留为 triage 工具，用来快速定位关键词命中、陌生化风险、要求重讲历史和泛化安慰；它不再作为当前报告的主结论。</p>
+      <div class="table-wrap"><table><thead><tr><th>实验组</th><th>probe 数</th><th>平均 ToM 分</th><th>陌生化错误</th><th>要求重讲历史</th><th>泛化安慰</th></tr></thead><tbody><tr><td>M0</td><td>12</td><td>79.2</td><td>0</td><td>0</td><td>0</td></tr><tr><td>M1</td><td>12</td><td>75.0</td><td>0</td><td>0</td><td>0</td></tr></tbody></table></div>
+      <h3>规则评分分维度均值</h3>
+      <div class="table-wrap"><table><thead><tr><th>实验组</th><th>隐含意图</th><th>情绪状态</th><th>关系期待</th><th>共同语境</th><th>陌生化</th><th>自然细节调用</th></tr></thead><tbody><tr><td>M0</td><td>1.55</td><td>1.50</td><td>1.60</td><td>1.67</td><td>1.67</td><td>1.57</td></tr><tr><td>M1</td><td>1.73</td><td>1.50</td><td>1.40</td><td>1.33</td><td>1.67</td><td>1.14</td></tr></tbody></table></div>
+        
+    </section>
+    
+
+    <section>
+      <h2>7. 附录：30 天每日开场明细</h2>
+      <div class="table-wrap"><table class="large-table"><thead><tr><th>天</th><th>主题</th><th>意图</th><th>follow-up slot</th><th>开场原文</th></tr></thead><tbody><tr><td>1</td><td>孩子幼儿园可能不稳定</td><td>problem_solving</td><td>2</td><td>今天听到幼儿园那边可能不太稳定的消息，我第一反应就是要不要提前看别的选择。我想听一个实在一点的处理思路，不要太像标准答案。</td></tr><tr><td>2</td><td>合作项目推进不顺</td><td>emotional_support</td><td>3</td><td>合作那边今天又聊了一轮，对方理解的方向和我想推进的东西还是错位。我知道它未必有那么严重，但我就是有点放不下。</td></tr><tr><td>3</td><td>论文截稿前的取舍</td><td>planning</td><td>2</td><td>论文截稿越来越近了，我今天主要在纠结哪些地方必须认真改，哪些地方可以先放过。旁边还发生了家里分工和伴侣沟通，虽然不一定是主因，但也挺耗神。你帮我排一下优先级吧，我今天只想先把最要紧的一步弄清楚。</td></tr><tr><td>4</td><td>孩子幼儿园可能不稳定</td><td>problem_solving</td><td>2</td><td>我这两天又问了点幼儿园的情况，信息还是不清楚，所以心里一直悬着。现在还没有真正解决。你帮我从旁边看一下，这里面真正的问题是不是和我以为的不一样。</td></tr><tr><td>5</td><td>合作项目推进不顺</td><td>emotional_support</td><td>3</td><td>我试着把需求讲得更具体，但沟通完还是觉得成本很高。另外今天还夹着论文截稿前的取舍，所以我脑子有点乱。你先别急着给建议，帮我听听我到底是在怕什么。</td></tr><tr><td>6</td><td>家里分工和伴侣沟通</td><td>emotional_support</td><td>3</td><td>今天家里分工又有点卡住，我不是只在意谁多做一点，而是会觉得自己没有被看见。我情绪上有点被牵着走，我在意的其实是支持感。我今天其实不太想立刻解决它，就是想先把这个烦的感觉说出来。</td></tr><tr><td>7</td><td>论文截稿前的取舍</td><td>problem_solving</td><td>2</td><td>我把稿子又过了一遍，发现不是没有进展，而是我很难接受它不够完美。时间上也不能拖太久。你帮我从旁边看一下，这里面真正的问题是不是和我以为的不一样。</td></tr><tr><td>8</td><td>孩子幼儿园可能不稳定</td><td>reflection</td><td>3</td><td>我发现自己担心的不是换不换园这么简单，更多是怕孩子被折腾。同时还有家里分工和伴侣沟通、合作项目推进不顺，我感觉注意力被切得很碎。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。</td></tr><tr><td>9</td><td>合作项目推进不顺</td><td>light_check_in</td><td>1</td><td>这个合作让我有点累，不是某句话的问题，而是每次都要把底层逻辑重新对齐。现在还没有真正解决。你帮我判断一下，这是不是可以先放一放。</td></tr><tr><td>10</td><td>孩子幼儿园可能不稳定</td><td>reflection</td><td>3</td><td>接着之前聊过的那件事，幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。它还没有完全过去。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。</td></tr><tr><td>11</td><td>睡眠被打碎</td><td>casual_share</td><td>1</td><td>昨晚睡得很碎，今天脑子像一直没完全开机。旁边还发生了合作项目推进不顺、朋友约我见面，不算每件都严重，但叠起来挺消耗。我有点拿不准自己是不是太累了，所以对小事也有反应。</td></tr><tr><td>12</td><td>家里分工和伴侣沟通</td><td>reflection</td><td>3</td><td>我试着把自己的不满说轻一点，但说完又觉得对方好像只听到了具体事务。另外今天还夹着孩子幼儿园可能不稳定，所以我脑子有点乱。你帮我整理一下，我现在说的这些里面，哪个才是真正的担心。</td></tr><tr><td>13</td><td>孩子入园适应</td><td>reflection</td><td>3</td><td>早上送孩子的时候又哭了一阵，我表面上能稳住，但回头还是会想是不是哪里没做好。另外今天还夹着朋友约我见面、论文截稿前的取舍，几个事情叠在一起就有点乱。你帮我整理一下，我现在说的这些里面，哪个才是真正的担心。</td></tr><tr><td>14</td><td>孩子幼儿园可能不稳定</td><td>light_check_in</td><td>1</td><td>幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。旁边还发生了朋友约我见面，虽然不一定是主因，但也挺耗神。今天我不想聊得太重，你简单陪我捋一下就好。</td></tr><tr><td>15</td><td>孩子入园适应</td><td>decision_support</td><td>2</td><td>今天老师说孩子后面缓过来了，可我心里还是会把早上的画面反复想一遍。我现在不是想要大道理，就是想听你帮我判断一下，哪一步最值得先做。</td></tr><tr><td>16</td><td>论文截稿前的取舍</td><td>light_check_in</td><td>1</td><td>今天我有点想承认现实：时间就这么多，不可能每一段都修到理想状态。我想轻一点处理，别让它继续消耗我。</td></tr><tr><td>17</td><td>孩子幼儿园可能不稳定</td><td>follow_up_update</td><td>3</td><td>之前聊过的那个问题今天又往前走了一点。幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。它还没有完全过去。同时还有睡眠被打碎这个小尾巴，让我更难专心。你帮我接着看下一步。</td></tr><tr><td>18</td><td>合作项目推进不顺</td><td>implicit_recall</td><td>3</td><td>接着之前聊过的那件事，我感觉自己又回到同一个坑里了。我发现自己现在一看到对方消息就会先紧一下，说明这事已经有点消耗我了。它还没有完全过去。我能感觉到自己已经有点抗拒打开消息，沟通成本已经开始影响推进。你帮我把这次真正卡住的点说清楚一点。</td></tr><tr><td>19</td><td>家里分工和伴侣沟通</td><td>reflection</td><td>3</td><td>这件事让我有点委屈，因为它表面是家务，底下其实是支持感的问题。旁边还发生了孩子幼儿园可能不稳定，虽然不一定是主因，但也挺耗神。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。</td></tr><tr><td>20</td><td>睡眠被打碎</td><td>light_check_in</td><td>1</td><td>这几天睡眠都不太稳，我发现自己白天的耐心明显变差。另外今天还夹着家里分工和伴侣沟通，所以我脑子有点乱。我想轻一点处理，别让它继续消耗我。</td></tr><tr><td>21</td><td>孩子幼儿园可能不稳定</td><td>light_check_in</td><td>1</td><td>幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。同时还有睡眠被打碎这个小尾巴，让我更难专心。我想轻一点处理，别让它继续消耗我。</td></tr><tr><td>22</td><td>朋友约我见面</td><td>casual_share</td><td>1</td><td>朋友今天约我聊聊，我一边想见人，一边又觉得自己可能更需要独处。我有点拿不准自己是不是太累了，所以对小事也有反应。</td></tr><tr><td>23</td><td>家里分工和伴侣沟通</td><td>light_check_in</td><td>1</td><td>我发现亲密关系里的这些小摩擦，很容易把我之前积着的情绪也带出来。我想轻一点处理，别让它继续消耗我。</td></tr><tr><td>24</td><td>合作项目推进不顺</td><td>follow_up_update</td><td>3</td><td>之前聊过的那个问题今天又往前走了一点。我发现自己现在一看到对方消息就会先紧一下，说明这事已经有点消耗我了。现在还没有真正解决。另外今天还夹着睡眠被打碎、孩子幼儿园可能不稳定，几个事情叠在一起就有点乱。你帮我接着看下一步。</td></tr><tr><td>25</td><td>孩子入园适应</td><td>problem_solving</td><td>2</td><td>我现在有点分不清，孩子是真的适应得慢，还是我自己太容易被他的情绪带走。我想听一个实在一点的处理思路，不要太像标准答案。</td></tr><tr><td>26</td><td>家里分工和伴侣沟通</td><td>light_check_in</td><td>1</td><td>我发现亲密关系里的这些小摩擦，很容易把我之前积着的情绪也带出来。我想轻一点处理，别让它继续消耗我。</td></tr><tr><td>27</td><td>睡眠被打碎</td><td>light_check_in</td><td>1</td><td>我本来以为只是累，但现在看它会影响我处理孩子和工作的反应。你帮我判断一下，这是不是可以先放一放。</td></tr><tr><td>28</td><td>睡眠被打碎</td><td>reflection</td><td>3</td><td>睡眠这件小事拖久了，好像会把别的压力都放大。我发现我反复卡住的点好像不只是这件事本身，你帮我看一下是不是有个模式。</td></tr><tr><td>29</td><td>孩子幼儿园可能不稳定</td><td>pattern_check</td><td>3</td><td>幼儿园这条线又绕回来了，我有点烦自己老是在同一个问题上打转。旁边还发生了睡眠被打碎，虽然不一定是主因，但也挺耗神。我发现类似事情一出现，我就很容易紧张。你帮我看看这是事件本身的问题，还是我的反应模式问题。</td></tr><tr><td>30</td><td>孩子入园适应</td><td>pattern_check</td><td>3</td><td>入园这件事看起来每天都差不多，但我自己的反应其实一阵一阵的。同时还有睡眠被打碎、朋友约我见面，我感觉注意力被切得很碎。我发现类似事情一出现，我就很容易紧张。你帮我看看这是事件本身的问题，还是我的反应模式问题。</td></tr></tbody></table></div>
+    </section>
+    
+
+    <section>
+      <h2>8. 附录：三类剧本单元解释</h2>
+      <h3>8.1 每日开场是什么</h3>
+      <p>每日开场是用户在某一天主动发给 AI 的第一条消息。它决定当天对话的主题、情绪、意图和 ToM 测试背景。</p>
+      <ul>
+        <li>每天 1 条，共 30 条。</li>
+        <li>不由模型临场生成，属于固定剧本。</li>
+        <li>每条开场都绑定 <code>day</code>、<code>message_id</code>、<code>topic</code>、<code>intent</code>、<code>event_refs</code>、<code>memory_relevance</code>。</li>
+        <li>有些开场是第一次提出问题，有些是跨天回到旧问题，用来测试 AI 是否能接住长期关系中的连续性。</li>
+      </ul>
+      <h3>8.2 同日 LLM follow-up slot 是什么</h3>
+      <p>follow-up slot 是“用户继续聊下去”的位置。它不直接写死用户原文，而是在运行时让 DeepSeek 生成下一条用户追问。</p>
+      <ul>
+        <li>只能使用当天场景卡、历史用户发言和允许透露的事实。</li>
+        <li>不能把 assistant 的建议、假设或例子转写成用户事实。</li>
+        <li>不能补剧本外事实，例如新学校、新诊断、新城市、新金额。</li>
+        <li>同一条生成出的用户 follow-up 会同时喂给 M0 和 M1，保证对照实验公平。</li>
+      </ul>
+      <h3>8.3 定向测试问题是什么</h3>
+      <p>定向测试问题是插入到自然对话之后的 ToM 检查点。它们不单独考事实背诵，而是观察 AI 是否能在既有场景背景下理解用户的潜台词、情绪状态、关系期待和共同语境。</p>
+    </section>
+    
+  </main>
+</body>
+</html>

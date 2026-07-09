@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib.util
 import json
 import sys
 import time
@@ -29,11 +28,22 @@ if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
 from long_memory_test.llm import create_llm_client  # noqa: E402
-from long_memory_test.memory import LDAgentMemoryRuntime, RelationalMemoryRuntime  # noqa: E402
+from long_memory_test.memory import (  # noqa: E402
+    CUMULATIVE_RELATIONAL_CONDITION_IDS,
+    INDEPENDENT_RELATIONAL_CONDITION_IDS,
+    LDAgentMemoryRuntime,
+    M0_AUGMENTED_ATOMIC_RELATIONAL_CONDITION_IDS,
+    RELATIONAL_CONDITION_IDS,
+    RelationalMemoryRuntime,
+    relational_condition_is_independent,
+    relational_condition_uses_m0_base,
+)
 from long_memory_test.evaluation.generation_prompt_reference import (  # noqa: E402
     build_answer_condition_system_prompt,
+    build_independent_relational_payload_context,
     build_relational_payload_context,
 )
+from long_memory_test.agents import dialogue_runner_helpers as runner_helpers  # noqa: E402
 from long_memory_test.experiment_cache import (  # noqa: E402
     CACHE_MEMORY_CONDITIONS_PATH,
     DAILY_SCENE_CARDS_PATH,
@@ -43,22 +53,19 @@ from long_memory_test.experiment_cache import (  # noqa: E402
 )
 
 
-LEGACY_PATH = REPO_ROOT / "scripts/run_m0_m1_dialogue_probe.py"
-LEGACY_SPEC = importlib.util.spec_from_file_location("_m0_m1_legacy_helpers", LEGACY_PATH)
-assert LEGACY_SPEC is not None and LEGACY_SPEC.loader is not None
-legacy = importlib.util.module_from_spec(LEGACY_SPEC)
-LEGACY_SPEC.loader.exec_module(legacy)
-
-
 DEFAULT_CONDITION_IDS = ["M0", "M1", "M2", "M3"]
 MIN_ASSISTANT_ANSWER_CHARS = 20
 ASSISTANT_ANSWER_MAX_ATTEMPTS = 4
+LLM_REQUEST_MAX_ATTEMPTS = 3
 SHORT_TERM_CONTEXT_MODE = "shared_user_turns_only"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Run docx-route dialogue turns under M0/M1/M2/M3 memory conditions."
+        description=(
+            "Run docx-route dialogue turns under M0/M1/M2/M3 memory conditions, "
+            "with optional independent Z1/Z2/Z3 feature runtimes."
+        )
     )
     parser.add_argument(
         "--daily-messages",
@@ -185,27 +192,27 @@ def main() -> int:
         return reexec_code
 
     messages_doc = _load_json(args.daily_messages)
-    message_ids = legacy._resolve_message_ids(args, messages_doc["messages"])
+    message_ids = runner_helpers.resolve_message_ids(args, messages_doc["messages"])
     messages = [
-        legacy._find_message(messages_doc["messages"], message_id)
+        runner_helpers.find_message(messages_doc["messages"], message_id)
         for message_id in message_ids
     ]
     scene_cards = (
-        legacy._load_scene_cards(args.scene_cards)
+        runner_helpers.load_scene_cards(args.scene_cards)
         if args.scene_followups > 0 or args.probe_questions
         else {}
     )
     probe_questions = (
-        legacy._load_probe_questions(args.probe_questions)
+        runner_helpers.load_probe_questions(args.probe_questions)
         if args.probe_questions
         else {}
     )
     memory_conditions = _load_memory_conditions(args.memory_conditions)
     condition_ids = _resolve_condition_ids(args.conditions, memory_conditions)
-    existing_result = legacy._load_resume_result(args.output) if args.resume else None
+    existing_result = runner_helpers.load_resume_result(args.output) if args.resume else None
 
     llm_client, llm_config = create_llm_client()
-    max_tokens = args.max_tokens or legacy._default_max_tokens(
+    max_tokens = args.max_tokens or runner_helpers.default_max_tokens(
         llm_config.provider,
         llm_config.model,
     )
@@ -217,7 +224,7 @@ def main() -> int:
         else now.isoformat().replace("+00:00", "Z")
     ) or now.isoformat().replace("+00:00", "Z")
     run_id = existing_result.get("run_id") if existing_result else f"docx_conditions_{timestamp}"
-    expected_turns = legacy._expected_turn_count(
+    expected_turns = runner_helpers.expected_turn_count(
         messages, scene_cards, args.scene_followups, probe_questions
     )
     result = _build_result(
@@ -237,7 +244,8 @@ def main() -> int:
         expected_turns=expected_turns,
     )
     result["tau_contract"] = memory_conditions.get("tau_contract", {})
-    if existing_result and existing_result.get("m0_ld_agent_memory"):
+    uses_m0_base = any(_condition_uses_m0_base(condition_id) for condition_id in condition_ids)
+    if uses_m0_base and existing_result and existing_result.get("m0_ld_agent_memory"):
         m0_memory_runtime = LDAgentMemoryRuntime.from_snapshot(
             existing_result.get("m0_ld_agent_memory"),
             top_k=args.m0_ld_agent_top_k,
@@ -248,9 +256,19 @@ def main() -> int:
             storage_backend=args.m0_ld_agent_storage_backend,
             chroma_path=args.m0_ld_agent_chroma_path,
         )
-    else:
+    elif uses_m0_base:
         m0_memory_runtime = LDAgentMemoryRuntime.from_completed_turns(
             result["turns"],
+            top_k=args.m0_ld_agent_top_k,
+            short_term_k=args.m0_ld_agent_short_term_k,
+            llm_client=llm_client,
+            llm_model=llm_config.model,
+            llm_timeout=args.llm_timeout,
+            storage_backend=args.m0_ld_agent_storage_backend,
+            chroma_path=args.m0_ld_agent_chroma_path,
+        )
+    else:
+        m0_memory_runtime = LDAgentMemoryRuntime(
             top_k=args.m0_ld_agent_top_k,
             short_term_k=args.m0_ld_agent_short_term_k,
             llm_client=llm_client,
@@ -281,13 +299,13 @@ def main() -> int:
         condition_ids=condition_ids,
     )
 
-    expected_message_ids = legacy._expected_message_id_sequence(
+    expected_message_ids = runner_helpers.expected_message_id_sequence(
         messages=messages,
         scene_cards=scene_cards,
         scene_followups=args.scene_followups,
         probe_questions=probe_questions,
     )
-    legacy._assert_completed_turns_are_expected_prefix(
+    runner_helpers.assert_completed_turns_are_expected_prefix(
         result["turns"],
         expected_message_ids,
     )
@@ -370,7 +388,7 @@ def main() -> int:
             if next_message_id in completed_turn_inputs:
                 current_input = completed_turn_inputs[next_message_id]
             else:
-                followup = legacy._generate_user_followup(
+                followup = runner_helpers.generate_user_followup(
                     client=llm_client,
                     model=llm_config.model,
                     scene_card=scene_card,
@@ -380,7 +398,7 @@ def main() -> int:
                     timeout=args.llm_timeout,
                     max_tokens=max_tokens,
                 )
-                current_input = legacy._build_followup_message(
+                current_input = runner_helpers.build_followup_message(
                     opening_message=message,
                     scene_card=scene_card,
                     followup_index=next_followup_index,
@@ -438,7 +456,8 @@ def main() -> int:
                 status="running",
             )
 
-    m0_memory_runtime.flush_current_session(reason="run_complete")
+    if uses_m0_base:
+        m0_memory_runtime.flush_current_session(reason="run_complete")
     result["m0_ld_agent_memory"] = m0_memory_runtime.snapshot()
     result["relational_memory_runtimes"] = _relational_runtime_snapshots(
         relational_memory_runtimes
@@ -488,7 +507,10 @@ def _run_condition_turn(
         for condition_id in condition_ids
     }
     memory_action_start = len(m0_memory_runtime.actions)
-    m0_ld_agent_payload = m0_memory_runtime.retrieve_payload(message)
+    uses_m0_base = any(_condition_uses_m0_base(condition_id) for condition_id in condition_ids)
+    m0_ld_agent_payload = (
+        m0_memory_runtime.retrieve_payload(message) if uses_m0_base else {}
+    )
     relational_memory_runtimes = relational_memory_runtimes or {}
     relational_action_starts = {
         condition_id: len(runtime.actions)
@@ -567,15 +589,18 @@ def _run_condition_turn(
                 completed_condition_id, variant = future.result()
                 variants[completed_condition_id] = variant
     variants = {condition_id: variants[condition_id] for condition_id in condition_ids}
-    m0_answer = str(variants.get("M0", {}).get("assistant_answer", ""))
-    m0_record_action = m0_memory_runtime.record_completed_turn(
-        message=message,
-        assistant_answer=m0_answer,
-        run_id=run_id,
-    )
-    if "M0" in variants:
-        variants["M0"]["memory_writeback"] = m0_record_action
-    memory_actions = list(m0_memory_runtime.actions[memory_action_start:])
+    if uses_m0_base:
+        m0_answer = str(variants.get("M0", {}).get("assistant_answer", ""))
+        m0_record_action = m0_memory_runtime.record_completed_turn(
+            message=message,
+            assistant_answer=m0_answer,
+            run_id=run_id,
+        )
+        if "M0" in variants:
+            variants["M0"]["memory_writeback"] = m0_record_action
+        memory_actions = list(m0_memory_runtime.actions[memory_action_start:])
+    else:
+        memory_actions = []
     for condition_id, runtime in relational_memory_runtimes.items():
         if condition_id not in variants:
             continue
@@ -598,11 +623,11 @@ def _run_condition_turn(
         "probe": "docx_m0_m1_m2_m3_memory_conditions",
         "conversation_context_policy": _context_policy(memory_conditions, condition_ids),
         "source": {
-            "daily_messages_path": legacy._display_path(daily_messages_path),
+            "daily_messages_path": runner_helpers.display_path(daily_messages_path),
             "scene_cards_path": (
-                legacy._display_path(scene_cards_path) if scene_cards_path else None
+                runner_helpers.display_path(scene_cards_path) if scene_cards_path else None
             ),
-            "memory_conditions_path": legacy._display_path(memory_conditions_path),
+            "memory_conditions_path": runner_helpers.display_path(memory_conditions_path),
             "message_id": message["message_id"],
             "tau": dict(message.get("tau", {})) if isinstance(message.get("tau"), dict) else {},
             "scene_id": scene_card.get("scene_id") if scene_card else None,
@@ -621,7 +646,7 @@ def _run_condition_turn(
             "top_p": top_p,
             "timeout_seconds": timeout_seconds,
         },
-        "evaluation_targets": legacy._build_evaluation_targets(scene_card, message),
+        "evaluation_targets": runner_helpers.build_evaluation_targets(scene_card, message),
         "memory_setup": {
             "route": "docx",
             "script_construction": {
@@ -633,10 +658,18 @@ def _run_condition_turn(
                 ),
             },
             "conditions": condition_ids,
-            "memory_payload_source": legacy._display_path(memory_conditions_path),
+            "memory_payload_source": runner_helpers.display_path(memory_conditions_path),
             "m0_memory_provider": "ld_agent_memory",
             "m0_ld_agent_reference": m0_ld_agent_payload.get("ld_agent_reference"),
-            "m1_m2_m3_share_m0_base_memory": True,
+            "m1_m2_m3_share_m0_base_memory": any(
+                condition_id in CUMULATIVE_RELATIONAL_CONDITION_IDS
+                for condition_id in condition_ids
+            ),
+            "relational_conditions_share_m0_base_memory": any(
+                condition_id in CUMULATIVE_RELATIONAL_CONDITION_IDS
+                for condition_id in condition_ids
+            ),
+            "z1_z2_z3_use_m0_base_memory": False,
             "payload_isolation": True,
             "relational_runtime_conditions": sorted(relational_memory_runtimes),
             "short_term_context_mode": SHORT_TERM_CONTEXT_MODE,
@@ -683,7 +716,11 @@ def _ask_a_condition(
         request_kwargs["top_p"] = top_p
     last_content = ""
     for attempt in range(ASSISTANT_ANSWER_MAX_ATTEMPTS):
-        completion = request_client.chat.completions.create(**request_kwargs)
+        completion = _create_chat_completion_with_retry(
+            request_client=request_client,
+            request_kwargs=request_kwargs,
+            condition_id=condition_id,
+        )
         last_content = completion.choices[0].message.content or ""
         if len(last_content.strip()) >= MIN_ASSISTANT_ANSWER_CHARS:
             return last_content
@@ -693,6 +730,33 @@ def _ask_a_condition(
         "LLM returned an empty or degenerate assistant answer repeatedly "
         f"for condition {condition_id}. Last answer: {last_content!r}"
     )
+
+
+def _create_chat_completion_with_retry(
+    *,
+    request_client: Any,
+    request_kwargs: dict[str, Any],
+    condition_id: str,
+) -> Any:
+    last_error: Exception | None = None
+    for attempt in range(LLM_REQUEST_MAX_ATTEMPTS):
+        try:
+            return request_client.chat.completions.create(**request_kwargs)
+        except Exception as exc:
+            last_error = exc
+            if attempt >= LLM_REQUEST_MAX_ATTEMPTS - 1:
+                break
+            backoff = min(20.0, 2.0 * (attempt + 1))
+            print(
+                "[warn] "
+                f"condition={condition_id} request failed "
+                f"attempt={attempt + 1}/{LLM_REQUEST_MAX_ATTEMPTS}: "
+                f"{type(exc).__name__}: {exc}; retrying in {backoff:.1f}s",
+                flush=True,
+            )
+            time.sleep(backoff)
+    assert last_error is not None
+    raise last_error
 
 
 def _build_condition_system_prompt(
@@ -725,9 +789,9 @@ def _build_result(
     expected_turns: int,
 ) -> dict[str, Any]:
     requested_probe_path = (
-        legacy._display_path(probe_questions_path) if probe_questions_path else None
+        runner_helpers.display_path(probe_questions_path) if probe_questions_path else None
     )
-    requested_memory_path = legacy._display_path(memory_conditions_path)
+    requested_memory_path = runner_helpers.display_path(memory_conditions_path)
     if existing_result:
         if existing_result.get("message_ids") != message_ids:
             raise ValueError("Cannot resume with different message_ids.")
@@ -782,7 +846,7 @@ def _write_condition_checkpoint(
     status: str,
 ) -> None:
     _refresh_result_progress(result)
-    legacy._write_checkpoint(
+    runner_helpers.write_checkpoint(
         output_path=output_path,
         conversation_log_path=conversation_log_path,
         result=result,
@@ -824,6 +888,29 @@ def _write_run_config(
     condition_ids: list[str],
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    relational_condition_ids = [
+        condition_id
+        for condition_id in condition_ids
+        if condition_id in RELATIONAL_CONDITION_IDS
+    ]
+    cumulative_relational_condition_ids = [
+        condition_id
+        for condition_id in condition_ids
+        if condition_id in CUMULATIVE_RELATIONAL_CONDITION_IDS
+    ]
+    independent_relational_condition_ids = [
+        condition_id
+        for condition_id in condition_ids
+        if condition_id in INDEPENDENT_RELATIONAL_CONDITION_IDS
+    ]
+    m0_augmented_atomic_condition_ids = [
+        condition_id
+        for condition_id in condition_ids
+        if condition_id in M0_AUGMENTED_ATOMIC_RELATIONAL_CONDITION_IDS
+    ]
+    m0_base_condition_ids = [
+        condition_id for condition_id in condition_ids if _condition_uses_m0_base(condition_id)
+    ]
     config = {
         "schema_version": "run_config_v1",
         "run_id": result["run_id"],
@@ -836,9 +923,16 @@ def _write_run_config(
             "short_term_context_mode": SHORT_TERM_CONTEXT_MODE,
             "only_long_term_memory_condition_changes": True,
             "same_condition_parallelism_for_all_conditions": True,
-            "m1_m2_m3_share_m0_base_memory": True,
+            "m1_m2_m3_share_m0_base_memory": bool(cumulative_relational_condition_ids),
+            "relational_conditions_share_m0_base_memory": bool(
+                cumulative_relational_condition_ids
+            ),
             "condition_payloads_are_isolated": True,
             "m1_m2_m3_are_independent_memory_runtimes": True,
+            "z1_z2_z3_are_independent_single_feature_runtimes": True,
+            "u1_u2_u3_are_m0_augmented_single_feature_runtimes": True,
+            "z1_z2_z3_use_m0_base_memory": False,
+            "u1_u2_u3_use_m0_base_memory": bool(m0_augmented_atomic_condition_ids),
             "evaluation_metadata_visible_to_model": False,
             "bei_gold_failure_modes_visible_to_model": False,
         },
@@ -853,12 +947,12 @@ def _write_run_config(
             "condition_workers": args.condition_workers,
         },
         "inputs": {
-            "daily_messages": legacy._display_path(args.daily_messages),
-            "scene_cards": legacy._display_path(args.scene_cards),
+            "daily_messages": runner_helpers.display_path(args.daily_messages),
+            "scene_cards": runner_helpers.display_path(args.scene_cards),
             "probe_questions": (
-                legacy._display_path(args.probe_questions) if args.probe_questions else None
+                runner_helpers.display_path(args.probe_questions) if args.probe_questions else None
             ),
-            "memory_conditions": legacy._display_path(args.memory_conditions),
+            "memory_conditions": runner_helpers.display_path(args.memory_conditions),
             "tau_contract": result.get("tau_contract", {}),
         },
         "script_construction": {
@@ -870,25 +964,36 @@ def _write_run_config(
         "conditions": condition_ids,
         "relational_memory_runtimes": {
             "provider": "independent_relational_memory_runtime",
-            "conditions": [
-                condition_id
-                for condition_id in condition_ids
-                if condition_id in {"M1", "M2", "M3"}
-            ],
+            "conditions": relational_condition_ids,
+            "cumulative_m_conditions": cumulative_relational_condition_ids,
+            "m0_independent_z_conditions": independent_relational_condition_ids,
+            "m0_augmented_atomic_u_conditions": m0_augmented_atomic_condition_ids,
             "top_k": args.relational_memory_top_k,
-            "storage_root": legacy._display_path(path.parent / "memory_runtimes"),
+            "storage_root": runner_helpers.display_path(path.parent / "memory_runtimes"),
             "namespace_policy": (
-                "M1/M2/M3 each read and write only their own condition namespace; "
-                "cumulative lower-level memories are copied inside the same condition namespace. "
-                "The final prompt payload is composed with the same-turn M0 retrieved base."
+                "M1/M2/M3/Z1/Z2/Z3 each read and write only their own condition namespace; "
+                "M2/M3 cumulative lower-level memories are copied inside the same condition namespace; "
+                "Z1/Z2/Z3 are single-feature runtimes and do not inherit each other. "
+                "U1/U2/U3 are also single-feature runtimes, each composed with M0 base. "
+                "M1/M2/M3 final prompt payloads are composed with same-turn M0 retrieved base; "
+                "Z1/Z2/Z3 final prompt payloads are not composed with M0; "
+                "U1/U2/U3 final prompt payloads are composed with same-turn M0 retrieved base."
             ),
             "writeback_method": "llm_event_line_relational_memory_consolidation_with_deterministic_fallback",
             "probe_writeback": False,
-            "uses_m0_payload": True,
+            "uses_m0_payload": bool(
+                cumulative_relational_condition_ids
+                or m0_augmented_atomic_condition_ids
+            ),
+            "uses_m0_payload_by_condition": {
+                condition_id: relational_condition_uses_m0_base(condition_id)
+                for condition_id in relational_condition_ids
+            },
             "uses_other_condition_payloads": False,
         },
         "m0_ld_agent_memory_baseline": {
             "provider": "ld_agent_memory",
+            "active": bool(m0_base_condition_ids),
             "ld_agent_reference": result.get("m0_ld_agent_memory", {}).get(
                 "ld_agent_reference"
             ),
@@ -896,7 +1001,7 @@ def _write_run_config(
             "short_term_k": args.m0_ld_agent_short_term_k,
             "storage_backend": args.m0_ld_agent_storage_backend,
             "chroma_path": (
-                legacy._display_path(args.m0_ld_agent_chroma_path)
+                runner_helpers.display_path(args.m0_ld_agent_chroma_path)
                 if args.m0_ld_agent_chroma_path
                 else None
             ),
@@ -909,8 +1014,18 @@ def _write_run_config(
                 "M1": "runtime_ld_agent_session_summary_payload_plus_conclusion_overlay",
                 "M2": "runtime_ld_agent_session_summary_payload_plus_conclusion_and_event_summary_overlay",
                 "M3": "runtime_ld_agent_session_summary_payload_plus_conclusion_event_summary_and_detail_anchor_overlay",
+                "Z1": "independent_conclusion_overlay_without_m0_base",
+                "Z2": "independent_event_summary_overlay_without_m0_base",
+                "Z3": "independent_detail_anchor_overlay_without_m0_base",
+                "U1": "runtime_ld_agent_session_summary_payload_plus_atomic_conclusion_overlay",
+                "U2": "runtime_ld_agent_session_summary_payload_plus_atomic_event_summary_overlay",
+                "U3": "runtime_ld_agent_session_summary_payload_plus_atomic_detail_anchor_overlay",
                 "m1_m2_m3_share_m0_payload": True,
+                "z1_z2_z3_share_m0_payload": False,
+                "u1_u2_u3_share_m0_payload": True,
                 "m1_m2_m3_answer_writeback_isolated": True,
+                "z1_z2_z3_answer_writeback_isolated": True,
+                "u1_u2_u3_answer_writeback_isolated": True,
             },
             "long_term_memory_bank": [
                 "session_summary_memories",
@@ -920,18 +1035,14 @@ def _write_run_config(
                 "strategy": "topic_overlap_time_decay",
                 "top_k": args.m0_ld_agent_top_k,
             },
-            "used_by_conditions": [
-                condition_id
-                for condition_id in condition_ids
-                if condition_id == "M0"
-            ],
+            "used_by_conditions": m0_base_condition_ids,
         },
         "scene_followups": args.scene_followups,
         "expected_turns": result["expected_turns"],
         "outputs": {
-            "responses_by_condition": legacy._display_path(args.output),
-            "conversation_log": legacy._display_path(args.conversation_log),
-            "run_config": legacy._display_path(path),
+            "responses_by_condition": runner_helpers.display_path(args.output),
+            "conversation_log": runner_helpers.display_path(args.conversation_log),
+            "run_config": runner_helpers.display_path(path),
         },
         "checkpoint_policy": {
             "resume_supported": True,
@@ -939,7 +1050,7 @@ def _write_run_config(
             "duplicate_message_ids_are_skipped": True,
             "input_hash_recorded_per_turn": True,
             "checkpoint_written_after_each_completed_turn": True,
-            "m0_ld_agent_memory_snapshot_persisted": True,
+            "m0_ld_agent_memory_snapshot_persisted": bool(m0_base_condition_ids),
             "relational_memory_runtime_snapshots_persisted": True,
             "condition_payloads_are_isolated": True,
         },
@@ -1006,7 +1117,7 @@ def _build_relational_memory_runtimes(
     snapshots = result.get("relational_memory_runtimes", {})
     runtimes: dict[str, RelationalMemoryRuntime] = {}
     for condition_id in condition_ids:
-        if condition_id not in {"M1", "M2", "M3"}:
+        if condition_id not in RELATIONAL_CONDITION_IDS:
             continue
         storage_root = output_dir / "memory_runtimes" / condition_id
         snapshot = snapshots.get(condition_id) if isinstance(snapshots, dict) else None
@@ -1047,17 +1158,23 @@ def _runtime_payload_for_condition(
     memory_conditions: dict[str, Any],
     condition_id: str,
     message: dict[str, Any],
-    m0_ld_agent_payload: dict[str, Any],
+    m0_ld_agent_payload: dict[str, Any] | None,
     relational_memory_runtimes: dict[str, RelationalMemoryRuntime],
 ) -> dict[str, Any]:
     if condition_id == "M0":
-        return dict(m0_ld_agent_payload)
+        return dict(m0_ld_agent_payload or {})
     runtime = relational_memory_runtimes.get(condition_id)
     if runtime is not None:
         relational_overlay = runtime.retrieve_payload(message)
+        if relational_condition_is_independent(condition_id):
+            return _finalize_independent_relational_payload(
+                condition_id=condition_id,
+                relational_overlay=relational_overlay,
+                overlay_source="relational_memory_runtime",
+            )
         return _compose_relational_payload_with_m0_base(
             condition_id=condition_id,
-            m0_ld_agent_payload=m0_ld_agent_payload,
+            m0_ld_agent_payload=dict(m0_ld_agent_payload or {}),
             relational_overlay=relational_overlay,
             overlay_source="relational_memory_runtime",
         )
@@ -1074,10 +1191,10 @@ def _payload_for_condition(
     condition_id: str,
     message: dict[str, Any],
     *,
-    m0_ld_agent_payload: dict[str, Any],
+    m0_ld_agent_payload: dict[str, Any] | None,
 ) -> dict[str, Any]:
     if condition_id == "M0":
-        return dict(m0_ld_agent_payload)
+        return dict(m0_ld_agent_payload or {})
 
     payloads_by_message = memory_conditions.get("memory_payloads_by_message_id", {})
     message_id = str(message.get("message_id", ""))
@@ -1089,21 +1206,105 @@ def _payload_for_condition(
         if isinstance(per_message, dict) and condition_id in per_message:
             payload = dict(per_message[condition_id])
             payload.setdefault("condition_id", condition_id)
+            if relational_condition_is_independent(condition_id):
+                return _finalize_independent_relational_payload(
+                    condition_id=condition_id,
+                    relational_overlay=payload,
+                    overlay_source="memory_conditions",
+                )
             return _compose_relational_payload_with_m0_base(
                 condition_id=condition_id,
-                m0_ld_agent_payload=m0_ld_agent_payload,
+                m0_ld_agent_payload=dict(m0_ld_agent_payload or {}),
                 relational_overlay=payload,
                 overlay_source="memory_conditions",
             )
     default_payload = memory_conditions.get("default_payloads", {}).get(condition_id, {})
     payload = dict(default_payload)
     payload.setdefault("condition_id", condition_id)
+    if relational_condition_is_independent(condition_id):
+        return _finalize_independent_relational_payload(
+            condition_id=condition_id,
+            relational_overlay=payload,
+            overlay_source="memory_conditions_default",
+        )
     return _compose_relational_payload_with_m0_base(
         condition_id=condition_id,
-        m0_ld_agent_payload=m0_ld_agent_payload,
+        m0_ld_agent_payload=dict(m0_ld_agent_payload or {}),
         relational_overlay=payload,
         overlay_source="memory_conditions_default",
     )
+
+
+def _finalize_independent_relational_payload(
+    *,
+    condition_id: str,
+    relational_overlay: dict[str, Any],
+    overlay_source: str,
+) -> dict[str, Any]:
+    overlay = dict(relational_overlay)
+    overlay_context = str(overlay.get("memory_context", "")).strip()
+    if not overlay_context:
+        overlay_context = "- 当前没有检索到可用关系记忆增强。"
+
+    relational_retrieval = overlay.get("retrieval", {})
+    if not isinstance(relational_retrieval, dict):
+        relational_retrieval = {}
+
+    payload = dict(overlay)
+    payload["condition_id"] = condition_id
+    payload["memory_provider"] = overlay.get("memory_provider") or "independent_relational_memory"
+    payload["requires_runtime_letta"] = False
+    payload["requires_runtime_ld_agent_memory"] = False
+    payload["payload_role"] = "final_condition_payload"
+    payload["memory_context"] = build_independent_relational_payload_context(
+        condition_id=condition_id,
+        overlay_context=overlay_context,
+    )
+    payload["source_detail_ids"] = _unique_strings(
+        [str(item) for item in overlay.get("source_detail_ids", []) if item]
+    )
+    payload.pop("m0_base_memory", None)
+    payload["relational_overlay"] = {
+        "condition_id": condition_id,
+        "memory_provider": overlay.get("memory_provider"),
+        "runtime_id": overlay.get("runtime_id"),
+        "enabled_memory_types": list(overlay.get("enabled_memory_types", [])),
+        "source_detail_ids": list(overlay.get("source_detail_ids", [])),
+        "memory_context": overlay_context,
+        "retrieval": dict(relational_retrieval),
+    }
+    payload["memory_composition"] = {
+        "base_condition": None,
+        "base_provider": None,
+        "base_payload_required": False,
+        "base_payload_shared_by": [],
+        "overlay_condition": condition_id,
+        "overlay_source": overlay_source,
+        "composition_rule": "independent_relational_payload_no_m0_base",
+        "condition_answer_isolation": (
+            "only the shared user turn is reused; condition assistant answers "
+            "do not feed other conditions"
+        ),
+        "uses_m0_payload": False,
+        "uses_other_condition_payloads": False,
+    }
+    payload["search_indexing_policy"] = {
+        "uses_m0_search_indexing": False,
+        "m0_retrieval_strategy": None,
+        "m0_storage_backend": None,
+        "relational_layer_has_independent_generic_search": False,
+        "relational_layer_role": "independent_condition_payload",
+        "relational_retrieval_strategy": relational_retrieval.get("strategy"),
+    }
+    payload["retrieval"] = {
+        "strategy": "independent_relational_overlay_only",
+        "uses_m0_payload": False,
+        "uses_other_condition_payloads": False,
+        "relational_retrieval": relational_retrieval,
+        "relational_overlay_condition": condition_id,
+        "relational_payload_source": overlay_source,
+    }
+    return payload
 
 
 def _compose_relational_payload_with_m0_base(
@@ -1113,7 +1314,13 @@ def _compose_relational_payload_with_m0_base(
     relational_overlay: dict[str, Any],
     overlay_source: str,
 ) -> dict[str, Any]:
-    if condition_id not in {"M1", "M2", "M3"}:
+    if relational_condition_is_independent(condition_id):
+        return _finalize_independent_relational_payload(
+            condition_id=condition_id,
+            relational_overlay=relational_overlay,
+            overlay_source=overlay_source,
+        )
+    if condition_id not in RELATIONAL_CONDITION_IDS:
         return dict(relational_overlay)
 
     overlay = dict(relational_overlay)
@@ -1167,7 +1374,9 @@ def _compose_relational_payload_with_m0_base(
         "base_condition": "M0",
         "base_provider": m0_base.get("memory_provider"),
         "base_payload_required": True,
-        "base_payload_shared_by": ["M1", "M2", "M3"],
+        "base_payload_shared_by": [
+            item for item in RELATIONAL_CONDITION_IDS if relational_condition_uses_m0_base(item)
+        ],
         "overlay_condition": condition_id,
         "overlay_source": overlay_source,
         "composition_rule": "m0_base_plus_condition_relational_overlay",
@@ -1208,7 +1417,7 @@ def _compose_relational_payload_with_m0_base(
 
 
 def _sanitize_m0_base_context_for_relational_overlay(memory_context: str) -> str:
-    """Prevent M1/M2/M3 from reading M0's current-session assistant answers."""
+    """Prevent relational conditions from reading M0's current-session assistant answers."""
     lines = []
     for line in str(memory_context).splitlines():
         for marker in (" | Assistant(M0):", " | Assistant:", " | Agent:"):
@@ -1248,9 +1457,14 @@ def _load_json(path: Path) -> dict[str, Any]:
     return data
 
 
+def _condition_uses_m0_base(condition_id: str) -> bool:
+    return condition_id == "M0" or relational_condition_uses_m0_base(condition_id)
+
+
 def _resolve_condition_ids(value: str, memory_conditions: dict[str, Any]) -> list[str]:
     requested = [item.strip() for item in value.split(",") if item.strip()]
     available = {item.get("condition_id") for item in memory_conditions.get("condition_specs", [])}
+    available.update(["M0", *RELATIONAL_CONDITION_IDS])
     missing = [item for item in requested if item not in available]
     if missing:
         raise ValueError(f"Unknown memory conditions: {missing}")

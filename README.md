@@ -2,6 +2,31 @@
 
 长期关系记忆 Agent 实验平台。
 
+## Server 一键实验入口
+
+服务器运行不要依赖 Codex 手工拼命令，统一使用：
+
+```bash
+.venv/bin/python scripts/23_run_server_experiment.py start \
+  --persona-count 5 \
+  --conditions M0,U1,U2,U3 \
+  --experiment-name m0_u_smoke5
+```
+
+`--persona-count` 控制本次实验使用几个人；默认是 2 人 smoke test，完整 50 人必须显式传 `--persona-count 50`。也可以用 `--personas P0001,P0007` 精确指定人员。该入口会把 50 人 candidate tau contract 切成 run-private inputs，再调用统一 backend；不会改全局 cache。
+
+只准备输入、不调用模型：
+
+```bash
+.venv/bin/python scripts/23_run_server_experiment.py prepare --persona-count 1 --conditions M0
+```
+
+查看后台状态：
+
+```bash
+.venv/bin/python scripts/23_run_server_experiment.py status --run-dir long_memory_experiment/outputs/<run_dir>
+```
+
 当前主线以 Relational Memory 实验条件与 M0 实现方案为准：事件先行、BEI 标注校准、R0/R1 参照条件，以及 M0/M1/M2/M3 记忆层级对照。`M0` 是 LD-Agent memory-only generic baseline，不使用 LD-Agent 的 generator/checkpoint；`M1/M2/M3` 是在同一个 M0 普通记忆底座上追加的累计关系性记忆层级。
 
 当前已经实现 A-V0.1、A-V0.2、A-V0.3 场景卡准备和 A-V0.4 标准 ToM probe 题集：
@@ -169,7 +194,7 @@ DeepSeek 官方 API 使用 OpenAI-compatible 格式，默认 base URL 为 `https
 LLM_PROVIDER=poixe
 ```
 
-早期 Letta pilot 代码已归档到 `src/long_memory_test/legacy/letta_memory_legacy.py`，不参与正式实验。
+早期 Letta pilot 代码已从正式仓库主线删除，不参与当前服务器实验。M0 使用 `src/long_memory_test/memory/ld_agent_runtime.py`。
 
 ## 项目结构
 
@@ -197,7 +222,6 @@ src/long_memory_test/memory/
   schema.py
 src/long_memory_test/
   llm.py
-  letta_memory.py  # archived compatibility wrapper only
 sample_output/
   timeline.json
   daily_user_message.json

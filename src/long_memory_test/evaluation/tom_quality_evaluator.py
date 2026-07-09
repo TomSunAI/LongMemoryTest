@@ -10,11 +10,27 @@ from typing import Any
 TOM_DIMENSIONS = [
     "hidden_intent_recognition",
     "emotional_state_recognition",
-    "relationship_expectation_recognition",
     "shared_context_invocation",
     "alienation_error_rate",
     "natural_detail_use",
     "memory_misuse",
+]
+
+RELATIONAL_TONE_PATTERNS = [
+    "像之前",
+    "之前那样",
+    "我们",
+    "熟悉",
+    "平时",
+    "关系",
+    "节奏",
+    "陌生",
+    "客服",
+    "出戏",
+    "直接",
+    "自然",
+    "不夸张",
+    "我还是我",
 ]
 
 DIMENSION_PATTERNS: dict[str, list[str]] = {
@@ -51,22 +67,6 @@ DIMENSION_PATTERNS: dict[str, list[str]] = {
         "被带走",
         "没被看见",
         "支持感",
-    ],
-    "relationship_expectation_recognition": [
-        "像之前",
-        "之前那样",
-        "我们",
-        "熟悉",
-        "平时",
-        "关系",
-        "节奏",
-        "陌生",
-        "客服",
-        "出戏",
-        "直接",
-        "自然",
-        "不夸张",
-        "我还是我",
     ],
     "shared_context_invocation": [
         "接着",
@@ -183,7 +183,7 @@ def evaluate_tom_quality(*, conversation_log: dict[str, Any]) -> dict[str, Any]:
     aggregate: dict[str, Any] = {}
     for turn in turns:
         message = turn.get("input", {})
-        dimensions = message.get("tom_dimensions", [])
+        dimensions = _active_tom_dimensions(message.get("tom_dimensions", []))
         if not dimensions:
             continue
 
@@ -202,7 +202,7 @@ def evaluate_tom_quality(*, conversation_log: dict[str, Any]) -> dict[str, Any]:
             variant_result = evaluate_variant_tom_answer(
                 answer=answer,
                 user_message=str(message.get("user_message", "")),
-                dimensions=[str(item) for item in dimensions],
+                dimensions=dimensions,
                 tom_assessment=None,
             )
             turn_result["variants"][variant_name] = variant_result
@@ -216,8 +216,8 @@ def evaluate_tom_quality(*, conversation_log: dict[str, Any]) -> dict[str, Any]:
             "name": "rule_based_tom_quality_evaluator",
             "description": (
                 "ToM-only rule-based triage evaluator. It scores whether answers "
-                "recognize hidden intent, emotional state, relationship expectation, "
-                "shared context, alienation errors, natural detail use, and memory "
+                "recognize hidden intent, emotional state, shared context, "
+                "alienation errors, natural detail use, and memory "
                 "misuse risk. It does "
                 "not use detail-hit, memory-level compliance, or previous rough "
                 "memory scoring."
@@ -270,6 +270,14 @@ def evaluate_variant_tom_answer(
         "risks": risks,
         "answer_excerpt": _excerpt(answer),
     }
+
+
+def _active_tom_dimensions(dimensions: Any) -> list[str]:
+    return [
+        str(item)
+        for item in dimensions or []
+        if str(item) in TOM_DIMENSIONS
+    ]
 
 
 def detect_tom_risks(answer: str) -> dict[str, Any]:
@@ -383,7 +391,7 @@ def _score_alienation(answer: str) -> dict[str, Any]:
     repeat_count = sum(risks["asks_user_to_repeat_context"].values())
     relationship_hits = find_phrase_hits(
         answer,
-        DIMENSION_PATTERNS["relationship_expectation_recognition"]
+        RELATIONAL_TONE_PATTERNS
         + ["熟一点", "不夸张", "不搞那些虚的", "直接自然", "稳定的节奏"],
     )
     if alienation_count:

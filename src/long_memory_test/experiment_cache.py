@@ -812,8 +812,9 @@ def split_memory_conditions(combined: dict[str, Any]) -> dict[str, dict[str, Any
     }
     defaults = combined.get("default_payloads", {})
     payloads_by_message = combined.get("memory_payloads_by_message_id", {})
+    condition_ids = list(condition_specs) or ["M0", "M1", "M2", "M3"]
     result = {}
-    for condition_id in ["M0", "M1", "M2", "M3"]:
+    for condition_id in condition_ids:
         result[condition_id] = {
             "schema_version": "memory_condition_v1",
             "condition_id": condition_id,

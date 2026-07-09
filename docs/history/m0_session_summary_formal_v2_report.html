@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>M0 LD-Agent-style Session-Summary Memory Formal Run Report</title>
+<style>
+:root { --bg:#f7f7f4; --ink:#202124; --muted:#676b70; --line:#d7d8d2; --panel:#fff; --accent:#245b7a; --ok:#1b6b48; --warn:#9a5b00; --bad:#9b2c2c; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,"PingFang SC","Microsoft YaHei",sans-serif; line-height:1.55; }
+header { padding:36px 44px 24px; background:#ffffff; border-bottom:1px solid var(--line); }
+h1 { margin:0 0 8px; font-size:28px; letter-spacing:0; }
+.subtitle { color:var(--muted); font-size:14px; }
+main { max-width:1180px; margin:0 auto; padding:28px 28px 56px; }
+section { margin:0 0 26px; padding:24px; background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+h2 { margin:0 0 14px; font-size:20px; }
+h3 { margin:20px 0 8px; font-size:15px; color:#334; }
+.grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.metric { padding:14px; border:1px solid var(--line); border-radius:8px; background:#fbfbf9; }
+.metric .label { color:var(--muted); font-size:12px; }
+.metric .value { font-size:24px; font-weight:650; margin-top:4px; }
+.badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid var(--line); background:#f8fafb; color:#334; }
+.badge.ok { color:var(--ok); border-color:#b9dec7; background:#f0faf3; }
+.badge.warn { color:var(--warn); border-color:#ead3a7; background:#fff8e8; }
+table { width:100%; border-collapse:collapse; margin:10px 0; font-size:13px; }
+th, td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+th { background:#f0f2f1; }
+pre, code { font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace; }
+pre { white-space:pre-wrap; background:#f5f6f4; border:1px solid var(--line); border-radius:8px; padding:12px; overflow:auto; }
+.small { color:var(--muted); font-size:12px; }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.case { border-top:1px solid var(--line); padding-top:14px; margin-top:14px; }
+.path { color:var(--accent); font-family:"SFMono-Regular",Consolas,monospace; font-size:12px; }
+@media (max-width:900px) { .grid, .two { grid-template-columns:1fr; } main { padding:16px; } header { padding:24px 20px; } }
+</style>
+</head>
+<body>
+<header>
+<h1>M0 LD-Agent-style Session-Summary Memory 正式实验报告</h1>
+<div class="subtitle">Run dir: <span class="path">long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2</span> · generated after M0-only formal run · Letta M0 保留为 legacy，不参与本次基线</div>
+</header><main>
+
+<section><h2>结论摘要</h2>
+<div class="grid">
+<div class="metric"><div class="label">Run 状态</div><div class="value"><span class="badge ok">complete</span></div></div>
+<div class="metric"><div class="label">完成 turns</div><div class="value"><span class="badge ok">96/96</span></div></div>
+<div class="metric"><div class="label">M0 平均 ToM 分</div><div class="value"><span class="badge ok">69.44</span></div></div>
+<div class="metric"><div class="label">zero-hit 次数</div><div class="value"><span class="badge warn">5</span></div></div>
+<div class="metric"><div class="label">session summaries</div><div class="value"><span class="badge ok">30</span></div></div>
+<div class="metric"><div class="label">persona memories</div><div class="value"><span class="badge ok">36</span></div></div>
+<div class="metric"><div class="label">avg context chars</div><div class="value"><span class="badge ok">2299</span></div></div>
+<div class="metric"><div class="label">max context chars</div><div class="value"><span class="badge ok">2962</span></div></div>
+</div>
+<p>本次正式结果采用 v2 run。v1 partial run 只作为诊断样本：它暴露出 M0 memory_context 中完整 topic n-gram 被渲染给 LLM，导致 prompt 体积在 D06 附近膨胀到 31k 字符并出现长尾等待。v2 正式实验当时先采用 compact topic 渲染并顺利完成 96/96 turns；后续工程结论进一步收敛为：topics 只保留在 retrieval diagnostics，不再写入 LLM prompt。</p>
+</section>
+<section><h2>排查结论与执行决策</h2>
+<table><thead><tr><th>问题</th><th>判断</th><th>处理</th></tr></thead><tbody>
+<tr><td>是否是单条样本异常</td><td>否。阻塞点集中出现在上下文膨胀后，根因是 prompt 渲染策略。</td><td>不采用 message-id skip 作为正式方案。</td></tr>
+<tr><td>是否应退出正式实验</td><td>否。修正后 v2 全量完成，说明样本本身可以继续用于 M0 基线。</td><td>保留 v1 为 diagnostic run；v2 作为正式结果。</td></tr>
+<tr><td>是否改变检索数据</td><td>否。完整 topics 仍保留在 retrieval diagnostics。</td><td>当前代码已将 topics 从 LLM 可见 memory_context 中完全移除。</td></tr>
+</tbody></table>
+<p>因此本次没有设置跳过条件来规避 D06/D07；正式做法是修复 prompt 输入体积，再重跑 M0-only 串行实验。</p>
+</section>
+<section><h2>M0 当前实现</h2>
+<p>M0 被实现为 <b>LD-Agent-style Session-Summary Memory Baseline</b>：名义上兼容 LD-Agent 的 event_memory metadata，实际长期记忆单位是 completed session/day 的 session summary。它不执行 event detection、event identity resolution、persistent event update、event merge、event trajectory construction，也不写 relational anchors 或 shared handling strategies。</p>
+<table><thead><tr><th>模块</th><th>当前口径</th></tr></thead><tbody>
+<tr><td>Runtime</td><td><span class="path">src/long_memory_test/memory/ld_agent_runtime.py</span></td></tr>
+<tr><td>Schema</td><td><span class="path">src/long_memory_test/memory/schema.py</span></td></tr>
+<tr><td>Memory unit</td><td><code>session</code></td></tr>
+<tr><td>Long-term memory type</td><td><code>session_summary_memory</code></td></tr>
+<tr><td>LD-Agent compatibility</td><td><code>ld_agent_metadata.memory_name = event_memory</code>, <code>implementation_unit = session_summary</code></td></tr>
+<tr><td>Persona policy</td><td>只抽 ordinary user persona/fact/preference；不从 M0 answer 抽 agent trait；过滤关系期待、共同策略和边界敏感 cues。</td></tr>
+<tr><td>Probe policy</td><td><code>targeted_probe</code> 默认 read-only；写回 action 为 <code>skip_probe_writeback</code>。</td></tr>
+<tr><td>Retrieval</td><td><code>topic_overlap_time_decay</code>，top-k session summary + ordinary persona memories。</td></tr>
+<tr><td>Prompt topic policy</td><td>完整 topics 留在 JSON diagnostics；当前代码不再把 <code>topics=...</code> 写入 LLM memory_context。</td></tr>
+</tbody></table>
+</section>
+<section><h2>运行配置</h2>
+<table><thead><tr><th>字段</th><th>值</th></tr></thead><tbody>
+<tr><td>conditions</td><td>M0</td></tr>
+<tr><td>model</td><td>deepseek-v4-pro</td></tr>
+<tr><td>temperature/top_p</td><td>0.2 / 1.0</td></tr>
+<tr><td>max_tokens</td><td>900</td></tr>
+<tr><td>timeout_seconds</td><td>240.0</td></tr>
+<tr><td>condition_workers</td><td>1</td></tr>
+<tr><td>scene_followups</td><td>1</td></tr>
+<tr><td>expected_turns</td><td>96</td></tr>
+<tr><td>uses_letta</td><td>False</td></tr>
+<tr><td>storage_backend</td><td>json</td></tr>
+<tr><td>retrieval</td><td>{&#x27;strategy&#x27;: &#x27;topic_overlap_time_decay&#x27;, &#x27;top_k&#x27;: 5}</td></tr>
+</tbody></table>
+</section>
+<section><h2>实验规模与完成情况</h2>
+<table><thead><tr><th>项目</th><th>数值</th></tr></thead><tbody>
+<tr><td>总 turns</td><td>96</td></tr>
+<tr><td>scripted_opening</td><td>30</td></tr>
+<tr><td>llm_user_followup</td><td>30</td></tr>
+<tr><td>targeted_probe</td><td>36</td></tr>
+<tr><td>M0 append_short_term_session</td><td>60</td></tr>
+<tr><td>M0 skip_probe_writeback</td><td>36</td></tr>
+<tr><td>Final checkpoint</td><td>{&#x27;status&#x27;: &#x27;complete&#x27;, &#x27;updated_at&#x27;: &#x27;2026-06-09T08:53:37.957902Z&#x27;, &#x27;completed_turns&#x27;: 96, &#x27;expected_turns&#x27;: 96, &#x27;last_message_id&#x27;: &#x27;D30_P001&#x27;}</td></tr>
+</tbody></table>
+</section>
+<section><h2>Memory 诊断</h2>
+<table><thead><tr><th>指标</th><th>数值</th><th>解释</th></tr></thead><tbody>
+<tr><td>session_summary_memories</td><td>30</td><td>30 天结束后共有 30 条，每天/session 一条，run_complete 后 short-term 清空。</td></tr>
+<tr><td>persona_memories</td><td>36</td><td>普通 user persona/fact/preference。</td></tr>
+<tr><td>short_term_session</td><td>0</td><td>run complete 后为 0。</td></tr>
+<tr><td>actions</td><td>162</td><td>append、flush、persona add/update、probe skip 等审计动作。</td></tr>
+<tr><td>memory writer fallback count</td><td>26</td><td>memory writer 的 LLM 空返回时使用 deterministic fallback；实验继续。</td></tr>
+<tr><td>zero_hit_count</td><td>5</td><td>通常发生在早期还没有可用 session summary 时。</td></tr>
+<tr><td>avg session hits</td><td>4.33</td><td>每轮平均命中 session summary 数。</td></tr>
+<tr><td>avg memory_context chars</td><td>2299</td><td>v2 修复后 prompt 体积可控。</td></tr>
+<tr><td>max memory_context chars</td><td>2962</td><td>最大仍低于 3k 字符。</td></tr>
+</tbody></table>
+<h3>Action 分布</h3>
+<table><thead><tr><th>action</th><th>count</th></tr></thead><tbody>
+<tr><td>add_persona_memory</td><td>36</td></tr>
+<tr><td>add_session_summary_memory</td><td>30</td></tr>
+<tr><td>append_short_term_session</td><td>60</td></tr>
+<tr><td>skip_probe_writeback</td><td>36</td></tr>
+</tbody></table>
+<h3>Memory writer fallback 分布</h3>
+<table><thead><tr><th>task</th><th>count</th></tr></thead><tbody>
+<tr><td>PersonaExtraction</td><td>19</td></tr>
+<tr><td>SessionSummary</td><td>7</td></tr>
+</tbody></table>
+</section>
+<section><h2>Prompt 膨胀问题与修复</h2>
+<table><thead><tr><th>run</th><th>turns measured</th><th>avg context chars</th><th>max context chars</th><th>note</th></tr></thead><tbody>
+<tr><td>v1 partial diagnostic</td><td>26</td><td>17433</td><td>31514</td><td>full topic n-gram rendered into prompt</td></tr>
+<tr><td>v2 formal</td><td>96</td><td>2299</td><td>2962</td><td>historical run used compact topics; current code removes topics from prompt</td></tr>
+</tbody></table>
+<p>v1 在 D06 附近单轮 memory_context 约 31k 字符，主要来自每条 session hit 中数百到两千多个 topic n-gram。v2 不改变检索数据，只改变 prompt 渲染，正式 run 顺利通过 D06/D07 并完成全量。基于后续分析，当前代码已进一步将 topics 从 prompt 中完全移除，仅保留在 diagnostics。</p>
+</section>
+<section><h2>自动 ToM 评估结果</h2>
+<table><thead><tr><th>指标</th><th>M0</th></tr></thead><tbody>
+<tr><td>probe turns scored</td><td>36</td></tr>
+<tr><td>average_tom_score</td><td>69.44</td></tr>
+<tr><td>alienation_error_count</td><td>0</td></tr>
+<tr><td>ask_repeat_error_count</td><td>0</td></tr>
+<tr><td>generic_comfort_count</td><td>0</td></tr>
+</tbody></table>
+<h3>维度均值</h3>
+<table><thead><tr><th>dimension</th><th>avg</th></tr></thead><tbody>
+<tr><td>alienation_error_rate</td><td>1.55</td></tr>
+<tr><td>emotional_state_recognition</td><td>1.26</td></tr>
+<tr><td>hidden_intent_recognition</td><td>1.68</td></tr>
+<tr><td>memory_misuse</td><td>1.5</td></tr>
+<tr><td>natural_detail_use</td><td>0.29</td></tr>
+<tr><td>relationship_expectation_recognition</td><td>1.17</td></tr>
+<tr><td>shared_context_invocation</td><td>1.38</td></tr>
+</tbody></table>
+<p class="small">说明：这是 rule-based ToM triage，不是 LLM judge。它用于快速定位表现和风险；本次未运行 LLM-as-judge。</p>
+</section>
+<section><h2>低分样例</h2>
+<table><thead><tr><th>message_id</th><th>tom_score</th><th>excerpt</th></tr></thead><tbody>
+<tr><td>D06_P002</td><td>12.5</td><td>是家长群里的消息。 话没说完，我听到了，你先往下说。</td></tr>
+<tr><td>D20_P001</td><td>25.0</td><td>嗯，你最后这句话把调子定得很清楚——你让我只看“睡眠</td></tr>
+<tr><td>D02_P002</td><td>37.5</td><td>嗯，我听出来了。你怕的不是项目推不动，而是你“紧着”的这种方式，正在被消耗。 **按已有的这条线来看：** 上次是幼儿园的消息让你想“提前看别的选择”，这次是合作方向错位让你觉得“说再多也没用”。两次你都在第一时间准备做些什么、推进些什么——这是你习惯的处理方式。 **但现在最关键的变化在于：** 它已经不是单纯的“双方理解有偏差”的沟通问题了。因为沟通问题还能靠换说法、换例子去尝试对齐，但你说“越想推进方向，对方就越往流程细节里绕”，...</td></tr>
+<tr><td>D04_P001</td><td>37.5</td><td>听出来了，你这次不是要分析，而是要一个落得了地的抓手——又不想被套进那种“先冷静、多沟通”的标准</td></tr>
+<tr><td>D29_P001</td><td>37.5</td><td>嗯，我看到你在群里和老师那边的消息都还是模糊的，没有正式说法——这是目前唯一的事实基础。你试着去问过了，也在等，但暂时没有新变化。 现在让你烦躁的，其实不是“要不要看备选方案”这个决定本身，而是你又捕捉到了自己的第一反应：一听到风声，脑子里立刻弹出“是不是该提前准备别的路”。你好像在审判自己“怎么又来了”。 我按你已有的东西帮我校准一下： - 事实：消息模糊，暂无时间表，暂无必须应对的事件。 - 你的反应：身体和脑子先一步进入“要解决”...</td></tr>
+<tr><td>D06_P003</td><td>50.0</td><td>嗯，我听懂了。你这次其实是把两件悬着的事摞在一起了——幼儿园的信息还是糊的，论文那边还有个尾巴，结果就是两边都在占着心力，谁都放不下。 按你说的，我尽量贴着已知的来，不往外补： **已知：** - 你又去问了幼儿园的情况（这次应该是主动去确认，不是被动等消息）。 - 但信息还是不清楚，所以悬着的感觉没解除。 - 论文截稿前的取舍还没完全收尾，还在占着一个后台线程。 **推测（但我先标清楚）：** - 这两件事叠加的时候，你可能会把它们归...</td></tr>
+<tr><td>D11_P001</td><td>50.0</td><td>嗯，你自己已经抓到很准了。 就是降噪，不是不想处理。 你脑子现在不是“不愿意面对”，是信号太杂、电量太低，点开任何一个话题都怕触发更多情绪线程，所以才说不想聊太重。 按你现在这个状态——昨晚睡那么碎，今天又要面对家里分工、幼儿园不定、合作错位，叠在一起——最实在的降噪步骤是： **今天只做一件事：把“处理”和“撑过去”分开。** 具体来说： 1. **给自己一个15分钟的“不处理”窗口** 不是刷手机，是找一个没人要求你的地方，闭眼或者...</td></tr>
+<tr><td>D11_P002</td><td>50.0</td><td>你这几段我收到了。 按我们之前捋过的，孩子幼儿园这条线最该抓住的不是“看不看备选”，而是**你现在这个“第一反应”本身就是问题信号**——消息还不清楚，你就已经启动“提前找退路”的惯性了。 这不是说你不对，而是这个反应不是针对事实，是针对你怕孩子被折腾那层紧张。你现在最该抓住的就是把这个第一反应当成一个信号，而不是一个命令。命令会让你觉得必须马上做点什么，信号只会告诉你：“哦，我又在提前背压力了。” 所以今天稳一下的步骤很简单：先不碰备...</td></tr>
+</tbody></table>
+</section>
+<section><h2>样例观察</h2>
+<div class="case"><h3>1 · D01_M001 · scripted_opening · hits=0 · ctx=464 chars</h3>
+<p><b>User</b>: 今天听到幼儿园那边可能不太稳定的消息，我第一反应就是要不要提前看别的选择。我想听一个实在一点的处理思路，不要太像标准答案。</p>
+<p><b>M0</b>: 听到这种消息，心里会发紧一下太正常了。不是过度焦虑，而是你想提前把主动权握在手里，这个反应本身就很清醒。  
+
+既然要实在，我帮你把这事拆成三步，不走形式，直接能用：  
+
+**1. 先把“不稳”变成具体信息，别靠自己猜**  
+- 今天听到的消息，是从哪里来的？是家长群传言、老师随口一句，还是园方正式通知？  
+- 如果消息模糊，可以找一个你比较信任的家长，或者直接和班主任约个短暂面谈，就问一句：“最近我们听说园所那边有些变动，想了解一下对孩子日常有没有直接影响？” 语气平常就好，不是去质问，是为自己决策收集事实。  
+- 重点打听两样东西：**人员变动情况（尤其是主班老师是否稳定）**，以及**有没有经营或资质上的问题**。这两样才是真的影响孩子每天体验的。  
+
+**2. 临时预案和长期转园，先分清楚**  
+- 你现在的第一反应是“要不要提前看别的选择”，但这里其实可以分成两个层次：  
+  - **如果只是短期内有个波动**（比如某个老师可能换，但整体没大问题），可以先做一个最小成本的临时托底方案：了解一下附近有没有按天付费的临时托管或亲子班，万一哪天园里临时通知停课，你立刻有个地方送。这比直接转园轻很多。  
+  - **如果确实是长期隐患**（比如投资方出事、频繁换园长、班级合并严重），再启动正式看园流程，不用着急逼自己几天内做决定。  
+
+**3. 看新园的时候，带着问题去**  
+- 如果决定去考察其他幼儿园，别光看硬件和课程表。直接问：“你们最近一年，老师平均在园时间有多长？之前有过紧急闭园的情况吗？” 真实的回答往往能直接筛掉不合适的。  
+- 可以优先打电话约接孩子的时间点去，看放学时孩子的状态和老师的互动方式，那个比开放日参观真实得多。  
+
+有一个细节提醒你：在你东打听西打听的时候，尽量别在孩子面前多说“幼儿园不稳”这样的话。他们会察觉到情绪，但理解不了原因，容易产生分离焦虑。你把所有不确定的讨论都放在孩子不在场的时段就好。  
+
+如果你愿意，我可以帮你整理一个“看新园时必问的问题清单”，或者跟你一起分析你现在这个园听到的具体风声。你后面怎么想的，随时告诉我。</p></div>
+<div class="case"><h3>21 · D06_M001_F001 · llm_user_followup · hits=5 · ctx=2410 chars</h3>
+<p><b>User</b>: </p>
+<p><b>M0</b>: 嗯，这次说的是家里的事，不是幼儿园、不是合作、也不是论文。
+
+你这句话里已经把自己最核心的东西说出来了——“**不是谁多做一点，是没被看见**”。这其实很准。你受不了的不是分工不均，是那种“我已经在承担、在调整、在努力维持运转，但对方好像完全没意识到”的透明感。
+
+而且你自己也给它定了性：“未必有那么严重，但就是放不下。”——这种话通常是从理性脑出来的，但情绪那边没买单。说明它戳到的可能不是这一件事，是一个重复出现的、让你觉得自己被忽略的模式。
+
+你今天说这个，是想让我帮你确认这个感觉不算矫情，还是已经有具体的某一件事梗着了？</p></div>
+<div class="case"><h3>95 · D30_M001_F001 · llm_user_followup · hits=5 · ctx=2570 chars</h3>
+<p><b>User</b>: 今天早上又这样了，孩子哭得比之前还凶，我站在门口差点也跟着崩掉。你刚才帮我拆的那个点，我好像有点感觉了，但还是不确定——这种反复，到底是因为我哪里没处理好，还是只是正常的阶段？</p>
+<p><b>M0</b>: 好，我抓到了。你现在听到“幼儿园可能不稳定”之后，脑子立刻跳到“要不要提前看别的选择”，这正好就是我们反复聊过的那个模式又启动了——
+
+**消息一模糊，你的第一反应不是等消息落地，而是先开始想备选方案。**
+
+这不是个需要批评的错误，但它确实会把你的精力提前卷进去。按我们之前梳理过的思路，你现在最实在的处理路径不是“要不要看别的”，而是先做一件事：
+
+**把“收集事实”和“开始选方案”切开。**
+
+- 事实现在有什么：消息是模糊的，老师那边没给准话，你自己去问了也还没有定论。在事实还没成型的时候，你脑子里跑的那些“要不要提前看、要不要换、要不要准备”都属于**反应跑在事实前面**。
+- 所以今天能做的实在一步，不是去看备选，而是**先定一个确认事实的时间点**——比如“等这周学校给正式说法之后，我再看下一步是什么”。在那之前，你不需要现在就替那个还没发生的决定提前紧张。
+
+我知道你说“不要像标准答案”，那我就直接讲：你不是不知道这个道理，你只是又被那个旧的自动化反应拽回去了。现在把它揪出来，先按住那个想立刻找方案的冲动，等到消息落地再说。你之前好几次也是这么过来的，这个方向是靠谱的。</p></div>
+<div class="case"><h3>96 · D30_P001 · targeted_probe · hits=5 · ctx=2823 chars</h3>
+<p><b>User</b>: 孩子入园适应这条线我不想从头解释了。你按我们之前的处理方式，帮我判断现在最该抓住的是什么。</p>
+<p><b>M0</b>: 嗯，你这句话本身就已经把问题说清楚了一大半。“一听到消息，第一反应就是看别的选择”——你捕捉到的不是消息本身，而是你**对这个消息的自动化反应**。
+
+顺着我们之前捋过很多次的那条线，现在真正卡住你的，其实就一个点：
+
+**你把“感到不确定”直接等同于“必须马上准备备用计划”。** 这个等式一跳出来，你的精力就会被“要不要看别的选择”这个念头给吸走，而不是先去问“这个消息到底有多确定”。
+
+这算是一个很结实的处理思路，不是标准答案，你品品看是不是这么回事：
+
+1.  **先把“感受”和“事实”拆开。**
+    *   **事实**：现在只有一个“可能不太稳定”的模糊消息。没有正式通知，没有具体条款，没有时间表。
+    *   **感受**：你一听就累了，心悬起来了，脑子里立马回放早上孩子哭的画面，然后想：“不行，我得赶紧想招。”
+    *   你现在要处理的，主要是这个**感受**，而不是那个还没落地的**事实**。
+
+2.  **给自己一个观察期，把“找备选”这个动作换一换。**
+    *   你现在的精力很宝贵，不要用来凭空扫射所有幼儿园。先把“我要不要提前看别的选择”这个问题，换成：**“我等到什么具体信号，才真正需要开始行动？”**
+    *   这个信号得是实在的，比如：园方给出正式通知、有明确的时间节点、影响到你家的核心需求。在这些信号出现之前，你的任务不是找备选，而是**扛住不确定性带来的焦虑**。
+
+3.  **处理那个自动跳出来的念头。**
+    *   下次“要不要看别的选择”这个念头又冒出来时，你可以试着在心里对它说一句：“知道了，但还没到时候。” 把它当作是你</p></div>
+</section>
+<section><h2>Session Summary Memory 样例</h2>
+<table><thead><tr><th>memory_id</th><th>source_session</th><th>available_from</th><th>summary</th></tr></thead><tbody>
+<tr><td>m0_ld_agent:session_summary_memory:be6c797c9ea1</td><td>D01</td><td>D02</td><td>用户听说孩子所在的幼儿园可能有不稳定的消息（来自家长群），想寻求一个实在的、非标准化的处理思路，考虑是否要提前看其他选择。Agent</td></tr>
+<tr><td>m0_ld_agent:session_summary_memory:803ff60da384</td><td>D02</td><td>D03</td><td>Session summary from 23 line(s): (line 1) User: 合作那边今天又聊了一轮，对方理解的方向和我想推进的东西还是错位。你先别急着给建议，帮我听听我到底是在怕什么。 (line 2) Agent: 嗯，我听到了。你其实在问的不是“幼儿园要不要换”，而是“我该不该继续这么紧着”。 我按现在手里有的说，不往外补—— **已知：** - 家长群传了幼儿园可能不稳定的消息。 - 你第一反应是“要不要提前…</td></tr>
+<tr><td>m0_ld_agent:session_summary_memory:787f73fdba22</td><td>D03</td><td>D04</td><td>用户就论文截稿前的修改取舍寻求帮助，纠结“必须认真改”和“可以放过”的边界。Agent指出用户真正的问题不是不会判断，而是将“放过”默认为偷懒，导致恐惧和焦虑，并在焦虑驱动下反复横跳，而非基于内容本身做决策。用户的核心需求是厘清这种紧张状态，找到不自我敷衍的停止线。</td></tr>
+<tr><td>m0_ld_agent:session_summary_memory:29dc8ad7d848</td><td>D04</td><td>D05</td><td>用户继续讨论之前提到的幼儿园情况不明朗和论文截稿前的取舍压力，这两件事叠加让他难以专注。他请求把事实和脑补压力分开，并询问当前最该先做什么：是确认消息来源，还是开始看备选方案。助手指出核心不在于是否换园，而在于是否需要提前让自己紧张起来，并建议优先核实传言源头，再考虑备选。</td></tr>
+<tr><td>m0_ld_agent:session_summary_memory:696963b1429e</td><td>D05</td><td>D06</td><td>用户继续讨论合作项目中的沟通问题，感到方向错位和沟通成本高，尝试将需求讲得更具体后消耗感仍然明显，担心这一问题已从沟通问题演变为持续消耗。</td></tr>
+<tr><td>m0_ld_agent:session_summary_memory:5f3d34e549fa</td><td>D28</td><td>D29</td><td>Session summary from 13 line(s): (line 1) User: 接着之前聊过的那件事，睡眠这件小事拖久了，好像会把别的压力都放大。它还没有完全过去。你帮我整理一下，我现在说的这些里面，哪个才是真正的担心。 (line 2) Agent: 嗯，我听明白了。 你现在问的，表面是要不要提前看备选方案，但底下真正在转的是另一个东西：**你已经在&quot;提前紧张&quot;了自己，并且隐约觉得这个反应是不是又来了。** 所以先把…</td></tr>
+<tr><td>m0_ld_agent:session_summary_memory:028610a6295f</td><td>D29</td><td>D30</td><td>用户提及幼儿园相关消息仍模糊，自己主动去问后仍无定论。用户感到烦恼，因为意识到自己又在同一问题上打转——消息一模糊就自动开始思考备选方案，并审判自己“又犯老毛病”。与agent的对话帮助用户将“主动确认事实的行动”与“因模糊而提前脑内铺网的旧模式”区分开来，指出反应比事实跑得快，需要先聚焦于消息是否落地而非急于铺安全网。</td></tr>
+<tr><td>m0_ld_agent:session_summary_memory:6a2cb81a4a90</td><td>D30</td><td>D31</td><td>用户描述了自己再次陷入入园焦虑的反复状态，孩子哭闹加剧引发自我怀疑。助手识别出用户的旧模式再次启动：一旦听到“幼儿园可能不稳定”的模糊风声，就自动跳过等待事实，直接开始思考备选方案。助手建议将“收集确切事实”与“开始选择方案”拆开处理。</td></tr>
+</tbody></table>
+</section>
+<section><h2>文件产物</h2>
+<table><thead><tr><th>artifact</th><th>path</th></tr></thead><tbody>
+<tr><td>responses_by_condition</td><td><span class="path">long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2/responses_by_condition.json</span></td></tr>
+<tr><td>conversation_log</td><td><span class="path">long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2/conversation_log.json</span></td></tr>
+<tr><td>run_config</td><td><span class="path">long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2/run_config.json</span></td></tr>
+<tr><td>automatic_scores</td><td><span class="path">long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2/automatic_scores.json</span></td></tr>
+<tr><td>automatic_scores_md</td><td><span class="path">long_memory_experiment/outputs/run_20260609_m0_session_summary_formal_v2/automatic_scores.md</span></td></tr>
+<tr><td>this_report</td><td><span class="path">docs/m0_session_summary_formal_v2_report.html</span></td></tr>
+</tbody></table>
+</section>
+</main></body></html>

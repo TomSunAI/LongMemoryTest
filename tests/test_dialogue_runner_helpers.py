@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import sys
 import types
@@ -15,12 +14,7 @@ SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-SCRIPT_PATH = REPO_ROOT / "scripts/run_m0_m1_dialogue_probe.py"
-SPEC = importlib.util.spec_from_file_location("run_m0_m1_dialogue_probe", SCRIPT_PATH)
-assert SPEC is not None
-probe = importlib.util.module_from_spec(SPEC)
-assert SPEC.loader is not None
-SPEC.loader.exec_module(probe)
+from long_memory_test.agents import dialogue_runner_helpers as runner_helpers  # noqa: E402
 
 
 class FakeCompletions:
@@ -49,7 +43,7 @@ class FakeClient:
         return self
 
 
-class RunM0M1DialogueProbeTests(unittest.TestCase):
+class DialogueRunnerHelpersTests(unittest.TestCase):
     def test_resolve_all_message_ids(self) -> None:
         args = argparse.Namespace(
             all_message_ids=True,
@@ -59,14 +53,14 @@ class RunM0M1DialogueProbeTests(unittest.TestCase):
         messages = [{"message_id": "D01_M001"}, {"message_id": "D02_M001"}]
 
         self.assertEqual(
-            probe._resolve_message_ids(args, messages),
+            runner_helpers.resolve_message_ids(args, messages),
             ["D01_M001", "D02_M001"],
         )
 
     def test_parse_json_object_handles_markdown_fence(self) -> None:
         raw = '```json\n{"user_message":"你好","move_id":"push_for_concreteness"}\n```'
 
-        self.assertEqual(probe._parse_json_object(raw)["user_message"], "你好")
+        self.assertEqual(runner_helpers.parse_json_object(raw)["user_message"], "你好")
 
     def test_build_followup_message_preserves_opening_metadata(self) -> None:
         opening = {
@@ -85,7 +79,7 @@ class RunM0M1DialogueProbeTests(unittest.TestCase):
         }
         followup = {"user_message": "消息还很模糊，我先想确认第一步。"}
 
-        result = probe._build_followup_message(
+        result = runner_helpers.build_followup_message(
             opening_message=opening,
             scene_card={"scene_id": "D01_SCENE"},
             followup_index=1,
@@ -105,7 +99,7 @@ class RunM0M1DialogueProbeTests(unittest.TestCase):
         }
 
         self.assertEqual(
-            probe._expected_message_id_sequence(
+            runner_helpers.expected_message_id_sequence(
                 messages=messages,
                 scene_cards=scene_cards,
                 scene_followups=1,
@@ -124,7 +118,7 @@ class RunM0M1DialogueProbeTests(unittest.TestCase):
         }
 
         self.assertEqual(
-            probe._expected_message_id_sequence(
+            runner_helpers.expected_message_id_sequence(
                 messages=messages,
                 scene_cards=scene_cards,
                 scene_followups=1,
@@ -140,7 +134,7 @@ class RunM0M1DialogueProbeTests(unittest.TestCase):
         ]
 
         with self.assertRaises(ValueError):
-            probe._assert_completed_turns_are_expected_prefix(
+            runner_helpers.assert_completed_turns_are_expected_prefix(
                 turns,
                 ["D01_M001", "D01_M001_F001", "D02_M001"],
             )
@@ -155,7 +149,7 @@ class RunM0M1DialogueProbeTests(unittest.TestCase):
                 "expected_turns": 2,
                 "turns": [self._fake_turn("run-1", 1, "D01_M001")],
             }
-            probe._write_checkpoint(
+            runner_helpers.write_checkpoint(
                 output_path=output_path,
                 conversation_log_path=log_path,
                 result=result,
@@ -163,7 +157,7 @@ class RunM0M1DialogueProbeTests(unittest.TestCase):
                 status="running",
             )
             result["turns"].append(self._fake_turn("run-1", 2, "D01_M001_F001"))
-            probe._write_checkpoint(
+            runner_helpers.write_checkpoint(
                 output_path=output_path,
                 conversation_log_path=log_path,
                 result=result,
@@ -186,7 +180,9 @@ class RunM0M1DialogueProbeTests(unittest.TestCase):
             self._fake_turn("run-1", 2, "D01_M001_F001"),
         ]
 
-        histories, transcript_ids, completed_inputs = probe._rebuild_runtime_state(turns)
+        histories, transcript_ids, completed_inputs = (
+            runner_helpers.rebuild_two_condition_runtime_state(turns)
+        )
 
         self.assertEqual(transcript_ids, ["D01_M001", "D01_M001_F001"])
         self.assertEqual(len(histories["M0"]), 4)
@@ -213,7 +209,7 @@ class RunM0M1DialogueProbeTests(unittest.TestCase):
             "user_message": "今天听到幼儿园那边可能不太稳定的消息。",
         }
 
-        result = probe._generate_user_followup(
+        result = runner_helpers.generate_user_followup(
             client=fake_client,
             model="deepseek-v4-pro",
             scene_card=scene_card,
@@ -236,7 +232,7 @@ class RunM0M1DialogueProbeTests(unittest.TestCase):
         self.assertIn("do_not_make_the_instability_more_specific", user_payload)
 
     def test_build_evaluation_targets_ignores_scene_card_details_for_tom_only_quality(self) -> None:
-        targets = probe._build_evaluation_targets(
+        targets = runner_helpers.build_evaluation_targets(
             {
                 "memory_detail_expectations": {
                     "stable_details": [
@@ -278,10 +274,10 @@ class RunM0M1DialogueProbeTests(unittest.TestCase):
             ]
         }
 
-        self.assertEqual(probe._build_evaluation_targets(scene_card, message), {})
+        self.assertEqual(runner_helpers.build_evaluation_targets(scene_card, message), {})
 
     def test_build_evaluation_targets_prefers_tom_quality_for_tom_probe(self) -> None:
-        targets = probe._build_evaluation_targets(
+        targets = runner_helpers.build_evaluation_targets(
             {
                 "memory_detail_expectations": {
                     "stable_details": [{"detail_id": "m1_response_style_direct"}],

@@ -76,7 +76,6 @@ TYPE_MEMORY_REQUIREMENTS: dict[str, list[str]] = {
 DIMENSION_MEMORY_REQUIREMENTS: dict[str, list[str]] = {
     "hidden_intent_recognition": ["relational_anchor"],
     "emotional_state_recognition": ["summary_memory"],
-    "relationship_expectation_recognition": ["relational_anchor", "response_boundary"],
     "shared_context_invocation": ["event_memory", "summary_memory"],
     "alienation_error_rate": ["response_boundary"],
     "natural_detail_use": ["relational_anchor"],
@@ -289,11 +288,6 @@ def _build_relational_expectation(*, probe_type: str, dimensions: list[str]) -> 
         return "只调用服务于当前判断的必要细节，避免机械背日志。"
     if probe_type == "state_transformation":
         return "接住跨天状态变化，用熟悉但克制的方式帮助用户校准下一步。"
-    if "relationship_expectation_recognition" in dimensions:
-        return (
-            "保持熟悉、直接、不过度安慰、不过度亲密的"
-            "长期陪伴关系位置。"
-        )
     return "以稳定、具体、不过度表演的方式接住用户。"
 
 

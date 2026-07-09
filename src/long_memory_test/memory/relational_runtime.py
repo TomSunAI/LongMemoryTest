@@ -24,15 +24,15 @@ RELATIONAL_MEMORY_SYSTEM_PROMPT = (
     "你不是聊天者、评审者、普通摘要器，也不是事实生成器；你的工作是把当前轮对话中"
     "确实可在未来复用的信息，合并进同一事件线已有记忆。\n\n"
     "先分清三个记忆层的概念：\n"
-    "1. 关系结论层（M1 / relationship_conclusion_memory）：记录这条事件线中"
+    "1. 关系结论层（M1/Z1/U1 / relationship_conclusion_memory）：记录这条事件线中"
     "“assistant 未来应如何对待用户”的稳定关系结论。它关注回应偏好、关系期待、"
     "沟通边界和误用边界。例如用户是否需要先被承接情绪、是否反感空泛安慰、"
     "是否希望 assistant 记住前后脉络。它不记录事件流水、日期、具体事实细节。\n"
-    "2. 事件线摘要层（M2 / event_line_summary_memory）：记录这条事件本身如何跨轮发展。"
+    "2. 事件线摘要层（M2/Z2/U2 / event_line_summary_memory）：记录这条事件本身如何跨轮发展。"
     "它关注持续议题、关键进展、当前状态、未解决点和已讨论过的处理策略。"
     "它不是单轮摘要，而是同一 event_line_id 下的主线状态；它不记录 assistant 的说话风格偏好，"
     "也不保存细碎可复用锚点。\n"
-    "3. 细节锚点层（M3 / detail_anchor_memory）：记录少量未来可轻量引用的具体线索。"
+    "3. 细节锚点层（M3/Z3/U3 / detail_anchor_memory）：记录少量未来可轻量引用的具体线索。"
     "它关注反复出现的观察点、角色、用户使用过的短语、共享称呼、以及这些细节的使用边界和误用风险。"
     "它不是全量日志，不保存大量原话，也不把细节推断成确定结论。\n\n"
     "你每次只写请求的那一个记忆层，不要混写其他层。"
@@ -57,7 +57,42 @@ CONDITION_MEMORY_TYPES = {
         EVENT_SUMMARY_MEMORY_TYPE,
         DETAIL_ANCHOR_MEMORY_TYPE,
     ],
+    "Z1": [CONCLUSION_MEMORY_TYPE],
+    "Z2": [EVENT_SUMMARY_MEMORY_TYPE],
+    "Z3": [DETAIL_ANCHOR_MEMORY_TYPE],
+    "U1": [CONCLUSION_MEMORY_TYPE],
+    "U2": [EVENT_SUMMARY_MEMORY_TYPE],
+    "U3": [DETAIL_ANCHOR_MEMORY_TYPE],
 }
+
+CUMULATIVE_RELATIONAL_CONDITION_IDS = ("M1", "M2", "M3")
+INDEPENDENT_RELATIONAL_CONDITION_IDS = ("Z1", "Z2", "Z3")
+M0_AUGMENTED_ATOMIC_RELATIONAL_CONDITION_IDS = ("U1", "U2", "U3")
+RELATIONAL_CONDITION_IDS = tuple(CONDITION_MEMORY_TYPES)
+
+RELATIONAL_CONDITION_COMPOSITION = {
+    "M1": "m0_base_plus_cumulative_relational_overlay",
+    "M2": "m0_base_plus_cumulative_relational_overlay",
+    "M3": "m0_base_plus_cumulative_relational_overlay",
+    "Z1": "independent_relational_overlay_only",
+    "Z2": "independent_relational_overlay_only",
+    "Z3": "independent_relational_overlay_only",
+    "U1": "m0_base_plus_atomic_relational_overlay",
+    "U2": "m0_base_plus_atomic_relational_overlay",
+    "U3": "m0_base_plus_atomic_relational_overlay",
+}
+
+
+def relational_condition_uses_m0_base(condition_id: str) -> bool:
+    return RELATIONAL_CONDITION_COMPOSITION.get(condition_id, "").startswith("m0_base_plus_")
+
+
+def relational_condition_is_independent(condition_id: str) -> bool:
+    return RELATIONAL_CONDITION_COMPOSITION.get(condition_id) == "independent_relational_overlay_only"
+
+
+def relational_condition_composition_rule(condition_id: str) -> str | None:
+    return RELATIONAL_CONDITION_COMPOSITION.get(condition_id)
 
 TYPE_LABELS = {
     CONCLUSION_MEMORY_TYPE: "结论级关系记忆",
@@ -97,13 +132,14 @@ FACT_ANSWER_LAYER_CONTRACT = {
 
 
 class RelationalMemoryRuntime:
-    """Independent overlay runtime for M1/M2/M3 relational memory conditions.
+    """Independent overlay runtime for relational memory conditions.
 
     M2 and M3 are cumulative in capability, but each condition stores its own
-    copy of lower-level relational memory inside its own namespace. The runner
-    composes this overlay with the same-turn M0 payload before prompting the
-    responder; the overlay runtime itself never reads another relational
-    condition's payload.
+    copy of lower-level relational memory inside its own namespace. Z1/Z2/Z3
+    are single-layer feature runtimes with no M0 base. U1/U2/U3 are also
+    single-layer feature runtimes, but the runner composes each U overlay with
+    the same-turn M0 payload before prompting the responder. The overlay runtime
+    itself never reads another relational condition's payload.
     """
 
     def __init__(
@@ -241,10 +277,18 @@ class RelationalMemoryRuntime:
             "config": {
                 "namespace_isolation": True,
                 "reads_m0_payload": False,
-                "final_payload_composed_with_m0_by_runner": True,
+                "final_payload_composed_with_m0_by_runner": (
+                    relational_condition_uses_m0_base(self.condition_id)
+                ),
                 "reads_other_condition_payloads": False,
                 "probe_writeback": False,
-                "cumulative_levels_are_copied_within_condition_namespace": True,
+                "cumulative_levels_are_copied_within_condition_namespace": (
+                    self.condition_id in CUMULATIVE_RELATIONAL_CONDITION_IDS
+                ),
+                "single_feature_runtime": (
+                    self.condition_id in INDEPENDENT_RELATIONAL_CONDITION_IDS
+                    or self.condition_id in M0_AUGMENTED_ATOMIC_RELATIONAL_CONDITION_IDS
+                ),
                 "retrieval_strategy": RELATIONAL_RETRIEVAL_STRATEGY,
                 "strict_current_event_line_only": True,
                 "cross_event_fallback": False,
@@ -253,6 +297,9 @@ class RelationalMemoryRuntime:
                 "requires_event_line_id_for_writeback": True,
                 "writes_event_line_mainline_files": True,
                 "event_line_file_schema": EVENT_LINE_FILE_SCHEMA,
+                "final_payload_has_m0_base": (
+                    relational_condition_uses_m0_base(self.condition_id)
+                ),
                 "source_layer_contract": _fact_answer_layer_contract(),
                 "summary_writer": "llm" if self._has_memory_llm() else "deterministic_fallback",
             },
@@ -301,13 +348,22 @@ class RelationalMemoryRuntime:
             "",
             "Runtime boundary:",
             "- 这里只提供本条件自己的长期关系记忆 overlay。",
-            "- runner 会把该 overlay 与同轮 M0 普通记忆底座组合后再发给模型。",
-            "- 不读取其他 M 条件的 payload。",
+            "- 不读取其他 M/Z 条件的 payload。",
             "- probe turn 只读，不写回。",
-            f"- M1/M2/M3 overlay 的长期存储单元是 event_line_id；当前事件线：{event_line_id or '未绑定'}。",
-            "- 读取策略：只加载当前 event_line_id 下的 M1/M2/M3 关系记忆；没有 event_line_id 时不加载关系 overlay；不跨事件线回退。",
+            f"- {self.condition_id} overlay 的长期存储单元是 event_line_id；当前事件线：{event_line_id or '未绑定'}。",
+            f"- 读取策略：只加载当前 event_line_id 下的 {self.condition_id} 关系记忆；没有 event_line_id 时不加载关系 overlay；不跨事件线回退。",
             "",
         ]
+        if self.condition_id in CUMULATIVE_RELATIONAL_CONDITION_IDS:
+            lines.insert(
+                4,
+                "- runner 会把该 overlay 与同轮 M0 普通记忆底座组合后再发给模型。",
+            )
+        else:
+            lines.insert(
+                4,
+                "- runner 会把该 overlay 作为独立 Z 条件载荷，不拼接 M0 普通记忆底座。",
+            )
         for memory_type in self.enabled_memory_types:
             lines.append(f"{TYPE_LABELS[memory_type]}:")
             hits = hits_by_type.get(memory_type, [])
@@ -330,7 +386,9 @@ class RelationalMemoryRuntime:
             "query_text": query,
             "event_line_id": event_line_id,
             "uses_m0_payload": False,
-            "final_payload_composed_with_m0_by_runner": True,
+            "final_payload_composed_with_m0_by_runner": (
+                self.condition_id in CUMULATIVE_RELATIONAL_CONDITION_IDS
+            ),
             "uses_other_condition_payloads": False,
             "enabled_memory_types": list(self.enabled_memory_types),
             "memory_count": len(self.memories),
@@ -353,7 +411,9 @@ class RelationalMemoryRuntime:
             "runtime_id": f"{self.condition_id}_independent_relational_memory",
             "memory_unit": RELATIONAL_MEMORY_UNIT,
             "requires_runtime_letta": False,
-            "requires_runtime_ld_agent_memory": True,
+            "requires_runtime_ld_agent_memory": (
+                relational_condition_uses_m0_base(self.condition_id)
+            ),
             "payload_role": "relational_overlay",
             "storage_backend": "json_files",
             "storage_root": str(self.storage_root) if self.storage_root else None,
@@ -364,11 +424,17 @@ class RelationalMemoryRuntime:
             "memory_composition": {
                 "base_condition": None,
                 "base_provider": None,
-                "base_payload_required": True,
+                "base_payload_required": (
+                    relational_condition_uses_m0_base(self.condition_id)
+                ),
                 "base_payload_shared_by": [],
                 "overlay_condition": self.condition_id,
                 "overlay_source": "independent_relational_memory_runtime",
-                "composition_rule": "relational_overlay_only_runner_adds_m0_base",
+                "composition_rule": (
+                    "relational_overlay_only_runner_adds_m0_base"
+                    if relational_condition_uses_m0_base(self.condition_id)
+                    else "relational_overlay_only_no_m0_base"
+                ),
             },
             "search_indexing_policy": {
                 "uses_m0_search_indexing": False,

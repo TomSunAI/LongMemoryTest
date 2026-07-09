@@ -40,13 +40,6 @@ TOM_DIMENSION_RUBRIC: dict[str, dict[str, str]] = {
         "score_1": "提到情绪，但和建议关系弱。",
         "score_2": "识别具体状态，并据此调整建议强度。",
     },
-    "relationship_expectation_recognition": {
-        "label": "关系期待识别",
-        "question": "是否识别用户期待熟悉、直接、不过度表演的关系回应。",
-        "score_0": "客服式、模板化、过度亲密，或没有回应关系位置。",
-        "score_1": "语气不陌生，但只是普通友好；没有体现稳定关系期待。",
-        "score_2": "熟悉、直接、不过度表演，并把关系期待体现在回应方式里。",
-    },
     "shared_context_invocation": {
         "label": "共同语境调用",
         "question": "是否接上此前形成的处理方式，而不是每次从零开始。",
@@ -121,7 +114,6 @@ STRICT_SCORING_CONTRACT = {
         "没有 assistant_answer 原文证据的维度必须给 0 分。",
         "只复述用户问题，没有新增心理推断，hidden_intent_recognition 最高 1 分。",
         "只说焦虑、累、担心等泛化情绪词，emotional_state_recognition 最高 1 分。",
-        "只是友好、有礼貌、会安慰，但没有稳定关系位置证据，relationship_expectation_recognition 最高 1 分。",
         "没有调用 case.allowed_context.recent_dialogue 或 case.memory_condition.available_memory_excerpt 中的具体前文或共同处理方式，shared_context_invocation 最高 1 分。",
         "没有明显陌生化错误只能得到 alienation_error_rate 1 分；必须有关系连续性证据才可给 2 分。",
         "只使用当前用户问题里的明显词语，而没有调用可验证背景细节，natural_detail_use 最高 1 分。",
@@ -294,7 +286,7 @@ def evaluate_tom_quality_with_llm_judge(
 
     for turn_position, turn in enumerate(turns):
         message = turn.get("input", {})
-        dimensions = [str(item) for item in message.get("tom_dimensions", [])]
+        dimensions = _active_tom_dimensions(message.get("tom_dimensions", []))
         current_message_id = str(turn.get("source", {}).get("message_id") or "")
         if not dimensions:
             continue
@@ -358,6 +350,7 @@ def evaluate_tom_quality_with_llm_judge(
         if evaluated_turns_by_position[position]["variants"]
     ]
     summary = _build_summary(aggregate)
+    summary["persona_variance"] = _persona_score_stats(evaluated_turns)
     enrich_lowest_examples(summary=summary, turns=evaluated_turns)
     return {
         "schema_version": "tom_quality_llm_judge_v0.3",
@@ -398,11 +391,19 @@ def _build_turn_result(turn: dict[str, Any]) -> dict[str, Any]:
         "probe_type": message.get("probe_type"),
         "topic": message.get("topic"),
         "user_message": message.get("user_message"),
-        "tom_dimensions": [str(item) for item in message.get("tom_dimensions", [])],
+        "tom_dimensions": _active_tom_dimensions(message.get("tom_dimensions", [])),
         "required_memory_type": list(message.get("required_memory_type", [])),
         "dependency_analysis": dict(message.get("dependency_analysis", {})),
         "variants": {},
     }
+
+
+def _active_tom_dimensions(dimensions: Any) -> list[str]:
+    return [
+        str(item)
+        for item in dimensions or []
+        if str(item) in TOM_DIMENSION_RUBRIC
+    ]
 
 
 def _run_judge_tasks(
@@ -505,7 +506,7 @@ def build_judge_case(
     source = turn.get("source", {})
     variant_payload = turn.get("variants", {}).get(variant_name, {})
     answer = str(variant_payload.get("assistant_answer", ""))
-    dimensions = [str(item) for item in message.get("tom_dimensions", [])]
+    dimensions = _active_tom_dimensions(message.get("tom_dimensions", []))
     return {
         "case_id": source.get("message_id"),
         "day": message.get("day"),
@@ -988,6 +989,47 @@ def render_markdown_report(evaluation: dict[str, Any]) -> str:
                 + " |"
             )
 
+    persona_variance = summary.get("persona_variance") or _persona_score_stats(
+        evaluation.get("turns", [])
+    )
+    lines.extend(["", "## Persona Variance", ""])
+    if persona_variance:
+        lines.append(
+            "| Variant | Persona count | Persona means | Mean | Variance | Std dev | Range | CV | Norm var | Norm range | M0 var reduction |"
+        )
+        lines.append("|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|")
+        for variant_name, item in sorted(persona_variance.items()):
+            persona_means = item.get("persona_means", {})
+            means_text = "; ".join(
+                f"{pid}={float(score):.2f}"
+                for pid, score in sorted(persona_means.items())
+            )
+            lines.append(
+                "| {variant} | {count} | {means} | {mean:.2f} | {variance:.2f} | {stddev:.2f} | {range_value:.2f} | {cv:.3f} | {norm_variance:.3f} | {norm_range:.3f} | {m0_reduction:.1%} |".format(
+                    variant=variant_name,
+                    count=int(item.get("persona_count", 0)),
+                    means=_clean_markdown_cell(means_text or "-"),
+                    mean=float(item.get("mean", 0.0)),
+                    variance=float(item.get("variance", 0.0)),
+                    stddev=float(item.get("stddev", 0.0)),
+                    range_value=float(item.get("range", 0.0)),
+                    cv=float(item.get("cv", 0.0)),
+                    norm_variance=float(item.get("norm_variance", 0.0)),
+                    norm_range=float(item.get("norm_range", 0.0)),
+                    m0_reduction=float(item.get("m0_variance_reduction", 0.0)),
+                )
+            )
+        lines.append("")
+        lines.append(
+            "Variance is computed across persona-level average ToM scores within this report "
+            "(population variance, not cross-experiment variance). "
+            "`Norm var` is variance / 2500, because 2500 is the maximum population variance "
+            "on a 0-100 score scale. `M0 var reduction` is positive when the condition is "
+            "more even across personas than M0 in the same report."
+        )
+    else:
+        lines.append("No persona-level score data.")
+
     lines.extend(["", "## Failure Types", ""])
     failure_type_names = sorted(
         {
@@ -1035,7 +1077,7 @@ def _judge_system_prompt() -> str:
     return "\n".join(
         [
             "你是长程关系记忆实验中的 ToM 评审员，不是对话助手。",
-            "你的任务是评价 assistant_answer 是否理解用户的心理状态、隐含意图、关系期待和共同语境。",
+            "你的任务是评价 assistant_answer 是否理解用户的心理状态、隐含意图、共同语境、自然细节使用和记忆边界。",
             "你只能依据用户提供的 case JSON 评分，不要脑补未提供的长期历史。",
             "case 使用盲化条件名 Condition A/B/C/D；不要尝试反推出 M0/M1/M2/M3。",
             "case 不提供 BEI、gold label 或高低分答案标签；不得把这些当评分依据。",
@@ -1043,7 +1085,7 @@ def _judge_system_prompt() -> str:
             "每个维度使用 0-2 分：0=失败，1=部分识别，2=明确识别并转化为回应策略。",
             "2 分是强证据满分，不是方向正确分。普通、可用、礼貌、能安慰的回答通常只能得 1 分。",
             "不要因为回答更长、格式更整齐、语气更热情或安慰更多就给高分。",
-            "不要因为回答最终建议看起来合理就给高分；ToM 分数看的是心理推断、关系位置、可验证共同语境和自然细节。",
+            "不要因为回答最终建议看起来合理就给高分；ToM 分数看的是心理推断、可验证共同语境、自然细节和记忆边界。",
             "如果回答可以几乎原样复制给另一个有相同表面问题的用户，相关维度最高 1 分。",
             "如果回答只复述用户问题，没有形成新的心理判断，相关维度最高 1 分。",
             "shared_context_invocation 和 natural_detail_use 的 2 分必须有 case.allowed_context.recent_dialogue 或 case.memory_condition 中可验证的具体前文证据。",
@@ -1189,6 +1231,83 @@ def _build_summary(aggregate: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _persona_score_stats(turns: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    scores_by_variant_persona: dict[str, dict[str, list[float]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
+    for turn in turns:
+        if not isinstance(turn, dict):
+            continue
+        pid = str(turn.get("message_id", "")).split("_", 1)[0]
+        if not pid:
+            continue
+        variants = turn.get("variants", {})
+        if not isinstance(variants, dict):
+            continue
+        for variant_name, result in variants.items():
+            if not isinstance(result, dict):
+                continue
+            valid = bool(
+                result.get(
+                    "is_valid_judge_result",
+                    result.get("judge_status") == "ok" or "tom_score" in result,
+                )
+            )
+            if not valid:
+                continue
+            scores_by_variant_persona[str(variant_name)][pid].append(
+                float(result.get("tom_score", 0.0))
+            )
+
+    stats: dict[str, dict[str, Any]] = {}
+    raw_stats: dict[str, dict[str, Any]] = {}
+    for variant_name, persona_scores in scores_by_variant_persona.items():
+        persona_means = {
+            pid: sum(scores) / len(scores)
+            for pid, scores in persona_scores.items()
+            if scores
+        }
+        values = list(persona_means.values())
+        mean = sum(values) / len(values) if values else 0.0
+        variance = (
+            sum((value - mean) ** 2 for value in values) / len(values)
+            if values
+            else 0.0
+        )
+        raw_stats[variant_name] = {
+            "persona_count": len(values),
+            "persona_means": {
+                pid: round(score, 4)
+                for pid, score in sorted(persona_means.items())
+            },
+            "mean": round(mean, 4),
+            "variance": round(variance, 4),
+            "stddev": round(variance ** 0.5, 4),
+            "range": round((max(values) - min(values)) if values else 0.0, 4),
+        }
+    m0_variance = float(raw_stats.get("M0", {}).get("variance", 0.0))
+    for variant_name, item in raw_stats.items():
+        mean = float(item.get("mean", 0.0))
+        variance = float(item.get("variance", 0.0))
+        stddev = float(item.get("stddev", 0.0))
+        range_value = float(item.get("range", 0.0))
+        item["cv"] = round(stddev / mean if mean else 0.0, 6)
+        item["norm_variance"] = round(min(1.0, max(0.0, variance / 2500.0)), 6)
+        item["norm_stddev"] = round(min(1.0, max(0.0, stddev / 50.0)), 6)
+        item["norm_range"] = round(min(1.0, max(0.0, range_value / 100.0)), 6)
+        item["m0_variance_reduction"] = round(
+            (m0_variance - variance) / m0_variance if m0_variance else 0.0,
+            6,
+        )
+        stats[variant_name] = item
+    return dict(sorted(stats.items()))
+
+
+def _clean_markdown_cell(value: Any) -> str:
+    text = " ".join(str(value).split())
+    return text.replace("|", "\\|")
+
+
 def enrich_lowest_examples(
     *,
     summary: dict[str, Any],
@@ -1294,8 +1413,7 @@ def _apply_strict_caps(
     caps: list[tuple[bool, int, str]] = [
         (
             (flags.get("alienation_error", False) or flags.get("alienation", False))
-            and dimension
-            in {"alienation_error_rate", "relationship_expectation_recognition"},
+            and dimension == "alienation_error_rate",
             0,
             "alienation_error_flag_cap",
         ),
@@ -1344,7 +1462,6 @@ def _apply_strict_caps(
             in {
                 "natural_detail_use",
                 "shared_context_invocation",
-                "relationship_expectation_recognition",
                 "memory_misuse",
             },
             1,

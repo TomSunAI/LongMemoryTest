@@ -36,6 +36,12 @@ CONDITION_COLORS = {
     "M1": "#0f766e",
     "M2": "#7c3aed",
     "M3": "#b45309",
+    "Z1": "#0f766e",
+    "Z2": "#7c3aed",
+    "Z3": "#b45309",
+    "U1": "#047857",
+    "U2": "#6d28d9",
+    "U3": "#a16207",
 }
 
 FAILURE_TYPE_EXPLANATIONS = {
@@ -52,6 +58,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Generate the two-person M0-M3 HTML report.")
     parser.add_argument("--run-dir", type=Path, default=RUN_DIR)
     parser.add_argument("--output", type=Path, default=OUTPUT)
+    parser.add_argument(
+        "--data-dir",
+        type=Path,
+        default=DATA_DIR,
+        help="Trajectory data directory that contains sampled_personas.json.",
+    )
     args = parser.parse_args()
 
     run_dir = args.run_dir
@@ -60,7 +72,7 @@ def main() -> int:
     automatic = _load_json(run_dir / "automatic_scores_two_person.json")
     conversation = _load_json(run_dir / "conversation_log_two_person_eval.json")
     run_config = _load_json(run_dir / "run_config.json")
-    sampled = _load_json(DATA_DIR / "sampled_personas.json")
+    sampled = _load_json(args.data_dir / "sampled_personas.json")
 
     personas = {
         str(persona.get("persona_id")): persona
@@ -92,6 +104,9 @@ def _render(
     personas: dict[str, dict[str, Any]],
     run_dir: Path,
 ) -> str:
+    global VARIANTS
+    VARIANTS = _report_variants(llm=llm, conversation=conversation, run_config=run_config)
+    variant_label = "/".join(VARIANTS)
     eval_turns = {
         str(turn.get("message_id")): turn
         for turn in llm.get("turns", [])
@@ -136,7 +151,7 @@ def _render(
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>两人 M0-M3 Probe 评测汇报</title>
+  <title>两人 {variant_label} Probe 评测汇报</title>
   <style>
     :root {{
       --ink: #172033;
@@ -612,13 +627,13 @@ def _render(
 <body>
 <main>
   <section class="hero">
-    <h1>两人 M0-M3 Probe 评测汇报</h1>
+    <h1>两人 {variant_label} Probe 评测汇报</h1>
     <p class="subtitle">这个页面按“人物 - 全轮对话 - probe 评分”组织。全轮对话包含普通 scripted turn 和 targeted probe；总体分数只统计带 <code>tom_dimensions</code> 的 targeted probe。</p>
     <div class="metrics">
       {_metric("Personas", len(probes_by_persona), "本次保留")}
       {_metric("Context turns", extraction.get("kept_turns", len(conversation.get("turns", []))), "供评测上下文")}
       {_metric("Probe turns", probe_count, "真正评分")}
-      {_metric("Judge cases", case_count, "probe x M0-M3")}
+      {_metric("Judge cases", case_count, "probe x " + variant_label)}
       {_metric("Best condition", _best_condition(summary), "LLM judge")}
       {_metric("Judge", method.get("judge_model", "-"), method.get("strictness", "-"))}
     </div>
@@ -672,6 +687,9 @@ def _summary_section(*, llm: dict[str, Any], automatic: dict[str, Any]) -> str:
     <h3>LLM judge 维度均分</h3>
     {_dimension_table(llm.get("summary", {}).get("dimension_averages", {}))}
     {_dimension_field_guide()}
+    <h3>跨 persona 方差</h3>
+    {_persona_variance_table(llm)}
+    <p class="source-note">方差口径：同一份报告内，先计算每个 persona 在该 condition 下的平均 LLM judge ToM score，再对这些 persona 均分计算总体方差；不跨实验合并。Norm var = variance / 2500，因为 0-100 分制的最大总体方差是 2500；M0 var reduction 为正，表示比同报告 M0 更均衡。</p>
     <h3>失败类型计数</h3>
     {_failure_table(variants)}
     {_failure_field_guide()}
@@ -683,7 +701,7 @@ def _field_guide() -> str:
     items = [
         (
             "Condition",
-            "实验条件：M0 为普通长期记忆 baseline，M1/M2/M3 为逐步叠加关系记忆的条件。",
+            "实验条件：M0 为普通长期记忆 baseline；M 系列为逐步叠加关系记忆；Z 系列为不拼接 M0 的原子关系记忆条件。",
         ),
         (
             "Probe answers",
@@ -740,10 +758,6 @@ def _dimension_field_guide() -> str:
             "自然细节调用。看回答是否只使用必要且可验证的背景细节服务心理理解，而不是机械背日志或堆砌细节。",
         ),
         (
-            "relationship_expectation_recognition",
-            "关系期待识别。看回答是否识别用户期待熟悉、直接、不过度表演的回应方式，并体现在语气和处理策略里。",
-        ),
-        (
             "shared_context_invocation",
             "共同语境调用。看回答是否自然接上此前形成的共同处理方式或旧线索，而不是把持续事件当第一次出现。",
         ),
@@ -793,7 +807,7 @@ def _condition_section(*, context_policy: dict[str, str], run_config: dict[str, 
     payload = run_config.get("m0_ld_agent_memory_baseline", {}).get("payload_isolation", {})
     cards = []
     for variant in VARIANTS:
-        color = CONDITION_COLORS[variant]
+        color = CONDITION_COLORS.get(variant, "#3347b8")
         cards.append(
             f"""
       <div class="standard">
@@ -804,32 +818,35 @@ def _condition_section(*, context_policy: dict[str, str], run_config: dict[str, 
         )
     return f"""
   <section class="section">
-    <h2>2. M0-M3 条件标准</h2>
+    <h2>2. 条件标准</h2>
     <div class="standard-grid">
       {''.join(cards)}
     </div>
     <div class="source-note">
-      控制变量：同一用户输入、同一模型、同一短期上下文策略；只改变长期记忆条件。M1/M2/M3 均使用同轮 M0 base memory，再叠加各自独立 namespace 的关系记忆 overlay。Probe turn 为 read-only，不写回记忆。
+      控制变量：同一用户输入、同一模型、同一短期上下文策略；只改变长期记忆条件。M 系列使用同轮 M0 base memory；Z 系列为原子关系记忆条件，不拼接 M0。Probe turn 为 read-only，不写回记忆。
     </div>
   </section>
 """
 
 
 def _prompt_reference_section(*, conversation: dict[str, Any]) -> str:
+    relational_variants = tuple(variant for variant in VARIANTS if variant in RELATIONAL_CONDITION_IDS)
+    if not relational_variants:
+        return ""
     template_cards = "".join(
         _prompt_card(
             title=f"{condition_id} system prompt template",
             body=build_answer_condition_system_prompt_template(condition_id=condition_id),
-            open_by_default=condition_id == "M1",
+            open_by_default=condition_id == relational_variants[0],
         )
-        for condition_id in RELATIONAL_CONDITION_IDS
+        for condition_id in relational_variants
     )
     payload_cards = "".join(
         _prompt_card(
             title=f"{condition_id} payload composition template",
             body=build_relational_payload_context_template(condition_id=condition_id),
         )
-        for condition_id in RELATIONAL_CONDITION_IDS
+        for condition_id in relational_variants
     )
     example_cards = "".join(
         _prompt_card(
@@ -849,12 +866,12 @@ def _prompt_reference_section(*, conversation: dict[str, Any]) -> str:
     )
     return f"""
   <section class="section">
-    <h2>3. M1-M3 Prompt Reference</h2>
-    <p class="muted">这里记录当前代码中的 M1/M2/M3 回答生成 prompt 参考模板。M0 仍是独立 baseline；以下“主记忆优先”规则只作用于 M1/M2/M3。本节不重新计算本报告里的旧回答分数。</p>
+    <h2>3. Relational Prompt Reference</h2>
+    <p class="muted">这里记录当前代码中的关系条件回答生成 prompt 参考模板。本节不重新计算本报告里的旧回答分数。</p>
     <h3>System prompt templates</h3>
     <div class="prompt-grid">{template_cards}</div>
     <h3>Relational payload templates</h3>
-    <p class="muted">system prompt 中的 <code>&lt;M*_MEMORY_CONTEXT&gt;</code> 会被下列组合 payload 填充：关系层是主记忆，M0 只是普通背景。</p>
+    <p class="muted">system prompt 中的 memory context 会被下列 payload 填充：M 系列可能包含 M0 普通背景，Z 系列不拼接 M0。</p>
     <div class="prompt-grid">{payload_cards}</div>
     <h3>Examples from this run</h3>
     <p class="muted">示例把当前 prompt 模板与 compact evaluator log 中保留的 memory context 组合展示，用于实现参考和审计阅读；它不表示旧回答已经按新 prompt 重新生成。</p>
@@ -1117,11 +1134,11 @@ def _failure_examples(result: dict[str, Any]) -> str:
 
 def _failure_evidence(*, failure: str, dims: dict[str, Any], result: dict[str, Any]) -> str:
     preferred_dimensions = {
-        "memory_absence": ("shared_context_invocation", "relationship_expectation_recognition"),
+        "memory_absence": ("shared_context_invocation",),
         "memory_misuse": ("memory_misuse", "natural_detail_use", "shared_context_invocation"),
         "memory_overuse": ("natural_detail_use", "memory_misuse"),
         "fabrication": ("memory_misuse", "natural_detail_use"),
-        "alienation": ("alienation_error_rate", "relationship_expectation_recognition"),
+        "alienation": ("alienation_error_rate",),
         "instruction_only_success": ("hidden_intent_recognition", "shared_context_invocation"),
     }
     candidates = list(preferred_dimensions.get(failure, ()))
@@ -1276,6 +1293,106 @@ def _failure_table(variants: dict[str, dict[str, Any]]) -> str:
     return f"<table class=\"compact\"><thead><tr><th>Condition</th>{head}</tr></thead><tbody>{''.join(rows)}</tbody></table>"
 
 
+def _persona_variance_table(llm: dict[str, Any]) -> str:
+    stats = _persona_score_stats(llm)
+    rows = []
+    for variant in VARIANTS:
+        item = stats.get(variant, {})
+        persona_means = item.get("persona_means", {})
+        means_text = "; ".join(
+            f"{pid}={float(score):.2f}"
+            for pid, score in sorted(persona_means.items())
+        )
+        rows.append(
+            "<tr>"
+            f"<td><strong>{_esc(variant)}</strong></td>"
+            f"<td>{_esc(item.get('persona_count', 0))}</td>"
+            f"<td>{_esc(means_text or '-')}</td>"
+            f"<td>{float(item.get('mean', 0.0)):.2f}</td>"
+            f"<td>{float(item.get('variance', 0.0)):.2f}</td>"
+            f"<td>{float(item.get('stddev', 0.0)):.2f}</td>"
+            f"<td>{float(item.get('range', 0.0)):.2f}</td>"
+            f"<td>{float(item.get('cv', 0.0)):.3f}</td>"
+            f"<td>{float(item.get('norm_variance', 0.0)):.3f}</td>"
+            f"<td>{float(item.get('norm_range', 0.0)):.3f}</td>"
+            f"<td>{float(item.get('m0_variance_reduction', 0.0)):.1%}</td>"
+            "</tr>"
+        )
+    return (
+        '<table class="compact"><thead><tr><th>Condition</th><th>Persona count</th>'
+        "<th>Persona means</th><th>Mean</th><th>Variance</th><th>Std dev</th>"
+        "<th>Range</th><th>CV</th><th>Norm var</th><th>Norm range</th>"
+        f"<th>M0 var reduction</th></tr></thead><tbody>{''.join(rows)}</tbody></table>"
+    )
+
+
+def _persona_score_stats(llm: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    scores_by_variant_persona: dict[str, dict[str, list[float]]] = {
+        variant: defaultdict(list) for variant in VARIANTS
+    }
+    for turn in llm.get("turns", []):
+        if not isinstance(turn, dict):
+            continue
+        pid = str(turn.get("message_id", "")).split("_", 1)[0]
+        if not pid:
+            continue
+        turn_variants = turn.get("variants", {})
+        if not isinstance(turn_variants, dict):
+            continue
+        for variant in VARIANTS:
+            result = turn_variants.get(variant, {})
+            if not isinstance(result, dict):
+                continue
+            valid = bool(
+                result.get(
+                    "is_valid_judge_result",
+                    result.get("judge_status") == "ok" or "tom_score" in result,
+                )
+            )
+            if not valid:
+                continue
+            scores_by_variant_persona[variant][pid].append(float(result.get("tom_score", 0.0)))
+
+    stats: dict[str, dict[str, Any]] = {}
+    raw_stats: dict[str, dict[str, Any]] = {}
+    for variant, persona_scores in scores_by_variant_persona.items():
+        persona_means = {
+            pid: sum(scores) / len(scores)
+            for pid, scores in persona_scores.items()
+            if scores
+        }
+        values = list(persona_means.values())
+        mean = sum(values) / len(values) if values else 0.0
+        variance = (
+            sum((value - mean) ** 2 for value in values) / len(values)
+            if values
+            else 0.0
+        )
+        raw_stats[variant] = {
+            "persona_count": len(values),
+            "persona_means": persona_means,
+            "mean": mean,
+            "variance": variance,
+            "stddev": variance ** 0.5,
+            "range": (max(values) - min(values)) if values else 0.0,
+        }
+    m0_variance = float(raw_stats.get("M0", {}).get("variance", 0.0))
+    for variant, item in raw_stats.items():
+        mean = float(item.get("mean", 0.0))
+        variance = float(item.get("variance", 0.0))
+        stddev = float(item.get("stddev", 0.0))
+        range_value = float(item.get("range", 0.0))
+        item["cv"] = stddev / mean if mean else 0.0
+        item["norm_variance"] = min(1.0, max(0.0, variance / 2500.0))
+        item["norm_stddev"] = min(1.0, max(0.0, stddev / 50.0))
+        item["norm_range"] = min(1.0, max(0.0, range_value / 100.0))
+        item["m0_variance_reduction"] = (
+            (m0_variance - variance) / m0_variance if m0_variance else 0.0
+        )
+        stats[variant] = item
+    return stats
+
+
 def _scorebars(variants: dict[str, dict[str, Any]], key: str) -> str:
     rows = []
     for variant, item in sorted(variants.items()):
@@ -1389,6 +1506,7 @@ def _first_context_policy(conversation: dict[str, Any]) -> dict[str, str]:
 
 
 def _prompt_reference_examples(conversation: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    relational_variants = tuple(variant for variant in VARIANTS if variant in RELATIONAL_CONDITION_IDS)
     examples: dict[str, dict[str, Any]] = {}
     for turn in conversation.get("turns", []):
         if not isinstance(turn, dict) or not turn.get("input", {}).get("tom_dimensions"):
@@ -1397,7 +1515,7 @@ def _prompt_reference_examples(conversation: dict[str, Any]) -> dict[str, dict[s
         if not isinstance(variants, dict):
             continue
         input_payload = turn.get("input", {})
-        for condition_id in RELATIONAL_CONDITION_IDS:
+        for condition_id in relational_variants:
             if condition_id in examples:
                 continue
             variant = variants.get(condition_id)
@@ -1425,7 +1543,7 @@ def _prompt_reference_examples(conversation: dict[str, Any]) -> dict[str, dict[s
                     memory_context=memory_context,
                 ),
             }
-        if all(condition_id in examples for condition_id in RELATIONAL_CONDITION_IDS):
+        if all(condition_id in examples for condition_id in relational_variants):
             break
     return examples
 
@@ -1441,6 +1559,27 @@ def _load_json(path: Path) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError(f"Expected JSON object: {path}")
     return data
+
+
+def _report_variants(
+    *,
+    llm: dict[str, Any],
+    conversation: dict[str, Any],
+    run_config: dict[str, Any],
+) -> tuple[str, ...]:
+    configured = [str(item) for item in run_config.get("conditions", []) if item]
+    scored = list((llm.get("summary", {}).get("variants") or {}).keys())
+    if configured:
+        result = tuple(variant for variant in configured if variant in scored or not scored)
+        if result:
+            return result
+    if scored:
+        return tuple(scored)
+    for turn in conversation.get("turns", []):
+        variants = turn.get("variants")
+        if isinstance(variants, dict) and variants:
+            return tuple(str(item) for item in variants)
+    return ("M0", "M1", "M2", "M3")
 
 
 def _esc(value: Any) -> str:

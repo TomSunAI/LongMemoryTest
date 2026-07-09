@@ -601,6 +601,65 @@ class RelationalMemoryRuntimeTests(unittest.TestCase):
         self.assertEqual(action["status"], "skipped")
         self.assertEqual(runtime.snapshot()["memory_count"], 0)
 
+    def test_z_conditions_are_single_feature_runtime_namespaces(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            runtime = RelationalMemoryRuntime(
+                condition_id="Z2",
+                storage_root=Path(tmpdir) / "Z2",
+            )
+
+            runtime.record_completed_turn(
+                message={
+                    "message_id": "D01_M001",
+                    "day": 1,
+                    "topic": "孩子幼儿园可能不稳定",
+                    "user_message": "我今天又在想幼儿园这件事。",
+                    "tau": {
+                        "event_line_id": "L_kindergarten",
+                        "event_stage": "initial",
+                    },
+                },
+                assistant_answer="先确认老师反馈，再决定是否继续观察。",
+                run_id="run-test",
+            )
+
+            snapshot = runtime.snapshot()
+            self.assertEqual(snapshot["condition_id"], "Z2")
+            self.assertEqual(snapshot["enabled_memory_types"], ["event_line_summary_memory"])
+            self.assertEqual(snapshot["memory_count"], 1)
+            self.assertTrue(snapshot["config"]["single_feature_runtime"])
+            self.assertFalse(snapshot["config"]["final_payload_composed_with_m0_by_runner"])
+            self.assertFalse(snapshot["config"]["final_payload_has_m0_base"])
+            self.assertFalse(
+                snapshot["config"]["cumulative_levels_are_copied_within_condition_namespace"]
+            )
+            self.assertEqual(
+                snapshot["memories"][0]["memory_type"],
+                "event_line_summary_memory",
+            )
+            self.assertTrue((Path(tmpdir) / "Z2" / "event_line_summaries.jsonl").exists())
+            self.assertFalse((Path(tmpdir) / "Z2" / "conclusion_memories.jsonl").exists())
+            self.assertFalse((Path(tmpdir) / "Z2" / "detail_anchors.jsonl").exists())
+            payload = runtime.retrieve_payload(
+                {
+                    "message_id": "D02_M001",
+                    "day": 2,
+                    "topic": "孩子幼儿园可能不稳定",
+                    "user_message": "昨天那件事我还是放心不下。",
+                    "tau": {
+                        "event_line_id": "L_kindergarten",
+                        "event_stage": "recurrence",
+                    },
+                }
+            )
+            self.assertFalse(payload["requires_runtime_ld_agent_memory"])
+            self.assertFalse(payload["memory_composition"]["base_payload_required"])
+            self.assertEqual(
+                payload["memory_composition"]["composition_rule"],
+                "relational_overlay_only_no_m0_base",
+            )
+            self.assertIn("不拼接 M0", payload["memory_context"])
+
     def test_resume_from_snapshot_preserves_runtime_namespace(self) -> None:
         runtime = RelationalMemoryRuntime(condition_id="M1")
         runtime.record_completed_turn(

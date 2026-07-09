@@ -144,6 +144,183 @@ CONDITION_SPECS = [
             "过度记忆。"
         ),
     },
+    {
+        "condition_id": "Z1",
+        "name": "Independent Relationship Conclusion Feature",
+        "definition": (
+            "只启用结论级关系记忆的独立功能条件；不拼接 M0 普通长期记忆底座。"
+            "关系记忆使用 Z1 自己的 runtime namespace，不读取 M1/M2/M3 或其他 Z 条件。"
+        ),
+        "can_read": [
+            "own_condition_conclusion_memory",
+            "stable_preferences",
+            "response_style",
+            "relationship_expectation",
+            "response_boundary",
+            "do_not_do",
+        ],
+        "cannot_read": [
+            "bei_annotations",
+            "gold_response_strategy",
+            "probe_type",
+            "event_line_stage_labels",
+            "other_condition_payloads",
+            "event_summary",
+            "specific_process",
+            "raw_user_quotes",
+            "detail_anchors",
+        ],
+        "theoretical_use": "作为 Z1 单功能 runtime，观察结论级关系记忆本身的运行表现。",
+    },
+    {
+        "condition_id": "Z2",
+        "name": "Independent Event-line Summary Feature",
+        "definition": (
+            "只启用事件线摘要记忆的独立功能条件；不拼接 M0 普通长期记忆底座。"
+            "关系记忆使用 Z2 自己的 runtime namespace，不继承 Z1/M1 结论层，"
+            "也不读取 M2/M3 或其他 Z 条件。"
+        ),
+        "can_read": [
+            "own_condition_event_line_summary_memory",
+            "cross_day_progress",
+            "state_change_summary",
+            "outcome_summary",
+        ],
+        "cannot_read": [
+            "bei_annotations",
+            "gold_response_strategy",
+            "probe_type",
+            "event_line_stage_labels",
+            "other_condition_payloads",
+            "relationship_conclusion_memory",
+            "raw_user_quotes",
+            "detailed_scene",
+            "shared_language",
+            "detail_anchors",
+        ],
+        "theoretical_use": "作为 Z2 单功能 runtime，观察事件线摘要记忆本身的运行表现。",
+    },
+    {
+        "condition_id": "Z3",
+        "name": "Independent Detail Anchor Feature",
+        "definition": (
+            "只启用细节锚点记忆的独立功能条件；不拼接 M0 普通长期记忆底座。"
+            "关系记忆使用 Z3 自己的 runtime namespace，不继承 Z1/Z2 或 M1/M2 层，"
+            "也不读取 M3 或其他条件。"
+        ),
+        "can_read": [
+            "own_condition_detail_anchor_memory",
+            "necessary_details",
+            "specific_scenes",
+            "shared_language",
+            "relational_anchors",
+            "response_boundaries",
+            "misuse_boundaries",
+            "current_task_relevant_details",
+        ],
+        "cannot_read": [
+            "bei_annotations",
+            "gold_response_strategy",
+            "probe_type",
+            "event_line_stage_labels",
+            "other_condition_payloads",
+            "relationship_conclusion_memory",
+            "event_line_summary_memory",
+            "full_raw_history",
+            "unstored_or_fabricated_facts",
+            "irrelevant_private_details",
+        ],
+        "theoretical_use": "作为 Z3 单功能 runtime，观察细节锚点记忆本身的运行表现。",
+    },
+    {
+        "condition_id": "U1",
+        "name": "M0 + Atomic Relationship Conclusion Feature",
+        "definition": (
+            "M0 普通长期记忆底座 + 单独结论级关系记忆条件；关系记忆使用 U1 "
+            "自己的 runtime namespace，不继承 U2/U3、Z1/Z2/Z3 或 M1/M2/M3。"
+        ),
+        "can_read": [
+            "shared_m0_ld_agent_retrieved_payload",
+            "own_condition_conclusion_memory",
+            "stable_preferences",
+            "response_style",
+            "relationship_expectation",
+            "response_boundary",
+            "do_not_do",
+        ],
+        "cannot_read": [
+            "bei_annotations",
+            "gold_response_strategy",
+            "probe_type",
+            "event_line_stage_labels",
+            "other_condition_payloads",
+            "event_summary",
+            "specific_process",
+            "raw_user_quotes",
+            "detail_anchors",
+        ],
+        "theoretical_use": "检验 M0 底座加单独结论层的增益，区别于不带 M0 的 Z1。",
+    },
+    {
+        "condition_id": "U2",
+        "name": "M0 + Atomic Event-line Summary Feature",
+        "definition": (
+            "M0 普通长期记忆底座 + 单独事件线摘要记忆条件；关系记忆使用 U2 "
+            "自己的 runtime namespace，不继承 U1/M1 结论层，也不读取 U3/Z/M 其他条件。"
+        ),
+        "can_read": [
+            "shared_m0_ld_agent_retrieved_payload",
+            "own_condition_event_line_summary_memory",
+            "cross_day_progress",
+            "state_change_summary",
+            "outcome_summary",
+        ],
+        "cannot_read": [
+            "bei_annotations",
+            "gold_response_strategy",
+            "probe_type",
+            "event_line_stage_labels",
+            "other_condition_payloads",
+            "relationship_conclusion_memory",
+            "raw_user_quotes",
+            "detailed_scene",
+            "shared_language",
+            "detail_anchors",
+        ],
+        "theoretical_use": "检验 M0 底座加单独摘要层的增益，区别于不带 M0 的 Z2 和累积 M2。",
+    },
+    {
+        "condition_id": "U3",
+        "name": "M0 + Atomic Detail Anchor Feature",
+        "definition": (
+            "M0 普通长期记忆底座 + 单独细节锚点记忆条件；关系记忆使用 U3 "
+            "自己的 runtime namespace，不继承 U1/U2 或 M1/M2 层，也不读取 Z/M 其他条件。"
+        ),
+        "can_read": [
+            "shared_m0_ld_agent_retrieved_payload",
+            "own_condition_detail_anchor_memory",
+            "necessary_details",
+            "specific_scenes",
+            "shared_language",
+            "relational_anchors",
+            "response_boundaries",
+            "misuse_boundaries",
+            "current_task_relevant_details",
+        ],
+        "cannot_read": [
+            "bei_annotations",
+            "gold_response_strategy",
+            "probe_type",
+            "event_line_stage_labels",
+            "other_condition_payloads",
+            "relationship_conclusion_memory",
+            "event_line_summary_memory",
+            "full_raw_history",
+            "unstored_or_fabricated_facts",
+            "irrelevant_private_details",
+        ],
+        "theoretical_use": "检验 M0 底座加单独细节锚点层的增益，区别于不带 M0 的 Z3 和累积 M3。",
+    },
 ]
 
 
@@ -189,7 +366,11 @@ def generate_memory_conditions(
             "+ a condition-specific relational overlay. The relational overlay "
             "uses independent runtime namespaces; M2 writes its own M1-level "
             "content, and M3 writes its own M1+M2-level content, but no condition "
-            "reads another condition's answers or relational namespace."
+            "reads another condition's answers or relational namespace. Z1/Z2/Z3 "
+            "are optional single-feature relational runtime conditions with their "
+            "own namespaces and no M0 base composition. U1/U2/U3 are optional "
+            "single-feature relational runtime conditions with their own namespaces "
+            "and same-turn M0 base composition."
         ),
         "tau_contract": _tau_contract_reference(tau_contract),
         "condition_specs": CONDITION_SPECS,
@@ -268,7 +449,9 @@ def generate_memory_conditions_from_tau_contract(
             "This artifact connects the latest tau contract to condition payloads "
             "without generating new user tasks. M1/M2/M3 final runtime payloads "
             "are still composed by the runner as M0 retrieved base + condition "
-            "relational overlay."
+            "relational overlay. Z1/Z2/Z3 are also available as independent "
+            "single-feature relational overlays that do not compose with M0. "
+            "U1/U2/U3 are single-feature relational overlays that do compose with M0."
         ),
         "tau_contract": _tau_contract_reference(tau_contract),
         "condition_specs": CONDITION_SPECS,
@@ -430,6 +613,76 @@ def _build_default_payloads() -> dict[str, dict[str, Any]]:
                 "m1_anxiety_fact_first",
             ],
         },
+        "Z1": {
+            "condition_id": "Z1",
+            "memory_provider": "independent_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "payload_role": "relational_overlay",
+            "memory_context": "结论级关系记忆：" + REL_CONCLUSION_MEMORY,
+            "source_detail_ids": [
+                "z1_response_style_direct",
+                "z1_anxiety_fact_first",
+            ],
+        },
+        "Z2": {
+            "condition_id": "Z2",
+            "memory_provider": "independent_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "payload_role": "relational_overlay",
+            "memory_context": (
+                "摘要级事件记忆：当前没有与本轮输入绑定的具体事件摘要，"
+                "只能使用普通主题连续性。"
+            ),
+            "source_detail_ids": [],
+        },
+        "Z3": {
+            "condition_id": "Z3",
+            "memory_provider": "independent_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "payload_role": "relational_overlay",
+            "memory_context": (
+                "细节级关系锚点：只在服务当前判断时调用必要细节；不要机械背日志。"
+            ),
+            "source_detail_ids": [],
+        },
+        "U1": {
+            "condition_id": "U1",
+            "memory_provider": "m0_base_plus_relational_overlay",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": True,
+            "payload_role": "relational_overlay",
+            "memory_context": "结论级关系记忆：" + REL_CONCLUSION_MEMORY,
+            "source_detail_ids": [
+                "u1_response_style_direct",
+                "u1_anxiety_fact_first",
+            ],
+        },
+        "U2": {
+            "condition_id": "U2",
+            "memory_provider": "m0_base_plus_relational_overlay",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": True,
+            "payload_role": "relational_overlay",
+            "memory_context": (
+                "摘要级事件记忆：当前没有与本轮输入绑定的具体事件摘要，"
+                "只能使用普通主题连续性。"
+            ),
+            "source_detail_ids": [],
+        },
+        "U3": {
+            "condition_id": "U3",
+            "memory_provider": "m0_base_plus_relational_overlay",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": True,
+            "payload_role": "relational_overlay",
+            "memory_context": (
+                "细节级关系锚点：只在服务当前判断时调用必要细节；不要机械背日志。"
+            ),
+            "source_detail_ids": [],
+        },
     }
 
 
@@ -452,6 +705,15 @@ def _build_message_payloads(
     m2_context = m1_context + "\n摘要级事件记忆：\n" + _build_m2_summary(
         topic=topic,
         topic_history=topic_history,
+        related_events=related_events,
+    )
+    z2_context = "摘要级事件记忆：\n" + _build_m2_summary(
+        topic=topic,
+        topic_history=topic_history,
+        related_events=related_events,
+    )
+    z3_context = "细节级关系锚点：\n" + _build_m3_details(
+        message=message,
         related_events=related_events,
     )
     m3_context = m2_context + "\n细节级关系锚点：\n" + _build_m3_details(
@@ -501,6 +763,72 @@ def _build_message_payloads(
             "memory_context": m3_context,
             "source_detail_ids": _source_detail_ids(related_events, max_level="M3"),
         },
+        "Z1": {
+            "condition_id": "Z1",
+            "memory_provider": "independent_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "payload_role": "relational_overlay",
+            "tau": dict(tau_binding),
+            "memory_context": m1_context,
+            "source_detail_ids": [
+                "z1_response_style_direct",
+                "z1_anxiety_fact_first",
+            ],
+        },
+        "Z2": {
+            "condition_id": "Z2",
+            "memory_provider": "independent_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "payload_role": "relational_overlay",
+            "tau": dict(tau_binding),
+            "memory_context": z2_context,
+            "source_detail_ids": _source_detail_ids(related_events, max_level="M2"),
+        },
+        "Z3": {
+            "condition_id": "Z3",
+            "memory_provider": "independent_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "payload_role": "relational_overlay",
+            "tau": dict(tau_binding),
+            "memory_context": z3_context,
+            "source_detail_ids": _source_detail_ids(related_events, max_level="Z3"),
+        },
+        "U1": {
+            "condition_id": "U1",
+            "memory_provider": "m0_base_plus_relational_overlay",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": True,
+            "payload_role": "relational_overlay",
+            "tau": dict(tau_binding),
+            "memory_context": m1_context,
+            "source_detail_ids": [
+                "u1_response_style_direct",
+                "u1_anxiety_fact_first",
+            ],
+        },
+        "U2": {
+            "condition_id": "U2",
+            "memory_provider": "m0_base_plus_relational_overlay",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": True,
+            "payload_role": "relational_overlay",
+            "tau": dict(tau_binding),
+            "memory_context": z2_context,
+            "source_detail_ids": _source_detail_ids(related_events, max_level="M2"),
+        },
+        "U3": {
+            "condition_id": "U3",
+            "memory_provider": "m0_base_plus_relational_overlay",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": True,
+            "payload_role": "relational_overlay",
+            "tau": dict(tau_binding),
+            "memory_context": z3_context,
+            "source_detail_ids": _source_detail_ids(related_events, max_level="Z3"),
+        },
     }
 
 
@@ -516,6 +844,14 @@ def _build_tau_message_payloads(
     m2_context = m1_context + "\n摘要级事件记忆：\n" + _build_tau_m2_summary(
         line=line,
         unit=unit,
+    )
+    z2_context = "摘要级事件记忆：\n" + _build_tau_m2_summary(
+        line=line,
+        unit=unit,
+    )
+    z3_context = "细节级关系锚点：\n" + _build_tau_m3_details(
+        unit=unit,
+        probe=probe,
     )
     m3_context = m2_context + "\n细节级关系锚点：\n" + _build_tau_m3_details(
         unit=unit,
@@ -563,6 +899,76 @@ def _build_tau_message_payloads(
                 line=line,
                 unit=unit,
                 level="M3",
+                probe=probe,
+            ),
+        },
+        "Z1": {
+            "condition_id": "Z1",
+            "memory_provider": "independent_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "payload_role": "relational_overlay",
+            "tau": dict(binding),
+            "memory_context": m1_context,
+            "source_detail_ids": _tau_source_detail_ids(line=line, unit=unit, level="Z1"),
+        },
+        "Z2": {
+            "condition_id": "Z2",
+            "memory_provider": "independent_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "payload_role": "relational_overlay",
+            "tau": dict(binding),
+            "memory_context": z2_context,
+            "source_detail_ids": _tau_source_detail_ids(line=line, unit=unit, level="Z2"),
+        },
+        "Z3": {
+            "condition_id": "Z3",
+            "memory_provider": "independent_relational_memory",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": False,
+            "payload_role": "relational_overlay",
+            "tau": dict(binding),
+            "memory_context": z3_context,
+            "source_detail_ids": _tau_source_detail_ids(
+                line=line,
+                unit=unit,
+                level="Z3",
+                probe=probe,
+            ),
+        },
+        "U1": {
+            "condition_id": "U1",
+            "memory_provider": "m0_base_plus_relational_overlay",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": True,
+            "payload_role": "relational_overlay",
+            "tau": dict(binding),
+            "memory_context": m1_context,
+            "source_detail_ids": _tau_source_detail_ids(line=line, unit=unit, level="Z1"),
+        },
+        "U2": {
+            "condition_id": "U2",
+            "memory_provider": "m0_base_plus_relational_overlay",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": True,
+            "payload_role": "relational_overlay",
+            "tau": dict(binding),
+            "memory_context": z2_context,
+            "source_detail_ids": _tau_source_detail_ids(line=line, unit=unit, level="Z2"),
+        },
+        "U3": {
+            "condition_id": "U3",
+            "memory_provider": "m0_base_plus_relational_overlay",
+            "requires_runtime_letta": False,
+            "requires_runtime_ld_agent_memory": True,
+            "payload_role": "relational_overlay",
+            "tau": dict(binding),
+            "memory_context": z3_context,
+            "source_detail_ids": _tau_source_detail_ids(
+                line=line,
+                unit=unit,
+                level="Z3",
                 probe=probe,
             ),
         },
@@ -811,7 +1217,7 @@ def _topic_history(
 
 
 def _source_detail_ids(related_events: list[dict[str, Any]], *, max_level: str) -> list[str]:
-    levels = {"M2": {"M2"}, "M3": {"M2", "M3"}}[max_level]
+    levels = {"M2": {"M2"}, "M3": {"M2", "M3"}, "Z3": {"M3"}}[max_level]
     detail_ids = []
     for event in related_events:
         for anchor in event.get("memory_detail_anchors", []):
@@ -827,13 +1233,15 @@ def _tau_source_detail_ids(
     level: str,
     probe: dict[str, Any] | None = None,
 ) -> list[str]:
-    result = [
-        f"{line.get('event_line_id')}:relational_targets",
-        f"{unit.get('interaction_unit_id')}:scene_boundary",
-    ]
-    if level in {"M2", "M3"}:
+    result = []
+    if level in {"M1", "M2", "M3", "Z1"}:
+        result.append(f"{line.get('event_line_id')}:relational_targets")
+    if level in {"M1", "M2", "M3", "Z2"}:
+        result.append(f"{unit.get('interaction_unit_id')}:scene_boundary")
+    if level in {"M2", "M3", "Z2"}:
         result.append(f"{line.get('event_line_id')}:observed_stage_sequence")
-    if level == "M3":
+    if level in {"M3", "Z3"}:
+        result.append(f"{unit.get('interaction_unit_id')}:scene_boundary")
         result.append(f"{unit.get('interaction_unit_id')}:allowed_facts")
         result.append(f"{unit.get('interaction_unit_id')}:latent_concerns")
         for detail_id in (probe or {}).get("target_detail_ids", []):

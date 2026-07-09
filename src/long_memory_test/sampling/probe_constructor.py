@@ -101,11 +101,9 @@ PROBE_TYPE_DIAGNOSTIC_DIMENSIONS = {
     "current_understanding": [
         "hidden_intent_recognition",
         "emotional_state_recognition",
-        "relationship_expectation_recognition",
     ],
     "memory_invocation": [
         "shared_context_invocation",
-        "relationship_expectation_recognition",
         "hidden_intent_recognition",
         "memory_misuse",
     ],
@@ -116,12 +114,10 @@ PROBE_TYPE_DIAGNOSTIC_DIMENSIONS = {
     ],
     "relational_boundary": [
         "hidden_intent_recognition",
-        "relationship_expectation_recognition",
         "alienation_error_rate",
         "memory_misuse",
     ],
     "alienation_avoidance": [
-        "relationship_expectation_recognition",
         "alienation_error_rate",
         "shared_context_invocation",
         "memory_misuse",
